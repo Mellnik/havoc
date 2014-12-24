@@ -60,7 +60,6 @@
 #include <sscanf2>
 #include <streamer>
 #include <a_mysql_R38>
-#include <utconvert>
 #include <mSelection>       // 1.1 R3
 #include <Dini>         	// 1.6
 #include <md-sort>      	// 13/02/2014
@@ -28229,17 +28228,8 @@ GetPlayerSettings(playerid)
 
 UTConvert(unixtime)
 {
-	new u_year,
-	    u_month,
-	    u_day,
-		u_hour,
-		u_minute,
-		u_second,
-		u_date[50];
-
-    TimestampToDate(unixtime, u_year, u_month, u_day, u_hour, u_minute, u_second, 1);
-
-    format(u_date, sizeof(u_date), "%02i/%02i/%i %02i:%02i:%02i", u_day, u_month, u_year, u_hour, u_minute, u_second);
+	new u_date[40];
+	NC_UnixtimeToDate(u_date, unixtime, sizeof(u_date));
 	return u_date;
 }
 
