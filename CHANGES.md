@@ -16,7 +16,7 @@ Havoc Freeroam SA-MP Server
 - Bans now include serverside information; Can be viewed at https://havocserver.com/bans
 - House system has been fully rewritten.
 - Derby has been rewritten, new maps can now be added easily.
-- Replaced remaining file operations engine to y_ini.
+- All file operations have been removed, everything is now in the Havoc database.
 - Removed bullet hit sound from deathmatches.
 - Added admin command to reset houses/enterprises which are being owned by banned players.
 - CnR has been rewritten:
@@ -31,3 +31,6 @@ Havoc Freeroam SA-MP Server
 - Gang score has been reduced if you attack a zone with many members.
 - Houses now determine how many private cars you may held within your account.
 - You can now sell/buy houses/enterprises/pvs on the Havoc forums.
+- Got rid of mSelection, now using an improved UI for toys.
+- Set the maximum attached player objects to 8.
+- Better unixtime converation.
