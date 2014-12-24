@@ -12,7 +12,7 @@
 /*
 || Build Dependencies:
 || SA-MP Server 0.3z-R4
-|| NEFMOD Core, latest
+|| Havoc Core
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1
 || Streamer Plugin v2.7.4
@@ -49,7 +49,7 @@
 #undef MAX_PLAYERS
 #define MAX_PLAYERS (400)
 #include <a_http>           // API Requests
-#include <nefmod>
+#include <havoc>
 #include <crashdetect>
 #include <amx\os>
 #include <YSI\y_iterate>
@@ -101,7 +101,7 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define SVRURLWWW                       "www.havocserver.com"
 #define SVRFORUM                        "forum.nefserver.net"
 #define SERVER_IP                       "31.204.153.110:7777"
-#define HOSTNAME                        " 	      ..:: NEF ::.. ×Stunt/DM/Race/Minigames×"
+//#define HOSTNAME                        " 	      ..:: NEF ::.. ×Stunt/DM/Race/Minigames×"
 #define HOSTNAME                        "Havoc Freeroam"
 #if IS_RELEASE_BUILD == true
 #define CURRENT_VERSION                 "1.00"
