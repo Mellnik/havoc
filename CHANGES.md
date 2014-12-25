@@ -6,6 +6,7 @@ Havoc Freeroam SA-MP Server
 - Businesses have been renamed to Enterprises.
 - Better unixtime conversion.
 - Dialog cleanups.
+- /announce commands have been removed.
 
 TODO
 ----
@@ -14,7 +15,6 @@ TODO
 - Now using salted whirlpool for password hashing.
 - Improved playing time counter for more accurate timings.
 - New, better UI.
-- /announce has been removed.
 - Player bounties are now being saved in the database.
 - All races have been overhauled.
 - Stores are now being saved in the database.

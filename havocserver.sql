@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Dec 25, 2014 at 12:16 AM
+-- Generation Time: Dec 25, 2014 at 01:12 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `deaths` mediumint(8) unsigned NOT NULL,
   `time` int(10) unsigned NOT NULL,
   `skin` smallint(6) NOT NULL,
+  `bounty` int(10) unsigned NOT NULL,
   `payday` tinyint(4) NOT NULL,
   `reaction` smallint(5) unsigned NOT NULL,
   `mathwins` smallint(5) unsigned NOT NULL,
@@ -104,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `bans` (
   `armor` float(14,2) NOT NULL,
   `god` tinyint(3) unsigned NOT NULL,
   `weapon` mediumint(8) unsigned NOT NULL,
-  `flags` binary(14) NOT NULL
+  `ac_flags` binary(14) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

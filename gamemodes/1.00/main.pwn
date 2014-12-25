@@ -4172,17 +4172,6 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 			}
 		}
 	}
-	
-	/* HITSOUND */
-	if(hittype == BULLET_HIT_TYPE_PLAYER) {
-	    if(hitid != INVALID_PLAYER_ID) {
-			if(weaponid >= 22) {
-			    if(gTeam[playerid] == DM || gTeam[playerid] == SNIPER || gTeam[playerid] == gDUEL) {
-			        PlayerPlaySound(playerid, 17802, 0.0, 0.0, 0.0);
-			    }
-			}
-		}
-	}
 
 	/* TDM RPG ABUSE */
 	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2) {
