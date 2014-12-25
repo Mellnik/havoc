@@ -3803,7 +3803,7 @@ public OnPlayerDisconnect(playerid, reason)
 	{
     	if(gTeam[i] == SPEC && PlayerData[i][SpecID] == playerid)
     	{
-    	    Command_ReProcess(i, "/specoff", false);
+    	    Command_ReProcess(i, "/unspec", false);
     	    SCM(i, -1, ""red"Player disconnected!");
 		}
 
@@ -5025,7 +5025,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	{
  		if(gTeam[i] == SPEC && PlayerData[i][SpecID] == playerid)
 	    {
-	        Command_ReProcess(i, "/specoff", false);
+	        Command_ReProcess(i, "/unspec", false);
 	        player_notice(i, "Spectated player died", "");
 		}
 	}
@@ -6811,7 +6811,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			}
 			else if(newstate == PLAYER_STATE_SPECTATING)
 			{
-			    Command_ReProcess(i, "/specoff", false);
+			    Command_ReProcess(i, "/unspec", false);
 				player_notice(i, "Player spectating someone else", "");
 			}
 		}
@@ -9637,7 +9637,7 @@ YCMD:adminhelp(playerid, params[], help)
 
 		format(gstr, sizeof(gstr), ""white"%s\n", g_szStaffLevelNames[1][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/suspect /asay /warn /slap /reports /spec /specoff /disarm\n/rplayers /dplayers /pweaps /getin /gotoxyza /spectators /caps\n/kick /mute /unmute /adminhq /ncrecords\n\n");
+		strcat(string, "/suspect /asay /warn /slap /reports /spec /unspec /disarm\n/rplayers /dplayers /pweaps /getin /gotoxyza /spectators /caps\n/kick /mute /unmute /adminhq /ncrecords\n\n");
 
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[2][e_rank]);
 		strcat(string, gstr);
@@ -15370,7 +15370,7 @@ YCMD:spectate(playerid, params[], help)
 	return 1;
 }
 
-YCMD:specoff(playerid, params[], help)
+YCMD:unspec(playerid, params[], help)
 {
     if(PlayerData[playerid][e_level] >= 1 || IsPlayerAdmin(playerid) || PlayerData[playerid][e_vip] == 1)
 	{
@@ -23196,6 +23196,7 @@ server_initialize()
     Command_AddAltNamed("xmas", "christmas");
     Command_AddAltNamed("xmas", "christ");
 	#endif
+	Command_AddAltNamed("unspec", "specoff");
 	Command_AddAltNamed("toggletp", "togtp");
 	Command_AddAltNamed("spectate", "spec");
 	Command_AddAltNamed("togglegc", "toggc");
@@ -23297,6 +23298,7 @@ server_initialize()
 	Command_AddAltNamed("announce", "ann");
 	Command_AddAltNamed("announce2", "ann2");
 	Command_AddAltNamed("emenu", "gotomybizz");
+	Command_AddAltNamed("emenu", "bmenu");
 	Command_AddAltNamed("go", "goto");
 	Command_AddAltNamed("slap", "throw");
 	Command_AddAltNamed("giveweapon", "givegun");
@@ -29079,7 +29081,7 @@ ExitPlayer(playerid)
 		}
 	    case SPEC:
 	    {
-	        Command_ReProcess(playerid, "/specoff", false);
+	        Command_ReProcess(playerid, "/unspec", false);
 	        return 0;
 	    }
 	    case gFREEROAM:
