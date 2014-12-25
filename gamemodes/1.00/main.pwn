@@ -29,7 +29,7 @@
 || Max teleport categories: 9
 || Max teleports per category: 32
 || Max teleport command name: 17
-|| Max businesses: 700
+|| Max enterprises: 700
 || Max gang zones: 60
 || Max houses: 700
 || Gang name: 4-20 chars
@@ -121,7 +121,7 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define GANG_POS_CO_FOUNDER             (6)
 #define GANG_POS_FOUNDER            	(7)
 #define house_mark                      "{FFFFFF}[{88EE88}House{FFFFFF}]"
-#define business_mark                   "{FFFFFF}[{AAAAFF}Business{FFFFFF}]"
+#define enterprise_mark                   "{FFFFFF}[{AAAAFF}Enterprise{FFFFFF}]"
 #define gwars_mark                      "{FFFFFF}[{2DFF00}Gang Zone{FFFFFF}]"
 #define derby_sign                      "{FFFFFF}[{AAAAFF}DERBY{FFFFFF}]"
 #define race_sign                       "{FFFFFF}[{AAAAFF}RACE{FFFFFF}]"
@@ -272,10 +272,10 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define MAX_PLAYER_HOUSES 				(5)
 #define MAX_HOUSE_OBJECTS               (10)
 
-// Businesses
-#define MAX_BUSINESSES                  (700)
-#define MAX_BUSINESS_LEVEL              (20)
-#define MAX_PLAYER_BUSINESSES           (5)
+// Enterprises
+#define MAX_ENTERPRISES                 (700)
+#define MAX_ENTERPRISE_LEVEL            (20)
+#define MAX_PLAYER_ENTERPRISES           (5)
 
 // Misc
 #define REAC_TIME              			(900000)
@@ -468,65 +468,53 @@ enum (+= 56)
     DIALOG_RACE_RACEVW,
     DIALOG_RACE_RACETYPE,
     DIALOG_RECOVERY_EMAIL,
-    REGISTER_DIALOG,
-    LOGIN_DIALOG,
-    TELE_DIALOG,
-    WEAPON_DIALOG,
-    STREAM_DIALOG,
-    ACHS_DIALOG,
-    LIFT_DIALOG,
-    BANK_DIALOG,
-    SERVERSTATS_DIALOG,
-    VEHICLE_DIALOG,
-    TOY_DIALOG,
-    CARBUY_DIALOG,
-    VEHICLE_PLATE_DIALOG,
-    CUSTOM_PLATE_DIALOG,
-    VMENU_DIALOG,
-    NEON_DIALOG,
-    GMENU_DIALOG,
-    BGVOTING_DIALOG,
-    DERBY_VOTING_DIALOG,
-    HELP_DIALOG,
-    ANIMS_DIALOG,
-    STATS_DIALOG,
-    WANTEDS_DIALOG,
-    TOPLIST_DIALOG,
-    ADMINS_DIALOG,
-    CMDS_DIALOG,
-    MOST_DEATHS_DIALOG,
-	MOST_KILLS_DIALOG,
-	FIRST_SPAWN_DIALOG,
-	MOST_PLAYING_TIME_DIALOG,
-	RICHLIST_DIALOG,
-	SCORE_DIALOG,
-	GANGS_DIALOG,
-	HOUSE_UPGRADE_DIALOG,
-	HOUSE_MENU_DIALOG,
-	DIALOG_BUSINESS,
-	DIALOG_UPGRADE_BUSINESS,
-	DIALOG_SET_BUSINESS_TYPE,
-	SETTINGS_DIALOG,
-	GANG_KICK_DIALOG,
-	CLOSE_GANG_DIALOG,
-	GANG_SET_RANK_DIALOG,
-	RULES_DIALOG,
-    TOP_GANGS_DIALOG,
-    NAME_CHANGE_DIALOG,
-    HAREFILL_DIALOG,
-    VCONTROL_DIALOG,
-    VIP_DIALOG,
-    ADMIN_CMD_DIALOG,
-    LABEL_DIALOG,
-    COLOR_DIALOG,
-    ANN2_DIALOG,
-    REFIL_DIALOG,
-    PV_SLOT_SELECT_DIALOG,
-    CM_DIALOG,
-    CNR_DIALOG,
-    COPS_REFILL,
-    ROBBER_REFILL,
-    NO_CREDITS_DIALOG,
+    DIALOG_REGISTER,
+    DIALOG_LOGIN,
+    DIALOG_TELEPORT,
+    DIALOG_WEAPON,
+    DIALOG_STREAM_RADIO,
+    DIALOG_ACHIEVEMENTS,
+    DIALOG_LIFT,
+    DIALOG_BANK,
+    DIALOG_SERVER_STATS,
+    DIALOG_VEHICLE,
+    DIALOG_TOY,
+    DIALOG_CAR_SHOP,
+    DIALOG_VEHICLE_PLATE,
+    DIALOG_CUSTOM_PLATE,
+    DIALOG_VMENU,
+    DIALOG_NEON,
+    DIALOG_GANG_MENU,
+    DIALOG_TDM_VOTING,
+    DIALOG_DERBY_VOTING,
+    DIALOG_HELP,
+    DIALOG_ANIMS,
+    DIALOG_STATS,
+    DIALOG_WANTEDS,
+    DIALOG_TOPLIST,
+    DIALOG_ADMINS,
+    DIALOG_COMMANDS,
+	DIALOG_HOUSE_UPGRADE,
+	DIALOG_HOUSE_MENU,
+	DIALOG_ENTERPRISE,
+	DIALOG_ENTERPRISE_UPGRADE,
+	DIALOG_ENTERPRISE_SET_TYPE,
+	DIALOG_SETTINGS,
+	DIALOG_GANG_KICK,
+	DIALOG_GANG_CLOSE,
+	DIALOG_GANG_SET_RANK,
+	DIALOG_CHANGE_NAME,
+    DIALOG_HA_REFILL,
+    DIALOG_VCONTROL,
+    DIALOG_VIP_LABEL,
+    DIALOG_PLAYER_COLOR,
+    DIALOG_CNR_REFILL,
+    DIALOG_PV_SELECT_SLOT,
+    DIALOG_CM,
+    DIALOG_CNR,
+    DIALOG_REFILL_COPS,
+    DIALOG_REFILL_ROBBERS,
+    DIALOG_NO_GC,
     DIALOG_DUEL,
     NO_DIALOG_ID
 };
@@ -2854,7 +2842,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	PlayerPVData[MAX_PLAYERS][MAX_PLAYER_PVS][E_PV_DATA],
   	HouseData[MAX_HOUSES][E_HOUSE_DATA],
   	GZoneData[MAX_GZONES][E_GZONE_DATA],
-  	BusinessData[MAX_BUSINESSES][E_BUSINESS_DATA],
+  	BusinessData[MAX_ENTERPRISES][E_BUSINESS_DATA],
   	PVSelect[MAX_PLAYERS],
 	PVCatSel[MAX_PLAYERS],
 	PVVMenuSel[MAX_PLAYERS],
@@ -5842,7 +5830,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 	 	{
 	 		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 	 		{
-	 			ShowPlayerDialog(playerid, REFIL_DIALOG, DIALOG_STYLE_LIST, ""ORANGE_E"Refill Station", ""GREEN_E"Repair Vehicle\t\t"LG_E"$2000\n"LB_E"Add Nitro (x10)\t\t"LG_E"$5000\n"LB_E"Repair and add Nitro\t"LG_E"$6500", "Select", "Exit");
+	 			ShowPlayerDialog(playerid, DIALOG_CNR_REFILL, DIALOG_STYLE_LIST, ""ORANGE_E"Refill Station", ""GREEN_E"Repair Vehicle\t\t"LG_E"$2000\n"LB_E"Add Nitro (x10)\t\t"LG_E"$5000\n"LB_E"Repair and add Nitro\t"LG_E"$6500", "Select", "Exit");
 			}
 	 	}
 	 	case 11: //24/7
@@ -5923,20 +5911,20 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 				SCM(playerid, COLOR_YELLOW, ">> "RED_E"You must be in a CNR minigame to purchase weapons from here!");
 				return 1;
 			}
-			ShowDialog(playerid, WEAPON_DIALOG);
+			ShowDialog(playerid, DIALOG_WEAPON);
 		}
   		case 20: //PD Refill
 		{
 			if(GetPVarInt(playerid, "Cop") != 0)
 			{
-				ShowPlayerDialog(playerid, COPS_REFILL, DIALOG_STYLE_LIST, ""BLUE_E"LVPD Refill", "Refill Health\nRefill Weapons", "Select", "Cancel");
+				ShowPlayerDialog(playerid, DIALOG_REFILL_COPS, DIALOG_STYLE_LIST, ""BLUE_E"LVPD Refill", "Refill Health\nRefill Weapons", "Select", "Cancel");
 			}
 		}
 		case 21: //Robber Refill
 		{
 			if(GetPVarInt(playerid, "Robber") == 1)
 			{
-				ShowPlayerDialog(playerid, ROBBER_REFILL, DIALOG_STYLE_LIST, ""ORANGE_E"Robbery Refill", "Refill Health\nRefill Weapons", "Select", "Cancel");
+				ShowPlayerDialog(playerid, DIALOG_REFILL_ROBBERS, DIALOG_STYLE_LIST, ""ORANGE_E"Robbery Refill", "Refill Health\nRefill Weapons", "Select", "Cancel");
 			}
 		}
 		case 22: //PD Entrance
@@ -6055,7 +6043,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		{
 			if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT && gTeam[playerid] == gFREEROAM)
 			{
-				ShowDialog(playerid, CM_DIALOG);
+				ShowDialog(playerid, DIALOG_CM);
 			}
 		}
 		case 36:
@@ -6434,7 +6422,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 		SetPlayerCameraLookAt(playerid, -1407.9410,1022.4058,1051.1681);
 		SetPlayerPos(playerid, -1409.6410, 1032.6376, 1049.0288);
 		TogglePlayerControllable(playerid, false);
-		ShowDialog(playerid, CARBUY_DIALOG);
+		ShowDialog(playerid, DIALOG_CAR_SHOP);
 	}
 
 	if(pickupid == dm1pickup)
@@ -6902,7 +6890,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
             if(IsPlayerInRangeOfPoint(playerid, 2.2, 2311.63, -3.89, 26.74))
             {
 			    if(!islogged(playerid)) return notlogged(playerid);
-			    ShowDialog(playerid, BANK_DIALOG);
+			    ShowDialog(playerid, DIALOG_BANK);
 			    return 1;
             }
         }
@@ -8156,7 +8144,7 @@ YCMD:derby(playerid, params[], help)
 	}
 	else
 	{
-		ShowDialog(playerid, DERBY_VOTING_DIALOG);
+		ShowDialog(playerid, DIALOG_DERBY_VOTING);
         SCM(playerid, RED, "You joined Derby. Please vote for a map!");
 	}
 
@@ -8521,7 +8509,7 @@ YCMD:l(playerid, params[], help)
 YCMD:t(playerid, params[], help)
 {
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
- 	ShowDialog(playerid, TELE_DIALOG);
+ 	ShowDialog(playerid, DIALOG_TELEPORT);
 	return 1;
 }
 
@@ -8544,7 +8532,7 @@ YCMD:colors(playerid, params[], help)
 	{
 		SCM(playerid, -1, ""nef" You can also set your own color using RGB values. /color <0-255> <0-255> <0-255>");
 		SCM(playerid, -1, ""nef" Quick color change: /blue /orange /red /yellow /grey /pink /green - /random for a random color");
-		ShowPlayerDialog(playerid, COLOR_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Colors", ""RED_E"Red\n"BLUE_E"Blue\n"WHITE_E"White\n{FFFF82}Ivory\n"PINK_E"Pink\n"YELLOW_E"Yellow\n"GREEN_E"Green\n{00EBFF}Lightblue\n"GREY_E"Grey\n"ORANGE_E"Orange\n"purple"Purple\n"LG_E"Light Green\n{B0C4DE}Steelblue", "Select", "Exit");
+		ShowPlayerDialog(playerid, DIALOG_PLAYER_COLOR, DIALOG_STYLE_LIST, ""nef" :: Colors", ""RED_E"Red\n"BLUE_E"Blue\n"WHITE_E"White\n{FFFF82}Ivory\n"PINK_E"Pink\n"YELLOW_E"Yellow\n"GREEN_E"Green\n{00EBFF}Lightblue\n"GREY_E"Grey\n"ORANGE_E"Orange\n"purple"Purple\n"LG_E"Light Green\n{B0C4DE}Steelblue", "Select", "Exit");
 	}
 	else
 	{
@@ -8879,7 +8867,7 @@ YCMD:bbuy(playerid, params[], help)
 	}
 
 	new bool:bFound = false;
-	for(new r = 0; r < MAX_BUSINESSES; r++)
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
 	    if(BusinessData[r][e_ormid] == ORM:-1) continue;
 	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, BusinessData[r][e_pos][0], BusinessData[r][e_pos][1], BusinessData[r][e_pos][2])) continue;
@@ -8945,7 +8933,7 @@ YCMD:bsell(playerid, params[], help)
 	}
 
 	new bool:bFound = false;
-	for(new r = 0; r < MAX_BUSINESSES; r++)
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
 	    if(BusinessData[r][e_ormid] == ORM:-1) continue;
 	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, BusinessData[r][e_pos][0], BusinessData[r][e_pos][1], BusinessData[r][e_pos][2])) continue;
@@ -9300,7 +9288,7 @@ YCMD:cnr(playerid, params[], help)
 	new string[512];
 	format(string, sizeof(string), ""YELLOW_E"Choose your side", ""LB_E"Cops\t\t"GREY_E"LVPD\t\t(Players: %i)\n"ORANGE_E"Robbers\t"GREY_E"LV Mafia\t\t(Players: %i)\n"RED_E"Pro Robbers\t"GREY_E"Mafia Commanders\n"PURPLE_E"Army\t\t"GREY_E"Army Task Force\n"BLUE_E"Swat\t\t"GREY_E"LVPD Commanders", cops, robbers);
 	
-	ShowPlayerDialog(playerid, CNR_DIALOG, DIALOG_STYLE_LIST, ""YELLOW_E"Choose your side", string, "Select", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_CNR, DIALOG_STYLE_LIST, ""YELLOW_E"Choose your side", string, "Select", "Cancel");
 */
     if(gTeam[playerid] == CNR) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
@@ -9319,7 +9307,7 @@ YCMD:cnr(playerid, params[], help)
 	new string[512];
 	format(string, sizeof(string), ""LB_E"Cops\t\t"GREY_E"LVPD\t\t\t(Players: %i)\n"ORANGE_E"Robbers\t"GREY_E"LV Mafia\t\t(Players: %i)\n"RED_E"Pro Robbers\t"GREY_E"Mafia Commanders\n"PURPLE_E"Army\t\t"GREY_E"Army Task Force\n"BLUE_E"Swat\t\t"GREY_E"LVPD Commanders", cops, robbers);
 
-	ShowPlayerDialog(playerid, CNR_DIALOG, DIALOG_STYLE_LIST, ""YELLOW_E"Choose your side", string, "Select", "Close");
+	ShowPlayerDialog(playerid, DIALOG_CNR, DIALOG_STYLE_LIST, ""YELLOW_E"Choose your side", string, "Select", "Close");
 	return 1;
 }
 
@@ -9466,7 +9454,7 @@ YCMD:tdm(playerid, params[], help)
 	{
 	    SetPlayerBGStaticMeshes(playerid);
 		gTeam[playerid] = gBG_VOTING;
-		ShowDialog(playerid, BGVOTING_DIALOG);
+		ShowDialog(playerid, DIALOG_TDM_VOTING);
 		ShowPlayerBGTextdraws(playerid);
 	}
 	else if(CurrentBGMap == BG_MAP1)
@@ -9676,7 +9664,7 @@ YCMD:adminhelp(playerid, params[], help)
 		strcat(string, gstr);
 		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /breset /hsetprice /hsetscore\n/setbizzlevel /hcreate /bcreate /createstore /gzonecreate");
 
-        ShowPlayerDialog(playerid, ADMIN_CMD_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
+        ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
 	}
   	else
 	{
@@ -9864,7 +9852,7 @@ YCMD:setspawn(playerid, params[], help)
 
 YCMD:radio(playerid, params[], help)
 {
-    ShowDialog(playerid, STREAM_DIALOG);
+    ShowDialog(playerid, DIALOG_STREAM_RADIO);
     return 1;
 }
 
@@ -10878,7 +10866,7 @@ YCMD:announce2(playerid, params[], help)
 		{
 		    if(IsPlayerAvail(i) && gTeam[i] != BUYCAR)
 		    {
-				ShowPlayerDialog(i, ANN2_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Announcement", gstr, "OK", "");
+				ShowPlayerDialog(i, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Announcement", gstr, "OK", "");
 			}
 		}
 	}
@@ -11640,7 +11628,7 @@ YCMD:register(playerid, params[], help)
     format(newtext2, sizeof(newtext2), ""nef" :: Registration - %s", __GetName(playerid));
 
 	format(newtext1, sizeof(newtext1), ""white"Welcome to "SVRLOGO""white"\n\nDesired name: %s\n\nIt seems that you don't have an account, please enter a password below:", __GetName(playerid));
-	ShowPlayerDialog(playerid, REGISTER_DIALOG + 1, DIALOG_STYLE_PASSWORD, newtext2, newtext1, "Register", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_REGISTER + 1, DIALOG_STYLE_PASSWORD, newtext2, newtext1, "Register", "Cancel");
 	return 1;
 }
 
@@ -12244,7 +12232,7 @@ YCMD:gclose(playerid, params[], help)
     if(PlayerData[playerid][e_gangrank] != GANG_POS_FOUNDER) return SCM(playerid, -1, ""er"You have to be the gang's founder!");
 	if(Iter_Contains(iterGangWar, PlayerData[playerid][e_gangid])) return SCM(playerid, -1, ""er"You can't close your gang since there is a gang war going on");
 
-	ShowDialog(playerid, CLOSE_GANG_DIALOG);
+	ShowDialog(playerid, DIALOG_GANG_CLOSE);
 	return 1;
 }
 
@@ -12287,7 +12275,7 @@ YCMD:gmenu(playerid, params[], help)
     
     if(PlayerData[playerid][e_gangid] == 0) return SCM(playerid, -1, ""er"You aren't in any gang!");
 
-	ShowDialog(playerid, GMENU_DIALOG);
+	ShowDialog(playerid, DIALOG_GANG_MENU);
 	return 1;
 }
 
@@ -12326,7 +12314,7 @@ YCMD:gsetrank(playerid, params[], help)
 	if(PlayerData[playerid][e_gangid] == 0) return SCM(playerid, -1, ""er"You aren't in any gang");
     if(PlayerData[playerid][e_gangrank] < GANG_POS_LEADER) return SCM(playerid, -1, ""er"You have to be at least the gang leader to set ranks");
     
-    ShowDialog(playerid, GANG_SET_RANK_DIALOG);
+    ShowDialog(playerid, DIALOG_GANG_SET_RANK);
 	return 1;
 }
 
@@ -12342,7 +12330,7 @@ YCMD:gkick(playerid, params[], help)
     if(PlayerData[playerid][e_gangid] == 0) return SCM(playerid, -1, ""er"You aren't in any gang");
 	if(PlayerData[playerid][e_gangrank] < GANG_POS_CO_FOUNDER) return SCM(playerid, -1, ""er"You have to be at least the Co-Founder");
 
-	ShowDialog(playerid, GANG_KICK_DIALOG);
+	ShowDialog(playerid, DIALOG_GANG_KICK);
 	
 	PlayerData[playerid][tickLastGKick] = tick;
 	return 1;
@@ -13392,7 +13380,7 @@ YCMD:admins(playerid, params[], help)
 	{
 	    format(gstr, sizeof(gstr), "\n"white"Total of "nef_yellow"%i "white"admins/VIPs online!", count);
 	    strcat(finstring, gstr);
-		ShowPlayerDialog(playerid, ADMINS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Admins", finstring, "OK", "");
+		ShowPlayerDialog(playerid, DIALOG_ADMINS, DIALOG_STYLE_MSGBOX, ""nef" :: Admins", finstring, "OK", "");
 	}
 	return 1;
 }
@@ -13427,7 +13415,7 @@ YCMD:vips(playerid, params[], help)
 	{
 	    format(gstr, sizeof(gstr), "\n\n"white"Total of "nef_yellow"%i "white"VIPs online!", count);
 	    strcat(finstring, gstr);
-		ShowPlayerDialog(playerid, ADMINS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: VIPs", finstring, "OK", "");
+		ShowPlayerDialog(playerid, DIALOG_ADMINS, DIALOG_STYLE_MSGBOX, ""nef" :: VIPs", finstring, "OK", "");
 	}
 	return 1;
 }
@@ -13568,7 +13556,7 @@ YCMD:vip(playerid, params[], help)
 	strcat(string, "\n Attach trailers to your truck (/trailer)\n Create ramps (/ramp)\n Health and armor (/harefill)");
 	strcat(string, "\n\n"nef_yellow"Get VIP today! Go to:\n");
 	strcat(string, ""red"-> "yellow_e""SVRURLWWW"/vip");
-    ShowPlayerDialog(playerid, VIP_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player (VIP)", string, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player (VIP)", string, "OK", "");
 	return 1;
 }
 
@@ -14281,7 +14269,7 @@ YCMD:setbizzlevel(playerid, params[], help)
 	if(blevel > 20 || blevel < 1) return SCM(playerid, -1, ""er"Business level 1 - 20");
 	
  	new bool:bFound = false;
- 	for(new r = 0; r < MAX_BUSINESSES; r++)
+ 	for(new r = 0; r < MAX_ENTERPRISES; r++)
  	{
 	    if(BusinessData[r][e_ormid] == ORM:-1) continue;
 	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, BusinessData[r][e_pos][0], BusinessData[r][e_pos][1], BusinessData[r][e_pos][2])) continue;
@@ -14290,9 +14278,9 @@ YCMD:setbizzlevel(playerid, params[], help)
 		BusinessData[r][e_level] = blevel;
 		
 		if(BusinessData[r][e_sold]) {
-	        format(gstr, sizeof(gstr), ""business_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
+	        format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
 		} else {
-		    format(gstr, sizeof(gstr), ""business_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", BusinessData[r][e_id], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
+		    format(gstr, sizeof(gstr), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", BusinessData[r][e_id], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
 		}
 		
 		UpdateDynamic3DTextLabelText(BusinessData[r][e_label_id], -1, gstr);
@@ -14310,7 +14298,7 @@ YCMD:breset(playerid, params[], help)
     if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL) return SCM(playerid, -1, NO_PERM);
 
  	new bool:bFound = false;
-	for(new r = 0; r < MAX_BUSINESSES; r++)
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
 	    if(BusinessData[r][e_ormid] == ORM:-1) continue;
 	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, BusinessData[r][e_pos][0], BusinessData[r][e_pos][1], BusinessData[r][e_pos][2])) continue;
@@ -14393,18 +14381,18 @@ YCMD:bcreate(playerid, params[], help)
 	}
 	
 	new count = 0;
-	for(new i = 0; i < MAX_BUSINESSES; i++) {
+	for(new i = 0; i < MAX_ENTERPRISES; i++) {
 	    if(BusinessData[i][e_ormid] != ORM:-1) {
 			++count;
 	    }
 	}
 	
-	if(count >= MAX_BUSINESSES) {
+	if(count >= MAX_ENTERPRISES) {
 	    return SCM(playerid, -1, ""er"Max businesses reached");
 	}
 	
 	new r = -1;
-	for(new i = 0; i < MAX_BUSINESSES; i++) {
+	for(new i = 0; i < MAX_ENTERPRISES; i++) {
 	    if(BusinessData[i][e_ormid] == ORM:-1) {
 	        r = i;
 	        break;
@@ -14679,7 +14667,7 @@ YCMD:rules(playerid, params[], help)
 	strcat(rules, "- No abusing bugs/glitches/commands\n- Do not share your account\n- No AFK in minigames\n- Do not ask for an unban ingame\n- Do not ask to be an administrator /free VIP\n- Do not use Vortex to driveby players\n- Do not driveby at Hotspots/Spawnareas");
 	strcat(rules, "\n- No score/money farming\n- Do not use joypad\n- No impersonating\n\nNever tell your password to anyone!");
 
-    ShowPlayerDialog(playerid, RULES_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Rules", rules, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Rules", rules, "OK", "");
 	return 1;
 }
 
@@ -14715,7 +14703,7 @@ YCMD:gungames(playerid, params[], help)
         strcat(finstring, tmpstring);
 	}
 
-    ShowPlayerDialog(playerid, MOST_KILLS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Most Gungame Wins", finstring, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Most Gungame Wins", finstring, "OK", "");
 	return 1;
 }
 
@@ -14751,7 +14739,7 @@ YCMD:fallouts(playerid, params[], help)
 		strcat(finstring, tmpstring);
 	}
 
-    ShowPlayerDialog(playerid, MOST_KILLS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Most Fallout Wins", finstring, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Most Fallout Wins", finstring, "OK", "");
 	return 1;
 }
 
@@ -14787,7 +14775,7 @@ YCMD:derbys(playerid, params[], help)
 		strcat(finstring, tmpstring);
 	}
 
-    ShowPlayerDialog(playerid, MOST_KILLS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Most Derby Wins", finstring, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Most Derby Wins", finstring, "OK", "");
 	return 1;
 }
 
@@ -14823,7 +14811,7 @@ YCMD:races(playerid, params[], help)
 		strcat(finstring, tmpstring);
 	}
 
-    ShowPlayerDialog(playerid, MOST_KILLS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Most Race Wins", finstring, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Most Race Wins", finstring, "OK", "");
 	return 1;
 }
 
@@ -14859,7 +14847,7 @@ YCMD:reacts(playerid, params[], help)
 		strcat(finstring, tmpstring);
 	}
 
-    ShowPlayerDialog(playerid, MOST_KILLS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Most Reaction Wins", finstring, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Most Reaction Wins", finstring, "OK", "");
 	return 1;
 }
 
@@ -14895,7 +14883,7 @@ YCMD:kills(playerid, params[], help)
 		strcat(finstring, tmpstring);
 	}
 
-    ShowPlayerDialog(playerid, MOST_KILLS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Most Kills", finstring, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Most Kills", finstring, "OK", "");
 	return 1;
 }
 
@@ -14931,7 +14919,7 @@ YCMD:deaths(playerid, params[], help)
 		strcat(finstring, tmpstring);
 	}
 
-    ShowPlayerDialog(playerid, MOST_DEATHS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Most Deaths", finstring, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Most Deaths", finstring, "OK", "");
 	return 1;
 }
 
@@ -14969,7 +14957,7 @@ YCMD:toptime(playerid, params[], help)
 		strcat(finstring, tmpstring);
 	}
 
-    ShowPlayerDialog(playerid, MOST_PLAYING_TIME_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Most Playing Time", finstring, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Most Playing Time", finstring, "OK", "");
 	return 1;
 }
 
@@ -15005,7 +14993,7 @@ YCMD:richlist(playerid, params[], help)
 		strcat(finstring, tmpstring);
 	}
 
-    ShowPlayerDialog(playerid, RICHLIST_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Richlist", finstring, "OK", "");
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Richlist", finstring, "OK", "");
 	return 1;
 }
 
@@ -15040,7 +15028,7 @@ YCMD:wanteds(playerid, params[], help)
 		    
 		strcat(finstring, tmpstring);
 	}
-	ShowPlayerDialog(playerid, WANTEDS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Most wanteds", finstring, "OK", "");
+	ShowPlayerDialog(playerid, DIALOG_WANTEDS, DIALOG_STYLE_MSGBOX, ""nef" :: Most wanteds", finstring, "OK", "");
 	return 1;
 }
 
@@ -15075,7 +15063,7 @@ YCMD:score(playerid, params[], help)
 		    
 		strcat(finstring, tmpstring);
 	}
-	ShowPlayerDialog(playerid, SCORE_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Score", finstring, "OK", "");
+	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Score", finstring, "OK", "");
 	return 1;
 }
 
@@ -15116,7 +15104,7 @@ YCMD:gangs(playerid, params[], help)
 			    break;
 			}
 	    }
-		ShowPlayerDialog(playerid, GANGS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Online Gangs", finstring, "OK", "");
+		ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Online Gangs", finstring, "OK", "");
 	}
 	else
 	{
@@ -15152,7 +15140,7 @@ function:OnGTopReceived(playerid)
 			else format(gstr, sizeof(gstr), ""white"%i - [%s]%s [%i]\n", i + 1, tmp2, tmp, cache_get_row_int(i, 2, pSQL));
 			strcat(finstring, gstr);
 	    }
-	    ShowPlayerDialog(playerid, TOP_GANGS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Top Gangs", finstring, "OK", "");
+	    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Top Gangs", finstring, "OK", "");
 	}
 	return 1;
 }
@@ -15163,7 +15151,7 @@ YCMD:top(playerid, params[], help)
 	strcat(string, "Richlist (/richlist)\nMost Wanteds (/wanteds)\nScore (/score)\nMost Kills (/kills)\nMost Deaths (/deaths)\nMost playing time (/toptime)\nOnline Gangs (/gangs)\nTop Gangs (/gtop)");
 	strcat(string, "\nMost Reaction Wins (/reacts)\nMost Race Wins (/races)\nMost Derby Wins (/derbys)\nMost Fallout Wins (/fallouts)\nMost Gungame Wins (/gungames)");
 	
-	ShowPlayerDialog(playerid, TOPLIST_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Toplists", string, "Select", "Close");
+	ShowPlayerDialog(playerid, DIALOG_TOPLIST, DIALOG_STYLE_LIST, ""nef" :: Toplists", string, "Select", "Close");
 	return 1;
 }
 
@@ -15178,7 +15166,7 @@ YCMD:vcontrol(playerid, params[], help)
 		    return player_notice(playerid, "You must be driving a vehicle", "");
 		}
 
-		ShowDialog(playerid, VCONTROL_DIALOG);
+		ShowDialog(playerid, DIALOG_VCONTROL);
 	}
 	else
 	{
@@ -15193,7 +15181,7 @@ YCMD:label(playerid, params[], help)
 	{
 	    if(PlayerData[playerid][VIPLabel] == Text3D:-1)
 	    {
-	        ShowDialog(playerid, LABEL_DIALOG);
+	        ShowDialog(playerid, DIALOG_VIP_LABEL);
 	    }
 	    else
 	    {
@@ -15213,7 +15201,7 @@ YCMD:elabel(playerid, params[], help)
 	{
 	    if(PlayerData[playerid][VIPLabel] != Text3D:-1)
 	    {
-	        ShowDialog(playerid, LABEL_DIALOG + 1);
+	        ShowDialog(playerid, DIALOG_VIP_LABEL + 1);
 	    }
 	    else
 	    {
@@ -15342,7 +15330,7 @@ YCMD:vmenu(playerid, params[], help)
 	    }
 	}
     
-   	ShowDialog(playerid, VMENU_DIALOG);
+   	ShowDialog(playerid, DIALOG_VMENU);
 	return 1;
 }
 
@@ -15354,7 +15342,7 @@ YCMD:harefill(playerid, params[], help)
 	{
 	    if(PlayerData[playerid][bGod]) return SCM(playerid, -1, ""er"You need to disable GodMode first. (/god)");
 	    if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
-	    ShowDialog(playerid, HAREFILL_DIALOG);
+	    ShowDialog(playerid, DIALOG_HA_REFILL);
 	}
 	else
 	{
@@ -15671,7 +15659,7 @@ YCMD:cc(playerid, params[], help)
 YCMD:changename(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
-    ShowDialog(playerid, NAME_CHANGE_DIALOG);
+    ShowDialog(playerid, DIALOG_CHANGE_NAME);
 	return 1;
 }
 
@@ -15706,7 +15694,7 @@ YCMD:changepass(playerid, params[], help)
 
 YCMD:serverstats(playerid, params[], help)
 {
-	ShowDialog(playerid, SERVERSTATS_DIALOG);
+	ShowDialog(playerid, DIALOG_SERVER_STATS);
 	return 1;
 }
 
@@ -15861,7 +15849,7 @@ YCMD:stats(playerid, params[], help)
 		    strcat(finstring, "\n\n"nef_yellow"You are not registered!\nType /register to create an account.");
 		}
 
-		ShowPlayerDialog(playerid, STATS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Player Statistics", finstring, "OK", "");
+		ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_MSGBOX, ""nef" :: Player Statistics", finstring, "OK", "");
 	}
 	else
 	{
@@ -15954,7 +15942,7 @@ YCMD:hmenu(playerid, params[], help)
 		strcat(string, tmp);
     }
 
-    ShowPlayerDialog(playerid, HOUSE_MENU_DIALOG, DIALOG_STYLE_LIST, ""nef" :: House Menu", string, "Select", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU, DIALOG_STYLE_LIST, ""nef" :: House Menu", string, "Select", "Cancel");
 	return 1;
 }
 
@@ -15965,7 +15953,7 @@ YCMD:bmenu(playerid, params[], help)
     if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
     new string[512], tmp[64];
 
-    for(new i = 0; i < MAX_PLAYER_BUSINESSES; i++)
+    for(new i = 0; i < MAX_PLAYER_ENTERPRISES; i++)
     {
         if(i > PlayerData[playerid][e_addbizzslots])
         {
@@ -15985,7 +15973,7 @@ YCMD:bmenu(playerid, params[], help)
 		strcat(string, tmp);
     }
 
-    ShowPlayerDialog(playerid, DIALOG_BUSINESS, DIALOG_STYLE_LIST, ""nef" :: Business Menu", string, "Select", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE, DIALOG_STYLE_LIST, ""nef" :: Business Menu", string, "Select", "Cancel");
 	return 1;
 }
 
@@ -15994,7 +15982,7 @@ YCMD:settings(playerid, params[], help)
     if(!islogged(playerid)) return notlogged(playerid);
     
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
-    ShowDialog(playerid, SETTINGS_DIALOG);
+    ShowDialog(playerid, DIALOG_SETTINGS);
 	return 1;
 }
 
@@ -16043,7 +16031,7 @@ YCMD:m(playerid, params[], help)
 	    
 	strcat(string, gstr2);
 	
-	ShowPlayerDialog(playerid, HELP_DIALOG + 3, DIALOG_STYLE_LIST, ""nef" :: Minigames", string, "Select", "Close");
+	ShowPlayerDialog(playerid, DIALOG_HELP + 3, DIALOG_STYLE_LIST, ""nef" :: Minigames", string, "Select", "Close");
 	return 1;
 }
 
@@ -16769,7 +16757,7 @@ YCMD:toys(playerid, params[], help)
 		strcat(string, tmp);
 	}
 
-	ShowPlayerDialog(playerid, TOY_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Player Toys", string, "Select", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_TOY, DIALOG_STYLE_LIST, ""nef" :: Player Toys", string, "Select", "Cancel");
 	return 1;
 }
 
@@ -16849,7 +16837,7 @@ YCMD:achs(playerid, params[], help)
 
 		if(player == playerid) strcat(finstring, "\n"white"Use /achs <playerid> to see someone else's achievements");
 
-		ShowPlayerDialog(playerid, ACHS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Achievements", finstring, "OK", "");
+		ShowPlayerDialog(playerid, DIALOG_ACHIEVEMENTS, DIALOG_STYLE_MSGBOX, ""nef" :: Achievements", finstring, "OK", "");
 	}
 	else
 	{
@@ -16860,13 +16848,13 @@ YCMD:achs(playerid, params[], help)
 
 YCMD:c(playerid, params[], help)
 {
-    ShowDialog(playerid, CMDS_DIALOG);
+    ShowDialog(playerid, DIALOG_COMMANDS);
 	return 1;
 }
 
 YCMD:help(playerid, params[], help)
 {
-	ShowDialog(playerid, HELP_DIALOG);
+	ShowDialog(playerid, DIALOG_HELP);
     return 1;
 }
 
@@ -16878,7 +16866,7 @@ YCMD:anims(playerid, params[], help)
 	strcat(cstring, ""nef_yellow"To stop an animation:");
 	strcat(cstring, "\n"white"Type: /stopanim or press: [SHIFT], [ENTER], [LMB]");
 
-	ShowPlayerDialog(playerid, ANIMS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Animations", cstring, "OK", "");
+	ShowPlayerDialog(playerid, DIALOG_ANIMS, DIALOG_STYLE_MSGBOX, ""nef" :: Animations", cstring, "OK", "");
 	return 1;
 }
 
@@ -17341,7 +17329,7 @@ YCMD:w(playerid, params[], help)
 	if(PlayerData[playerid][bGod]) return SCM(playerid, -1, ""er"You need to disable GodMode first. (/god)");
 	if(gTeam[playerid] == gFREEROAM)
 	{
-		ShowDialog(playerid, WEAPON_DIALOG);
+		ShowDialog(playerid, DIALOG_WEAPON);
 	}
 	else
 	{
@@ -17402,7 +17390,7 @@ YCMD:v(playerid, params[], help)
 			}
 			else
 			{
-				ShowDialog(playerid, VEHICLE_DIALOG);
+				ShowDialog(playerid, DIALOG_VEHICLE);
 			}
 		}
 	}
@@ -17463,13 +17451,13 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
 				}
             }
 
-			for(new r = 0; r < MAX_BUSINESSES; r++)
+			for(new r = 0; r < MAX_ENTERPRISES; r++)
 			{
 				if(strcmp(BusinessData[r][e_owner], oldname, true)) continue;
 
                 strmid(BusinessData[r][e_owner], newname, 0, 25, 25);
 
-                format(gstr, sizeof(gstr), ""business_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
+                format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
 			    UpdateDynamic3DTextLabelText(BusinessData[r][e_label_id], -1, gstr);
 			    orm_update(BusinessData[r][e_ormid]);
 			}
@@ -17661,7 +17649,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		        g_BuildTakeCheckpoints = true;
 				return true;
 		    }
-	        case DIALOG_BUSINESS:
+	        case DIALOG_ENTERPRISE:
 	        {
 				format(gstr2, sizeof(gstr2), ""nef" :: Business Menu > Slot: %i", listitem + 1);
 
@@ -17679,12 +17667,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    }
 				    else
 				    {
-				        ShowPlayerDialog(playerid, DIALOG_BUSINESS + 1, DIALOG_STYLE_LIST, gstr2, "Goto This Business\nSet Business Type\nUpgrade Business Level", "Select", "Cancel");
+				        ShowPlayerDialog(playerid, DIALOG_ENTERPRISE + 1, DIALOG_STYLE_LIST, gstr2, "Goto This Business\nSet Business Type\nUpgrade Business Level", "Select", "Cancel");
 				    }
 				}
 	            return true;
 	        }
-	        case DIALOG_BUSINESS + 1:
+	        case DIALOG_ENTERPRISE + 1:
 	        {
 		        if(gTeam[playerid] != gFREEROAM)
 				{
@@ -17709,23 +17697,23 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 				    case 1:
 				    {
-						ShowDialog(playerid, DIALOG_SET_BUSINESS_TYPE);
+						ShowDialog(playerid, DIALOG_ENTERPRISE_SET_TYPE);
 				    }
 				    case 2:
 				    {
-				        ShowDialog(playerid, DIALOG_UPGRADE_BUSINESS);
+				        ShowDialog(playerid, DIALOG_ENTERPRISE_UPGRADE);
 				    }
 				}
 	            return true;
 	        }
-	        case DIALOG_SET_BUSINESS_TYPE:
+	        case DIALOG_ENTERPRISE_SET_TYPE:
 	        {
 	            new r = GetBusinessSlotBySelection(playerid);
 	            
 				if(r != -1) {
 				    player_notice(playerid, "Business type set", "");
 					BusinessData[r][e_type] = E_BUSINESS_TYPES:listitem;
-					format(gstr, sizeof(gstr), ""business_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
+					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
 					UpdateDynamic3DTextLabelText(BusinessData[r][e_label_id], -1, gstr);
 					orm_update(BusinessData[r][e_ormid]);
 				} else {
@@ -17733,12 +17721,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 	        }
-	        case DIALOG_UPGRADE_BUSINESS:
+	        case DIALOG_ENTERPRISE_UPGRADE:
 	        {
 	            new r = GetBusinessSlotBySelection(playerid);
 			    
 				if(r != -1) {
-		            if(BusinessData[r][e_level] >= MAX_BUSINESS_LEVEL)
+		            if(BusinessData[r][e_level] >= MAX_ENTERPRISE_LEVEL)
 		            {
 						Command_ReProcess(playerid, "/bmenu", false);
 						return 1;
@@ -17764,7 +17752,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                format(gstr, sizeof(gstr), ""nef" :: Business Level Upgrade > Slot: %i", PlayerData[playerid][BusinessIdSelected] + 1);
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr, gstr2, "OK", "");
                  	
-					format(gstr, sizeof(gstr), ""business_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
+					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
 					UpdateDynamic3DTextLabelText(BusinessData[r][e_label_id], -1, gstr);
 				    
 					orm_update(BusinessData[r][e_ormid]);
@@ -17773,7 +17761,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 	            return true;
 	        }
-	        case CM_DIALOG:
+	        case DIALOG_CM:
 	        {
 				// How to get credits, Toy slots, pvs slots, house slots, house obj slots, business slot, instant namechange, medkit x20, medkit x100, money boost x2, money boost x3, scoreboost x2, scoreboost x3, master boost
 				new string[1024];
@@ -17783,33 +17771,33 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                {
 	                    strcat(string, ""white"Gold Credits is a virtual currency which can be used to buy \nin-game items and add new features.");
 	                    strcat(string, "\n\nGoto "SVRURLWWW"/credits to learn more about Gold Credits");
-	                    ShowPlayerDialog(playerid, CM_DIALOG + 1, DIALOG_STYLE_MSGBOX, ""nef" Gold Credits", string, "Back", "");
+	                    ShowPlayerDialog(playerid, DIALOG_CM + 1, DIALOG_STYLE_MSGBOX, ""nef" Gold Credits", string, "Back", "");
 	                }
 	                case 1..14:
 	                {
-	                    ShowPlayerDialog(playerid, CM_DIALOG + 1 + listitem, DIALOG_STYLE_MSGBOX, ""nef" Gold Credits", GetItem(listitem - 1), "Buy", "Back");
+	                    ShowPlayerDialog(playerid, DIALOG_CM + 1 + listitem, DIALOG_STYLE_MSGBOX, ""nef" Gold Credits", GetItem(listitem - 1), "Buy", "Back");
 	                }
 	            }
 	            return true;
 	        }
-	        case CM_DIALOG + 1:
+	        case DIALOG_CM + 1:
 	        {
-	            ShowDialog(playerid, CM_DIALOG);
+	            ShowDialog(playerid, DIALOG_CM);
 	            return true;
 	        }
-	        case CM_DIALOG + 2: // toy slot
+	        case DIALOG_CM + 2: // toy slot
 	        {
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[0][E_item_credits])
 	            {
         			SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 	        
 				if(PlayerData[playerid][e_addtoyslots] >= 5)
 				{
 				    SCM(playerid, -1, ""er"You already have 5 additional toy slots!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 				
@@ -17821,19 +17809,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[0][E_item_credits]);
 				return true;
 	        }
-	        case CM_DIALOG + 3: // pv slot
+	        case DIALOG_CM + 3: // pv slot
 	        {
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[1][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(PlayerData[playerid][e_addpvslots] >= 7)
 				{
 				    SCM(playerid, -1, ""er"You already have 7 additional car slots!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -17845,19 +17833,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[1][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 4: // house slot
+	        case DIALOG_CM + 4: // house slot
 	        {
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[2][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(PlayerData[playerid][e_addhouseslots] >= 4)
 				{
 				    SCM(playerid, -1, ""er"You already have 4 additional house slots!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -17869,19 +17857,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[2][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 5: // house obj slot
+	        case DIALOG_CM + 5: // house obj slot
 	        {
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[3][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(PlayerData[playerid][e_addhouseitemslots] >= 7)
 				{
 				    SCM(playerid, -1, ""er"You already have 7 additional house item slots!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -17893,19 +17881,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[3][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 6: // business slot
+	        case DIALOG_CM + 6: // business slot
 	        {
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[4][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(PlayerData[playerid][e_addbizzslots] >= 4)
 				{
 				    SCM(playerid, -1, ""er"You already have 4 additional business slots!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -17917,20 +17905,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[4][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 7: // instant nc
+	        case DIALOG_CM + 7: // instant nc
 	        {
 	            if(!islogged(playerid)) return notlogged(playerid);
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[5][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(((PlayerData[playerid][e_vip] == 1) ? (PlayerData[playerid][e_lastnc] + 2592000) : (PlayerData[playerid][e_lastnc] + 7776000)) < gettime())
 				{
 				    SCM(playerid, -1, ""er"You can already change your name!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -17942,12 +17930,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[5][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 8: // 20 medkit
+	        case DIALOG_CM + 8: // 20 medkit
 	        {
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[6][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
@@ -17959,12 +17947,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[6][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 9: // 100 medkits
+	        case DIALOG_CM + 9: // 100 medkits
 	        {
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[7][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
@@ -17976,20 +17964,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[7][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 10: // mb x2
+	        case DIALOG_CM + 10: // mb x2
 	        {
 	            if(!islogged(playerid)) return notlogged(playerid);
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[8][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(PlayerData[playerid][Boost] & BOOST_MONEY_x2 || PlayerData[playerid][Boost] & BOOST_MONEY_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
 				{
 				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -18004,20 +17992,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[8][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 11: // mb x3
+	        case DIALOG_CM + 11: // mb x3
 	        {
 	            if(!islogged(playerid)) return notlogged(playerid);
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[9][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(PlayerData[playerid][Boost] & BOOST_MONEY_x2 || PlayerData[playerid][Boost] & BOOST_MONEY_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
 				{
 				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -18032,20 +18020,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[9][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 12: // sb x2
+	        case DIALOG_CM + 12: // sb x2
 	        {
 	            if(!islogged(playerid)) return notlogged(playerid);
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[10][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(PlayerData[playerid][Boost] & BOOST_SCORE_x2 || PlayerData[playerid][Boost] & BOOST_SCORE_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
 				{
 				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -18060,20 +18048,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[10][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 13: // sb x3
+	        case DIALOG_CM + 13: // sb x3
 	        {
 	            if(!islogged(playerid)) return notlogged(playerid);
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[11][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(PlayerData[playerid][Boost] & BOOST_SCORE_x2 || PlayerData[playerid][Boost] & BOOST_SCORE_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
 				{
 				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -18088,20 +18076,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[11][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 14: // masterb
+	        case DIALOG_CM + 14: // masterb
 	        {
 	            if(!islogged(playerid)) return notlogged(playerid);
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[12][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
 				if(PlayerData[playerid][Boost] & BOOST_SCORE_x2 || PlayerData[playerid][Boost] & BOOST_SCORE_x3 || PlayerData[playerid][Boost] & BOOST_MONEY_x2 || PlayerData[playerid][Boost] & BOOST_MONEY_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
 				{
 				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
@@ -18116,12 +18104,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[12][E_item_credits]);
 	            return true;
 	        }
-	        case CM_DIALOG + 15: // kills/deaths reset
+	        case DIALOG_CM + 15: // kills/deaths reset
 	        {
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[13][E_item_credits])
 	            {
 				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, CM_DIALOG);
+				    ShowDialog(playerid, DIALOG_CM);
 	                return 1;
 	            }
 
@@ -18135,7 +18123,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[13][E_item_credits]);
 	            return true;
 	        }
-	        case COPS_REFILL:
+	        case DIALOG_REFILL_COPS:
 	        {
  				switch(listitem)
   				{
@@ -18157,7 +18145,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
    				}
 	            return true;
 	        }
-	        case ROBBER_REFILL:
+	        case DIALOG_REFILL_ROBBERS:
 	        {
        			switch(listitem)
   				{
@@ -18179,7 +18167,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
   	    			}
    				}
 	        }
-	        case CNR_DIALOG:
+	        case DIALOG_CNR:
 	        {
 	            SetPVarInt(playerid, "dSkin", GetPlayerSkin(playerid));
 	            new string[255];
@@ -18394,7 +18382,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				SetPlayerWorldBounds(playerid, 20000.0, -20000.0, 20000.0, -20000.0);
 	            return true;
 	        }
-	        case REFIL_DIALOG:
+	        case DIALOG_CNR_REFILL:
 	        {
      			new vID = GetPlayerVehicleID(playerid);
 				switch(listitem)
@@ -18431,7 +18419,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
    				}
 	            return true;
 	        }
-	        case HOUSE_MENU_DIALOG:
+	        case DIALOG_HOUSE_MENU:
 	        {
 				format(gstr, sizeof(gstr), ""nef" :: House Menu > Slot: %i", listitem + 1);
 				
@@ -18449,12 +18437,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    }
 				    else
 				    {
-				        ShowPlayerDialog(playerid, HOUSE_MENU_DIALOG + 1, DIALOG_STYLE_LIST, gstr, "Goto This House\nUpgrade Interior\nManage House Items", "Select", "Cancel");
+				        ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU + 1, DIALOG_STYLE_LIST, gstr, "Goto This House\nUpgrade Interior\nManage House Items", "Select", "Cancel");
 				    }
 				}
 	            return true;
 	        }
-	        case HOUSE_MENU_DIALOG + 1:
+	        case DIALOG_HOUSE_MENU + 1:
 	        {
 				switch(listitem)
 				{
@@ -18485,7 +18473,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 							return 1;
 						}
 						
-				        ShowDialog(playerid, HOUSE_UPGRADE_DIALOG);
+				        ShowDialog(playerid, DIALOG_HOUSE_UPGRADE);
 				    }
 				    case 2:
 				    {
@@ -18520,14 +18508,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 								strcat(string, gstr);
 							}
 
-							ShowPlayerDialog(playerid, HOUSE_MENU_DIALOG + 2, DIALOG_STYLE_LIST, gstr2, string, "Select", "Cancel");
+							ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU + 2, DIALOG_STYLE_LIST, gstr2, string, "Select", "Cancel");
 						}
 						else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
 				    }
 				}
 	            return true;
 	        }
-	        case HOUSE_MENU_DIALOG + 2:
+	        case DIALOG_HOUSE_MENU + 2:
 	        {
 	            if(gTeam[playerid] != HOUSE) return SCM(playerid, -1, ""er"You need to be in your house!");
 
@@ -18553,14 +18541,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                    }
 	                    else
 	                    {
-	                        ShowPlayerDialog(playerid, HOUSE_MENU_DIALOG + 3, DIALOG_STYLE_LIST, gstr, "Edit House Item Position\n"grey"Remove House Item", "Select", "Cancel");
+	                        ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU + 3, DIALOG_STYLE_LIST, gstr, "Edit House Item Position\n"grey"Remove House Item", "Select", "Cancel");
 	                    }
 					}
 					else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
 				}
 	            return true;
 	        }
-	        case HOUSE_MENU_DIALOG + 3:
+	        case DIALOG_HOUSE_MENU + 3:
 	        {
 	            if(gTeam[playerid] != HOUSE) return SCM(playerid, -1, ""er"You need to be in your house!");
 
@@ -18596,7 +18584,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
 	            return true;
 	        }
-	        case PV_SLOT_SELECT_DIALOG:
+	        case DIALOG_PV_SELECT_SLOT:
 	        {
 				if(listitem == 0) return PVSlotSelect(playerid);
 
@@ -18605,7 +18593,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            CreateFinalCar(playerid, listitem);
 	            return true;
 	        }
-	        case COLOR_DIALOG:
+	        case DIALOG_PLAYER_COLOR:
 	        {
     			switch(listitem)
 	    		{
@@ -18677,7 +18665,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-	        case LABEL_DIALOG:
+	        case DIALOG_VIP_LABEL:
 	        {
 	            if(strlen(inputtext) > 35 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Inputlength: 3-35");
 	            
@@ -18703,7 +18691,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 SCM(playerid, -1, ""er"Label attached! Note: You can't see the label yourself");
 				return true;
 	        }
-	        case LABEL_DIALOG + 1:
+	        case DIALOG_VIP_LABEL + 1:
 	        {
 	            if(strlen(inputtext) > 35 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Inputlength: 3-35");
 
@@ -18728,19 +18716,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            SCM(playerid, -1, ""er"Label text changed!");
 	            return true;
 	        }
-	        case VCONTROL_DIALOG:
+	        case DIALOG_VCONTROL:
 	        {
 	            switch(listitem) // "Engine control\nLight control\nAlarm\nBonnet\nBoot"
 	            {
-					case 0: ShowPlayerDialog(playerid, VCONTROL_DIALOG + 1, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle engine", ""white"Do you want to start or stop your engine?", "Start", "Stop");
-                    case 1: ShowPlayerDialog(playerid, VCONTROL_DIALOG + 2, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle lights", ""white"Do you want to enable or disable your lights?\n\nNOTE: Lights are only visible at night.", "Enable", "Disable");
-                    case 2: ShowPlayerDialog(playerid, VCONTROL_DIALOG + 3, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle alarm", ""white"Do you want to enable or disable your alarm?\n\nNOTE: The alarm will not reset itself when it's over,\nyou'll need to reset it by yourself.", "Enable", "Disable");
-                    case 3: ShowPlayerDialog(playerid, VCONTROL_DIALOG + 4, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle bonnet", ""white"Do you want to open or close your bonnet?", "Open", "Close");
-                    case 4: ShowPlayerDialog(playerid, VCONTROL_DIALOG + 5, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle boot", ""white"Do you want to open or close your boot?", "Open", "Close");
+					case 0: ShowPlayerDialog(playerid, DIALOG_VCONTROL + 1, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle engine", ""white"Do you want to start or stop your engine?", "Start", "Stop");
+                    case 1: ShowPlayerDialog(playerid, DIALOG_VCONTROL + 2, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle lights", ""white"Do you want to enable or disable your lights?\n\nNOTE: Lights are only visible at night.", "Enable", "Disable");
+                    case 2: ShowPlayerDialog(playerid, DIALOG_VCONTROL + 3, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle alarm", ""white"Do you want to enable or disable your alarm?\n\nNOTE: The alarm will not reset itself when it's over,\nyou'll need to reset it by yourself.", "Enable", "Disable");
+                    case 3: ShowPlayerDialog(playerid, DIALOG_VCONTROL + 4, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle bonnet", ""white"Do you want to open or close your bonnet?", "Open", "Close");
+                    case 4: ShowPlayerDialog(playerid, DIALOG_VCONTROL + 5, DIALOG_STYLE_MSGBOX, ""white"VCS > Toggle boot", ""white"Do you want to open or close your boot?", "Open", "Close");
 	            }
 	            return true;
 	        }
-	        case VCONTROL_DIALOG + 1:
+	        case DIALOG_VCONTROL + 1:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -18751,7 +18739,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
      			GetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
             	SetVehicleParamsEx(vehicle, 1, vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 	        }
-	        case VCONTROL_DIALOG + 2:
+	        case DIALOG_VCONTROL + 2:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -18762,7 +18750,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
      			GetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 				SetVehicleParamsEx(vehicle, vehicle_params[0], 1, vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 	        }
-	        case VCONTROL_DIALOG + 3:
+	        case DIALOG_VCONTROL + 3:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -18773,7 +18761,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
      			GetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 				SetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], 1, vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 	        }
-	        case VCONTROL_DIALOG + 4:
+	        case DIALOG_VCONTROL + 4:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -18784,7 +18772,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
      			GetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 				SetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], 1, vehicle_params[5], vehicle_params[6]);
 	        }
-	        case VCONTROL_DIALOG + 5:
+	        case DIALOG_VCONTROL + 5:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -18795,7 +18783,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
      			GetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 				SetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], 1, vehicle_params[6]);
 	        }
-	        case NAME_CHANGE_DIALOG:
+	        case DIALOG_CHANGE_NAME:
 	        {
 	            if(strlen(inputtext) > 20 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Name length: 3-20");
                 if(!strcmp(inputtext, __GetName(playerid), false)) return SCM(playerid, -1, ""er"You are already using that name");
@@ -18808,7 +18796,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 mysql_tquery(pSQL, gstr, "OnPlayerNameChangeRequest", "is", playerid, newname);
 	            return true;
 	        }
-	        case HAREFILL_DIALOG:
+	        case DIALOG_HA_REFILL:
 	        {
 	            if(listitem == 0)
 	            {
@@ -18827,18 +18815,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				PlayerData[playerid][tickLastRefill] = GetTickCountEx();
 	            return 1;
 	        }
-	        case GANG_SET_RANK_DIALOG:
+	        case DIALOG_GANG_SET_RANK:
 	        {
-				if(listitem == 0) return ShowDialog(playerid, GANG_SET_RANK_DIALOG);
+				if(listitem == 0) return ShowDialog(playerid, DIALOG_GANG_SET_RANK);
 				
 				PlayerData[playerid][RankSelected] = listitem;
 				
 				format(gstr, sizeof(gstr), ""white"Now enter the name of the player who should get the rank:\n\nSelected Rank: %s", g_szGangRanks[listitem][E_gang_pos_name]);
 				
-				ShowPlayerDialog(playerid, GANG_SET_RANK_DIALOG + 1, DIALOG_STYLE_INPUT, ""nef" :: Gang Rank Menu", gstr, "Next", "Cancel");
+				ShowPlayerDialog(playerid, DIALOG_GANG_SET_RANK + 1, DIALOG_STYLE_INPUT, ""nef" :: Gang Rank Menu", gstr, "Next", "Cancel");
 	            return true;
 	        }
-	        case GANG_SET_RANK_DIALOG + 1:
+	        case DIALOG_GANG_SET_RANK + 1:
 	        {
 			    if(!strcmp(__GetName(playerid), inputtext, true))
 			    {
@@ -18873,7 +18861,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            }
 	            return true;
 	        }
-	        case CLOSE_GANG_DIALOG:
+	        case DIALOG_GANG_CLOSE:
 	        {
 				format(gstr, sizeof(gstr), "UPDATE `accounts` SET `gangrank` = 0, `gangid` = 0 WHERE `gangid` = %i;", PlayerData[playerid][e_gangid]);
 				mysql_tquery(pSQL, gstr);
@@ -18946,7 +18934,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				SCM(playerid, -1, ""gang_sign" The gang has been closed!");
 	            return true;
 	        }
-	        case GANG_KICK_DIALOG:
+	        case DIALOG_GANG_KICK:
 	        {
 	            if(strlen(inputtext) > MAX_PLAYER_NAME+1 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Player doesn't exist");
 	            if(sscanf(inputtext, "s[26]", PlayerData[playerid][GangKickMem])) return SCM(playerid, -1, ""er"Player doesn't exist");
@@ -18991,30 +18979,30 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 	        }
-	        case SETTINGS_DIALOG:
+	        case DIALOG_SETTINGS:
 	        {
 	            switch(listitem)
 	            {
 					case 0:
 					{
 					    Command_ReProcess(playerid, "/sb", false);
-					    ShowDialog(playerid, SETTINGS_DIALOG);
+					    ShowDialog(playerid, DIALOG_SETTINGS);
 					}
 					case 1:
 					{
 					    Command_ReProcess(playerid, "/sj", false);
-					    ShowDialog(playerid, SETTINGS_DIALOG);
+					    ShowDialog(playerid, DIALOG_SETTINGS);
 					}
 					case 2:
 					{
 					    if(PlayerData[playerid][bTextdraws]) Command_ReProcess(playerid, "/hidef", false);
 					    else Command_ReProcess(playerid, "/showf", false);
-					    ShowDialog(playerid, SETTINGS_DIALOG);
+					    ShowDialog(playerid, DIALOG_SETTINGS);
 					}
 					case 3:
 					{
 					    Command_ReProcess(playerid, "/random", false);
-					    ShowDialog(playerid, SETTINGS_DIALOG);
+					    ShowDialog(playerid, DIALOG_SETTINGS);
 					}
 					case 4:
 					{
@@ -19026,7 +19014,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					    {
 					    	Command_ReProcess(playerid, "/setspawn", false);
 						}
-						ShowDialog(playerid, SETTINGS_DIALOG);
+						ShowDialog(playerid, DIALOG_SETTINGS);
 					}
 					case 5:
 					{
@@ -19038,7 +19026,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					    {
 					    	Command_ReProcess(playerid, "/deletecolor", false);
 						}
-						ShowDialog(playerid, SETTINGS_DIALOG);
+						ShowDialog(playerid, DIALOG_SETTINGS);
 					}
 					case 6:
 					{
@@ -19050,7 +19038,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					    {
 					    	Command_ReProcess(playerid, "/deleteskin", false);
 						}
-						ShowDialog(playerid, SETTINGS_DIALOG);
+						ShowDialog(playerid, DIALOG_SETTINGS);
 					}
 					case 7:
 					{
@@ -19075,7 +19063,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            }
 	            return true;
 	        }
-	        case HELP_DIALOG:
+	        case DIALOG_HELP:
 	        {
 	            switch(listitem)
 	            {
@@ -19099,7 +19087,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						strcat(cstring, ""red"» "nef_yellow"Houses/Business\n");
 						strcat(cstring, ""white"Houses and business are for sale around San Andreas. Use "yellow"/cmds "white"for more infos");
 
-						ShowPlayerDialog(playerid, HELP_DIALOG + 1, DIALOG_STYLE_MSGBOX, ""nef" :: General Help", cstring, "OK", "Back");
+						ShowPlayerDialog(playerid, DIALOG_HELP + 1, DIALOG_STYLE_MSGBOX, ""nef" :: General Help", cstring, "OK", "Back");
 	                }
 	                case 1: // Commands
 	                {
@@ -19118,7 +19106,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						strcat(cstring, ""red"» "nef_yellow"H\n");
 						strcat(cstring, ""white"Jump with your vehicle\n\n");
 
-						ShowPlayerDialog(playerid, HELP_DIALOG + 2, DIALOG_STYLE_MSGBOX, ""nef" :: Shortcuts", cstring, "OK", "Back");
+						ShowPlayerDialog(playerid, DIALOG_HELP + 2, DIALOG_STYLE_MSGBOX, ""nef" :: Shortcuts", cstring, "OK", "Back");
 	                }
 	                case 3: // Minigames
 	                {
@@ -19136,20 +19124,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                {
 						strcat(gstr, ""white"To earn score and money you can join various minigames (/m). For each kill or objective\nyou will receive a certain amount of money and score.\nCheck /minigames for a list of all minigames.\n\nYou can also freeroam and kill people for money and score.");
 
-						ShowPlayerDialog(playerid, HELP_DIALOG + 5, DIALOG_STYLE_MSGBOX, ""nef" :: How to earn score and money", gstr, "OK", "Back");
+						ShowPlayerDialog(playerid, DIALOG_HELP + 5, DIALOG_STYLE_MSGBOX, ""nef" :: How to earn score and money", gstr, "OK", "Back");
 	                }
 	                case 7: // what to do here
 	                {
 						strcat(gstr, ""white"On "SVRNAME" you will never be bored. If you like to play with and\nagainst others join a minigame (/minigames).\nExplore our map and teleports (/t)\nYou can design your character with our toy system (/toy).");
 
-						ShowPlayerDialog(playerid, HELP_DIALOG + 6, DIALOG_STYLE_MSGBOX, ""nef" :: What to do here", gstr, "OK", "Back");
+						ShowPlayerDialog(playerid, DIALOG_HELP + 6, DIALOG_STYLE_MSGBOX, ""nef" :: What to do here", gstr, "OK", "Back");
 	                }
 	                case 8: Command_ReProcess(playerid, "/credits", false);
 	                case 9: Command_ReProcess(playerid, "/vip", false);
 	            }
 	            return true;
 	        }
-	        case HELP_DIALOG + 3:
+	        case DIALOG_HELP + 3:
 	        {
 	            switch(listitem)
 	            {
@@ -19161,14 +19149,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                case 5: Command_ReProcess(playerid, "/gungame", false);
 	                case 6: Command_ReProcess(playerid, "/minigun", false);
 	                case 7: Command_ReProcess(playerid, "/sniper", false);
-	                case 8: ShowPlayerDialog(playerid, HELP_DIALOG + 4, DIALOG_STYLE_MSGBOX, ""nef" :: Minigames", ""white"Death Match (/dm1-4)", "OK", "Back");
+	                case 8: ShowPlayerDialog(playerid, DIALOG_HELP + 4, DIALOG_STYLE_MSGBOX, ""nef" :: Minigames", ""white"Death Match (/dm1-4)", "OK", "Back");
 	                case 9: Command_ReProcess(playerid, "/tdm", false);
 	                case 10: Command_ReProcess(playerid, "/war", false);
 	                case 11: Command_ReProcess(playerid, "/sawn", false);
 	            }
 	            return true;
 	        }
-		    case CMDS_DIALOG:
+		    case DIALOG_COMMANDS:
 		    {
 		        new cstring[2048];
 		        
@@ -19275,10 +19263,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					case 7: return Command_ReProcess(playerid, "/credits", false);
 		        }
 
-				ShowPlayerDialog(playerid, CMDS_DIALOG + 1, DIALOG_STYLE_LIST, ""nef" :: Commands", cstring, "OK", "Back");
+				ShowPlayerDialog(playerid, DIALOG_COMMANDS + 1, DIALOG_STYLE_LIST, ""nef" :: Commands", cstring, "OK", "Back");
 				return true;
 		    }
-		    case CMDS_DIALOG + 1:
+		    case DIALOG_COMMANDS + 1:
 		    {
 		        new command[32], bool:s = false;
 		        for(new i = 0, c = 0; i < strlen(inputtext); i++)
@@ -19304,15 +19292,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				Command_ReProcess(playerid, command, false);
 		        return true;
 		    }
-	        case HOUSE_UPGRADE_DIALOG:
+	        case DIALOG_HOUSE_UPGRADE:
 	        {
 				PlayerData[playerid][HouseIntSelected] = listitem;
 
 				format(gstr2, sizeof(gstr2), ""white"House Upgrade\n\n- Interior: %s\n- Price: $%s\n\nClick \"Upgrade\" in order to apply the new interior.\n"green"* "white"All House Items will be removed in this slot!", g_aHouseInteriorTypes[listitem][intname], number_format(g_aHouseInteriorTypes[listitem][price]));
-				ShowPlayerDialog(playerid, HOUSE_UPGRADE_DIALOG + 1, DIALOG_STYLE_MSGBOX, ""nef" :: House Upgrade", gstr2, "Upgrade", "Cancel");
+				ShowPlayerDialog(playerid, DIALOG_HOUSE_UPGRADE + 1, DIALOG_STYLE_MSGBOX, ""nef" :: House Upgrade", gstr2, "Upgrade", "Cancel");
 				return true;
 	        }
-	        case HOUSE_UPGRADE_DIALOG + 1:
+	        case DIALOG_HOUSE_UPGRADE + 1:
 	        {
 		        if(gTeam[playerid] != gFREEROAM)
 				{
@@ -19371,7 +19359,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
 	            return true;
 	        }
-	        case TOPLIST_DIALOG:
+	        case DIALOG_TOPLIST:
 	        {
 	            switch(listitem)
 	            {
@@ -19391,7 +19379,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            }
 	            return true;
 	        }
-		    case TELE_DIALOG:
+		    case DIALOG_TELEPORT:
 		    {
 				if(listitem < 0 || listitem > 8)
 					return true;
@@ -19402,89 +19390,89 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		        {
 		            case 0: // Stunt Zones
 		            {
-						ShowPlayerDialog(playerid, TELE_DIALOG + 1, DIALOG_STYLE_LIST, ""nef" :: Teleports > Stunt Zones", g_dialogTpString, "Select", "Back");
+						ShowPlayerDialog(playerid, DIALOG_TELEPORT + 1, DIALOG_STYLE_LIST, ""nef" :: Teleports > Stunt Zones", g_dialogTpString, "Select", "Back");
 		            }
 		            case 1: // Jumps
 		            {
-						ShowPlayerDialog(playerid, TELE_DIALOG + 2, DIALOG_STYLE_LIST, ""nef" :: Teleports > Jumps", g_dialogTpString, "Select", "Back");
+						ShowPlayerDialog(playerid, DIALOG_TELEPORT + 2, DIALOG_STYLE_LIST, ""nef" :: Teleports > Jumps", g_dialogTpString, "Select", "Back");
 					}
 		            case 2: // Fun Maps
 		            {
-						ShowPlayerDialog(playerid, TELE_DIALOG + 3, DIALOG_STYLE_LIST, ""nef" :: Teleports > Fun Maps", g_dialogTpString, "Select", "Back");
+						ShowPlayerDialog(playerid, DIALOG_TELEPORT + 3, DIALOG_STYLE_LIST, ""nef" :: Teleports > Fun Maps", g_dialogTpString, "Select", "Back");
 					}
 		            case 3: // Challenges/Parkours
 		            {
-						ShowPlayerDialog(playerid, TELE_DIALOG + 4, DIALOG_STYLE_LIST, ""nef" :: Teleports > Challenges/Parkours", g_dialogTpString, "Select", "Back");
+						ShowPlayerDialog(playerid, DIALOG_TELEPORT + 4, DIALOG_STYLE_LIST, ""nef" :: Teleports > Challenges/Parkours", g_dialogTpString, "Select", "Back");
 					}
 		            case 4: // Specials
 		            {
-						ShowPlayerDialog(playerid, TELE_DIALOG + 5, DIALOG_STYLE_LIST, ""nef" :: Teleports > Specials", g_dialogTpString, "Select", "Back");
+						ShowPlayerDialog(playerid, DIALOG_TELEPORT + 5, DIALOG_STYLE_LIST, ""nef" :: Teleports > Specials", g_dialogTpString, "Select", "Back");
 					}
 		            case 5: // Hotspots
 		            {
-						ShowPlayerDialog(playerid, TELE_DIALOG + 6, DIALOG_STYLE_LIST, ""nef" :: Teleports > Hotspots", g_dialogTpString, "Select", "Back");
+						ShowPlayerDialog(playerid, DIALOG_TELEPORT + 6, DIALOG_STYLE_LIST, ""nef" :: Teleports > Hotspots", g_dialogTpString, "Select", "Back");
 					}
 					case 6: // Drifts
 					{
-					    ShowPlayerDialog(playerid, TELE_DIALOG + 7, DIALOG_STYLE_LIST, ""nef" :: Teleports > Drifts", g_dialogTpString, "Select", "Back");
+					    ShowPlayerDialog(playerid, DIALOG_TELEPORT + 7, DIALOG_STYLE_LIST, ""nef" :: Teleports > Drifts", g_dialogTpString, "Select", "Back");
 					}
 					case 7: // Tune Shops
 					{
-					    ShowPlayerDialog(playerid, TELE_DIALOG + 8, DIALOG_STYLE_LIST, ""nef" :: Teleports > Tune Shops", g_dialogTpString, "Select", "Back");
+					    ShowPlayerDialog(playerid, DIALOG_TELEPORT + 8, DIALOG_STYLE_LIST, ""nef" :: Teleports > Tune Shops", g_dialogTpString, "Select", "Back");
 					}
 					case 8: // Cities
 					{
-					    ShowPlayerDialog(playerid, TELE_DIALOG + 9, DIALOG_STYLE_LIST, ""nef" :: Teleports > Cities", g_dialogTpString, "Select", "Back");
+					    ShowPlayerDialog(playerid, DIALOG_TELEPORT + 9, DIALOG_STYLE_LIST, ""nef" :: Teleports > Cities", g_dialogTpString, "Select", "Back");
 					}
 		        }
 				return true;
 		    }
-		    case TELE_DIALOG + 1: // Stunt Zones
+		    case DIALOG_TELEPORT + 1: // Stunt Zones
 		    {
 		        PushTeleportInput(playerid, 0, listitem);
 				return 1;
 		    }
-		    case TELE_DIALOG + 2: // Jumps
+		    case DIALOG_TELEPORT + 2: // Jumps
 		    {
 		        PushTeleportInput(playerid, 1, listitem);
 				return 1;
 		    }
-		    case TELE_DIALOG + 3: // Fun Maps
+		    case DIALOG_TELEPORT + 3: // Fun Maps
 		    {
 		        PushTeleportInput(playerid, 2, listitem);
 				return 1;
 		    }
-		    case TELE_DIALOG + 4: // Challenges/Parkours
+		    case DIALOG_TELEPORT + 4: // Challenges/Parkours
 		    {
 		        PushTeleportInput(playerid, 3, listitem);
 				return 1;
 		    }
-		    case TELE_DIALOG + 5: // Specials
+		    case DIALOG_TELEPORT + 5: // Specials
 		    {
 		        PushTeleportInput(playerid, 4, listitem);
 				return 1;
 		    }
-		    case TELE_DIALOG + 6: // Hotspots
+		    case DIALOG_TELEPORT + 6: // Hotspots
 		    {
 		        PushTeleportInput(playerid, 5, listitem);
 				return 1;
 		    }
-		    case TELE_DIALOG + 7: // Drifts
+		    case DIALOG_TELEPORT + 7: // Drifts
 		    {
 		        PushTeleportInput(playerid, 6, listitem);
 				return 1;
 		    }
-		    case TELE_DIALOG + 8: // Tune Shops
+		    case DIALOG_TELEPORT + 8: // Tune Shops
 		    {
 		        PushTeleportInput(playerid, 7, listitem);
 				return 1;
 		    }
-		    case TELE_DIALOG + 9: // Cities
+		    case DIALOG_TELEPORT + 9: // Cities
 		    {
 		        PushTeleportInput(playerid, 8, listitem);
 				return 1;
 		    }
-	        case GMENU_DIALOG:
+	        case DIALOG_GANG_MENU:
 	        {
 		        switch(listitem)
 		        {
@@ -19516,7 +19504,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						strcat(cstring, ""yellow"/gwar "white"- start a war against another gang\n");
 						strcat(cstring, ""yellow"/gwars "white"- view ongoing gwars\n");
 		            
-		                ShowPlayerDialog(playerid, GMENU_DIALOG + 1, DIALOG_STYLE_MSGBOX, ""nef" :: Gang commands", cstring, "OK", "Back");
+		                ShowPlayerDialog(playerid, DIALOG_GANG_MENU + 1, DIALOG_STYLE_MSGBOX, ""nef" :: Gang commands", cstring, "OK", "Back");
 		            }
 		            case 3: // view gang zones
 		            {
@@ -19533,7 +19521,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		        }
 		        return true;
 	        }
-	        case DERBY_VOTING_DIALOG:
+	        case DIALOG_DERBY_VOTING:
 	        {
 				if(!IsDerbyRunning)
 				{
@@ -19605,19 +19593,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case BANK_DIALOG:
+			case DIALOG_BANK:
 			{
 			    switch(listitem)
 			    {
 				    case 0: // Deposit
 				    {
 				        format(gstr, sizeof(gstr), ""white"» You got "yellow"$%s"white" in your bank account.\n\nType in the amount you want to deposit below:", number_format(PlayerData[playerid][e_bank]));
-				        ShowPlayerDialog(playerid, BANK_DIALOG+1, DIALOG_STYLE_INPUT, ""nef" :: Bank > Deposit", gstr, "Deposit", "Cancel");
+				        ShowPlayerDialog(playerid, DIALOG_BANK+1, DIALOG_STYLE_INPUT, ""nef" :: Bank > Deposit", gstr, "Deposit", "Cancel");
 				    }
 				    case 1: // Withdraw
 				    {
 				        format(gstr, sizeof(gstr), ""white"» You got "yellow"$%s"white" in your bank account.\n\nType in the amount you want to withdraw below:", number_format(PlayerData[playerid][e_bank]));
-				        ShowPlayerDialog(playerid, BANK_DIALOG+2, DIALOG_STYLE_INPUT, ""nef" :: Bank > Withdraw", gstr, "Withdraw", "Cancel");
+				        ShowPlayerDialog(playerid, DIALOG_BANK+2, DIALOG_STYLE_INPUT, ""nef" :: Bank > Withdraw", gstr, "Withdraw", "Cancel");
 				    }
 				    case 2: // Show Credit
 				    {
@@ -19627,7 +19615,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    }
 			    return true;
 			}
-			case BANK_DIALOG + 1:
+			case DIALOG_BANK + 1:
 			{
 				extract inputtext -> new inamount; else
 				{
@@ -19651,7 +19639,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case BANK_DIALOG+2:
+			case DIALOG_BANK+2:
 			{
 				extract inputtext -> new outamount; else
 				{
@@ -19675,7 +19663,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case LIFT_DIALOG:
+			case DIALOG_LIFT:
 			{
 		        if(FloorRequestedBy[listitem] != INVALID_PLAYER_ID || IsFloorInQueue(listitem))
 		        {
@@ -19691,7 +19679,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case LOGIN_DIALOG: // player entered a password
+			case DIALOG_LOGIN: // player entered a password
 			{
 				if(strlen(inputtext) < 4 || strlen(inputtext) > 32)
 				{
@@ -19706,7 +19694,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_LOGIN);
 			    return true;
 			}
-			case REGISTER_DIALOG:
+			case DIALOG_REGISTER:
 			{
 			    if(strlen(inputtext) < 4 || strlen(inputtext) > 32)
 				{
@@ -19720,7 +19708,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    SQL_RegisterAccount(playerid, REGISTER_CONNECT, password);
 			    return true;
 			}
-			case REGISTER_DIALOG + 1:
+			case DIALOG_REGISTER + 1:
 			{
 			    if(strlen(inputtext) < 4 || strlen(inputtext) > 32)
 				{
@@ -19734,23 +19722,23 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    SQL_RegisterAccount(playerid, REGISTER_ONLINE, password);
 			    return true;
 			}
-			case STREAM_DIALOG:
+			case DIALOG_STREAM_RADIO:
 			{
 				switch(listitem)
 		    	{
-	      			case 0: ShowPlayerDialog(playerid, STREAM_DIALOG+1, DIALOG_STYLE_LIST, ""nef" :: Streams > Streams > Electro", "#MUSIK.TRANCE - WWW.RAUTEMUSIK.FM\n:: Electro Radio :: all about electromusic", "Select", "Back");
-					case 1: ShowPlayerDialog(playerid, STREAM_DIALOG+2, DIALOG_STYLE_LIST, ""nef" :: Streams > Metal", "RockRadio1.Com - Classic Hard Rock and Heavy\nidobi Howl", "Select", "Back");
-					case 2: ShowPlayerDialog(playerid, STREAM_DIALOG+3, DIALOG_STYLE_LIST, ""nef" :: Streams > Pop", "idobi Radio: New. Music.\nChartHits.FM - Top 40 Radio", "Select", "Back");
-					case 3: ShowPlayerDialog(playerid, STREAM_DIALOG+4, DIALOG_STYLE_LIST, ""nef" :: Streams > Hip Hop", "HOT 108 JAMZ - #1 FOR HIP HOP\nOne love Hip Hop Radio", "Select", "Back");
-					case 4: ShowPlayerDialog(playerid, STREAM_DIALOG+5, DIALOG_STYLE_LIST, ""nef" :: Streams > Rap", "POWERHITZ.COM - #1 FOR HITZ\nRADIOUP.COM - THE HITLIST", "Select", "Back");
-					case 5: ShowPlayerDialog(playerid, STREAM_DIALOG+6, DIALOG_STYLE_LIST, ""nef" :: Streams > Mainstream/Rock", "#MUSIK.MAIN - WWW.RAUTEMUSIK.FM - 24H\n181.FM - Kickin' Country", "Select", "Back");
-					case 6: ShowPlayerDialog(playerid, STREAM_DIALOG+7, DIALOG_STYLE_LIST, ""nef" :: Streams > Oldies", "181.FM - Good Time Oldies\n#MUSIK.GOLDIES - WWW.RAUTEMUSIK.FM", "Select", "Back");
-					case 7: ShowPlayerDialog(playerid, STREAM_DIALOG+8, DIALOG_STYLE_LIST, ""nef" :: Streams > Dubstep", "#MUSIK.DRUMSTEP - WWW.RAUTEMUSIK.FM\nSinister Souls Dubstep, Dub and Deep Bass", "Select", "Back");
-					case 8: ShowPlayerDialog(playerid, STREAM_DIALOG+9, DIALOG_STYLE_INPUT, ""nef" :: Streams > Your own stream", ""white"Please enter the audio stream you want to listen to", "Play", "Back");
+	      			case 0: ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+1, DIALOG_STYLE_LIST, ""nef" :: Streams > Streams > Electro", "#MUSIK.TRANCE - WWW.RAUTEMUSIK.FM\n:: Electro Radio :: all about electromusic", "Select", "Back");
+					case 1: ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+2, DIALOG_STYLE_LIST, ""nef" :: Streams > Metal", "RockRadio1.Com - Classic Hard Rock and Heavy\nidobi Howl", "Select", "Back");
+					case 2: ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+3, DIALOG_STYLE_LIST, ""nef" :: Streams > Pop", "idobi Radio: New. Music.\nChartHits.FM - Top 40 Radio", "Select", "Back");
+					case 3: ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+4, DIALOG_STYLE_LIST, ""nef" :: Streams > Hip Hop", "HOT 108 JAMZ - #1 FOR HIP HOP\nOne love Hip Hop Radio", "Select", "Back");
+					case 4: ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+5, DIALOG_STYLE_LIST, ""nef" :: Streams > Rap", "POWERHITZ.COM - #1 FOR HITZ\nRADIOUP.COM - THE HITLIST", "Select", "Back");
+					case 5: ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+6, DIALOG_STYLE_LIST, ""nef" :: Streams > Mainstream/Rock", "#MUSIK.MAIN - WWW.RAUTEMUSIK.FM - 24H\n181.FM - Kickin' Country", "Select", "Back");
+					case 6: ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+7, DIALOG_STYLE_LIST, ""nef" :: Streams > Oldies", "181.FM - Good Time Oldies\n#MUSIK.GOLDIES - WWW.RAUTEMUSIK.FM", "Select", "Back");
+					case 7: ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+8, DIALOG_STYLE_LIST, ""nef" :: Streams > Dubstep", "#MUSIK.DRUMSTEP - WWW.RAUTEMUSIK.FM\nSinister Souls Dubstep, Dub and Deep Bass", "Select", "Back");
+					case 8: ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+9, DIALOG_STYLE_INPUT, ""nef" :: Streams > Your own stream", ""white"Please enter the audio stream you want to listen to", "Play", "Back");
 				}
 				return true;
 			}
-			case STREAM_DIALOG+1:
+			case DIALOG_STREAM_RADIO+1:
 			{
 				switch(listitem)
 		    	{
@@ -19759,7 +19747,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     			}
 				return true;
 			}
-			case STREAM_DIALOG+2:
+			case DIALOG_STREAM_RADIO+2:
 			{
 				switch(listitem)
 		    	{
@@ -19768,7 +19756,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case STREAM_DIALOG+3:
+			case DIALOG_STREAM_RADIO+3:
 			{
 				switch(listitem)
 		    	{
@@ -19777,7 +19765,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case STREAM_DIALOG+4:
+			case DIALOG_STREAM_RADIO+4:
 			{
 	  			switch(listitem)
 		    	{
@@ -19786,7 +19774,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case STREAM_DIALOG+5:
+			case DIALOG_STREAM_RADIO+5:
 			{
 				switch(listitem)
 			    {
@@ -19795,7 +19783,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case STREAM_DIALOG+6:
+			case DIALOG_STREAM_RADIO+6:
 			{
 				switch(listitem)
 			    {
@@ -19804,7 +19792,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case STREAM_DIALOG+7:
+			case DIALOG_STREAM_RADIO+7:
 			{
 				switch(listitem)
 		    	{
@@ -19813,7 +19801,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case STREAM_DIALOG+8:
+			case DIALOG_STREAM_RADIO+8:
 			{
 				switch(listitem)
 		    	{
@@ -19822,16 +19810,16 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case STREAM_DIALOG+9:
+			case DIALOG_STREAM_RADIO+9:
 			{
 			    extract inputtext -> new string:link[144]; else
 			    {
-					return ShowPlayerDialog(playerid, STREAM_DIALOG+9, DIALOG_STYLE_INPUT, ""nef" :: Streams > Your own stream", ""white"Please enter the audio stream you want to listen to", "Play", "Back");
+					return ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO+9, DIALOG_STYLE_INPUT, ""nef" :: Streams > Your own stream", ""white"Please enter the audio stream you want to listen to", "Play", "Back");
 			    }
 				PlayAudioStreamForPlayer(playerid, link);
 				return true;
 			}
-			case TOY_DIALOG:
+			case DIALOG_TOY:
 			{
 				format(gstr, sizeof(gstr), ""nef" :: Player Toys > Slot: %i", listitem + 1);
 					
@@ -19849,12 +19837,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 					else
 					{
-		            	ShowPlayerDialog(playerid, TOY_DIALOG + 1, DIALOG_STYLE_LIST, gstr, "Edit Toy Position\nChange Bone\n"grey"Remove Toy", "Select", "Close");
+		            	ShowPlayerDialog(playerid, DIALOG_TOY + 1, DIALOG_STYLE_LIST, gstr, "Edit Toy Position\nChange Bone\n"grey"Remove Toy", "Select", "Close");
 					}
 			    }
 				return true;
 			}
-			case TOY_DIALOG + 1:
+			case DIALOG_TOY + 1:
 			{
 				switch(listitem)
 				{
@@ -19873,7 +19861,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					    strcat(finstring, "Spine\nHead\nLeft upper arm\nRight upper arm\nLeft hand\nRight hand\nLeft thigh\nRight thigh\nLeft foot\nRight foot");
 					    strcat(finstring, "\nRight calf\nLeft calf\nLeft forearm\nRight forearm\nLeft clavicle\nRight clavicle\nNeck\nJaw");
 
-					    ShowPlayerDialog(playerid, TOY_DIALOG + 2, DIALOG_STYLE_LIST, gstr, finstring, "Select", "Cancel");
+					    ShowPlayerDialog(playerid, DIALOG_TOY + 2, DIALOG_STYLE_LIST, gstr, finstring, "Select", "Cancel");
 					}
 					case 2: // remove toy
 					{
@@ -19887,7 +19875,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 			    return true;
 			}
-			case TOY_DIALOG + 2: //change bone
+			case DIALOG_TOY + 2: //change bone
 			{
 			    listitem++;
 			    PlayerToyData[playerid][PlayerData[playerid][toy_selected]][toy_bone] = listitem;
@@ -19916,7 +19904,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    player_notice(playerid, "Bone changed", "");
 			    return true;
 			}
-			case VEHICLE_DIALOG:
+			case DIALOG_VEHICLE:
 			{
 			   	switch(listitem)
 				{
@@ -19926,117 +19914,117 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						{
 							return SCM(playerid, -1, ""er"You need to be VIP to access this section");
 						}
-						ShowPlayerDialog(playerid, VEHICLE_DIALOG+16, DIALOG_STYLE_LIST, ""nef" :: Vehicles > VIP Vehicles", ""RED_E"Custom Cheetah\n"LB_E"Police Infernus\n"YELLOW_E"Custom NRG\n"GREEN_E"Custom Bullet\n"WHITE_E"Custom Huntley", "Select", "Back");
+						ShowPlayerDialog(playerid, DIALOG_VEHICLE+16, DIALOG_STYLE_LIST, ""nef" :: Vehicles > VIP Vehicles", ""RED_E"Custom Cheetah\n"LB_E"Police Infernus\n"YELLOW_E"Custom NRG\n"GREEN_E"Custom Bullet\n"WHITE_E"Custom Huntley", "Select", "Back");
 					}
-					case 1: ShowPlayerDialog(playerid, VEHICLE_DIALOG+1, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Airplanes", "Andromada\nAT-400\nBeagle\nCropduster\nDodo\nNevada\nRustler\nShamal\nSkimmer\nStuntplane", "Select", "Back");
-					case 2: ShowPlayerDialog(playerid, VEHICLE_DIALOG+2, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Helicopters", "Cargobob\nLeviathan\nMaverick\nNews Maverick\nPolice Maverick\nRaindance\nSeasparrow\nSparrow", "Select", "Back");
-					case 3: ShowPlayerDialog(playerid, VEHICLE_DIALOG+3, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Bikes", "BF-400\nBike\nBMX\nFaggio\nFCR-900\nFreeway\nMountain Bike\nNRG-500\nPCJ-600\nPizzaboy\nQuad\nSanchez\nWayfarer", "Select", "Back");
-					case 4: ShowPlayerDialog(playerid, VEHICLE_DIALOG+4, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Convertibles", "Comet\nFeltzer\nStallion\nWindsor", "Select", "Back");
-					case 5: ShowPlayerDialog(playerid, VEHICLE_DIALOG+5, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Industrial", "Benson\nBobcat\nBurrito\nBoxville\nBoxburg\nCement Truck\nDFT-30\nFlatbed\nLinerunner\nMule\nNewsvan\nPacker\nPetrol Tanker\nPony\nRoadtrain\nRumpo\nSadler\nSadler Shit\nTopfun\nTractor\nTrashmaster\nUtility Van\nWalton\nYankee\nYosemite", "Select", "Back");
-					case 6: ShowPlayerDialog(playerid, VEHICLE_DIALOG+6, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Lowriders", "Blade\nBroadway\nRemington\nSavanna\nSlamvan\nTahoma\nTornado\nVoodoo", "Select", "Back");
-					case 7: ShowPlayerDialog(playerid, VEHICLE_DIALOG+7, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Off Road", "BF Injection\nDune\nHuntley\nLandstalker\nMesa\nMonster\nMonster A\nMonster B\nPatriot\nRancher A\nRancher B\nSandking", "Select", "Back");
-					case 8: ShowPlayerDialog(playerid, VEHICLE_DIALOG+8, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Public Service Vehicles", "Ambulance\nBarracks\nBus\nCabbie\nCoach\nCop Bike (HPV-1000)\nEnforcer\nFBI Rancher\nFBI Truck\nFiretruck\nFiretruck LA\nPolice Car (LSPD)\nPolice Car (LVPD)\nPolice Car (SFPD)\nRanger\nRhino\nS.W.A.T\nTaxi", "Select", "Back");
-					case 9: ShowPlayerDialog(playerid, VEHICLE_DIALOG+9, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Saloons", "Admiral\nBloodring Banger\nBravura\nBuccaneer\nCadrona\nClover\nElegant\nElegy\nEmperor\nEsperanto\nFortune\nGlendale Shit\nGlendale\nGreenwood\nHermes\nIntruder\nMajestic\nManana\nMerit\nNebula\nOceanic\nPicador\nPremier\nPrevion\nPrimo\nSentinel\nStafford\nSultan\nSunrise\nTampa\nVincent\nVirgo\nWillard\nWashington", "Select", "Back");
-					case 10: ShowPlayerDialog(playerid, VEHICLE_DIALOG+10, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Sport Vehicles", "Alpha\nBanshee\nBlista Compact\nBuffalo\nBullet\nCheetah\nClub\nEuros\nFlash\nHotring Racer\nHotring Racer A\nHotring Racer B\nInfernus\nJester\nPhoenix\nSabre\nSuper GT\nTurismo\nUranus\nZR-350", "Select", "Back");
-					case 11: ShowPlayerDialog(playerid, VEHICLE_DIALOG+11, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Station Wagons", "Moonbeam\nPerenniel\nRegina\nSolair\nStratum", "Select", "Back");
-					case 12: ShowPlayerDialog(playerid, VEHICLE_DIALOG+12, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Boats", "Coastguard\nDinghy\nJetmax\nLaunch\nMarquis\nPredator\nReefer\nSpeeder\nSquallo\nTropic", "Select", "Back");
-					case 13: ShowPlayerDialog(playerid, VEHICLE_DIALOG+13, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Trailers", "Article Trailer\nArticle Trailer 2\nArticle Trailer 3\nBaggage Trailer A\nBaggage Trailer B\nFarm Trailer\nPetrol Trailer\nStairs Trailer\nUtility Trailer", "Select", "Back");
-					case 14: ShowPlayerDialog(playerid, VEHICLE_DIALOG+14, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Unique Vehicles", "Baggage\nCaddy\nCamper A\nCamper B\nCombine Harvester\nDozer\nDumper\nForklift\nHotknife\nHotdog\nMower\nMr Whoopee\nRomero\nSecuricar\nStretch\nSweeper\nTram\nTowtruck\nTug", "Select", "Back");
-					case 15: ShowPlayerDialog(playerid, VEHICLE_DIALOG+15, DIALOG_STYLE_LIST, ""nef" :: Vehicles > RC Vehicles", "RC Bandit\nRC Raider\nRC Goblin\nRC Tiger\nRC Cam", "Select", "Back");
+					case 1: ShowPlayerDialog(playerid, DIALOG_VEHICLE+1, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Airplanes", "Andromada\nAT-400\nBeagle\nCropduster\nDodo\nNevada\nRustler\nShamal\nSkimmer\nStuntplane", "Select", "Back");
+					case 2: ShowPlayerDialog(playerid, DIALOG_VEHICLE+2, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Helicopters", "Cargobob\nLeviathan\nMaverick\nNews Maverick\nPolice Maverick\nRaindance\nSeasparrow\nSparrow", "Select", "Back");
+					case 3: ShowPlayerDialog(playerid, DIALOG_VEHICLE+3, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Bikes", "BF-400\nBike\nBMX\nFaggio\nFCR-900\nFreeway\nMountain Bike\nNRG-500\nPCJ-600\nPizzaboy\nQuad\nSanchez\nWayfarer", "Select", "Back");
+					case 4: ShowPlayerDialog(playerid, DIALOG_VEHICLE+4, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Convertibles", "Comet\nFeltzer\nStallion\nWindsor", "Select", "Back");
+					case 5: ShowPlayerDialog(playerid, DIALOG_VEHICLE+5, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Industrial", "Benson\nBobcat\nBurrito\nBoxville\nBoxburg\nCement Truck\nDFT-30\nFlatbed\nLinerunner\nMule\nNewsvan\nPacker\nPetrol Tanker\nPony\nRoadtrain\nRumpo\nSadler\nSadler Shit\nTopfun\nTractor\nTrashmaster\nUtility Van\nWalton\nYankee\nYosemite", "Select", "Back");
+					case 6: ShowPlayerDialog(playerid, DIALOG_VEHICLE+6, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Lowriders", "Blade\nBroadway\nRemington\nSavanna\nSlamvan\nTahoma\nTornado\nVoodoo", "Select", "Back");
+					case 7: ShowPlayerDialog(playerid, DIALOG_VEHICLE+7, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Off Road", "BF Injection\nDune\nHuntley\nLandstalker\nMesa\nMonster\nMonster A\nMonster B\nPatriot\nRancher A\nRancher B\nSandking", "Select", "Back");
+					case 8: ShowPlayerDialog(playerid, DIALOG_VEHICLE+8, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Public Service Vehicles", "Ambulance\nBarracks\nBus\nCabbie\nCoach\nCop Bike (HPV-1000)\nEnforcer\nFBI Rancher\nFBI Truck\nFiretruck\nFiretruck LA\nPolice Car (LSPD)\nPolice Car (LVPD)\nPolice Car (SFPD)\nRanger\nRhino\nS.W.A.T\nTaxi", "Select", "Back");
+					case 9: ShowPlayerDialog(playerid, DIALOG_VEHICLE+9, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Saloons", "Admiral\nBloodring Banger\nBravura\nBuccaneer\nCadrona\nClover\nElegant\nElegy\nEmperor\nEsperanto\nFortune\nGlendale Shit\nGlendale\nGreenwood\nHermes\nIntruder\nMajestic\nManana\nMerit\nNebula\nOceanic\nPicador\nPremier\nPrevion\nPrimo\nSentinel\nStafford\nSultan\nSunrise\nTampa\nVincent\nVirgo\nWillard\nWashington", "Select", "Back");
+					case 10: ShowPlayerDialog(playerid, DIALOG_VEHICLE+10, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Sport Vehicles", "Alpha\nBanshee\nBlista Compact\nBuffalo\nBullet\nCheetah\nClub\nEuros\nFlash\nHotring Racer\nHotring Racer A\nHotring Racer B\nInfernus\nJester\nPhoenix\nSabre\nSuper GT\nTurismo\nUranus\nZR-350", "Select", "Back");
+					case 11: ShowPlayerDialog(playerid, DIALOG_VEHICLE+11, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Station Wagons", "Moonbeam\nPerenniel\nRegina\nSolair\nStratum", "Select", "Back");
+					case 12: ShowPlayerDialog(playerid, DIALOG_VEHICLE+12, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Boats", "Coastguard\nDinghy\nJetmax\nLaunch\nMarquis\nPredator\nReefer\nSpeeder\nSquallo\nTropic", "Select", "Back");
+					case 13: ShowPlayerDialog(playerid, DIALOG_VEHICLE+13, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Trailers", "Article Trailer\nArticle Trailer 2\nArticle Trailer 3\nBaggage Trailer A\nBaggage Trailer B\nFarm Trailer\nPetrol Trailer\nStairs Trailer\nUtility Trailer", "Select", "Back");
+					case 14: ShowPlayerDialog(playerid, DIALOG_VEHICLE+14, DIALOG_STYLE_LIST, ""nef" :: Vehicles > Unique Vehicles", "Baggage\nCaddy\nCamper A\nCamper B\nCombine Harvester\nDozer\nDumper\nForklift\nHotknife\nHotdog\nMower\nMr Whoopee\nRomero\nSecuricar\nStretch\nSweeper\nTram\nTowtruck\nTug", "Select", "Back");
+					case 15: ShowPlayerDialog(playerid, DIALOG_VEHICLE+15, DIALOG_STYLE_LIST, ""nef" :: Vehicles > RC Vehicles", "RC Bandit\nRC Raider\nRC Goblin\nRC Tiger\nRC Cam", "Select", "Back");
 				}
 				return true;
 			}
-			case VEHICLE_DIALOG+1:
+			case DIALOG_VEHICLE+1:
 			{
 	   			new model_array[] = {592, 577, 511, 512, 593, 553, 476, 519, 460, 513};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+2:
+			case DIALOG_VEHICLE+2:
 			{
 			    new model_array[] = {548, 417, 487, 488, 497, 563, 447, 469};
 	            CarSpawner(playerid, model_array[listitem], 120);
 			    return true;
 			}
-			case VEHICLE_DIALOG+3:
+			case DIALOG_VEHICLE+3:
 			{
 				new	model_array[] = {581, 509, 481, 462, 521, 463, 510, 522, 461, 448, 471, 468, 586};
     			CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+4:
+			case DIALOG_VEHICLE+4:
 			{
 	   			new	model_array[] = {480, 533, 439, 555};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+5:
+			case DIALOG_VEHICLE+5:
 			{
 				new model_array[] = {499, 422, 482, 498, 609, 524, 578, 455, 403, 414, 582, 443, 514, 413, 515, 440, 543, 605, 459, 531, 408, 552, 478, 456, 554};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+6:
+			case DIALOG_VEHICLE+6:
 			{
 			    new model_array[] = { 536, 575, 534, 567, 535, 566, 576, 412 };
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+7:
+			case DIALOG_VEHICLE+7:
 			{
 	    		new model_array[] = {424, 573, 579, 400, 500, 444, 556, 557, 470, 489, 505, 495};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+8:
+			case DIALOG_VEHICLE+8:
 			{
 				new model_array[] = {416, 433, 431, 438, 437, 523, 427, 490, 528, 407, 544, 596, 598, 597, 599, 432, 601, 420};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+9:
+			case DIALOG_VEHICLE+9:
 			{
 			    new model_array[] = {445, 504, 401, 518, 527, 542, 507, 562, 585, 419, 526, 604, 466, 492, 474, 546, 517, 410, 551, 516, 467, 600, 426, 436, 547, 405, 580, 560, 550, 549, 540, 491, 529, 421};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
    			}
-			case VEHICLE_DIALOG+10:
+			case DIALOG_VEHICLE+10:
 			{
 	    		new model_array[] = {602, 429, 496, 402, 541, 415, 589, 587, 565, 494, 502, 503, 411, 559, 603, 475, 506, 451, 558, 477};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+11:
+			case DIALOG_VEHICLE+11:
 			{
 				new model_array[] = {418, 404, 479, 458, 561};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+12:
+			case DIALOG_VEHICLE+12:
 			{
 		        new model_array[] = {472, 473, 493, 595, 484, 430, 453, 452, 446, 454};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+13:
+			case DIALOG_VEHICLE+13:
 			{
 			    new model_array[] = {435, 450, 591, 606, 607, 610, 584, 608, 611};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+14:
+			case DIALOG_VEHICLE+14:
 			{
 		        new model_array[] = {485, 457, 483, 508, 532, 486, 406, 530, 434, 588, 572, 423, 442, 428, 409, 574, 449, 525, 583};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+15:
+			case DIALOG_VEHICLE+15:
 			{
 		        new model_array[] = {441, 465, 501, 564, 594};
 	            CarSpawner(playerid, model_array[listitem], 120);
 				return true;
 			}
-			case VEHICLE_DIALOG+16:
+			case DIALOG_VEHICLE+16:
 			{
 			    switch(listitem)
 			    {
@@ -20048,20 +20036,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    }
 			    return true;
 			}
-			case WEAPON_DIALOG:
+			case DIALOG_WEAPON:
 			{
 	  			switch(listitem)
 		    	{
-					case 0: ShowPlayerDialog(playerid, WEAPON_DIALOG+1, DIALOG_STYLE_LIST, ""nef" :: Weapons > Rifles", "AK-47\nM4\nCountry Rifle\nSniper Rifle", "Select", "Back");
-					case 1: ShowPlayerDialog(playerid, WEAPON_DIALOG+2, DIALOG_STYLE_LIST, ""nef" :: Weapons > Submachine Guns", "MP 5\nUZI\nTEC-9", "Select", "Back");
-					case 2: ShowPlayerDialog(playerid, WEAPON_DIALOG+3, DIALOG_STYLE_LIST, ""nef" :: Weapons > Shot Guns", "Pump Gun\nSawn-Off\nCombat Shotgun", "Select", "Back");
-					case 3: ShowPlayerDialog(playerid, WEAPON_DIALOG+4, DIALOG_STYLE_LIST, ""nef" :: Weapons > Hand Guns", "9mm\nSilenced 9mm\nDesert Eagle", "Select", "Back");
-	   				case 4: ShowPlayerDialog(playerid, WEAPON_DIALOG+5, DIALOG_STYLE_LIST, ""nef" :: Weapons > Melee Weapons", "Golf Club\nNightstick\nKnife\nShovel\nKatana\nChainsaw\nDouble-ended Dildo\nSilver Vibrator\nFlowers", "Select", "Back");
-	   				case 5: ShowPlayerDialog(playerid, WEAPON_DIALOG+6, DIALOG_STYLE_LIST, ""nef" :: Weapons > Special Weapons", "Tear Gas\nMolotov Cocktail\nFlamethrower\nSpraycan\nFire Extinguisher", "Select", "Back");
+					case 0: ShowPlayerDialog(playerid, DIALOG_WEAPON+1, DIALOG_STYLE_LIST, ""nef" :: Weapons > Rifles", "AK-47\nM4\nCountry Rifle\nSniper Rifle", "Select", "Back");
+					case 1: ShowPlayerDialog(playerid, DIALOG_WEAPON+2, DIALOG_STYLE_LIST, ""nef" :: Weapons > Submachine Guns", "MP 5\nUZI\nTEC-9", "Select", "Back");
+					case 2: ShowPlayerDialog(playerid, DIALOG_WEAPON+3, DIALOG_STYLE_LIST, ""nef" :: Weapons > Shot Guns", "Pump Gun\nSawn-Off\nCombat Shotgun", "Select", "Back");
+					case 3: ShowPlayerDialog(playerid, DIALOG_WEAPON+4, DIALOG_STYLE_LIST, ""nef" :: Weapons > Hand Guns", "9mm\nSilenced 9mm\nDesert Eagle", "Select", "Back");
+	   				case 4: ShowPlayerDialog(playerid, DIALOG_WEAPON+5, DIALOG_STYLE_LIST, ""nef" :: Weapons > Melee Weapons", "Golf Club\nNightstick\nKnife\nShovel\nKatana\nChainsaw\nDouble-ended Dildo\nSilver Vibrator\nFlowers", "Select", "Back");
+	   				case 5: ShowPlayerDialog(playerid, DIALOG_WEAPON+6, DIALOG_STYLE_LIST, ""nef" :: Weapons > Special Weapons", "Tear Gas\nMolotov Cocktail\nFlamethrower\nSpraycan\nFire Extinguisher", "Select", "Back");
 				}
 				return true;
 			}
-			case WEAPON_DIALOG+1:
+			case DIALOG_WEAPON+1:
 			{
 			    if(gTeam[playerid] == gDUEL) return SCM(playerid, -1, ""er"You tryin' to abuse? ;)");
 				switch(listitem)
@@ -20073,7 +20061,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case WEAPON_DIALOG+2:
+			case DIALOG_WEAPON+2:
 			{
 			    if(gTeam[playerid] == gDUEL) return SCM(playerid, -1, ""er"You tryin' to abuse? ;)");
 				switch(listitem)
@@ -20084,7 +20072,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case WEAPON_DIALOG+3:
+			case DIALOG_WEAPON+3:
 			{
 			    if(gTeam[playerid] == gDUEL) return SCM(playerid, -1, ""er"You tryin' to abuse? ;)");
 	  			switch(listitem)
@@ -20095,7 +20083,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 			    return true;
 			}
-			case WEAPON_DIALOG+4:
+			case DIALOG_WEAPON+4:
 			{
 			    if(gTeam[playerid] == gDUEL) return SCM(playerid, -1, ""er"You tryin' to abuse? ;)");
 				switch(listitem)
@@ -20106,7 +20094,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 			    return true;
 			}
-			case WEAPON_DIALOG+5:
+			case DIALOG_WEAPON+5:
 			{
 			    if(gTeam[playerid] == gDUEL) return SCM(playerid, -1, ""er"You tryin' to abuse? ;)");
 	  			switch(listitem)
@@ -20123,7 +20111,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 			    return true;
 			}
-			case WEAPON_DIALOG+6:
+			case DIALOG_WEAPON+6:
 			{
                 if(gTeam[playerid] == gDUEL) return SCM(playerid, -1, ""er"You tryin' to abuse? ;)");
 				switch(listitem)
@@ -20136,7 +20124,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case VMENU_DIALOG:
+			case DIALOG_VMENU:
 			{
                 if(listitem > PlayerData[playerid][e_addpvslots])
 			    {
@@ -20154,11 +20142,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 
 					format(gstr, sizeof(gstr), ""nef" :: Private vehicle menu > Slot: %i", listitem + 1);
-				    ShowPlayerDialog(playerid, VMENU_DIALOG + 1, DIALOG_STYLE_LIST, gstr, "Spawn Vehicle\nAttach Neon\nChange Number Plate\nChange Vehicle Color\n"grey"Sell vehicle", "Select", "Back");
+				    ShowPlayerDialog(playerid, DIALOG_VMENU + 1, DIALOG_STYLE_LIST, gstr, "Spawn Vehicle\nAttach Neon\nChange Number Plate\nChange Vehicle Color\n"grey"Sell vehicle", "Select", "Back");
 			    }
 				return true;
 			}
-			case VMENU_DIALOG + 1:
+			case DIALOG_VMENU + 1:
 			{
    				switch(listitem)
 			    {
@@ -20189,11 +20177,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 					case 1:
 					{
-						ShowDialog(playerid, NEON_DIALOG);
+						ShowDialog(playerid, DIALOG_NEON);
 					}
 					case 2:
 					{
-						ShowDialog(playerid, CUSTOM_PLATE_DIALOG);
+						ShowDialog(playerid, DIALOG_CUSTOM_PLATE);
 					}
 					case 3:
 					{
@@ -20246,12 +20234,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				return true;
 			}
-			case CARBUY_DIALOG:
+			case DIALOG_CAR_SHOP:
 			{
                 if(PlayerData[playerid][e_vip] == 0 && listitem == 8)
                 {
 					SCM(playerid, -1, ""er"You need to be VIP");
-					ShowDialog(playerid, CARBUY_DIALOG);
+					ShowDialog(playerid, DIALOG_CAR_SHOP);
 					return 1;
                 }
 			
@@ -20269,10 +20257,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    PVCatSel[playerid] = listitem;
 			    
 			    format(gstr, sizeof(gstr), ""nef" :: Custom cars > %s", g_szCustomCarCategories[listitem]);
-			    ShowPlayerDialog(playerid, CARBUY_DIALOG + 1, DIALOG_STYLE_LIST, gstr, string, "Select", "Back");
+			    ShowPlayerDialog(playerid, DIALOG_CAR_SHOP + 1, DIALOG_STYLE_LIST, gstr, string, "Select", "Back");
 			    return true;
 			}
-			case CARBUY_DIALOG + 1:
+			case DIALOG_CAR_SHOP + 1:
 			{
 				new idx = 0;
 				for(new i = 0; i < sizeof(g_aPVMatrix); i++)
@@ -20292,18 +20280,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				if(GetPlayerMoneyEx(playerid) < PlayerPVTMP[playerid][1])
 				{
 					SCM(playerid, -1, ""er"You can't afford that vehicle");
-					ShowDialog(playerid, CARBUY_DIALOG);
+					ShowDialog(playerid, DIALOG_CAR_SHOP);
 					return 1;
 				}
 
-				ShowDialog(playerid, VEHICLE_PLATE_DIALOG);
+				ShowDialog(playerid, DIALOG_VEHICLE_PLATE);
 
 				PlayerData[playerid][pPreviewVehicle] = CreateVehicleEx(PlayerPVTMP[playerid][0], -1412.1841, 1027.2224, 1049.1060, 231.6696, 0, 0, -1);
 				LinkVehicleToInterior(PlayerData[playerid][pPreviewVehicle], GetPlayerInterior(playerid));
 				SetVehicleVirtualWorld(PlayerData[playerid][pPreviewVehicle], GetPlayerVirtualWorld(playerid));
 			    return true;
 			}
-			case NEON_DIALOG:
+			case DIALOG_NEON:
 			{
 				DestroyPlayerVehicles(playerid);
 				
@@ -20433,24 +20421,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 			    return true;
 			}
-			case VEHICLE_PLATE_DIALOG:
+			case DIALOG_VEHICLE_PLATE:
 			{
    				if(strlen(inputtext) < 2 || strlen(inputtext) > 12 || isnull(inputtext))
 		    	{
 					SCM(playerid, RED, "Number plate length: 2 - 12 characters");
-			 		ShowDialog(playerid, VEHICLE_PLATE_DIALOG);
+			 		ShowDialog(playerid, DIALOG_VEHICLE_PLATE);
 					return 1;
 				}
 				if(badsql(inputtext, false) != 0)
 				{
-				    ShowDialog(playerid, VEHICLE_PLATE_DIALOG);
+				    ShowDialog(playerid, DIALOG_VEHICLE_PLATE);
 				    SCM(playerid, -1, ""er"You have specified invalid characters");
 				    return 1;
 				}
 				if(sscanf(inputtext, "s[13]", PlayerPVTMPPlate[playerid]))
 				{
 					SCM(playerid, RED, "Number plate length: 2 - 12 characters");
-			 		ShowDialog(playerid, VEHICLE_PLATE_DIALOG);
+			 		ShowDialog(playerid, DIALOG_VEHICLE_PLATE);
 					return 1;
 				}
 				mysql_escape_string(PlayerPVTMPPlate[playerid], PlayerPVTMPPlate[playerid], pSQL, 13);
@@ -20458,24 +20446,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				PVSlotSelect(playerid);
 				return true;
 			}
-			case CUSTOM_PLATE_DIALOG:
+			case DIALOG_CUSTOM_PLATE:
 			{
    				if(strlen(inputtext) < 2 || strlen(inputtext) > 12 || isnull(inputtext))
 		    	{
 					SCM(playerid, RED, "Number plate length: 2 - 12 characters");
-				 	ShowDialog(playerid, CUSTOM_PLATE_DIALOG);
+				 	ShowDialog(playerid, DIALOG_CUSTOM_PLATE);
 				 	return 1;
 				}
 				if(badsql(inputtext, false) != 0)
 				{
 					SCM(playerid, RED, ""er"You entered an invalid character!");
-				 	ShowDialog(playerid, CUSTOM_PLATE_DIALOG);
+				 	ShowDialog(playerid, DIALOG_CUSTOM_PLATE);
 					return 1;
 				}
 				if(sscanf(inputtext, "s[13]", PlayerPVData[playerid][PVVMenuSel[playerid]][e_plate]))
 				{
 					SCM(playerid, RED, ""er"You entered an invalid character!");
-				 	ShowDialog(playerid, CUSTOM_PLATE_DIALOG);
+				 	ShowDialog(playerid, DIALOG_CUSTOM_PLATE);
 				 	return 1;
 				}
 
@@ -20506,7 +20494,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				player_notice(playerid, "Plate changed", "");
 			    return true;
 			}
-			case BGVOTING_DIALOG:
+			case DIALOG_TDM_VOTING:
 			{
    				if(CurrentBGMap == BG_VOTING)
 				{
@@ -20579,12 +20567,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    RemoveFromRaceBuilder(playerid);
 			    return true;
 			}
- 		    case CM_DIALOG + 1 .. CM_DIALOG + 15:
+ 		    case DIALOG_CM + 1 .. DIALOG_CM + 15:
  		    {
- 		        ShowDialog(playerid, CM_DIALOG);
+ 		        ShowDialog(playerid, DIALOG_CM);
 				return 1;
  		    }
-	        case VCONTROL_DIALOG + 1:
+	        case DIALOG_VCONTROL + 1:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -20596,7 +20584,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             	SetVehicleParamsEx(vehicle, 0, vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 				return 1;
 	        }
-	        case VCONTROL_DIALOG + 2:
+	        case DIALOG_VCONTROL + 2:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -20608,7 +20596,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				SetVehicleParamsEx(vehicle, vehicle_params[0], 0, vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 				return 1;
 	        }
-	        case VCONTROL_DIALOG + 3:
+	        case DIALOG_VCONTROL + 3:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -20620,7 +20608,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				SetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], 0, vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 				return 1;
 	        }
-	        case VCONTROL_DIALOG + 4:
+	        case DIALOG_VCONTROL + 4:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -20632,7 +20620,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				SetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], 0, vehicle_params[5], vehicle_params[6]);
 				return 1;
 	        }
-	        case VCONTROL_DIALOG + 5:
+	        case DIALOG_VCONTROL + 5:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				{
@@ -20644,114 +20632,114 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				SetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], 0, vehicle_params[6]);
 				return 1;
 	        }
- 		    case GMENU_DIALOG + 1:
+ 		    case DIALOG_GANG_MENU + 1:
  		    {
- 		        ShowDialog(playerid, GMENU_DIALOG);
+ 		        ShowDialog(playerid, DIALOG_GANG_MENU);
  		        return true;
  		    }
- 		    case HELP_DIALOG + 4:
+ 		    case DIALOG_HELP + 4:
  		    {
- 		        ShowPlayerDialog(playerid, HELP_DIALOG + 3, DIALOG_STYLE_LIST, ""nef" :: Minigames", "Race (/race)\nDerby (/derby)\nFallout (/fallout)\nGungame (/gungame)\nMinigun (/minigun)\nSniper (/sniper)\nDeath Match (/dm1-4)\nTeam Death Match (/tdm)\nWAR (/war)", "Select", "");
+ 		        ShowPlayerDialog(playerid, DIALOG_HELP + 3, DIALOG_STYLE_LIST, ""nef" :: Minigames", "Race (/race)\nDerby (/derby)\nFallout (/fallout)\nGungame (/gungame)\nMinigun (/minigun)\nSniper (/sniper)\nDeath Match (/dm1-4)\nTeam Death Match (/tdm)\nWAR (/war)", "Select", "");
  		        return true;
  		    }
- 		    case HELP_DIALOG + 1, HELP_DIALOG + 2, HELP_DIALOG + 5, HELP_DIALOG + 6:
+ 		    case DIALOG_HELP + 1, DIALOG_HELP + 2, DIALOG_HELP + 5, DIALOG_HELP + 6:
  		    {
  		        Command_ReProcess(playerid, "/help", false);
  		        return true;
  		    }
- 		    case TELE_DIALOG + 1..TELE_DIALOG + 9:
+ 		    case DIALOG_TELEPORT + 1..DIALOG_TELEPORT + 9:
  		    {
- 		        ShowDialog(playerid, TELE_DIALOG);
+ 		        ShowDialog(playerid, DIALOG_TELEPORT);
  		        return true;
  		    }
-			case PV_SLOT_SELECT_DIALOG:
+			case DIALOG_PV_SELECT_SLOT:
 			{
-			    ShowDialog(playerid, VEHICLE_PLATE_DIALOG);
+			    ShowDialog(playerid, DIALOG_VEHICLE_PLATE);
 			    return true;
 			}
-			case NEON_DIALOG:
+			case DIALOG_NEON:
 			{
 				format(gstr, sizeof(gstr), ""nef" :: Custom car menu > Slot: %i", PVVMenuSel[playerid] + 1);
-			    ShowPlayerDialog(playerid, VMENU_DIALOG + 1, DIALOG_STYLE_LIST, gstr, "Spawn Vehicle\nAttach Neon\nChange Number Plate\nChange Vehicle Color\n"grey"Sell vehicle", "Select", "Back");
+			    ShowPlayerDialog(playerid, DIALOG_VMENU + 1, DIALOG_STYLE_LIST, gstr, "Spawn Vehicle\nAttach Neon\nChange Number Plate\nChange Vehicle Color\n"grey"Sell vehicle", "Select", "Back");
 			    return true;
 			}
-			case CUSTOM_PLATE_DIALOG:
+			case DIALOG_CUSTOM_PLATE:
 			{
 				format(gstr, sizeof(gstr), ""nef" :: Custom car menu > Slot: %i", PVVMenuSel[playerid] + 1);
-			    ShowPlayerDialog(playerid, VMENU_DIALOG + 1, DIALOG_STYLE_LIST, gstr, "Spawn Vehicle\nAttach Neon\nChange Number Plate\nChange Vehicle Color\n"grey"Sell vehicle", "Select", "Back");
+			    ShowPlayerDialog(playerid, DIALOG_VMENU + 1, DIALOG_STYLE_LIST, gstr, "Spawn Vehicle\nAttach Neon\nChange Number Plate\nChange Vehicle Color\n"grey"Sell vehicle", "Select", "Back");
 				return true;
 			}
-			case VMENU_DIALOG + 1:
+			case DIALOG_VMENU + 1:
 			{
-			    ShowDialog(playerid, VMENU_DIALOG);
+			    ShowDialog(playerid, DIALOG_VMENU);
 			    return true;
 			}
- 		    case DERBY_VOTING_DIALOG:
+ 		    case DIALOG_DERBY_VOTING:
  		    {
- 		        ShowDialog(playerid, DERBY_VOTING_DIALOG);
+ 		        ShowDialog(playerid, DIALOG_DERBY_VOTING);
  		        return true;
  		    }
- 		    case LOGIN_DIALOG:
+ 		    case DIALOG_LOGIN:
  		    {
  		        // Skip Login
  		        SkipLogin(playerid);
  		        return true;
  		    }
- 		    case REGISTER_DIALOG:
+ 		    case DIALOG_REGISTER:
  		    {
  		        SkipRegistration(playerid);
  		        return true;
  		    }
-		    case CMDS_DIALOG + 1:
+		    case DIALOG_COMMANDS + 1:
 		    {
-		        ShowDialog(playerid, CMDS_DIALOG);
+		        ShowDialog(playerid, DIALOG_COMMANDS);
 		        return true;
 		    }
- 		    case STREAM_DIALOG:
+ 		    case DIALOG_STREAM_RADIO:
  		    {
  		        StopAudioStreamForPlayer(playerid);
  		        return true;
 			}
-			case STREAM_DIALOG+1..STREAM_DIALOG+9:
+			case DIALOG_STREAM_RADIO+1..DIALOG_STREAM_RADIO+9:
 			{
-				ShowDialog(playerid, STREAM_DIALOG);
+				ShowDialog(playerid, DIALOG_STREAM_RADIO);
 				return true;
 			}
-			case VEHICLE_DIALOG+1..VEHICLE_DIALOG+16:
+			case DIALOG_VEHICLE+1..DIALOG_VEHICLE+16:
 			{
-				ShowDialog(playerid, VEHICLE_DIALOG);
+				ShowDialog(playerid, DIALOG_VEHICLE);
 				return true;
 			}
-			case WEAPON_DIALOG+1..WEAPON_DIALOG+6:
+			case DIALOG_WEAPON+1..DIALOG_WEAPON+6:
 			{
-				ShowDialog(playerid, WEAPON_DIALOG);
+				ShowDialog(playerid, DIALOG_WEAPON);
 				return true;
 			}
-			case VEHICLE_PLATE_DIALOG:
+			case DIALOG_VEHICLE_PLATE:
 			{
 			    if(PlayerData[playerid][pPreviewVehicle] != INVALID_VEHICLE_ID)
 			    {
 		    		DestroyVehicleEx(PlayerData[playerid][pPreviewVehicle]);
 		    		PlayerData[playerid][pPreviewVehicle] = INVALID_VEHICLE_ID;
 				}
-				ShowDialog(playerid, CARBUY_DIALOG);
+				ShowDialog(playerid, DIALOG_CAR_SHOP);
 				return true;
 			}
-			case CARBUY_DIALOG:
+			case DIALOG_CAR_SHOP:
 			{
    				SetCameraBehindPlayer(playerid);
 		    	SetPlayerVirtualWorld(playerid, 0);
 		    	TogglePlayerControllable(playerid, true);
 		    	return true;
 			}
-			case CARBUY_DIALOG+1..CARBUY_DIALOG+9:
+			case DIALOG_CAR_SHOP+1..DIALOG_CAR_SHOP+9:
 			{
-				ShowDialog(playerid, CARBUY_DIALOG);
+				ShowDialog(playerid, DIALOG_CAR_SHOP);
 				return true;
 			}
-			case BGVOTING_DIALOG:
+			case DIALOG_TDM_VOTING:
 			{
-		 		ShowDialog(playerid, BGVOTING_DIALOG);
+		 		ShowDialog(playerid, DIALOG_TDM_VOTING);
 		 		return true;
 			}
 		}
@@ -20867,7 +20855,7 @@ function:OnBusinessLoad()
 {
 	new rows = cache_get_row_count();
 
-	for(new r = 0; r < rows && r < MAX_BUSINESSES; r++)
+	for(new r = 0; r < rows && r < MAX_ENTERPRISES; r++)
 	{
 	    new ORM:ormid = BusinessData[r][e_ormid] = orm_create("businesses");
 	    
@@ -20899,13 +20887,13 @@ function:OnBusinessLoadEx(slot)
 
 SetupBusiness(slot)
 {
-	if(slot < 0 || slot > MAX_BUSINESSES) return 0;
+	if(slot < 0 || slot > MAX_ENTERPRISES) return 0;
 	new r = slot;
 
 	if(BusinessData[r][e_sold]) {
-        format(gstr2, sizeof(gstr2), ""business_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
+        format(gstr2, sizeof(gstr2), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", BusinessData[r][e_id], BusinessData[r][e_owner], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
 	} else {
-	    format(gstr2, sizeof(gstr2), ""business_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", BusinessData[r][e_id], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
+	    format(gstr2, sizeof(gstr2), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", BusinessData[r][e_id], g_szBusinessTypes[_:BusinessData[r][e_type]], BusinessData[r][e_level]);
 	}
 	
 	BusinessData[r][e_label_id] = CreateDynamic3DTextLabel(gstr2, WHITE, BusinessData[r][e_pos][0], BusinessData[r][e_pos][1], BusinessData[r][e_pos][2], 30.0, .worldid = 0);
@@ -21060,7 +21048,7 @@ ResetBusiness(slot = -1)
 {
 	if(slot == -1)
 	{
-		for(new r = 0; r < MAX_BUSINESSES; r++)
+		for(new r = 0; r < MAX_ENTERPRISES; r++)
 		{
 		    BusinessData[r][e_ormid] = ORM:-1;
 		    BusinessData[r][e_id] = 0;
@@ -21077,7 +21065,7 @@ ResetBusiness(slot = -1)
 	}
 	else
 	{
-	    if(slot < 0 || slot > MAX_BUSINESSES) return 0;
+	    if(slot < 0 || slot > MAX_ENTERPRISES) return 0;
 	    new r = slot;
 	    
 	    BusinessData[r][e_ormid] = ORM:-1;
@@ -21138,7 +21126,7 @@ function:BGVoting()
 		{
  			if(gTeam[i] == gBG_VOTING)
    			{
-				ShowDialog(i, BGVOTING_DIALOG);
+				ShowDialog(i, DIALOG_TDM_VOTING);
 			}
 		}
 		return 1;
@@ -21173,7 +21161,7 @@ function:BGVoting()
 		{
  			if(gTeam[i] == gBG_VOTING)
    			{
-				ShowDialog(i, BGVOTING_DIALOG);
+				ShowDialog(i, DIALOG_TDM_VOTING);
 			}
 		}
 		return 1;
@@ -21517,7 +21505,7 @@ function:BattleGround()
 	{
 	    if(gTeam[i] == gBG_TEAM1 || gTeam[i] == gBG_TEAM2 || gTeam[i] == gBG_VOTING)
 	    {
-			ShowDialog(i, BGVOTING_DIALOG);
+			ShowDialog(i, DIALOG_TDM_VOTING);
 	    }
 	}
 
@@ -21627,7 +21615,7 @@ RequestRegistration(playerid)
 	
     format(gstr, sizeof(gstr), ""nef" :: Registration - %s", __GetName(playerid));
 	format(string, sizeof(string), ""white"Welcome to "SVRLOGO""white"\n\nYour name: %s\n\nLet's create an account, enter a password below:", __GetName(playerid));
-	ShowPlayerDialog(playerid, REGISTER_DIALOG, DIALOG_STYLE_PASSWORD, gstr, string, "Register", "Skip");
+	ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, gstr, string, "Register", "Skip");
 	return 1;
 }
 
@@ -21637,7 +21625,7 @@ RequestLogin(playerid)
 	
     format(gstr, sizeof(gstr), ""nef_yellow"Login "white"- %s", __GetName(playerid));
     format(string, sizeof(string), ""white"Welcome to "SVRLOGO""white"\nHow are you, %s?\n\nAccount: %s\n\nThe name that you are using is registered! Please enter the password:", __GetName(playerid), __GetName(playerid));
-	ShowPlayerDialog(playerid, LOGIN_DIALOG, DIALOG_STYLE_PASSWORD, gstr, string, "Login", "Skip");
+	ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, gstr, string, "Login", "Skip");
     return 1;
 }
 
@@ -22475,7 +22463,7 @@ ShowElevatorDialog(playerid)
 	    strcat(string, "\n");
 	}
 
-	ShowPlayerDialog(playerid, LIFT_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Admin Elevator", string, "Accept", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_LIFT, DIALOG_STYLE_LIST, ""nef" :: Admin Elevator", string, "Accept", "Cancel");
 	return 1;
 }
 
@@ -24525,7 +24513,7 @@ PVSlotSelect(playerid)
 		}
     }
 
-	ShowPlayerDialog(playerid, PV_SLOT_SELECT_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Custom car shop", string, "Select", "Back");
+	ShowPlayerDialog(playerid, DIALOG_PV_SELECT_SLOT, DIALOG_STYLE_LIST, ""nef" :: Custom car shop", string, "Select", "Back");
 	return 1;
 }
 
@@ -24738,7 +24726,7 @@ function:DerbyVoting()
 		ExecDerbyVotingTimer();
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24754,7 +24742,7 @@ function:DerbyVoting()
 		derby_broadcast("There were no votes!");
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 	    return 1;
 	}
@@ -24784,7 +24772,7 @@ function:DerbyVoting()
 		ClearDerbyVotes();
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24814,7 +24802,7 @@ function:DerbyVoting()
         ClearDerbyVotes();
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24873,7 +24861,7 @@ function:StartDerbyMap1()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24968,7 +24956,7 @@ function:StartDerbyMap2()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25063,7 +25051,7 @@ function:StartDerbyMap3()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25158,7 +25146,7 @@ function:StartDerbyMap4()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25253,7 +25241,7 @@ function:StartDerbyMap5()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25348,7 +25336,7 @@ function:StartDerbyMap6()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25433,7 +25421,7 @@ function:StartDerbyMap7()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25518,7 +25506,7 @@ function:StartDerbyMap8()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25603,7 +25591,7 @@ function:StartDerbyMap9()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DERBY_VOTING_DIALOG);
+ 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25682,7 +25670,7 @@ function:Derby()
 			{
        			SetPlayerVirtualWorld(i, DERBY_WORLD);
        			SetPlayerDerbyStaticMeshes(i);
-				ShowDialog(i, DERBY_VOTING_DIALOG);
+				ShowDialog(i, DIALOG_DERBY_VOTING);
 			}
 		}
   		SCMToAll(-1, ""derby_sign" No winner! new round starting soon. Join with /derby");
@@ -25714,7 +25702,7 @@ function:Derby()
 					derby_broadcast(gstr);
 	   			}
 				SetPlayerDerbyStaticMeshes(i);
-	      		ShowDialog(i, DERBY_VOTING_DIALOG);
+	      		ShowDialog(i, DIALOG_DERBY_VOTING);
 			}
 		}
 	}
@@ -27661,11 +27649,11 @@ function:ShowDialog(playerid, dialogid)
 		{
 			ShowPlayerDialog(playerid, DIALOG_RACE_RACETYPE, DIALOG_STYLE_LIST, ""nef" :: Race Creation "white"- (Step 1/5)", "Normal Race\nAir Race", "Next", "Exit");
 		}
-		case DIALOG_SET_BUSINESS_TYPE:
+		case DIALOG_ENTERPRISE_SET_TYPE:
 		{
-		    ShowPlayerDialog(playerid, DIALOG_SET_BUSINESS_TYPE, DIALOG_STYLE_LIST, ""nef" :: Select a business type", "Loan Sharks\nRobbery\nSmuggling\nProstitution\nMeth Lab", "Select", "Back");
+		    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_SET_TYPE, DIALOG_STYLE_LIST, ""nef" :: Select a business type", "Loan Sharks\nRobbery\nSmuggling\nProstitution\nMeth Lab", "Select", "Back");
 		}
-	    case DIALOG_UPGRADE_BUSINESS:
+	    case DIALOG_ENTERPRISE_UPGRADE:
 	    {
 	        new string[512];
 	        
@@ -27674,7 +27662,7 @@ function:ShowDialog(playerid, dialogid)
 			if(r != -1) {
 			    strcat(string, ""white"The higher the level the higher the earnings. Upgrade your business\nlevel to receive more money each payday! Max. level: 20\n\nCurrent Business Level: ");
 			    
-			    if(BusinessData[r][e_level] >= MAX_BUSINESS_LEVEL)
+			    if(BusinessData[r][e_level] >= MAX_ENTERPRISE_LEVEL)
 			    {
 				    format(gstr, sizeof(gstr), "%i\nCurrent Business Earnings: $%s\n\nThis business reached it's max. level!", BusinessData[r][e_level], number_format(GetBusinessEarnings(r)));
 					strcat(string, gstr);
@@ -27691,29 +27679,29 @@ function:ShowDialog(playerid, dialogid)
 				
 	 	        format(gstr, sizeof(gstr), ""nef" :: Business Level Upgrade > Slot: %i", PlayerData[playerid][BusinessIdSelected] + 1);
 
-	            if(BusinessData[r][e_level] == MAX_BUSINESS_LEVEL) {
-					ShowPlayerDialog(playerid, DIALOG_UPGRADE_BUSINESS, DIALOG_STYLE_MSGBOX, gstr, string, "Back", "");
+	            if(BusinessData[r][e_level] == MAX_ENTERPRISE_LEVEL) {
+					ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_UPGRADE, DIALOG_STYLE_MSGBOX, gstr, string, "Back", "");
 				} else {
-	                ShowPlayerDialog(playerid, DIALOG_UPGRADE_BUSINESS, DIALOG_STYLE_MSGBOX, gstr, string, "Upgrade", "Back");
+	                ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_UPGRADE, DIALOG_STYLE_MSGBOX, gstr, string, "Upgrade", "Back");
 				}
 			} else {
                 player_notice(playerid, "Couldn't find the business in that slot", "Report on forums", 4000);
 			}
 		}
-	    case CM_DIALOG:
+	    case DIALOG_CM:
 	    {
 	        new string[1024];
 
 	        strcat(string, ""red"How to get Gold Credits\nToy Slots\nCustom car slot\nHouse Slots\nHouse Item Slots\nBusiness Slots\nInstant Namechange Access");
 	        strcat(string, "\nMedkit x20\nMedkit x100\nMoney Boost x2\nMoney Boost x3\nScore Boost x2\nScore Boost x3\nMaster Boost\nReset K/D");
 
-	        ShowPlayerDialog(playerid, CM_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Gold Credits", string, "Select", "Cancel");
+	        ShowPlayerDialog(playerid, DIALOG_CM, DIALOG_STYLE_LIST, ""nef" :: Gold Credits", string, "Select", "Cancel");
 	    }
-	    case NO_CREDITS_DIALOG:
+	    case DIALOG_NO_GC:
 	    {
-	        ShowPlayerDialog(playerid, NO_CREDITS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Gold Credits", ""nef_green"You don't have enough Gold Credits to perform this action.\n"white"To purchase Gold Credits goto "SVRURLWWW"/credits", "OK", "");
+	        ShowPlayerDialog(playerid, DIALOG_NO_GC, DIALOG_STYLE_MSGBOX, ""nef" :: Gold Credits", ""nef_green"You don't have enough Gold Credits to perform this action.\n"white"To purchase Gold Credits goto "SVRURLWWW"/credits", "OK", "");
 	    }
-	    case SERVERSTATS_DIALOG:
+	    case DIALOG_SERVER_STATS:
 	    {
 	        new string[680];
 	        format(string, sizeof(string), "%s since %s. During that time...\n\n... "yellow_e"%i "white"commands have been performed\n... "yellow_e"%i "white"chat messages have been sent\n... "yellow_e"%i "white"new players have registered\n... "yellow_e"%i "white"players have been murdered",
@@ -27723,21 +27711,21 @@ function:ShowDialog(playerid, dialogid)
 	        strcat(string, gstr2);
 	        strcat(string, "\n\nServer version: "SVRNAME" "CURRENT_VERSION" on SA-MP "SAMP_VERSION"");
 	        
-	        ShowPlayerDialog(playerid, SERVERSTATS_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Server Stats", string, "OK", "");
+	        ShowPlayerDialog(playerid, DIALOG_SERVER_STATS, DIALOG_STYLE_MSGBOX, ""nef" :: Server Stats", string, "OK", "");
 	    }
-	    case LABEL_DIALOG + 1:
+	    case DIALOG_VIP_LABEL + 1:
 	    {
-	        ShowPlayerDialog(playerid, LABEL_DIALOG + 1, DIALOG_STYLE_INPUT, ""nef" :: Change VIP Label Text", ""white"Enter the new text which your label shall display\n"nef_yellow"* "white"Input length: 3-35", "Next", "Cancel");
+	        ShowPlayerDialog(playerid, DIALOG_VIP_LABEL + 1, DIALOG_STYLE_INPUT, ""nef" :: Change VIP Label Text", ""white"Enter the new text which your label shall display\n"nef_yellow"* "white"Input length: 3-35", "Next", "Cancel");
 	    }
-	    case LABEL_DIALOG:
+	    case DIALOG_VIP_LABEL:
 	    {
-        	ShowPlayerDialog(playerid, LABEL_DIALOG, DIALOG_STYLE_INPUT, ""nef" :: Attach VIP Label", ""white"Enter some text which your label shall display\n"nef_yellow"* "white"Input length: 3-35", "Next", "Cancel");
+        	ShowPlayerDialog(playerid, DIALOG_VIP_LABEL, DIALOG_STYLE_INPUT, ""nef" :: Attach VIP Label", ""white"Enter some text which your label shall display\n"nef_yellow"* "white"Input length: 3-35", "Next", "Cancel");
 	    }
-	    case VCONTROL_DIALOG:
+	    case DIALOG_VCONTROL:
 	    {
-			ShowPlayerDialog(playerid, VCONTROL_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Vehicle Control", "Engine control\nLight control\nAlarm\nBonnet\nBoot", "Select", "Cancel");
+			ShowPlayerDialog(playerid, DIALOG_VCONTROL, DIALOG_STYLE_LIST, ""nef" :: Vehicle Control", "Engine control\nLight control\nAlarm\nBonnet\nBoot", "Select", "Cancel");
 	    }
-	    case NAME_CHANGE_DIALOG:
+	    case DIALOG_CHANGE_NAME:
 	    {
 	        new string[1024];
 
@@ -27767,7 +27755,7 @@ function:ShowDialog(playerid, dialogid)
 							__GetName(playerid));
 	                }
 	                
-					return ShowPlayerDialog(playerid, NAME_CHANGE_DIALOG, DIALOG_STYLE_INPUT, ""nef" :: Namechange", string, "Change", "Cancel");
+					return ShowPlayerDialog(playerid, DIALOG_CHANGE_NAME, DIALOG_STYLE_INPUT, ""nef" :: Namechange", string, "Change", "Cancel");
 	            }
 	        }
 	        else
@@ -27796,52 +27784,52 @@ function:ShowDialog(playerid, dialogid)
 							__GetName(playerid));
 	                }
 
-					return ShowPlayerDialog(playerid, NAME_CHANGE_DIALOG, DIALOG_STYLE_INPUT, ""nef" :: Namechange", string, "Change", "Cancel");
+					return ShowPlayerDialog(playerid, DIALOG_CHANGE_NAME, DIALOG_STYLE_INPUT, ""nef" :: Namechange", string, "Change", "Cancel");
 	            }
 			}
 		}
-		case HAREFILL_DIALOG:
+		case DIALOG_HA_REFILL:
 		{
 		 	new tick = GetTickCountEx();
 			if((PlayerData[playerid][tickLastRefill] + COOLDOWN_CMD_HAREFILL) >= tick)
 			{
 			    return player_notice(playerid, "Command is on cooldown!", "");
 			}
-		    ShowPlayerDialog(playerid, HAREFILL_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Health & Armor Refill", "Health\t\t"grey"[$5,000]\nArmor\t\t"grey"[$2,500]", "Select", "Cancel");
+		    ShowPlayerDialog(playerid, DIALOG_HA_REFILL, DIALOG_STYLE_LIST, ""nef" :: Health & Armor Refill", "Health\t\t"grey"[$5,000]\nArmor\t\t"grey"[$2,500]", "Select", "Cancel");
 		}
-	    case GANG_SET_RANK_DIALOG:
+	    case DIALOG_GANG_SET_RANK:
 	    {
 	        switch(PlayerData[playerid][e_gangrank])
 	        {
-	            case GANG_POS_LEADER: ShowPlayerDialog(playerid, GANG_SET_RANK_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Gang Rank Menu", ""grey"Select a rank below:\nJunior Member\nMember\nSenior Member\nAdvisor", "Next", "Cancel");
-	            case GANG_POS_CO_FOUNDER: ShowPlayerDialog(playerid, GANG_SET_RANK_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Gang Rank Menu", ""grey"Select a rank below:\nJunior Member\nMember\nSenior Member\nAdvisor\nLeader", "Next", "Cancel");
-	            case GANG_POS_FOUNDER: ShowPlayerDialog(playerid, GANG_SET_RANK_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Gang Rank Menu", ""grey"Select a rank below:\nJunior Member\nMember\nSenior Member\nAdvisor\nLeader\nCo-Founder", "Next", "Cancel");
+	            case GANG_POS_LEADER: ShowPlayerDialog(playerid, DIALOG_GANG_SET_RANK, DIALOG_STYLE_LIST, ""nef" :: Gang Rank Menu", ""grey"Select a rank below:\nJunior Member\nMember\nSenior Member\nAdvisor", "Next", "Cancel");
+	            case GANG_POS_CO_FOUNDER: ShowPlayerDialog(playerid, DIALOG_GANG_SET_RANK, DIALOG_STYLE_LIST, ""nef" :: Gang Rank Menu", ""grey"Select a rank below:\nJunior Member\nMember\nSenior Member\nAdvisor\nLeader", "Next", "Cancel");
+	            case GANG_POS_FOUNDER: ShowPlayerDialog(playerid, DIALOG_GANG_SET_RANK, DIALOG_STYLE_LIST, ""nef" :: Gang Rank Menu", ""grey"Select a rank below:\nJunior Member\nMember\nSenior Member\nAdvisor\nLeader\nCo-Founder", "Next", "Cancel");
 	        }
 		}
-	    case CLOSE_GANG_DIALOG:
+	    case DIALOG_GANG_CLOSE:
 	    {
-	        ShowPlayerDialog(playerid, CLOSE_GANG_DIALOG, DIALOG_STYLE_MSGBOX, ""nef" :: Close Gang", ""white"If you want to destroy your gang right click\non 'Close' else 'Cancel'", "Close", "Cancel");
+	        ShowPlayerDialog(playerid, DIALOG_GANG_CLOSE, DIALOG_STYLE_MSGBOX, ""nef" :: Close Gang", ""white"If you want to destroy your gang right click\non 'Close' else 'Cancel'", "Close", "Cancel");
 	    }
-	    case GANG_KICK_DIALOG:
+	    case DIALOG_GANG_KICK:
 	    {
-	        ShowPlayerDialog(playerid, GANG_KICK_DIALOG, DIALOG_STYLE_INPUT, ""nef" :: Gang Kick Menu", ""white"Enter the "nef_yellow"exact "white"name the of the player you want to kick out of your gang:", "Kick", "Cancel");
+	        ShowPlayerDialog(playerid, DIALOG_GANG_KICK, DIALOG_STYLE_INPUT, ""nef" :: Gang Kick Menu", ""white"Enter the "nef_yellow"exact "white"name the of the player you want to kick out of your gang:", "Kick", "Cancel");
 	    }
-	    case SETTINGS_DIALOG:
+	    case DIALOG_SETTINGS:
 	    {
-	    	ShowPlayerDialog(playerid, SETTINGS_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Settings", GetPlayerSettings(playerid), "Select", "Cancel");
+	    	ShowPlayerDialog(playerid, DIALOG_SETTINGS, DIALOG_STYLE_LIST, ""nef" :: Settings", GetPlayerSettings(playerid), "Select", "Cancel");
 	    }
-	    case HELP_DIALOG:
+	    case DIALOG_HELP:
 	    {
 	        new str[400];
 	        strcat(str, "General Help\nCommands\nShortcuts\nMinigames\nMaps\nSettings\n");
 	        strcat(str, "How do I earn money and score?\nWhat can I do on this server?\nHow do I get Gold Credits?\nHow do I get VIP?\n"grey"ServerIP: "SERVER_IP"");
-	        ShowPlayerDialog(playerid, HELP_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Help", str, "OK", "");
+	        ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_LIST, ""nef" :: Help", str, "OK", "");
 	    }
-	    case CMDS_DIALOG:
+	    case DIALOG_COMMANDS:
 	    {
-        	ShowPlayerDialog(playerid, CMDS_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Commands", "General\nAccount\nGang\nHouse/Business\nCustom cars\nOther\nVIP\nGold Credits", "Select", "Cancel");
+        	ShowPlayerDialog(playerid, DIALOG_COMMANDS, DIALOG_STYLE_LIST, ""nef" :: Commands", "General\nAccount\nGang\nHouse/Business\nCustom cars\nOther\nVIP\nGold Credits", "Select", "Cancel");
 		}
-	    case HOUSE_UPGRADE_DIALOG:
+	    case DIALOG_HOUSE_UPGRADE:
 	    {
 	        new string[512];
 
@@ -27849,27 +27837,27 @@ function:ShowDialog(playerid, dialogid)
 			format(gstr, sizeof(gstr), "\nLuxury House\nStrip Club\nEntire Motel\nSmall Villa\nBig Villa\nMadd Doggs Mansion\nSweets House");
 			strcat(string, gstr);
 
-	        ShowPlayerDialog(playerid, HOUSE_UPGRADE_DIALOG, DIALOG_STYLE_LIST, ""nef" :: House Upgrade", string, "Select", "Cancel");
+	        ShowPlayerDialog(playerid, DIALOG_HOUSE_UPGRADE, DIALOG_STYLE_LIST, ""nef" :: House Upgrade", string, "Select", "Cancel");
 	    }
-		case STREAM_DIALOG:
+		case DIALOG_STREAM_RADIO:
 		{
-			ShowPlayerDialog(playerid, STREAM_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Audio Streams", "Electro\nMetal\nPop\nHip Hop\nRap\nMainstream/Rock\nOldies\nDubstep\n"grey"Your own stream", "Select", "Stop stream");
+			ShowPlayerDialog(playerid, DIALOG_STREAM_RADIO, DIALOG_STYLE_LIST, ""nef" :: Audio Streams", "Electro\nMetal\nPop\nHip Hop\nRap\nMainstream/Rock\nOldies\nDubstep\n"grey"Your own stream", "Select", "Stop stream");
 		}
-		case VEHICLE_PLATE_DIALOG:
+		case DIALOG_VEHICLE_PLATE:
   		{
-			ShowPlayerDialog(playerid, VEHICLE_PLATE_DIALOG, DIALOG_STYLE_INPUT, ""nef" :: Custom car shop", ""white"Please enter something for your number plate:\nYou can change it later.\nLength: 2 - 12 characters", "Next", "Back");
+			ShowPlayerDialog(playerid, DIALOG_VEHICLE_PLATE, DIALOG_STYLE_INPUT, ""nef" :: Custom car shop", ""white"Please enter something for your number plate:\nYou can change it later.\nLength: 2 - 12 characters", "Next", "Back");
   		}
-		case NEON_DIALOG:
+		case DIALOG_NEON:
 		{
 			format(gstr, sizeof(gstr), ""nef" :: Custom car menu > Slot: %i > Neon Menu", PVVMenuSel[playerid] + 1);
-		    ShowPlayerDialog(playerid, NEON_DIALOG, DIALOG_STYLE_LIST, gstr, "Red\nGreen\nBlue\nYellow\nWhite\nPink\n"grey"Remove", "Select", "Back");
+		    ShowPlayerDialog(playerid, DIALOG_NEON, DIALOG_STYLE_LIST, gstr, "Red\nGreen\nBlue\nYellow\nWhite\nPink\n"grey"Remove", "Select", "Back");
 		}
-		case CUSTOM_PLATE_DIALOG:
+		case DIALOG_CUSTOM_PLATE:
 		{
 			format(gstr, sizeof(gstr), ""nef" :: Custom car menu > Slot: %i > Plate", PVVMenuSel[playerid] + 1);
-		    ShowPlayerDialog(playerid, CUSTOM_PLATE_DIALOG, DIALOG_STYLE_INPUT, gstr, ""white"Please enter something for your number plate:\nLength: 2 - 12 characters", "Change", "Back");
+		    ShowPlayerDialog(playerid, DIALOG_CUSTOM_PLATE, DIALOG_STYLE_INPUT, gstr, ""white"Please enter something for your number plate:\nLength: 2 - 12 characters", "Change", "Back");
 		}
-		case VEHICLE_DIALOG:
+		case DIALOG_VEHICLE:
 		{
 			new string[512],
 				finstring[1024];
@@ -27877,13 +27865,13 @@ function:ShowDialog(playerid, dialogid)
 			format(finstring, sizeof(finstring), ""yellow_e"VIP Vehicles\nAirplanes\nHelicopters\nBikes\nConvertibles\nIndustrial\nLowriders\nOff Road\nPublic Service Vehicles\nSaloons\n");
 			format(string, sizeof(string), "Sport Vehicles\nStation Wagons\nBoats\nTrailers\nUnique Vehicles\nRC Vehicles");
 			strcat(finstring, string, sizeof(string));
-			ShowPlayerDialog(playerid, VEHICLE_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Vehicle Menu", finstring, "Select", "Cancel");
+			ShowPlayerDialog(playerid, DIALOG_VEHICLE, DIALOG_STYLE_LIST, ""nef" :: Vehicle Menu", finstring, "Select", "Cancel");
 		}
-		case TELE_DIALOG:
+		case DIALOG_TELEPORT:
 		{
-		    ShowPlayerDialog(playerid, TELE_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Teleports", "Stunt Zones\nJumps\nFun Maps\nChallenges/Parkours\nSpecials\nHotspots\nDrifts\nTune Shops\nCities", "Select", "Cancel");
+		    ShowPlayerDialog(playerid, DIALOG_TELEPORT, DIALOG_STYLE_LIST, ""nef" :: Teleports", "Stunt Zones\nJumps\nFun Maps\nChallenges/Parkours\nSpecials\nHotspots\nDrifts\nTune Shops\nCities", "Select", "Cancel");
 		}
-		case VMENU_DIALOG:
+		case DIALOG_VMENU:
 		{
 		    new string[1024], tmp[128];
 		    
@@ -27909,17 +27897,17 @@ function:ShowDialog(playerid, dialogid)
 				}
 		    }
 		    
-			ShowPlayerDialog(playerid, VMENU_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Your custom cars", string, "Select", "Cancel");
+			ShowPlayerDialog(playerid, DIALOG_VMENU, DIALOG_STYLE_LIST, ""nef" :: Your custom cars", string, "Select", "Cancel");
 		}
-		case WEAPON_DIALOG:
+		case DIALOG_WEAPON:
 		{
-			ShowPlayerDialog(playerid, WEAPON_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Weapons", "Rifles\nSubmachine Guns\nShot Guns\nHand Guns\nMelee Weapons\nSpecial Weapons", "Select", "Cancel");
+			ShowPlayerDialog(playerid, DIALOG_WEAPON, DIALOG_STYLE_LIST, ""nef" :: Weapons", "Rifles\nSubmachine Guns\nShot Guns\nHand Guns\nMelee Weapons\nSpecial Weapons", "Select", "Cancel");
 		}
-		case CARBUY_DIALOG:
+		case DIALOG_CAR_SHOP:
 		{
-  			ShowPlayerDialog(playerid, CARBUY_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Custom car shop", g_sCustomCarCategory, "Select", "Cancel");
+  			ShowPlayerDialog(playerid, DIALOG_CAR_SHOP, DIALOG_STYLE_LIST, ""nef" :: Custom car shop", g_sCustomCarCategory, "Select", "Cancel");
 		}
-		case GMENU_DIALOG:
+		case DIALOG_GANG_MENU:
 		{
 		    format(gstr, sizeof(gstr), ""grey"[%s] %s "white"- Gang Menu", PlayerData[playerid][GangTag], PlayerData[playerid][GangName]);
 		
@@ -27927,29 +27915,29 @@ function:ShowDialog(playerid, dialogid)
 			{
 			    case GANG_POS_JUNIOR_MEMBER, GANG_POS_MEMBER, GANG_POS_SENIOR_MEMBER, GANG_POS_ADVISOR:
 			    {
-			        ShowPlayerDialog(playerid, GMENU_DIALOG, DIALOG_STYLE_LIST, gstr, "Gang Info\nShow all gang members\nView all gang commands\nView gang zones", "Select", "Cancel");
+			        ShowPlayerDialog(playerid, DIALOG_GANG_MENU, DIALOG_STYLE_LIST, gstr, "Gang Info\nShow all gang members\nView all gang commands\nView gang zones", "Select", "Cancel");
 			    }
 			    case GANG_POS_LEADER:
 			    {
-			        ShowPlayerDialog(playerid, GMENU_DIALOG, DIALOG_STYLE_LIST, gstr, "Gang Info\nShow all gang members\nView All gang commands\nView gang zones\nSet Player Rank", "Select", "Cancel");
+			        ShowPlayerDialog(playerid, DIALOG_GANG_MENU, DIALOG_STYLE_LIST, gstr, "Gang Info\nShow all gang members\nView All gang commands\nView gang zones\nSet Player Rank", "Select", "Cancel");
 			    }
 			    case GANG_POS_CO_FOUNDER, GANG_POS_FOUNDER:
 			    {
-			    	ShowPlayerDialog(playerid, GMENU_DIALOG, DIALOG_STYLE_LIST, gstr, "Gang Info\nShow all gang members\nView All gang commands\nView gang zones\nSet Player Rank\nKick Player From Gang", "Select", "Cancel");
+			    	ShowPlayerDialog(playerid, DIALOG_GANG_MENU, DIALOG_STYLE_LIST, gstr, "Gang Info\nShow all gang members\nView All gang commands\nView gang zones\nSet Player Rank\nKick Player From Gang", "Select", "Cancel");
 			    }
 			}
 		}
-		case BGVOTING_DIALOG:
+		case DIALOG_TDM_VOTING:
 		{
-		    ShowPlayerDialog(playerid, BGVOTING_DIALOG, DIALOG_STYLE_LIST, ""nef" :: TDM Map Voting", "Forest\nQuarters\nRust\nItaly\nMedieval\nHangar War", "Vote", "");
+		    ShowPlayerDialog(playerid, DIALOG_TDM_VOTING, DIALOG_STYLE_LIST, ""nef" :: TDM Map Voting", "Forest\nQuarters\nRust\nItaly\nMedieval\nHangar War", "Vote", "");
 		}
-		case DERBY_VOTING_DIALOG:
+		case DIALOG_DERBY_VOTING:
 		{
-            ShowPlayerDialog(playerid, DERBY_VOTING_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Derby Map Voting", "SilverGround\nAnubis\nConfusing\nLighthouse\nTruncat\nSky Skiing\nTownhall\nGlazz\nRambo", "Vote", "");
+            ShowPlayerDialog(playerid, DIALOG_DERBY_VOTING, DIALOG_STYLE_LIST, ""nef" :: Derby Map Voting", "SilverGround\nAnubis\nConfusing\nLighthouse\nTruncat\nSky Skiing\nTownhall\nGlazz\nRambo", "Vote", "");
 		}
-		case BANK_DIALOG:
+		case DIALOG_BANK:
 		{
-		    ShowPlayerDialog(playerid, BANK_DIALOG, DIALOG_STYLE_LIST, ""nef" :: Bank Menu", "Deposit\nWithdraw\nShow Credit", "Select", "Cancel");
+		    ShowPlayerDialog(playerid, DIALOG_BANK, DIALOG_STYLE_LIST, ""nef" :: Bank Menu", "Deposit\nWithdraw\nShow Credit", "Select", "Cancel");
 		}
 	}
 	return 1;
@@ -29074,7 +29062,7 @@ GetHouseIdByPlayerSlotSel(playerid)
 GetBusinessSlotBySelection(playerid)
 {
 	new idx = 0;
-	for(new r = 0; r < MAX_BUSINESSES; r++)
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
         if(!strcmp(BusinessData[r][e_owner], __GetName(playerid), true) && BusinessData[r][e_sold] == 1)
         {
@@ -29646,7 +29634,7 @@ function:player_medkit_charge(playerid)
 GetPlayerBusinessEarnings(playerid)
 {
 	new __int32 = 0;
-	for(new r = 0; r < MAX_BUSINESSES; r++)
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
 	    if(strcmp(BusinessData[r][e_owner], __GetName(playerid), true)) continue;
 	    

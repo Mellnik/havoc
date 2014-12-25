@@ -5,7 +5,7 @@ Havoc Freeroam SA-MP Server
 -------------------
 - Businesses have been renamed to Enterprises.
 - Better unixtime conversion.
-
+- Dialog cleanups.
 
 TODO
 ----
