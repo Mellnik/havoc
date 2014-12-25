@@ -9642,7 +9642,7 @@ YCMD:adminhelp(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] >= 1)
 	{
-	    new string[1500];
+	    new string[1024];
 
 		format(gstr, sizeof(gstr), ""white"%s\n", g_szStaffLevelNames[1][e_rank]);
 		strcat(string, gstr);
@@ -9658,7 +9658,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/unban /oban /sethealth /healall /announce /armorall /cashfall\n/scorefall /announce2\n\n");
+		strcat(string, "/unban /oban /sethealth /healall /armorall /cashfall /scorefall\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
@@ -10817,58 +10817,6 @@ YCMD:asay(playerid, params[], help)
 
 		format(gstr, sizeof(gstr), ""yellow"** "red"Admin %s(%i): %s", __GetName(playerid), playerid, text);
 		SCMToAll(-1, gstr);
-	}
-	else
-	{
-		SCM(playerid, -1, NO_PERM);
-	}
-	return 1;
-}
-
-YCMD:announce(playerid, params[], help)
-{
-    if(PlayerData[playerid][e_level] >= 4 || IsPlayerAdmin(playerid))
-	{
-	    extract params -> new string:text[144]; else
-	    {
-	        return SCM(playerid, NEF_GREEN, "Usage: /announce <message>");
-	    }
-	    
-	    if(strfind(text, "~", true) != -1) return SCM(playerid, -1, ""er"'~' is not allowed in announce.");
-	    if(strfind(text, "#", true) != -1) return SCM(playerid, -1, ""er"'#' is not allowed in announce.");
-	    if(strfind(text, "%", true) != -1) return SCM(playerid, -1, ""er"'%' is not allowed in announce.");
-	    if(strlen(text) > 50 || strlen(text) < 1) return SCM(playerid, -1, ""er"Length 1-50");
-
-		format(gstr, sizeof(gstr), "%s", text);
-		GameTextForAll(gstr, 4000, 3);
-    }
-	else
-	{
-		SCM(playerid, -1, NO_PERM);
-	}
-	return 1;
-}
-
-YCMD:announce2(playerid, params[], help)
-{
-    if(PlayerData[playerid][e_level] >= 4 || IsPlayerAdmin(playerid))
-	{
-	    extract params -> new string:text[144]; else
-	    {
-	        return SCM(playerid, NEF_GREEN, "Usage: /announce2 <message>");
-	    }
-
-	    if(strlen(text) > 144 || strlen(text) < 1) return SCM(playerid, -1, ""er"Length 1-50");
-
-		format(gstr, sizeof(gstr), ""white"Admin %s(%i):\n\n %s", __GetName(playerid), playerid, text);
-
-		for(new i = 0; i < MAX_PLAYERS; i++)
-		{
-		    if(IsPlayerAvail(i) && gTeam[i] != BUYCAR)
-		    {
-				ShowPlayerDialog(i, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Announcement", gstr, "OK", "");
-			}
-		}
 	}
 	else
 	{
