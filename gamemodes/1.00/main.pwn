@@ -15885,7 +15885,7 @@ YCMD:hmenu(playerid, params[], help)
 	return 1;
 }
 
-YCMD:bmenu(playerid, params[], help)
+YCMD:emenu(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
     
@@ -17667,7 +17667,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				if(r != -1) {
 		            if(EnterpriseData[r][e_level] >= MAX_ENTERPRISE_LEVEL)
 		            {
-						Command_ReProcess(playerid, "/bmenu", false);
+						Command_ReProcess(playerid, "/emenu", false);
 						return 1;
 		            }
                 
@@ -19159,7 +19159,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            case 3: // House/Enterprises
 		            {
 						strcat(cstring, ""yellow"/hmenu "white"- house menu\n");
-						strcat(cstring, ""yellow"/bmenu "white"- enterprise menu\n");
+						strcat(cstring, ""yellow"/emenu "white"- enterprise menu\n");
 		                strcat(cstring, ""yellow"/upgrade "white"- upgrade your house interior\n");
 						strcat(cstring, ""yellow"/enter "white"- enter a unlocked house\n");
 						strcat(cstring, ""yellow"/buy "white"- buy a house\n");
@@ -23235,9 +23235,9 @@ server_initialize()
 	Command_AddAltNamed("stopanims", "stopanimations");
 	Command_AddAltNamed("stopanims", "clearanim");
 	Command_AddAltNamed("stopanims", "clearanims");
-	Command_AddAltNamed("bmenu", "gotomybizz");
+	Command_AddAltNamed("emenu", "gotomybizz");
 	Command_AddAltNamed("credits", "secredits");
-	Command_AddAltNamed("bmenu", "gotomyenterprise");
+	Command_AddAltNamed("emenu", "gotomyenterprise");
     Command_AddAltNamed("mk", "medkit");
     Command_AddAltNamed("mk", "medkits");
     Command_AddAltNamed("toys", "wear");
@@ -23296,7 +23296,7 @@ server_initialize()
 	Command_AddAltNamed("spawn", "kill");
 	Command_AddAltNamed("announce", "ann");
 	Command_AddAltNamed("announce2", "ann2");
-	Command_AddAltNamed("bmenu", "gotomybizz");
+	Command_AddAltNamed("emenu", "gotomybizz");
 	Command_AddAltNamed("go", "goto");
 	Command_AddAltNamed("slap", "throw");
 	Command_AddAltNamed("giveweapon", "givegun");
