@@ -275,17 +275,19 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 // Enterprises
 #define MAX_ENTERPRISES                 (700)
 #define MAX_ENTERPRISE_LEVEL            (20)
-#define MAX_PLAYER_ENTERPRISES           (5)
+#define MAX_PLAYER_ENTERPRISES          (5)
 
 // Misc
 #define REAC_TIME              			(900000)
+#define MAX_STORES                      (80)
+#define MAX_STORE_NAME                  (24)
+
 #define MAX_BANKS    			 		20
 #define MAX_AMMUNATIONS    		 		20
 #define MAX_BURGERSHOTS    		 		20
 #define MAX_CLUCKINBELLS    	 		20
 #define MAX_PIZZASTACKS 		 		20
 #define MAX_TFS                         20
-#define MAX_STORES 						(MAX_BANKS + MAX_AMMUNATIONS + MAX_BURGERSHOTS + MAX_CLUCKINBELLS + MAX_PIZZASTACKS + MAX_TFS)
 #define COUNT_DOWN_TILL_RACE_START 		(21)
 #define MAX_RACE_TIME 					(300)
 #define RACE_MAX_CHECKPOINTS            (75)
@@ -1008,6 +1010,16 @@ enum E_HOUSE_DATA
 	date
 };
 
+enum E_STORE_TYPE
+{
+	STORE_TYPE_AMMUNATION,
+	STORE_TYPE_BANK,
+	STORE_TYPE_BURGERSHOT,
+	STORE_TYPE_CLUCKINBELLS,
+	STORE_TYPE_247,
+	STORE_TYPE_STACKEDPIZZAS
+};
+
 enum E_ENT_TYPE
 {
     ENT_TYPE_LOANSHARK,
@@ -1038,11 +1050,26 @@ enum E_ENT_DATA
 	e_pickup_id
 };
 
-enum e_buss_matrix
+enum e_ent_matrix
 {
 	E_blevel,
 	E_bupgradeprice,
 	E_bearnings
+};
+
+enum E_STORE_DATA
+{
+	/* ORM */
+	ORM:e_ormid,
+	
+	/* DATA */
+	e_id,
+	E_STORE_TYPE:e_type,
+	e_name[MAX_STORE_NAME + 1],
+	Float:e_pick[3],
+	Float:e_spawn[4],
+	e_date,
+	e_creator
 };
 
 enum e_house_type
@@ -1862,7 +1889,7 @@ static const g_szCustomCarCategories[11][] =
  	/*10*/{"Aircraft"}
 };
 
-static const g_aEnterpriseLevelMatrix[21][e_buss_matrix] =
+static const g_aEnterpriseLevelMatrix[21][e_ent_matrix] =
 {
 	{1, 0, 1000},
 	{2, 5000, 1250},
@@ -2845,6 +2872,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	HouseData[MAX_HOUSES][E_HOUSE_DATA],
   	GZoneData[MAX_GZONES][E_GZONE_DATA],
   	EnterpriseData[MAX_ENTERPRISES][E_ENT_DATA],
+  	StoreData[MAX_STORES][E_STORE_DATA],
   	PVSelect[MAX_PLAYERS],
 	PVCatSel[MAX_PLAYERS],
 	PVVMenuSel[MAX_PLAYERS],
@@ -2943,6 +2971,7 @@ public OnGameModeInit()
     race_fetch_data();
 	LoadStores();
 	LoadGZones();
+	LoadStores();
 	LoadHouses();
 	LoadEnterpises();
 	SollIchDirMaEtWatSagen();
@@ -20790,6 +20819,36 @@ function:OnHouseLoad()
 	return 1;
 }
 
+function:OnStoreLoad()
+{
+	new rows = cache_get_row_count();
+
+	for(new r = 0; r < rows && r < MAX_STORES; r++)
+	{
+	    new ORM:ormid = StoreData[r][e_ormid] = orm_create("stores");
+
+	    orm_addvar_int(ormid, StoreData[r][e_id], "id");
+	    orm_addvar_int(ormid, _:StoreData[r][e_type], "type");
+	    orm_addvar_string(ormid, StoreData[r][e_name], MAX_STORE_NAME + 1, "name");
+	    orm_addvar_float(ormid, StoreData[r][e_pick][0], "xpick");
+	    orm_addvar_float(ormid, StoreData[r][e_pick][1], "ypick");
+	    orm_addvar_float(ormid, StoreData[r][e_pick][2], "zpick");
+	    orm_addvar_float(ormid, StoreData[r][e_spawn][0], "xspawn");
+	    orm_addvar_float(ormid, StoreData[r][e_spawn][1], "yspawn");
+	    orm_addvar_float(ormid, StoreData[r][e_spawn][2], "zspawn");
+	    orm_addvar_int(ormid, StoreData[r][e_date], "date");
+	    orm_addvar_int(ormid, StoreData[r][e_creator], "creator");
+
+	    orm_setkey(ormid, "id");
+		orm_apply_cache(ormid, r);
+
+		SetupEnterprise(r);
+	}
+
+	Log(LOG_INIT, "%i stores loaded in %i microseconds", rows, cache_get_query_exec_time(UNIT_MICROSECONDS));
+	return 1;
+}
+
 function:OnEnterpriseLoad()
 {
 	new rows = cache_get_row_count();
@@ -21026,6 +21085,12 @@ LoadGZones()
 {
     ResetGZones();
 	mysql_tquery(pSQL, "SELECT * FROM `gzones`;", "OnGangZoneLoad");
+	return 1;
+}
+
+LoadStores()
+{
+	mysql_pquery(pSQL, "SLECT * FROM `stores`", "OnStoreLoad");
 	return 1;
 }
 
