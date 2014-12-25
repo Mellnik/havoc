@@ -9,9 +9,13 @@ Havoc Freeroam SA-MP Server
 - /announce commands have been removed.
 - Removed bullet hit sound from deathmatches.
 - Added enterprise type: Bitcoin Mining Farm.
-- Renamed /bmenut to /emenu.
+- Renamed /bmenu to /emenu.
 - Renamed /specoff to /unspec.
-
+- Stores system has been rewritten. Stores now load and save from database.
+- Bans now include serverside information; Can be viewed at https://havocserver.com/bans
+- Account IDs rather than playernames are now being used for internal data handlers.
+- Players can now have an offical mapper status (/admins, /mappers)
+- Internal safetly handlers for score and money ranges.
 
 TODO
 ----
@@ -22,9 +26,7 @@ TODO
 - New, better UI.
 - Player bounties are now being saved in the database.
 - All races have been overhauled.
-- Stores are now being saved in the database.
 - Races are now being saved in the datatbase.
-- Bans now include serverside information; Can be viewed at https://havocserver.com/bans
 - House system has been fully rewritten.
 - Derby has been rewritten, new maps can now be added easily.
 - All file operations have been removed, everything is now in the Havoc database.

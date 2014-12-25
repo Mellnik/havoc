@@ -9,6 +9,8 @@
 || #################################################################### ||
 \*======================================================================*/
 
+// Nach TODO suchen wenn fertig
+
 /*
 || Build Dependencies:
 || SA-MP Server 0.3z-R4
@@ -121,7 +123,7 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define GANG_POS_CO_FOUNDER             (6)
 #define GANG_POS_FOUNDER            	(7)
 #define house_mark                      "{FFFFFF}[{88EE88}House{FFFFFF}]"
-#define enterprise_mark                   "{FFFFFF}[{AAAAFF}Enterprise{FFFFFF}]"
+#define enterprise_mark                 "{FFFFFF}[{AAAAFF}Enterprise{FFFFFF}]"
 #define gwars_mark                      "{FFFFFF}[{2DFF00}Gang Zone{FFFFFF}]"
 #define derby_sign                      "{FFFFFF}[{AAAAFF}DERBY{FFFFFF}]"
 #define race_sign                       "{FFFFFF}[{AAAAFF}RACE{FFFFFF}]"
@@ -281,7 +283,7 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define REAC_TIME              			(900000)
 #define MAX_STORES                      (80)
 #define MAX_STORE_NAME                  (24)
-#define COUNT_DOWN_TILL_RACE_START 		(21)
+#define RACE_COUNTDOWN 					(21)
 #define MAX_RACE_TIME 					(300)
 #define RACE_MAX_CHECKPOINTS            (75)
 #define RACE_MAX_PLAYERS 				(12)
@@ -2721,7 +2723,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	g_RaceArray[e_race_data],
 	g_RaceStatus = RaceStatus_Inactive,
 	g_RaceCount = 0,
-	g_RaceCountDown = COUNT_DOWN_TILL_RACE_START,
+	g_RaceCountDown = RACE_COUNTDOWN,
 	g_RacePlayerCount = 0,
 	g_RaceSpawnCount = 0,
 	g_tRaceCounter = -1,
@@ -12401,7 +12403,7 @@ YCMD:tban(playerid, params[], help)
 			    new amsg[144];
 			    if(!islogged(player)) return SCM(playerid, -1, ""er"Player is not registered");
 			    
-			    SQL_BanAccount(__GetName(player), __GetName(playerid), reason, gettime() + (time * 60));
+			    SQL_BanAccount(player, playerid, reason, gettime() + (time * 60));
 
 				format(gstr, sizeof(gstr), ""yellow"** "red"%s(%i) has been banned by Admin %s(%i) [Reason: %s] [Time: %i mins]", __GetName(player), player, __GetName(playerid), playerid, reason, time);
 				format(amsg, sizeof(amsg), "[ADMIN CHAT] "LG_E"Account banned of %s [EXPIRES: %s, REASON: %s]", __GetName(player), UTConvert(gettime() + (time * 60)), reason);
@@ -12485,7 +12487,7 @@ YCMD:ban(playerid, params[], help)
 			{
 			    new amsg[144];
 			    if(islogged(player)) { // Ban registered player
-                	SQL_BanAccount(__GetName(player), __GetName(playerid), reason);
+                	SQL_BanAccount(player, playerid, reason);
                     SQL_BanIP(__GetIP(player));
                     
                     format(gstr, sizeof(gstr), ""yellow"** "red"%s(%i) has been banned by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
@@ -21997,10 +21999,30 @@ SQL_UpdateAccount(playerid)
 	}
 }
 
-SQL_BanAccount(account[], admin[], reason[], lift = 0)
+SQL_BanAccount(playerid, adminid, reason[], lift = 0)
 {
-    mysql_format(pSQL, gstr2, sizeof(gstr2), "INSERT INTO `bans` VALUES (NULL, '%e', '%e', '%e', %i, UNIX_TIMESTAMP());", account, admin, reason, lift);
-    mysql_pquery(pSQL, gstr2);
+	new query[512], Float:fPOS[3], Float:ha[2];
+	GetPlayerPos(playerid, fPOS[0], fPOS[1], fPOS[2]);
+	GetPlayerHealth(playerid, h[0]);
+	GetPlayerArmour(playerid, h[1]);
+	
+	mysql_format(pSQL, query, sizeof(query), "INSERT INTO `bans` VALUES (%i, %i, '%e', %i, UNIX_TIMESTAMP(), %i, %f, %f, %f, %f, %i, %f, %f, %i, %i, %b);",
+	    PlayerData[playerid][e_accountid],
+		PlayerData[adminid][e_accountid],
+	    reason,
+	    lift,
+	    GetPlayerPing(playerid),
+	    fPOS[0],
+	    fPOS[1],
+	    fPOS[2],
+	    NetStats_PacketLossPercent(playerid),
+	    GetPlayerState(playerid),
+	    ha[0],
+	    ha[1],
+	    PlayerData[playerid][bGod],
+	    GetPlayerWeapon(playerid),
+	    PlayerData[playerid][bwSuspect]);
+	mysql_tquery(pSQL, query);
 }
 
 SQL_SaveHouse(house, bool:save_items = false)
@@ -29539,7 +29561,7 @@ function:OnOfflineBanAttempt2(playerid, ban[], reason[])
 		
 		cache_delete(cache);
 
-		SQL_BanAccount(ban, __GetName(playerid), reason);
+		//SQL_BanAccount(ban, __GetName(playerid), reason); TODO
 		
 		format(gstr, sizeof(gstr), "[ADMIN CHAT] "LG_E"Account and IP (o)banned of %s [EXPIRES: NEVER, REASON: %s] by %s", ban, reason, __GetName(playerid));
 		admin_broadcast(COLOR_RED, gstr);
@@ -29662,7 +29684,7 @@ race_prepare()
     g_rPosition = 0;
 	g_RaceTime = MAX_RACE_TIME;
 	g_RacePlayerCount = 0;
-	g_RaceCountDown = COUNT_DOWN_TILL_RACE_START;
+	g_RaceCountDown = RACE_COUNTDOWN;
 	g_RaceStatus = RaceStatus_StandBy;
 	return 1;
 }
