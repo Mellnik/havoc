@@ -7,6 +7,7 @@ Havoc Freeroam SA-MP Server
 - Better unixtime conversion.
 - Dialog cleanups.
 - /announce commands have been removed.
+- Removed bullet hit sound from deathmatches.
 
 TODO
 ----
@@ -23,7 +24,6 @@ TODO
 - House system has been fully rewritten.
 - Derby has been rewritten, new maps can now be added easily.
 - All file operations have been removed, everything is now in the Havoc database.
-- Removed bullet hit sound from deathmatches.
 - Added admin command to reset houses/enterprises which are being owned by banned players.
 - CnR has been rewritten:
 - Top gangs are now being reset automatically all 7 days.

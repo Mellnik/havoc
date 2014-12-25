@@ -40,8 +40,8 @@
 #pragma dynamic 8192        // for md-sort
 
 #define IS_RELEASE_BUILD (true)
-#define INC_ENVIRONMENT (true)
-#define WINTER_EDITION (true) // Requires FS ferriswheelfair.amx
+#define INC_ENVIRONMENT (false)
+#define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
 #define YSI_IS_SERVER
 
@@ -562,11 +562,11 @@ enum
 {
 	gNONE,
 	gFREEROAM,
-	DERBY,
+	gDERBY,
  	gRACE,
-	gBG_TEAM1,
-	gBG_TEAM2,
-	gBG_VOTING,
+	gTDM_TEAM1,
+	gTDM_TEAM2,
+	gTDM_VOTING,
 	MINIGUN,
 	MINIGUN2,
 	SNIPER,
@@ -3171,7 +3171,7 @@ public OnPlayerSpawn(playerid)
 
 			if(GetPVarInt(playerid, "HadGod") == 1) Command_ReProcess(playerid, "/god silent", false);
         }
-		case DERBY:
+		case gDERBY:
 		{
 		    SetTimerEx("SetPlayerDerbyStaticMeshes", 10, 0, "i", playerid);
 		}
@@ -3245,11 +3245,11 @@ public OnPlayerSpawn(playerid)
 			SetPlayerPos(playerid, DM_MAP_1[rand][0], DM_MAP_1[rand][1], DM_MAP_1[rand][2]);
 			SetPlayerFacingAngle(playerid, DM_MAP_1[rand][3]);
 		}
-		case gBG_VOTING:
+		case gTDM_VOTING:
 		{
 		    SetPlayerBGStaticMeshes(playerid);
 		}
-		case gBG_TEAM1:
+		case gTDM_TEAM1:
 		{
 		    SetPlayerBGTeam1(playerid);
 
@@ -3257,7 +3257,7 @@ public OnPlayerSpawn(playerid)
 		    RandomBGSpawn(playerid, CurrentBGMap, BG_TEAM1);
 		    SetPlayerHealth(playerid, 100.0);
 		}
-		case gBG_TEAM2:
+		case gTDM_TEAM2:
 		{
             SetPlayerBGTeam2(playerid);
 
@@ -3688,11 +3688,11 @@ public OnPlayerDisconnect(playerid, reason)
 			    Streamer_ToggleItemUpdate(playerid, STREAMER_TYPE_3D_TEXT_LABEL, 1);
 			    Streamer_Update(playerid);
 			}
-		    case gBG_TEAM1:
+		    case gTDM_TEAM1:
 		    {
 			    BGTeam1Players--;
 		    }
-		    case gBG_TEAM2:
+		    case gTDM_TEAM2:
 		    {
 			    BGTeam2Players--;
 		    }
@@ -3730,7 +3730,7 @@ public OnPlayerDisconnect(playerid, reason)
 					fallout_cancel();
 				}
 			}
-			case DERBY:
+			case gDERBY:
 			{
 			    // OnPlayerDisconnect
 			    if(PlayerData[playerid][t3dDerbyVehicleLabel] != PlayerText3D:-1)
@@ -4174,7 +4174,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 	}
 
 	/* TDM RPG ABUSE */
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2) {
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2) {
 		if(weaponid == 35) {
 		    GivePlayerWeapon(playerid, 37, 1);
 		    GivePlayerWeapon(playerid, 35, 0);
@@ -4713,7 +4713,7 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 		Log(LOG_NET, "Invalid data in OnPlayerExitVehicle(%i, %i)", playerid, vehicleid);
 	}	
 
-	if(gTeam[playerid] == DERBY || gTeam[playerid] == gRACE)
+	if(gTeam[playerid] == gDERBY || gTeam[playerid] == gRACE)
 	{
 	    if(ExitPlayer(playerid) == 0)
 	    {
@@ -5277,7 +5277,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 			ResetPlayerWorld(playerid);
 	    }
-		case DERBY:
+		case gDERBY:
 		{
 		    // OPDeath
 		    if(PlayerData[playerid][bDerbyAFK])
@@ -5373,18 +5373,18 @@ public OnPlayerDeath(playerid, killerid, reason)
 				GivePlayerMoneyEx(killerid, 2000, true, true);
 		    }
 		}
-		case gBG_TEAM1:
+		case gTDM_TEAM1:
 		{
-  		    if(IsPlayerAvail(killerid) && gTeam[killerid] == gBG_TEAM2)
+  		    if(IsPlayerAvail(killerid) && gTeam[killerid] == gTDM_TEAM2)
 		    {
 		        BGTeam2Kills++;
 		        GivePlayerScoreEx(killerid, 1, true, true);
 				GivePlayerMoneyEx(killerid, 2500, true, true);
 		    }
 		}
-		case gBG_TEAM2:
+		case gTDM_TEAM2:
 		{
-  		    if(IsPlayerAvail(killerid) && gTeam[killerid] == gBG_TEAM1)
+  		    if(IsPlayerAvail(killerid) && gTeam[killerid] == gTDM_TEAM1)
 		    {
 		        BGTeam1Kills++;
 		        GivePlayerScoreEx(killerid, 1, true, true);
@@ -6753,7 +6753,7 @@ public OnVehicleDamageStatusUpdate(vehicleid, playerid)
 		RepairVehicle(vehicleid);
 		return 1;
 	}
-	else if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER && gTeam[playerid] == DERBY)
+	else if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER && gTeam[playerid] == gDERBY)
 	{
 		new Float:HP,
 			vehicle = GetPlayerVehicleID(playerid);
@@ -6849,7 +6849,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		PlayerData[playerid][tTDhandle] = SetTimerEx("player_hide_vehicle_td", 3000, false, "i", playerid);
 	}
 	
-    if(gTeam[playerid] == DERBY)
+    if(gTeam[playerid] == gDERBY)
 	{
 		if(newstate == PLAYER_STATE_DRIVER)
 		{
@@ -8114,7 +8114,7 @@ YCMD:derby(playerid, params[], help)
 	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
-    if(gTeam[playerid] == DERBY) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gDERBY) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 	
 	if(CurrentDerbyPlayers == MAX_DERBY_PLAYERS) return SCM(playerid, -1, ""er"Derby reached it's max Players!");
@@ -8122,7 +8122,7 @@ YCMD:derby(playerid, params[], help)
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
     ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-    gTeam[playerid] = DERBY;
+    gTeam[playerid] = gDERBY;
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 	ClearAnimations(playerid);
 
@@ -8511,7 +8511,7 @@ YCMD:parch(playerid, params[], help)
 
 YCMD:colors(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8540,7 +8540,7 @@ YCMD:colors(playerid, params[], help)
 
 YCMD:random(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8553,7 +8553,7 @@ YCMD:random(playerid, params[], help)
 
 YCMD:red(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8564,7 +8564,7 @@ YCMD:red(playerid, params[], help)
 
 YCMD:yellow(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8575,7 +8575,7 @@ YCMD:yellow(playerid, params[], help)
 
 YCMD:grey(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8586,7 +8586,7 @@ YCMD:grey(playerid, params[], help)
 
 YCMD:pink(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8597,7 +8597,7 @@ YCMD:pink(playerid, params[], help)
 
 YCMD:blue(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8608,7 +8608,7 @@ YCMD:blue(playerid, params[], help)
 
 YCMD:green(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8619,7 +8619,7 @@ YCMD:green(playerid, params[], help)
 
 YCMD:white(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8630,7 +8630,7 @@ YCMD:white(playerid, params[], help)
 
 YCMD:orange(playerid, params[], help)
 {
-	if(gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2 || gTeam[playerid] == gBG_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -9430,7 +9430,7 @@ YCMD:tdm(playerid, params[], help)
 	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
-    if(gTeam[playerid] == gBG_VOTING || gTeam[playerid] == gBG_TEAM1 || gTeam[playerid] == gBG_TEAM2) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 	
     CheckPlayerGod(playerid);
@@ -9442,7 +9442,7 @@ YCMD:tdm(playerid, params[], help)
 	if(CurrentBGMap == BG_VOTING)
 	{
 	    SetPlayerBGStaticMeshes(playerid);
-		gTeam[playerid] = gBG_VOTING;
+		gTeam[playerid] = gTDM_VOTING;
 		ShowDialog(playerid, DIALOG_TDM_VOTING);
 		ShowPlayerBGTextdraws(playerid);
 	}
@@ -9455,21 +9455,21 @@ YCMD:tdm(playerid, params[], help)
 	    	RandomBGSpawn(playerid, BG_MAP1, BG_TEAM2);
 	    	BGTeam2Players++;
 	    	SetPlayerBGTeam2(playerid);
-	    	gTeam[playerid] = gBG_TEAM2;
+	    	gTeam[playerid] = gTDM_TEAM2;
 		}
 		else if(BGTeam1Players < BGTeam2Players)
 	    {
 	    	RandomBGSpawn(playerid, BG_MAP1, BG_TEAM1);
 	    	BGTeam1Players++;
 	    	SetPlayerBGTeam1(playerid);
-	    	gTeam[playerid] = gBG_TEAM1;
+	    	gTeam[playerid] = gTDM_TEAM1;
 		}
 		else
 		{
 		    RandomBGSpawn(playerid, BG_MAP1, BG_TEAM1);
 		    BGTeam1Players++;
 		    SetPlayerBGTeam1(playerid);
-		    gTeam[playerid] = gBG_TEAM1;
+		    gTeam[playerid] = gTDM_TEAM1;
 		}
 	}
 	else if(CurrentBGMap == BG_MAP2)
@@ -9485,21 +9485,21 @@ YCMD:tdm(playerid, params[], help)
 	    	RandomBGSpawn(playerid, BG_MAP2, BG_TEAM2);
 	    	BGTeam2Players++;
 	    	SetPlayerBGTeam2(playerid);
-	    	gTeam[playerid] = gBG_TEAM2;
+	    	gTeam[playerid] = gTDM_TEAM2;
 		}
 		else if(BGTeam1Players < BGTeam2Players)
 	    {
 	    	RandomBGSpawn(playerid, BG_MAP2, BG_TEAM1);
 	    	BGTeam1Players++;
 	    	SetPlayerBGTeam1(playerid);
-	    	gTeam[playerid] = gBG_TEAM1;
+	    	gTeam[playerid] = gTDM_TEAM1;
 		}
 		else
 		{
 		    RandomBGSpawn(playerid, BG_MAP2, BG_TEAM1);
 		    BGTeam1Players++;
 		    SetPlayerBGTeam1(playerid);
-		    gTeam[playerid] = gBG_TEAM1;
+		    gTeam[playerid] = gTDM_TEAM1;
 		}
 	}
 	else if(CurrentBGMap == BG_MAP3)
@@ -9515,21 +9515,21 @@ YCMD:tdm(playerid, params[], help)
 	    	RandomBGSpawn(playerid, BG_MAP3, BG_TEAM2);
 	    	BGTeam2Players++;
 	    	SetPlayerBGTeam2(playerid);
-	    	gTeam[playerid] = gBG_TEAM2;
+	    	gTeam[playerid] = gTDM_TEAM2;
 		}
 		else if(BGTeam1Players < BGTeam2Players)
 	    {
 	    	RandomBGSpawn(playerid, BG_MAP3, BG_TEAM1);
 	    	BGTeam1Players++;
 	    	SetPlayerBGTeam1(playerid);
-	    	gTeam[playerid] = gBG_TEAM1;
+	    	gTeam[playerid] = gTDM_TEAM1;
 		}
 		else
 		{
 		    RandomBGSpawn(playerid, BG_MAP3, BG_TEAM1);
 		    BGTeam1Players++;
 		    SetPlayerBGTeam1(playerid);
-		    gTeam[playerid] = gBG_TEAM1;
+		    gTeam[playerid] = gTDM_TEAM1;
 		}
 	}
 	else if(CurrentBGMap == BG_MAP4)
@@ -9545,21 +9545,21 @@ YCMD:tdm(playerid, params[], help)
 	    	RandomBGSpawn(playerid, BG_MAP4, BG_TEAM2);
 	    	BGTeam2Players++;
 	    	SetPlayerBGTeam2(playerid);
-	    	gTeam[playerid] = gBG_TEAM2;
+	    	gTeam[playerid] = gTDM_TEAM2;
 		}
 		else if(BGTeam1Players < BGTeam2Players)
 	    {
 	    	RandomBGSpawn(playerid, BG_MAP4, BG_TEAM1);
 	    	BGTeam1Players++;
 	    	SetPlayerBGTeam1(playerid);
-	    	gTeam[playerid] = gBG_TEAM1;
+	    	gTeam[playerid] = gTDM_TEAM1;
 		}
 		else
 		{
 		    RandomBGSpawn(playerid, BG_MAP4, BG_TEAM1);
 		    BGTeam1Players++;
 		    SetPlayerBGTeam1(playerid);
-		    gTeam[playerid] = gBG_TEAM1;
+		    gTeam[playerid] = gTDM_TEAM1;
 		}
 	}
 	else if(CurrentBGMap == BG_MAP5)
@@ -9575,21 +9575,21 @@ YCMD:tdm(playerid, params[], help)
 	    	RandomBGSpawn(playerid, BG_MAP5, BG_TEAM2);
 	    	BGTeam2Players++;
 	    	SetPlayerBGTeam2(playerid);
-	    	gTeam[playerid] = gBG_TEAM2;
+	    	gTeam[playerid] = gTDM_TEAM2;
 		}
 		else if(BGTeam1Players < BGTeam2Players)
 	    {
 	    	RandomBGSpawn(playerid, BG_MAP5, BG_TEAM1);
 	    	BGTeam1Players++;
 	    	SetPlayerBGTeam1(playerid);
-	    	gTeam[playerid] = gBG_TEAM1;
+	    	gTeam[playerid] = gTDM_TEAM1;
 		}
 		else
 		{
 		    RandomBGSpawn(playerid, BG_MAP5, BG_TEAM1);
 		    BGTeam1Players++;
 		    SetPlayerBGTeam1(playerid);
-		    gTeam[playerid] = gBG_TEAM1;
+		    gTeam[playerid] = gTDM_TEAM1;
 		}
 	}
 	else if(CurrentBGMap == BG_MAP6)
@@ -9605,21 +9605,21 @@ YCMD:tdm(playerid, params[], help)
 	    	RandomBGSpawn(playerid, BG_MAP6, BG_TEAM2);
 	    	BGTeam2Players++;
 	    	SetPlayerBGTeam2(playerid);
-	    	gTeam[playerid] = gBG_TEAM2;
+	    	gTeam[playerid] = gTDM_TEAM2;
 		}
 		else if(BGTeam1Players < BGTeam2Players)
 	    {
 	    	RandomBGSpawn(playerid, BG_MAP6, BG_TEAM1);
 	    	BGTeam1Players++;
 	    	SetPlayerBGTeam1(playerid);
-	    	gTeam[playerid] = gBG_TEAM1;
+	    	gTeam[playerid] = gTDM_TEAM1;
 		}
 		else
 		{
 		    RandomBGSpawn(playerid, BG_MAP6, BG_TEAM1);
 		    BGTeam1Players++;
 		    SetPlayerBGTeam1(playerid);
-		    gTeam[playerid] = gBG_TEAM1;
+		    gTeam[playerid] = gTDM_TEAM1;
 		}
 	}
 	
@@ -10565,9 +10565,9 @@ YCMD:burn(playerid, params[], help)
 			}
 		    switch(gTeam[otherid])
 		    {
-		        case DERBY, gRACE, BUYCAR, gBG_VOTING, GUNGAME, SPEC, JAIL: return SCM(playerid, -1, ""er"You can't use this command on that player now");
+		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, GUNGAME, SPEC, JAIL: return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    }
-			if(!PlayerData[otherid][bDerbyWinner] && gTeam[otherid] == DERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
+			if(!PlayerData[otherid][bDerbyWinner] && gTeam[otherid] == gDERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    
 		    new Float:POS[3];
 			GetPlayerPos(otherid, POS[0], POS[1], POS[2]);
@@ -12798,7 +12798,7 @@ YCMD:dplayers(playerid, params[], help)
 		new string[512], tmp[50];
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(IsPlayerAvail(i) && gTeam[i] == DERBY)
+		    if(IsPlayerAvail(i) && gTeam[i] == gDERBY)
 		    {
 				format(tmp, sizeof(tmp), "{%06x}(%i)%s\n", GetColorEx(i) >>> 8, i, __GetName(i));
 				strcat(string, tmp);
@@ -12970,9 +12970,9 @@ YCMD:slap(playerid, params[], help)
 		{
 		    switch(gTeam[player])
 		    {
-		        case DERBY, gRACE, BUYCAR, gBG_VOTING, GUNGAME, SPEC, JAIL, HOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
+		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, GUNGAME, SPEC, JAIL, HOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    }
-			if(!PlayerData[player][bDerbyWinner] && gTeam[player] == DERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
+			if(!PlayerData[player][bDerbyWinner] && gTeam[player] == gDERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
 
   			new Float:Health,
 			  	Float:POS[3];
@@ -21061,7 +21061,7 @@ function:BGVoting()
 		ClearBGVotes();
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == gBG_VOTING)
+ 			if(gTeam[i] == gTDM_VOTING)
    			{
 				ShowDialog(i, DIALOG_TDM_VOTING);
 			}
@@ -21096,7 +21096,7 @@ function:BGVoting()
 		ClearBGVotes();
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == gBG_VOTING)
+ 			if(gTeam[i] == gTDM_VOTING)
    			{
 				ShowDialog(i, DIALOG_TDM_VOTING);
 			}
@@ -21113,7 +21113,7 @@ function:BGVoting()
 
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == gBG_VOTING)
+		    if(gTeam[i] == gTDM_VOTING)
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
@@ -21125,14 +21125,14 @@ function:BGVoting()
 					RandomBGSpawn(i, BG_MAP1, BG_TEAM2);
 				    BGTeam2Players++;
 				    SetPlayerBGTeam2(i);
-				    gTeam[i] = gBG_TEAM2;
+				    gTeam[i] = gTDM_TEAM2;
 				}
 				else if(BGTeam1Players < BGTeam2Players)
 				{
 				  	RandomBGSpawn(i, BG_MAP1, BG_TEAM1);
 				   	BGTeam1Players++;
 				   	SetPlayerBGTeam1(i);
-				   	gTeam[i] = gBG_TEAM1;
+				   	gTeam[i] = gTDM_TEAM1;
 				}
 				else
 				{
@@ -21143,14 +21143,14 @@ function:BGVoting()
 			                SetPlayerBGTeam1(i);
 							RandomBGSpawn(i, BG_MAP1, BG_TEAM1);
 							BGTeam1Players++;
-							gTeam[i] = gBG_TEAM1;
+							gTeam[i] = gTDM_TEAM1;
 						}
 						case 1:
 						{
 						    SetPlayerBGTeam2(i);
 							RandomBGSpawn(i, BG_MAP1, BG_TEAM2);
 							BGTeam2Players++;
-							gTeam[i] = gBG_TEAM2;
+							gTeam[i] = gTDM_TEAM2;
 						}
 					}
 				}
@@ -21166,7 +21166,7 @@ function:BGVoting()
 
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == gBG_VOTING)
+		    if(gTeam[i] == gTDM_VOTING)
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
@@ -21178,14 +21178,14 @@ function:BGVoting()
 					RandomBGSpawn(i, BG_MAP2, BG_TEAM2);
 				    BGTeam2Players++;
 				    SetPlayerBGTeam2(i);
-				    gTeam[i] = gBG_TEAM2;
+				    gTeam[i] = gTDM_TEAM2;
 				}
 				else if(BGTeam1Players < BGTeam2Players)
 				{
 				  	RandomBGSpawn(i, BG_MAP2, BG_TEAM1);
 				   	BGTeam1Players++;
 				   	SetPlayerBGTeam1(i);
-				   	gTeam[i] = gBG_TEAM1;
+				   	gTeam[i] = gTDM_TEAM1;
 				}
 				else
 				{
@@ -21196,14 +21196,14 @@ function:BGVoting()
 			                SetPlayerBGTeam1(i);
 							RandomBGSpawn(i, BG_MAP2, BG_TEAM1);
 							BGTeam1Players++;
-							gTeam[i] = gBG_TEAM1;
+							gTeam[i] = gTDM_TEAM1;
 						}
 						case 1:
 						{
 						    SetPlayerBGTeam2(i);
 							RandomBGSpawn(i, BG_MAP2, BG_TEAM2);
 							BGTeam2Players++;
-							gTeam[i] = gBG_TEAM2;
+							gTeam[i] = gTDM_TEAM2;
 						}
 					}
 				}
@@ -21219,7 +21219,7 @@ function:BGVoting()
 
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == gBG_VOTING)
+		    if(gTeam[i] == gTDM_VOTING)
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
@@ -21231,14 +21231,14 @@ function:BGVoting()
 					RandomBGSpawn(i, BG_MAP3, BG_TEAM2);
 				    BGTeam2Players++;
 				    SetPlayerBGTeam2(i);
-				    gTeam[i] = gBG_TEAM2;
+				    gTeam[i] = gTDM_TEAM2;
 				}
 				else if(BGTeam1Players < BGTeam2Players)
 				{
 				  	RandomBGSpawn(i, BG_MAP3, BG_TEAM1);
 				   	BGTeam1Players++;
 				   	SetPlayerBGTeam1(i);
-				   	gTeam[i] = gBG_TEAM1;
+				   	gTeam[i] = gTDM_TEAM1;
 				}
 				else
 				{
@@ -21249,14 +21249,14 @@ function:BGVoting()
 			                SetPlayerBGTeam1(i);
 							RandomBGSpawn(i, BG_MAP3, BG_TEAM1);
 							BGTeam1Players++;
-							gTeam[i] = gBG_TEAM1;
+							gTeam[i] = gTDM_TEAM1;
 						}
 						case 1:
 						{
 						    SetPlayerBGTeam2(i);
 							RandomBGSpawn(i, BG_MAP3, BG_TEAM2);
 							BGTeam2Players++;
-							gTeam[i] = gBG_TEAM2;
+							gTeam[i] = gTDM_TEAM2;
 						}
 					}
 				}
@@ -21272,7 +21272,7 @@ function:BGVoting()
 
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == gBG_VOTING)
+		    if(gTeam[i] == gTDM_VOTING)
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
@@ -21284,14 +21284,14 @@ function:BGVoting()
 					RandomBGSpawn(i, BG_MAP4, BG_TEAM2);
 				    BGTeam2Players++;
 				    SetPlayerBGTeam2(i);
-				    gTeam[i] = gBG_TEAM2;
+				    gTeam[i] = gTDM_TEAM2;
 				}
 				else if(BGTeam1Players < BGTeam2Players)
 				{
 				  	RandomBGSpawn(i, BG_MAP4, BG_TEAM1);
 				   	BGTeam1Players++;
 				   	SetPlayerBGTeam1(i);
-				   	gTeam[i] = gBG_TEAM1;
+				   	gTeam[i] = gTDM_TEAM1;
 				}
 				else
 				{
@@ -21302,14 +21302,14 @@ function:BGVoting()
 			                SetPlayerBGTeam1(i);
 							RandomBGSpawn(i, BG_MAP4, BG_TEAM1);
 							BGTeam1Players++;
-							gTeam[i] = gBG_TEAM1;
+							gTeam[i] = gTDM_TEAM1;
 						}
 						case 1:
 						{
 						    SetPlayerBGTeam2(i);
 							RandomBGSpawn(i, BG_MAP4, BG_TEAM2);
 							BGTeam2Players++;
-							gTeam[i] = gBG_TEAM2;
+							gTeam[i] = gTDM_TEAM2;
 						}
 					}
 				}
@@ -21325,7 +21325,7 @@ function:BGVoting()
 
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == gBG_VOTING)
+		    if(gTeam[i] == gTDM_VOTING)
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
@@ -21337,14 +21337,14 @@ function:BGVoting()
 					RandomBGSpawn(i, BG_MAP5, BG_TEAM2);
 				    BGTeam2Players++;
 				    SetPlayerBGTeam2(i);
-				    gTeam[i] = gBG_TEAM2;
+				    gTeam[i] = gTDM_TEAM2;
 				}
 				else if(BGTeam1Players < BGTeam2Players)
 				{
 				  	RandomBGSpawn(i, BG_MAP5, BG_TEAM1);
 				   	BGTeam1Players++;
 				   	SetPlayerBGTeam1(i);
-				   	gTeam[i] = gBG_TEAM1;
+				   	gTeam[i] = gTDM_TEAM1;
 				}
 				else
 				{
@@ -21355,14 +21355,14 @@ function:BGVoting()
 			                SetPlayerBGTeam1(i);
 							RandomBGSpawn(i, BG_MAP5, BG_TEAM1);
 							BGTeam1Players++;
-							gTeam[i] = gBG_TEAM1;
+							gTeam[i] = gTDM_TEAM1;
 						}
 						case 1:
 						{
 						    SetPlayerBGTeam2(i);
 							RandomBGSpawn(i, BG_MAP5, BG_TEAM2);
 							BGTeam2Players++;
-							gTeam[i] = gBG_TEAM2;
+							gTeam[i] = gTDM_TEAM2;
 						}
 					}
 				}
@@ -21378,7 +21378,7 @@ function:BGVoting()
 
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == gBG_VOTING)
+		    if(gTeam[i] == gTDM_VOTING)
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
@@ -21390,14 +21390,14 @@ function:BGVoting()
 					RandomBGSpawn(i, BG_MAP6, BG_TEAM2);
 				    BGTeam2Players++;
 				    SetPlayerBGTeam2(i);
-				    gTeam[i] = gBG_TEAM2;
+				    gTeam[i] = gTDM_TEAM2;
 				}
 				else if(BGTeam1Players < BGTeam2Players)
 				{
 				  	RandomBGSpawn(i, BG_MAP6, BG_TEAM1);
 				   	BGTeam1Players++;
 				   	SetPlayerBGTeam1(i);
-				   	gTeam[i] = gBG_TEAM1;
+				   	gTeam[i] = gTDM_TEAM1;
 				}
 				else
 				{
@@ -21408,14 +21408,14 @@ function:BGVoting()
 			                SetPlayerBGTeam1(i);
 							RandomBGSpawn(i, BG_MAP6, BG_TEAM1);
 							BGTeam1Players++;
-							gTeam[i] = gBG_TEAM1;
+							gTeam[i] = gTDM_TEAM1;
 						}
 						case 1:
 						{
 						    SetPlayerBGTeam2(i);
 							RandomBGSpawn(i, BG_MAP6, BG_TEAM2);
 							BGTeam2Players++;
-							gTeam[i] = gBG_TEAM2;
+							gTeam[i] = gTDM_TEAM2;
 						}
 					}
 				}
@@ -21429,7 +21429,7 @@ function:BattleGround()
 {
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(gTeam[i] == gBG_TEAM1 || gTeam[i] == gBG_TEAM2 || gTeam[i] == gBG_VOTING)
+	    if(gTeam[i] == gTDM_TEAM1 || gTeam[i] == gTDM_TEAM2 || gTeam[i] == gTDM_VOTING)
 	    {
 	        SetPlayerBGStaticMeshes(i);
 	    }
@@ -21440,7 +21440,7 @@ function:BattleGround()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(gTeam[i] == gBG_TEAM1 || gTeam[i] == gBG_TEAM2 || gTeam[i] == gBG_VOTING)
+	    if(gTeam[i] == gTDM_TEAM1 || gTeam[i] == gTDM_TEAM2 || gTeam[i] == gTDM_VOTING)
 	    {
 			ShowDialog(i, DIALOG_TDM_VOTING);
 	    }
@@ -21473,7 +21473,7 @@ function:BattleGround()
 		
 	 	for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == gBG_TEAM1)
+		    if(gTeam[i] == gTDM_TEAM1)
 		    {
 		        GivePlayerMoneyEx(i, money, true, true);
 		        GivePlayerScoreEx(i, 10, true, true);
@@ -21493,7 +21493,7 @@ function:BattleGround()
 
 	 	for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == gBG_TEAM2)
+		    if(gTeam[i] == gTDM_TEAM2)
 		    {
 		        GivePlayerMoneyEx(i, money, true, true);
 		        GivePlayerScoreEx(i, 10, true, true);
@@ -21504,9 +21504,9 @@ function:BattleGround()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(gTeam[i] == gBG_TEAM1 || gTeam[i] == gBG_TEAM2 || gTeam[i] == gBG_VOTING)
+	    if(gTeam[i] == gTDM_TEAM1 || gTeam[i] == gTDM_TEAM2 || gTeam[i] == gTDM_VOTING)
 	    {
-			gTeam[i] = gBG_VOTING;
+			gTeam[i] = gTDM_VOTING;
 	    }
 	}
 	return 1;
@@ -21771,7 +21771,7 @@ derby_broadcast(const string[])
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 			SCM(i, -1, gstr);
 		}
@@ -21784,7 +21784,7 @@ tdm_broadcast(const string[])
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == gBG_TEAM1 || gTeam[i] == gBG_VOTING || gTeam[i] == gBG_TEAM2)
+		if(gTeam[i] == gTDM_TEAM1 || gTeam[i] == gTDM_VOTING || gTeam[i] == gTDM_TEAM2)
 		{
   			SCM(i, -1, gstr);
 		}
@@ -24663,7 +24663,7 @@ function:DerbyVoting()
 		ExecDerbyVotingTimer();
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24679,7 +24679,7 @@ function:DerbyVoting()
 		derby_broadcast("There were no votes!");
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 	    return 1;
 	}
@@ -24709,7 +24709,7 @@ function:DerbyVoting()
 		ClearDerbyVotes();
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24718,7 +24718,7 @@ function:DerbyVoting()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(gTeam[i] == DERBY)
+	    if(gTeam[i] == gDERBY)
 		{
 	        SetPlayerVirtualWorld(i, DERBY_WORLD); // <bla>
 	        if(IsPlayerOnDesktop(i, 5000))
@@ -24739,7 +24739,7 @@ function:DerbyVoting()
         ClearDerbyVotes();
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24775,7 +24775,7 @@ function:StartDerbyMap1()
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 		    ClearAnimations(i);
 		    SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -24798,7 +24798,7 @@ function:StartDerbyMap1()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24807,7 +24807,7 @@ function:StartDerbyMap1()
 
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+		if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
 		{
 			PlayerData[i][bDerbyWinner] = true;
 			DerbyPlayers++;
@@ -24870,7 +24870,7 @@ function:StartDerbyMap2()
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
   		{
 		    ClearAnimations(i);
 		    SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -24893,7 +24893,7 @@ function:StartDerbyMap2()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24902,7 +24902,7 @@ function:StartDerbyMap2()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-  		if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+  		if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
 		{
 			PlayerData[i][bDerbyWinner] = true;
 			DerbyPlayers++;
@@ -24965,7 +24965,7 @@ function:StartDerbyMap3()
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 		    ClearAnimations(i);
 		    SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -24988,7 +24988,7 @@ function:StartDerbyMap3()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -24997,7 +24997,7 @@ function:StartDerbyMap3()
 
     for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+		if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
 		{
 			PlayerData[i][bDerbyWinner] = true;
 			DerbyPlayers++;
@@ -25060,7 +25060,7 @@ function:StartDerbyMap4()
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 		    ClearAnimations(i);
 		    SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -25083,7 +25083,7 @@ function:StartDerbyMap4()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25092,7 +25092,7 @@ function:StartDerbyMap4()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+		if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
   		{
 			PlayerData[i][bDerbyWinner] = true;
 			DerbyPlayers++;
@@ -25155,7 +25155,7 @@ function:StartDerbyMap5()
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 		    ClearAnimations(i);
 		    SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -25178,7 +25178,7 @@ function:StartDerbyMap5()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25187,7 +25187,7 @@ function:StartDerbyMap5()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+		if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
 		{
 			PlayerData[i][bDerbyWinner] = true;
 			DerbyPlayers++;
@@ -25250,7 +25250,7 @@ function:StartDerbyMap6()
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 		    ClearAnimations(i);
 		    SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -25273,7 +25273,7 @@ function:StartDerbyMap6()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25282,7 +25282,7 @@ function:StartDerbyMap6()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+		if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
 		{
 			PlayerData[i][bDerbyWinner] = true;
 			DerbyPlayers++;
@@ -25335,7 +25335,7 @@ function:StartDerbyMap7()
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 		    ClearAnimations(i);
 		    SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -25358,7 +25358,7 @@ function:StartDerbyMap7()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25367,7 +25367,7 @@ function:StartDerbyMap7()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+		if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
 		{
 			PlayerData[i][bDerbyWinner] = true;
 			DerbyPlayers++;
@@ -25420,7 +25420,7 @@ function:StartDerbyMap8()
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 		    ClearAnimations(i);
 		    SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -25443,7 +25443,7 @@ function:StartDerbyMap8()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25452,7 +25452,7 @@ function:StartDerbyMap8()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+		if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
 		{
 			PlayerData[i][bDerbyWinner] = true;
 			DerbyPlayers++;
@@ -25505,7 +25505,7 @@ function:StartDerbyMap9()
  	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 		    ClearAnimations(i);
 		    SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -25528,7 +25528,7 @@ function:StartDerbyMap9()
         IsDerbyRunning = false;
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
- 			if(gTeam[i] == DERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
+ 			if(gTeam[i] == gDERBY) ShowDialog(i, DIALOG_DERBY_VOTING);
 		}
 		return 1;
 	}
@@ -25537,7 +25537,7 @@ function:StartDerbyMap9()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+		if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
 		{
 			PlayerData[i][bDerbyWinner] = true;
 			DerbyPlayers++;
@@ -25603,7 +25603,7 @@ function:Derby()
 	{
     	for(new i = 0; i < MAX_PLAYERS; i++)
     	{
-  			if(gTeam[i] == DERBY)
+  			if(gTeam[i] == gDERBY)
 			{
        			SetPlayerVirtualWorld(i, DERBY_WORLD);
        			SetPlayerDerbyStaticMeshes(i);
@@ -25616,7 +25616,7 @@ function:Derby()
 	{
 		for(new i = 0; i < MAX_PLAYERS; i++)
     	{
-			if(gTeam[i] == DERBY && !PlayerData[i][bDerbyAFK])
+			if(gTeam[i] == gDERBY && !PlayerData[i][bDerbyAFK])
 			{
 			    if(PlayerData[i][bDerbyWinner])
 			    {
@@ -25647,7 +25647,7 @@ function:Derby()
 	CurrentDerbyPlayers = 0;
 	for(new i = 0; i < MAX_PLAYERS; i++)
    	{
-		if(gTeam[i] == DERBY)
+		if(gTeam[i] == gDERBY)
 		{
 		    if(PlayerData[i][bDerbyAFK])
 		    {
@@ -25683,7 +25683,7 @@ function:DerbyFallOver()
 	new Float:POS[3], string[64];
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == DERBY && PlayerData[i][bDerbyWinner])
+		if(gTeam[i] == gDERBY && PlayerData[i][bDerbyWinner])
 		{
 		    if(PlayerData[i][bDerbyAFK]) continue;
 
@@ -26190,7 +26190,7 @@ function:ProcessTick()
 
 					T_RacePlayers++;
 			    }
-			    case DERBY:
+			    case gDERBY:
 			    {
 					T_DerbyPlayers++;
 			    }
@@ -26226,7 +26226,7 @@ function:ProcessTick()
 				        }
 					}
 			    }
-			    case gBG_VOTING, gBG_TEAM1, gBG_TEAM2:
+			    case gTDM_VOTING, gTDM_TEAM1, gTDM_TEAM2:
 			    {
 			        T_TDMPlayers++;
 			    }
@@ -26595,7 +26595,7 @@ function:Derby_FreezeVehicles()
 {
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(gTeam[i] == DERBY)
+	    if(gTeam[i] == gDERBY)
 	    {
 	        if(IsPlayerInAnyVehicle(i))
 	        {
@@ -29149,7 +29149,7 @@ ExitPlayer(playerid)
 			}
 			return 0;
 		}
-		case gBG_VOTING:
+		case gTDM_VOTING:
 		{
 			gTeam[playerid] = gFREEROAM;
 		
@@ -29169,7 +29169,7 @@ ExitPlayer(playerid)
 			PlayerData[playerid][tickJoin_bmx] = 0;
 			return 0;
 		}
-		case gBG_TEAM1:
+		case gTDM_TEAM1:
 		{
 		    BGTeam1Players--;
 		    gTeam[playerid] = gFREEROAM;
@@ -29188,7 +29188,7 @@ ExitPlayer(playerid)
 			PlayerData[playerid][tickJoin_bmx] = 0;
 			return 0;
 		}
-		case gBG_TEAM2:
+		case gTDM_TEAM2:
 		{
 		    BGTeam2Players--;
 		    gTeam[playerid] = gFREEROAM;
@@ -29260,7 +29260,7 @@ ExitPlayer(playerid)
 		    PlayerData[playerid][tickJoin_bmx] = 0;
 		    return 0;
 		}
-		case DERBY:
+		case gDERBY:
 		{
 		    //exit
 		    HidePlayerDerbyTextdraws(playerid);
