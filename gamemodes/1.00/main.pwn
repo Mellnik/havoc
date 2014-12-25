@@ -20904,32 +20904,32 @@ SetupStore(slot)
 	    {
 	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 2304.69, -16.19, 26.74, (slot + 1000), .streamdistance = 50.0);
 	        StoreData[r][e_pickup_menu] = CreateDynamicPickup(1559, 1, 2311.63, -3.89, 26.74, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 25, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 25, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 	    case STORE_TYPE_AMMUNATION:
 	    {
 	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 315.81, -143.65, 999.60, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 6, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 6, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 	    case STORE_TYPE_BURGERSHOT:
 	    {
 	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 362.87, -75.17, 1001.50, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 10, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 10, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 	    case STORE_TYPE_CLUCKINBELLS:
 	    {
 	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 364.87, -11.74, 1001.85, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 14, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 14, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 	    case STORE_TYPE_247:
 	    {
 	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, -25.884, -185.868, 1003.546, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 17, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 17, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 		case STORE_TYPE_STACKEDPIZZAS:
 		{
 		    StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 372.36, -133.50, 1001.49, (slot + 1000), .streamdistance = 50.0);
-		    StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 29, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+		    StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 29, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 		}
 	}
 	return 1;
@@ -21142,7 +21142,7 @@ LoadGZones()
 
 LoadStores()
 {
-	mysql_pquery(pSQL, "SLECT * FROM `stores`", "OnStoreLoad");
+	mysql_pquery(pSQL, "SLECT * FROM `stores`;", "OnStoreLoad");
 	return 1;
 }
 
@@ -23213,6 +23213,15 @@ server_initialize()
 	{
 	    format(gstr, sizeof(gstr), "%s\n", g_szCustomCarCategories[i]);
 	    strcat(g_sCustomCarCategory, gstr);
+	}
+	
+	for(new i = 0; i < MAX_STORES; i++)
+	{
+	    StoreData[i][e_pickup_in] = -1;
+	    StoreData[i][e_pickup_out] = -1;
+	    StoreData[i][e_pickup_menu] = -1;
+	    StoreData[i][e_mapicon] = -1;
+	    StoreData[i][e_labelid] = Text3D:-1;
 	}
 		
 	// Other stuff to initialize TODO: Overhaul spawns using polygons
