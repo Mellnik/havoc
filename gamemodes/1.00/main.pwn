@@ -21991,6 +21991,12 @@ SQL_UpdateAccount(playerid)
 	}
 }
 
+SQL_BanAccountOffline(account[], adminid, reason[], lift = 0)
+{
+	mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", account);
+	mysql_pquery(pSQL, gstr, "OnOfflineBanFetch", "iisi", YHash(__GetName(playerid)), adminid, reason, lift);
+}
+
 SQL_BanAccount(playerid, adminid, reason[], lift = 0)
 {
 	new query[512], Float:fPOS[3], Float:ha[2];
@@ -29505,13 +29511,32 @@ function:OnUnbanAttempt(playerid, unban[])
 function:OnUnbanAttempt2()
 {
 	if(cache_get_row_count() > 0)
-	{
-	    new ip[MAX_PLAYER_IP + 1];
-	    cache_get_row(0, 0, ip, pSQL, sizeof(ip));
-	    
-	    format(gstr, sizeof(gstr), "DELETE FROM `blacklist` WHERE `ip` = '%s';", ip);
-	    mysql_pquery(pSQL, gstr);
-	}
+		return 0;
+
+    new ip[MAX_PLAYER_IP + 1];
+    cache_get_row(0, 0, ip, pSQL, sizeof(ip));
+    
+    format(gstr, sizeof(gstr), "DELETE FROM `blacklist` WHERE `ip` = '%s';", ip);
+    mysql_pquery(pSQL, gstr);
+	return 1;
+}
+
+function:OnOfflineBanFetch(namehash, adminid, reason[], lift)
+{
+	if(YHash(__GetName(adminid)) != namehash)
+		return 0;
+
+	if(cache_get_row_count() == 0)
+	    return 0;
+
+	new accountid = cache_get_row_int(0, 0, pSQL);
+
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "INSERT INTO `bans` (`id`, `admin_id`, `reason`, `lift`, `date`) VALUES (%i, %i, '%e', %i, UNIX_TIMESTAMP());",
+		accountid,
+		adminid,
+		reason,
+		lift);
+	mysql_pquery(pSQL, gstr2);
 	return 1;
 }
 
