@@ -1043,11 +1043,11 @@ enum E_ENT_DATA
 	e_level,
 	e_sold,
 	e_date,
-	
+
 	/* INTERNAL */
-	Text3D:e_label_id,
-	e_icon_id,
-	e_pickup_id
+	Text3D:e_labelid,
+	e_iconid,
+	e_pickupid
 };
 
 enum e_ent_matrix
@@ -1069,7 +1069,14 @@ enum E_STORE_DATA
 	Float:e_pick[3],
 	Float:e_spawn[4],
 	e_date,
-	e_creator
+	e_creator,
+	
+	/* INTERNAL */
+	e_pickup_in,
+	e_pickup_out,
+	e_pickup_menu,
+	e_mapicon,
+	Text3D:e_labelid,
 };
 
 enum e_house_type
@@ -2971,7 +2978,6 @@ public OnGameModeInit()
     race_fetch_data();
 	LoadStores();
 	LoadGZones();
-	LoadStores();
 	LoadHouses();
 	LoadEnterpises();
 	SollIchDirMaEtWatSagen();
@@ -8914,10 +8920,10 @@ YCMD:bbuy(playerid, params[], help)
 		EnterpriseData[r][e_sold] = 1;
 		EnterpriseData[r][e_date] = gettime();
 		
-		DestroyDynamic3DTextLabel(EnterpriseData[r][e_label_id]);
-		DestroyDynamicPickup(EnterpriseData[r][e_pickup_id]);
-		DestroyDynamicMapIcon(EnterpriseData[r][e_icon_id]);
-		EnterpriseData[r][e_icon_id] = -1;
+		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
+		DestroyDynamicMapIcon(EnterpriseData[r][e_iconid]);
+		EnterpriseData[r][e_iconid] = -1;
 		
 		SetupEnterprise(r);
 		
@@ -8973,8 +8979,8 @@ YCMD:bsell(playerid, params[], help)
         EnterpriseData[r][e_level] = 1;
         EnterpriseData[r][e_date] = 0;
 
-		DestroyDynamic3DTextLabel(EnterpriseData[r][e_label_id]);
-		DestroyDynamicPickup(EnterpriseData[r][e_pickup_id]);
+		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
 
         SetupEnterprise(r);
 
@@ -14251,7 +14257,7 @@ YCMD:setentlevel(playerid, params[], help)
 		    format(gstr, sizeof(gstr), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 		}
 		
-		UpdateDynamic3DTextLabelText(EnterpriseData[r][e_label_id], -1, gstr);
+		UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
 		orm_update(EnterpriseData[r][e_ormid]);
 		
 		player_notice(playerid, "Enterprise level set", "");
@@ -14292,8 +14298,8 @@ YCMD:breset(playerid, params[], help)
         EnterpriseData[r][e_level] = 1;
         EnterpriseData[r][e_date] = 0;
 
-		DestroyDynamic3DTextLabel(EnterpriseData[r][e_label_id]);
-		DestroyDynamicPickup(EnterpriseData[r][e_pickup_id]);
+		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
 
         SetupEnterprise(r);
 
@@ -17426,7 +17432,7 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
                 strmid(EnterpriseData[r][e_owner], newname, 0, 25, 25);
 
                 format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-			    UpdateDynamic3DTextLabelText(EnterpriseData[r][e_label_id], -1, gstr);
+			    UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
 			    orm_update(EnterpriseData[r][e_ormid]);
 			}
             
@@ -17682,7 +17688,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    player_notice(playerid, "Enterprise type set", "");
 					EnterpriseData[r][e_type] = E_ENT_TYPE:listitem;
 					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-					UpdateDynamic3DTextLabelText(EnterpriseData[r][e_label_id], -1, gstr);
+					UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
 					orm_update(EnterpriseData[r][e_ormid]);
 				} else {
 					return player_notice(playerid, "Couldn't find the enterprise in that slot", "Report on forums", 5000);
@@ -17721,7 +17727,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr, gstr2, "OK", "");
                  	
 					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-					UpdateDynamic3DTextLabelText(EnterpriseData[r][e_label_id], -1, gstr);
+					UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
 				    
 					orm_update(EnterpriseData[r][e_ormid]);
 				} else {
@@ -20842,7 +20848,7 @@ function:OnStoreLoad()
 	    orm_setkey(ormid, "id");
 		orm_apply_cache(ormid, r);
 
-		SetupEnterprise(r);
+		SetupStore(r);
 	}
 
 	Log(LOG_INIT, "%i stores loaded in %i microseconds", rows, cache_get_query_exec_time(UNIT_MICROSECONDS));
@@ -20883,6 +20889,52 @@ function:OnEnterpriseLoadEx(slot)
 	return 1;
 }
 
+SetupStore(slot)
+{
+	if(slot < 0 || slot > MAX_STORES) return 0;
+	new r = slot;
+
+    format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", StoreData[r][e_name]);
+   	StoreData[r][e_labelid] = CreateDynamic3DTextLabel(gstr, WHITE, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] + 0.6, 25.0, .worldid = 0, .streamdistance = 25.0);
+    StoreData[r][e_pickup_out] = CreateDynamicPickup(1559, 1, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
+
+	switch(StoreData[r][e_type])
+	{
+	    case STORE_TYPE_BANK:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 2304.69, -16.19, 26.74, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_pickup_menu] = CreateDynamicPickup(1559, 1, 2311.63, -3.89, 26.74, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 25, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	    }
+	    case STORE_TYPE_AMMUNATION:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 315.81, -143.65, 999.60, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 6, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	    }
+	    case STORE_TYPE_BURGERSHOT:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 362.87, -75.17, 1001.50, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 10, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	    }
+	    case STORE_TYPE_CLUCKINBELLS:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 364.87, -11.74, 1001.85, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 14, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	    }
+	    case STORE_TYPE_247:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, -25.884, -185.868, 1003.546, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 17, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+	    }
+		case STORE_TYPE_STACKEDPIZZAS:
+		{
+		    StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 372.36, -133.50, 1001.49, (slot + 1000), .streamdistance = 50.0);
+		    StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 29, -1, .worldid = 0, .iteriorid = 0, .streamdistance = 300.0);
+		}
+	}
+	return 1;
+}
+
 SetupEnterprise(slot)
 {
 	if(slot < 0 || slot > MAX_ENTERPRISES) return 0;
@@ -20894,11 +20946,11 @@ SetupEnterprise(slot)
 	    format(gstr2, sizeof(gstr2), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 	}
 	
-	EnterpriseData[r][e_label_id] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 30.0, .worldid = 0);
-    EnterpriseData[r][e_pickup_id] = CreateDynamicPickup(1274, 1, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], .worldid = 0, .streamdistance = 50.0);
+	EnterpriseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 30.0, .worldid = 0);
+    EnterpriseData[r][e_pickupid] = CreateDynamicPickup(1274, 1, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], .worldid = 0, .streamdistance = 50.0);
     
 	if(!EnterpriseData[r][e_sold]) {
-	    EnterpriseData[r][e_icon_id] = CreateDynamicMapIcon(EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 52, 1, .worldid = 0, .streamdistance = 150.0);
+	    EnterpriseData[r][e_iconid] = CreateDynamicMapIcon(EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 52, 1, .worldid = 0, .streamdistance = 150.0);
 	}
 	return 1;
 }
@@ -21056,9 +21108,9 @@ ResetEnterprise(slot = -1)
 		    EnterpriseData[r][e_level] = 1;
 		    EnterpriseData[r][e_sold] = 0;
 		    EnterpriseData[r][e_date] = 0;
-		    EnterpriseData[r][e_label_id] = Text3D:-1;
-		    EnterpriseData[r][e_icon_id] = -1;
-		    EnterpriseData[r][e_pickup_id] = -1;
+		    EnterpriseData[r][e_labelid] = Text3D:-1;
+		    EnterpriseData[r][e_iconid] = -1;
+		    EnterpriseData[r][e_pickupid] = -1;
 		}
 	}
 	else
@@ -21074,9 +21126,9 @@ ResetEnterprise(slot = -1)
 	    EnterpriseData[r][e_level] = 1;
 	    EnterpriseData[r][e_sold] = 0;
 	    EnterpriseData[r][e_date] = 0;
-	    EnterpriseData[r][e_label_id] = Text3D:-1;
-	    EnterpriseData[r][e_icon_id] = -1;
-	    EnterpriseData[r][e_pickup_id] = -1;
+	    EnterpriseData[r][e_labelid] = Text3D:-1;
+	    EnterpriseData[r][e_iconid] = -1;
+	    EnterpriseData[r][e_pickupid] = -1;
 	}
 	return 1;
 }
@@ -22289,89 +22341,6 @@ SQL_Connect()
 
         SendRconCommand("exit");
     }
-}
-
-LoadStores()
-{
-	new file[50],
-		count = GetTickCountEx();
-
-	for(new b = 0; b < MAX_BANKS; b++)
-	{
-	    format(file, sizeof(file), "/Store/Banks/%i.ini", b);
-		if(fexist(file))
-		{
-			BankPickOut[b] = CreateDynamicPickup(1559, 1, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 0, 0, -1, 50.0);
-	  		BankPickInt[b] = CreateDynamicPickup(1559, 1, 2304.69, -16.19, 26.74, (b + 1000), -1, -1, 50.0);
-	  		BankPickMenu[b] = CreateDynamicPickup(1559, 1, 2311.63, -3.89, 26.74, (b + 1000), -1, -1, 50.0);
-	  		BankMIcon[b] = CreateDynamicMapIcon(dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 25, -1, 0, 0, -1, 300.0);
-	  		format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", dini_Get(file, "StoreName"));
-	  		CreateDynamic3DTextLabel(gstr, YELLOW, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ") + 0.7, 25.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, -1, -1, 25.0);
-		}
-	}
-    for(new a = 0; a < MAX_AMMUNATIONS; a++)
-	{
-	    format(file, sizeof(file), "/Store/Ammunations/%i.ini", a);
-		if(fexist(file))
-		{
-			AmmunationPickOut[a] = CreateDynamicPickup(1559, 1, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 0, 0, -1, 50.0);
-	  		AmmunationPickInt[a] = CreateDynamicPickup(1559, 1, 315.81, -143.65, 999.60, (a + 1000), 7, -1, 50.0);
-			AmmunationMIcon[a] = CreateDynamicMapIcon(dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 6, -1, 0, 0, -1, 300.0);
-			format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", dini_Get(file, "StoreName"));
-			CreateDynamic3DTextLabel(gstr, YELLOW, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ") + 0.7, 25.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, -1, -1, 25.0);
-		}
-	}
-	for(new bs = 0; bs < MAX_BURGERSHOTS; bs++)
-	{
-	    format(file, sizeof(file), "/Store/BurgerShots/%i.ini", bs);
-		if(fexist(file))
-		{
-			BurgerPickOut[bs] = CreateDynamicPickup(1559, 1, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 0, 0, -1, 50.0);
-	  		BurgerPickInt[bs] = CreateDynamicPickup(1559, 1, 362.87, -75.17, 1001.50, (bs + 1000), 10, -1, 50.0);
-		   	BurgerMIcon[bs] = CreateDynamicMapIcon(dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 10, -1, 0, 0, -1, 300.0);
-		   	format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", dini_Get(file, "StoreName"));
-	  		CreateDynamic3DTextLabel(gstr, YELLOW, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ") + 0.7, 25.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, -1, -1, 25.0);
-		}
-	}
-	for(new cb = 0; cb < MAX_CLUCKINBELLS; cb++)
-	{
-	    format(file, sizeof(file), "/Store/CluckinBells/%i.ini", cb);
-		if(fexist(file))
-		{
-			CluckinBellPickOut[cb] = CreateDynamicPickup(1559, 1, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 0, 0, -1, 50.0);
-	  		CluckinBellPickInt[cb] = CreateDynamicPickup(1559, 1, 364.87, -11.74, 1001.85, (cb + 1000), 9, -1, 50.0);
-			CluckinBellMIcon[cb] = CreateDynamicMapIcon(dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 14, -1, 0, 0, -1, 300.0);
-			format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", dini_Get(file, "StoreName"));
-	  		CreateDynamic3DTextLabel(gstr, YELLOW, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ") + 0.7, 25.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, -1, -1, 25.0);
-		}
-	}
-	for(new ps = 0; ps < MAX_PIZZASTACKS; ps++)
-	{
-	    format(file, sizeof(file), "/Store/WellStackedPizzas/%i.ini", ps);
-		if(fexist(file))
-		{
-			PizzaPickOut[ps] = CreateDynamicPickup(1559, 1, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 0, 0, -1, 50.0);
-	  		PizzaPickInt[ps] = CreateDynamicPickup(1559, 1, 372.36, -133.50, 1001.49, (ps + 1000), 5, -1, 50.0);
-			PizzaMIcon[ps] = CreateDynamicMapIcon(dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 29, -1, 0, 0, -1, 300.0);
-			format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", dini_Get(file, "StoreName"));
-	  		CreateDynamic3DTextLabel(gstr, YELLOW, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ") + 0.7, 25.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, -1, -1, 25.0);
-		}
-	}
-	for(new tfs = 0; tfs < MAX_TFS; tfs++)
-	{
-	    format(file, sizeof(file), "/Store/TwentyFourSeven/%i.ini", tfs);
-		if(fexist(file))
-		{
-			TFSPickOut[tfs] = CreateDynamicPickup(1559, 1, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 0, 0, -1, 50.0);
-	  		TFSPickInt[tfs] = CreateDynamicPickup(1559, 1, -25.884, -185.868, 1003.546, (tfs + 1000), 17, -1, 50.0);
-			TFSMIcon[tfs] = CreateDynamicMapIcon(dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ"), 17, -1, 0, 0, -1, 300.0);
-			format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", dini_Get(file, "StoreName"));
-	  		CreateDynamic3DTextLabel(gstr, YELLOW, dini_Float(file, "PickOutX"), dini_Float(file, "PickOutY"), dini_Float(file, "PickOutZ") + 0.7, 25.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, -1, -1, 25.0);
-		}
-	}
-
- 	Log(LOG_INIT, "Stores loaded in %i ms", GetTickCountEx() - count);
- 	return 1;
 }
 
 RemoveFirstQueueFloor()
