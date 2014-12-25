@@ -6453,14 +6453,14 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 	{
 		for(new r = 0; r < MAX_STORES; r++)
 		{
-		    if(pickupid == StoreData[r][e_pickup_int])
+		    if(pickupid == StoreData[r][e_pickup_in])
 		    {
 		        gTeam[playerid] = gFREEROAM;
 		        SetPlayerPos(playerid, StoreData[r][e_spawn][0], StoreData[r][e_spawn][1], StoreData[r][e_spawn][2]);
 		        SetPlayerFacingAngle(playerid, StoreData[r][e_spawn][3]);
 		        SetPlayerInterior(playerid, 0);
 		        SetPlayerVirtualWorld(playerid, 0);
-		        SetCamerBehindPlayer(playerid);
+		        SetCameraBehindPlayer(playerid);
 		        return 1;
 		    }
 		    else if(pickupid == StoreData[r][e_pickup_out])
@@ -14320,181 +14320,62 @@ YCMD:createstore(playerid, params[], help)
 	{
 		return SCM(playerid, -1, NO_PERM);
 	}
+	
+	new type;
+    if(sscanf(params, "is[143]", type, gstr))
+    {
+        return SCM(playerid, NEF_GREEN, "Usage: /createstore <type> <name>");
+    }
 
-	new string[80],
-		file[50],
-		labeltext[50],
-		Float:POS[4];
+	if(type < 0 || type > 6)
+	    return SCM(playerid, -1, ""er"Invalid store type");
+	
+	if(strlen(gstr) < 3 || strlen(gstr) > MAX_STORE_NAME)
+		return SCM(playerid, -1, ""er"Invalid store name length");
 
-	extract params -> new string:store[144]; else
-	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /createstore (bank/ammunation/burger/cluckinbell/pizza/247)");
+	new count = 0;
+	for(new i = 0; i < MAX_STORES; i++) {
+	    if(StoreData[i][e_ormid] != ORM:-1)
+			++count;
 	}
 
-	if(strlen(store) < 3 || strlen(store) > 11)
-	{
-		return SCM(playerid, NEF_GREEN, "Usage: /createstore (bank/ammunation/burger/cluckinbell/pizza/247)");
+	if(count >= MAX_STORES)
+	    return SCM(playerid, -1, ""er"Max stores reached");
+
+	new r = -1;
+	for(new i = 0; i < MAX_STORES; i++) {
+	    if(StoreData[i][e_ormid] == ORM:-1) {
+	        r = i;
+	        break;
+	    }
 	}
 
-    if(strcmp(store, "bank", true) && strcmp(store, "ammunation", true) && strcmp(store, "burger", true) && strcmp(store, "cluckinbell", true) && strcmp(store, "pizza", true) && strcmp(store, "247", true))
-	{
-		return SCM(playerid, NEF_GREEN, "Usage: /createstore (bank/ammunation/burger/cluckinbell/pizza/247)");
-	}
-	else
-	{
-	    GetPlayerPos(playerid, POS[0], POS[1], POS[2]);
-		GetPlayerFacingAngle(playerid, POS[3]);
-		dini_Create("/Store/Index.ini");
-		dini_IntSet("/Store/Index.ini", "TotalStores", (dini_Int("/Store/Index.ini", "TotalStores") + 1));
+	if(r == -1) return SCM(playerid, -1, ""er"No free store slot");
 
-	    if(!strcmp(store, "bank", true))
-	    {
-	        new bankid = dini_Int("/Store/Index.ini", "CurrentBankID");
-	        if(bankid >= MAX_BANKS)
-			{
-				return SCM(playerid, -1, ""er"Unable to create more banks. There are already "#MAX_BANKS" created");
-			}
-	        else
-	        {
-		        format(string, sizeof(string), "Bank ID %i created.", bankid);
-		        format(labeltext, sizeof(labeltext), "Bank");
-		    	format(file, sizeof(file), "/Store/Banks/%i.ini", bankid);
- 				if(dini_Create(file))
- 				{
-			    	dini_IntSet("/Store/Index.ini", "CurrentBankID", (bankid + 1));
-			    	dini_IntSet("/Store/Index.ini", "CurrentBankWorld", (bankid + 1000));
-			    	BankPickOut[bankid] = CreateDynamicPickup(1559, 1, POS[0], POS[1], POS[2], 0, 0, -1, 30.0);
-		   			BankPickInt[bankid] = CreateDynamicPickup(1559, 1, 2304.69, -16.19, 26.74, (bankid + 1000), -1, -1, 50.0);
-					BankPickMenu[bankid] = CreateDynamicPickup(1559, 1, 2311.63, -3.89, 26.74, (bankid + 1000), -1, -1, 50.0);
-				    BankMIcon[bankid] = CreateDynamicMapIcon(POS[0], POS[1], POS[2], 25, -1, 0, 0, -1, 300.0);
-				}
-		    }
-	    }
-	    if(!strcmp(store, "ammunation", true))
-	    {
-	        new ammunationid = dini_Int("/Store/Index.ini", "CurrentAmmunationID");
-	        if(ammunationid >= MAX_AMMUNATIONS)
-			{
-				return SCM(playerid, -1, ""er"Unable to create more banks. There are already "#MAX_AMMUNATIONS" created");
-			}
-			else
-			{
-		        format(string, sizeof(string), "Ammunation ID %i Created.", ammunationid);
-		        format(labeltext, sizeof(labeltext), "Ammunation");
-		    	format(file, sizeof(file), "/Store/Ammunations/%i.ini", ammunationid);
-		    	if(dini_Create(file))
-				{
-			    	dini_IntSet("/Store/Index.ini", "CurrentAmmunationID", (ammunationid + 1));
-	    			dini_IntSet("/Store/Index.ini", "CurrentAmmunationWorld", (ammunationid + 1000));
-			    	AmmunationPickOut[ammunationid] = CreateDynamicPickup(1559, 1, POS[0], POS[1], POS[2], 0, 0, -1, 50.0);
-					AmmunationPickInt[ammunationid] = CreateDynamicPickup(1559, 1, 315.81, -143.65, 999.60, (ammunationid + 1000), 7, -1, 50.0);
-					AmmunationMIcon[ammunationid] = CreateDynamicMapIcon(POS[0], POS[1], POS[2], 6, -1, 0, 0, -1, 300.0);
-				}
-			}
-	    }
-	    if(!strcmp(store, "burger", true))
-	    {
-	        new burgerid = dini_Int("/Store/Index.ini", "CurrentBurgerID");
-	        if(burgerid >= MAX_BURGERSHOTS)
-			{
-				return SCM(playerid, -1, ""er"There are already "#MAX_BURGERSHOTS" created");
-			}
-            else
-			{
-			    format(string, sizeof(string), "Burger Shot ID %i Created.", burgerid);
-		        format(labeltext, sizeof(labeltext), "Burger Shot");
-		    	format(file, sizeof(file), "/Store/BurgerShots/%i.ini", burgerid);
-		    	if(dini_Create(file))
-				{
-			    	dini_IntSet("/Store/Index.ini", "CurrentBurgerID", (burgerid + 1));
-			    	dini_IntSet("/Store/Index.ini", "CurrentBurgerWorld", (burgerid + 1000));
-					BurgerPickOut[burgerid] = CreateDynamicPickup(1559, 1, POS[0], POS[1], POS[2], 0, 0, -1, 50.0);
-					BurgerPickInt[burgerid] = CreateDynamicPickup(1559, 1, 362.87, -75.17, 1001.50, (burgerid + 1000), 10, -1, 50.0);
-					BurgerMIcon[burgerid] = CreateDynamicMapIcon(POS[0], POS[1], POS[2], 10, -1, 0, 0, -1, 300.0);
-				}
-			}
-	    }
-	    if(!strcmp(store, "cluckinbell", true))
-	    {
-	        new cluckinbellid = dini_Int("/Store/Index.ini", "CurrentCluckinBellID");
-	        if(cluckinbellid >= MAX_CLUCKINBELLS)
-			{
-				return SCM(playerid, -1, ""er"There are already "#MAX_CLUCKINBELLS" created");
-			}
-            else
-			{
-				format(string, sizeof(string), "Cluckin Bell ID %i Created", cluckinbellid);
-		        format(labeltext, sizeof(labeltext), "Cluckin' Bell");
-		    	format(file, sizeof(file), "/Store/CluckinBells/%i.ini", cluckinbellid);
-		    	if(dini_Create(file))
-				{
-			    	dini_IntSet("/Store/Index.ini", "CurrentCluckinBellID", (cluckinbellid + 1));
-			    	dini_IntSet("/Store/Index.ini", "CurrentCluckinBellWorld", (cluckinbellid + 1000));
-					CluckinBellPickOut[cluckinbellid] = CreateDynamicPickup(1559, 1, POS[0], POS[1], POS[2], 0, 0, -1, 50.0);
-					CluckinBellPickInt[cluckinbellid] = CreateDynamicPickup(1559, 1, 364.87, -11.74, 1001.85, (cluckinbellid + 1000), 9, -1, 50.0);
-					CluckinBellMIcon[cluckinbellid] = CreateDynamicMapIcon(POS[0], POS[1], POS[2], 14, -1, 0, 0, -1, 300.0);
-				}
-			}
-	    }
-	    if(!strcmp(store, "pizza", true))
-	    {
-	        new pizzaid = dini_Int("/Store/Index.ini", "CurrentPizzaID");
-	        if(pizzaid >= MAX_PIZZASTACKS)
-			{
-				return SCM(playerid, -1, ""er"There are already "#MAX_PIZZASTACKS" created");
-			}
-			else
-			{
-				format(string, sizeof(string), "Well Stacked Pizza & Co. ID %i Created.", pizzaid);
-		        format(labeltext, sizeof(labeltext), "Well Stacked Pizza & Co.");
-		    	format(file, sizeof(file), "/Store/WellStackedPizzas/%i.ini", pizzaid);
-		    	if(dini_Create(file))
-				{
-	   		    	dini_IntSet("/Store/Index.ini", "CurrentPizzaID", (pizzaid + 1));
-			    	dini_IntSet("/Store/Index.ini", "CurrentPizzaWorld", (pizzaid + 1000));
-					PizzaPickOut[pizzaid] = CreateDynamicPickup(1559, 1, POS[0], POS[1], POS[2], 0, 0, -1, 50.0);
-					PizzaPickInt[pizzaid] = CreateDynamicPickup(1559, 1, 372.36, -133.50, 1001.49, (pizzaid + 1000), 5, -1, 50.0);
-					PizzaMIcon[pizzaid] = CreateDynamicMapIcon(POS[0], POS[1], POS[2], 29, -1, 0, 0, -1, 300.0);
-				}
-			}
-	    }
-	    if(!strcmp(store, "247", true))
-	    {
-	        new tfs = dini_Int("/Store/Index.ini", "CurrentTFSID");
-	        if(tfs >= MAX_TFS)
-			{
-				return SCM(playerid, -1, ""er"There are already "#MAX_TFS" created");
-			}
-			else
-			{
-				format(string, sizeof(string), "24/7 ID %i Created.", tfs);
-		        format(labeltext, sizeof(labeltext), "24/7");
-		    	format(file, sizeof(file), "/Store/TwentyFourSeven/%i.ini", tfs);
-		    	if(dini_Create(file))
-				{
-			    	dini_IntSet("/Store/Index.ini", "CurrentTFSID", (tfs + 1));
-			    	dini_IntSet("/Store/Index.ini", "CurrentTFSWorld", (tfs + 1000));
-					TFSPickOut[tfs] = CreateDynamicPickup(1559, 1, POS[0], POS[1], POS[2], 0, 0, -1, 50.0);
-					TFSPickInt[tfs] = CreateDynamicPickup(1559, 1,  -25.884, -185.868, 1003.546, (tfs + 1000), 17, -1, 50.0);
-					TFSMIcon[tfs] = CreateDynamicMapIcon(POS[0], POS[1], POS[2], 17, -1, 0, 0, -1, 300.0);
-				}
-			}
-	    }
+    new ORM:ormid = StoreData[r][e_ormid] = orm_create("stores"),
+		Float:fPOS[4];
 
-	    format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", labeltext);
-		CreateDynamic3DTextLabel(gstr, YELLOW, POS[0], POS[1], floatadd(POS[2], 0.7), 25.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, -1, -1, 25.0);
-		dini_Set(file, "StoreName", gstr);
-		dini_FloatSet(file, "PickOutX", POS[0]);
-		dini_FloatSet(file, "PickOutY", POS[1]);
-		dini_FloatSet(file, "PickOutZ", POS[2]);
-		GetPosInFrontOfPlayer(playerid, POS[0], POS[1], -2.5);
-		dini_FloatSet(file, "SpawnOutX", POS[0]);
-		dini_FloatSet(file, "SpawnOutY", POS[1]);
-		dini_FloatSet(file, "SpawnOutZ", POS[2]);
-		dini_FloatSet(file, "SpawnOutAngle", floatround((floatadd(180.0, POS[3])), floatround_ceil));
-		dini_IntSet(file, "StoreID", dini_Int("/Store/Index.ini", "TotalStores"));
-		SCM(playerid, YELLOW, string);
-	}
+	AssembleStoreORM(ormid, r);
+
+	GetPlayerPos(playerid, fPOS[0], fPOS[1], fPOS[2]);
+	GetPlayerFacingAngle(playerid, fPOS[3]);
+	
+    StoreData[r][e_pick][0] = fPOS[0];
+    StoreData[r][e_pick][1] = fPOS[1];
+    StoreData[r][e_pick][2] = fPOS[2];
+    
+    GetPosInFrontOfPlayer(playerid, fPOS[0], fPOS[1], -2.5);
+    StoreData[r][e_spawn][0] = fPOS[0];
+    StoreData[r][e_spawn][1] = fPOS[1];
+    StoreData[r][e_spawn][2] = fPOS[2];
+    StoreData[r][e_spawn][3] = floatround(floatadd(180.0, fPOS[3]), floatround_ceil);
+
+    StoreData[r][e_date] = gettime();
+    StoreData[r][e_creator] = PlayerData[playerid][e_accountid];
+    strcpy(StoreData[r][e_name], gstr, MAX_STORE_NAME);
+
+    orm_setkey(ormid, "id");
+	orm_insert(ormid, "OnStoreLoadEx", "i", r);
     return 1;
 }
 
@@ -20698,17 +20579,7 @@ function:OnStoreLoad()
 	{
 	    new ORM:ormid = StoreData[r][e_ormid] = orm_create("stores");
 
-	    orm_addvar_int(ormid, StoreData[r][e_id], "id");
-	    orm_addvar_int(ormid, _:StoreData[r][e_type], "type");
-	    orm_addvar_string(ormid, StoreData[r][e_name], MAX_STORE_NAME + 1, "name");
-	    orm_addvar_float(ormid, StoreData[r][e_pick][0], "xpick");
-	    orm_addvar_float(ormid, StoreData[r][e_pick][1], "ypick");
-	    orm_addvar_float(ormid, StoreData[r][e_pick][2], "zpick");
-	    orm_addvar_float(ormid, StoreData[r][e_spawn][0], "xspawn");
-	    orm_addvar_float(ormid, StoreData[r][e_spawn][1], "yspawn");
-	    orm_addvar_float(ormid, StoreData[r][e_spawn][2], "zspawn");
-	    orm_addvar_int(ormid, StoreData[r][e_date], "date");
-	    orm_addvar_int(ormid, StoreData[r][e_creator], "creator");
+		AssembleStoreORM(ormid, r);
 
 	    orm_setkey(ormid, "id");
 		orm_apply_cache(ormid, r);
@@ -20717,6 +20588,12 @@ function:OnStoreLoad()
 	}
 
 	Log(LOG_INIT, "%i stores loaded in %i microseconds", rows, cache_get_query_exec_time(UNIT_MICROSECONDS));
+	return 1;
+}
+
+function:OnStoreLoadEx(slot)
+{
+	SetupStore(slot);
 	return 1;
 }
 
@@ -31465,4 +31342,20 @@ ResetPlayerGWarMode(playerid, bool:msg = true)
     PlayerData[playerid][bGWarMode] = false;
 	PlayerData[playerid][bSpeedBoost] = true;
     PlayerData[playerid][bSuperJump] = false;
+}
+
+AssembleStoreORM(ORM:_ormid, slot)
+{
+    orm_addvar_int(_ormid, StoreData[slot][e_id], "id");
+    orm_addvar_int(_ormid, _:StoreData[slot][e_type], "type");
+    orm_addvar_string(_ormid, StoreData[slot][e_name], MAX_STORE_NAME + 1, "name");
+    orm_addvar_float(_ormid, StoreData[slot][e_pick][0], "xpick");
+    orm_addvar_float(_ormid, StoreData[slot][e_pick][1], "ypick");
+    orm_addvar_float(_ormid, StoreData[slot][e_pick][2], "zpick");
+    orm_addvar_float(_ormid, StoreData[slot][e_spawn][0], "xspawn");
+    orm_addvar_float(_ormid, StoreData[slot][e_spawn][1], "yspawn");
+    orm_addvar_float(_ormid, StoreData[slot][e_spawn][2], "zspawn");
+    orm_addvar_float(_ormid, StoreData[slot][e_spawn][3], "aspawn");
+    orm_addvar_int(_ormid, StoreData[slot][e_date], "date");
+    orm_addvar_int(_ormid, StoreData[slot][e_creator], "creator");
 }
