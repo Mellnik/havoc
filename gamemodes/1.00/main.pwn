@@ -969,6 +969,8 @@ enum E_GZONE_DATA
 	Float:e_pos[3],
 	e_localgang,
 	e_locked,
+	e_date,
+	e_creator,
 	
 	/* INTERNAL */
 	e_timeleft,
@@ -11570,16 +11572,12 @@ YCMD:gzonecreate(playerid, params[], help)
 	GZoneData[r][e_localgang] = 0;
 	GZoneData[r][e_locked] = gettime();
     GZoneData[r][e_underattack] = false;
+    GZoneData[r][e_date] = gettime();
+    GZoneData[r][e_creator] = PlayerData[playerid][e_accountid];
     
 	new ORM:ormid = GZoneData[r][e_ormid] = orm_create("gzones");
 	
-    orm_addvar_int(ormid, GZoneData[r][e_id], "id");
-    orm_addvar_string(ormid, GZoneData[r][e_zname], 40, "zname");
-    orm_addvar_float(ormid, GZoneData[r][e_pos][0], "xpos");
-    orm_addvar_float(ormid, GZoneData[r][e_pos][1], "ypos");
-    orm_addvar_float(ormid, GZoneData[r][e_pos][2], "zpos");
-    orm_addvar_int(ormid, GZoneData[r][e_localgang], "localgang");
-    orm_addvar_int(ormid, GZoneData[r][e_locked], "locked");
+	AssembleGZoneORM(ormid, r);
 	    
 	orm_setkey(ormid, "id");
 	orm_insert(ormid, "OnGangZoneLoadEx", "i", r);
@@ -20711,13 +20709,7 @@ function:OnGangZoneLoad()
 		
 	    new ORM:ormid = GZoneData[r][e_ormid] = orm_create("gzones");
 	    
-	    orm_addvar_int(ormid, GZoneData[r][e_id], "id");
-	    orm_addvar_string(ormid, GZoneData[r][e_zname], 40, "zname");
-	    orm_addvar_float(ormid, GZoneData[r][e_pos][0], "xpos");
-	    orm_addvar_float(ormid, GZoneData[r][e_pos][1], "ypos");
-	    orm_addvar_float(ormid, GZoneData[r][e_pos][2], "zpos");
-	    orm_addvar_int(ormid, GZoneData[r][e_localgang], "localgang");
-	    orm_addvar_int(ormid, GZoneData[r][e_locked], "locked");
+	    AssembleGZoneORM(ormid, r);
 	    
 	    orm_setkey(ormid, "id");
 	    orm_apply_cache(ormid, r);
@@ -31380,4 +31372,17 @@ AssembleStoreORM(ORM:_ormid, slot)
     orm_addvar_float(_ormid, StoreData[slot][e_spawn][3], "aspawn");
     orm_addvar_int(_ormid, StoreData[slot][e_date], "date");
     orm_addvar_int(_ormid, StoreData[slot][e_creator], "creator");
+}
+
+AssembleGZoneORM(ORM:_ormid, slot)
+{
+    orm_addvar_int(_ormid, GZoneData[slot][e_id], "id");
+    orm_addvar_string(_ormid, GZoneData[slot][e_zname], 40, "zname");
+    orm_addvar_float(_ormid, GZoneData[slot][e_pos][0], "xpos");
+    orm_addvar_float(_ormid, GZoneData[slot][e_pos][1], "ypos");
+    orm_addvar_float(_ormid, GZoneData[slot][e_pos][2], "zpos");
+    orm_addvar_int(_ormid, GZoneData[slot][e_localgang], "localgang");
+    orm_addvar_int(_ormid, GZoneData[slot][e_locked], "locked");
+    orm_addvar_int(_ormid, GZoneData[slot][e_date], "date");
+    orm_addvar_int(_ormid, GZoneData[slot][e_creator], "creator");
 }
