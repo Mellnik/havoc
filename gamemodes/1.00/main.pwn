@@ -15130,9 +15130,7 @@ YCMD:spectate(playerid, params[], help)
 			for(new i = 0; i < MAX_PLAYERS; i++)
 			{
 			    if(gTeam[i] == SPEC && PlayerData[i][SpecID] == otherid && i != playerid)
-			    {
 			        count++;
-			    }
 			}
 
 			if(GetPlayerState(playerid) != PLAYER_STATE_SPECTATING && gTeam[playerid] != SPEC)

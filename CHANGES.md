@@ -20,6 +20,7 @@ Havoc Freeroam SA-MP Server
 
 TODO
 ----
+- Duel wins and defeats are now being saved within your account.
 - Time bans are now being deleted automatically upon expiration.
 - /sell /buy can now be used for houses and enterprises.
 - Now using salted whirlpool for password hashing.

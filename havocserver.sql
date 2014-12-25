@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Dec 25, 2014 at 06:43 PM
+-- Generation Time: Dec 25, 2014 at 08:07 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -61,6 +61,8 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `winfallout` smallint(5) unsigned NOT NULL,
   `wingungame` smallint(5) unsigned NOT NULL,
   `wanteds` smallint(5) unsigned NOT NULL,
+  `duelwins` mediumint(8) unsigned NOT NULL,
+  `duellost` mediumint(8) unsigned NOT NULL,
   `vip` tinyint(3) unsigned NOT NULL,
   `medkits` smallint(5) unsigned NOT NULL,
   `regdate` int(10) unsigned NOT NULL,
@@ -165,7 +167,8 @@ CREATE TABLE IF NOT EXISTS `enterprises` (
   `type` tinyint(3) unsigned NOT NULL,
   `level` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `sold` tinyint(3) unsigned NOT NULL,
-  `date` int(10) unsigned NOT NULL
+  `date` int(10) unsigned NOT NULL,
+  `creator` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -198,7 +201,9 @@ CREATE TABLE IF NOT EXISTS `gzones` (
   `ypos` float(14,4) NOT NULL,
   `zpos` float(14,4) NOT NULL,
   `localgang` mediumint(6) unsigned NOT NULL,
-  `locked` int(10) unsigned NOT NULL
+  `locked` int(10) unsigned NOT NULL,
+  `date` int(10) unsigned NOT NULL,
+  `creator` int(10) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -218,7 +223,8 @@ CREATE TABLE IF NOT EXISTS `houses` (
   `score` mediumint(8) unsigned NOT NULL,
   `sold` tinyint(4) NOT NULL,
   `locked` tinyint(4) NOT NULL,
-  `date` int(10) unsigned NOT NULL
+  `date` int(10) unsigned NOT NULL,
+  `creator` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -313,7 +319,8 @@ CREATE TABLE IF NOT EXISTS `queue` (
 CREATE TABLE IF NOT EXISTS `race_records` (
   `id` int(10) unsigned NOT NULL,
   `track` smallint(5) unsigned NOT NULL,
-  `time` int(11) NOT NULL
+  `time` int(11) NOT NULL,
+  `date` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -333,6 +340,17 @@ CREATE TABLE IF NOT EXISTS `server` (
 
 INSERT INTO `server` (`name`, `value`) VALUES
 ('player_record', '250');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings`
+--
+
+CREATE TABLE IF NOT EXISTS `settings` (
+  `id` int(10) unsigned NOT NULL,
+  `allow_teleport` tinyint(3) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -539,6 +557,12 @@ ALTER TABLE `server`
   ADD PRIMARY KEY (`name`);
 
 --
+-- Indexes for table `settings`
+--
+ALTER TABLE `settings`
+  ADD KEY `id` (`id`);
+
+--
 -- Indexes for table `stores`
 --
 ALTER TABLE `stores`
@@ -670,6 +694,12 @@ ADD CONSTRAINT `ncrecords_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`
 --
 ALTER TABLE `race_records`
 ADD CONSTRAINT `race_records_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `settings`
+--
+ALTER TABLE `settings`
+ADD CONSTRAINT `settings_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `toys`
