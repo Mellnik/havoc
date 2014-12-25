@@ -14,7 +14,7 @@ Havoc Freeroam SA-MP Server
 - Stores system has been rewritten. Stores now load and save from database.
 - Bans now include serverside information; Can be viewed at https://havocserver.com/bans
 - Account IDs rather than playernames are now being used for internal data handlers.
-- Players can now have an offical mapper status (/admins, /mappers)
+- Players can now have an offical mapper status (/mappers).
 - Internal safetly handlers for score and money ranges.
 - Namechanges are now attached to an account id rather than a name. This prevents confusion.
 

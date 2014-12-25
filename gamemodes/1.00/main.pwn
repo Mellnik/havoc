@@ -13225,6 +13225,41 @@ YCMD:admins(playerid, params[], help)
 	return 1;
 }
 
+YCMD:mappers(playerid, params[], help)
+{
+	new finstring[1024], count = 0;
+	format(finstring, sizeof(finstring), ""yellow"ID:\t\tName:\n"white"");
+
+	for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+	    if(!IsPlayerAvail(i)) continue;
+	    if(PlayerData[i][e_mapper] == 1)
+	    {
+            if(IsPlayerOnDesktop(i))
+            {
+				format(gstr, sizeof(gstr), "%i\t\t%s | [AFK]\n", i, __GetName(i));
+			}
+			else
+			{
+			    format(gstr, sizeof(gstr), "%i\t\t%s\n", i, __GetName(i));
+			}
+			strcat(finstring, gstr);
+			count++;
+	    }
+	}
+	if(count == 0)
+	{
+	    player_notice(playerid, "No mappers online", "");
+	}
+	else
+	{
+	    format(gstr, sizeof(gstr), "\n\n"white"Total of "nef_yellow"%i "white"mappers online!", count);
+	    strcat(finstring, gstr);
+		ShowPlayerDialog(playerid, DIALOG_ADMINS, DIALOG_STYLE_MSGBOX, ""nef" :: Mappers", finstring, "OK", "");
+	}
+	return 1;
+}
+
 YCMD:vips(playerid, params[], help)
 {
 	new finstring[1024], count = 0;
