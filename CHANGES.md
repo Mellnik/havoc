@@ -16,6 +16,7 @@ Havoc Freeroam SA-MP Server
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/admins, /mappers)
 - Internal safetly handlers for score and money ranges.
+- Namechanges are now attached to an account id rather than a name. This prevents confusion.
 
 TODO
 ----

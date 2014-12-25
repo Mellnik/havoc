@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Dec 25, 2014 at 01:12 PM
+-- Generation Time: Dec 25, 2014 at 06:43 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `id` int(10) unsigned NOT NULL,
   `name` varchar(24) NOT NULL,
   `password` varchar(128) NOT NULL,
+  `salt` varchar(32) NOT NULL,
   `password_old` varchar(40) NOT NULL,
   `version` varchar(20) NOT NULL,
   `serial` varchar(64) NOT NULL,
@@ -193,9 +194,9 @@ CREATE TABLE IF NOT EXISTS `gangs` (
 CREATE TABLE IF NOT EXISTS `gzones` (
   `id` int(10) unsigned NOT NULL,
   `zname` varchar(40) NOT NULL,
-  `xpos` float(24,2) NOT NULL,
-  `ypos` float(24,2) NOT NULL,
-  `zpos` float(24,2) NOT NULL,
+  `xpos` float(14,4) NOT NULL,
+  `ypos` float(14,4) NOT NULL,
+  `zpos` float(14,4) NOT NULL,
   `localgang` mediumint(6) unsigned NOT NULL,
   `locked` int(10) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -257,11 +258,11 @@ CREATE TABLE IF NOT EXISTS `loginlog` (
 --
 
 CREATE TABLE IF NOT EXISTS `ncrecords` (
-  `id` mediumint(6) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
   `oldname` varchar(24) NOT NULL,
   `newname` varchar(24) NOT NULL,
-  `date` int(10) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `date` int(10) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -310,10 +311,48 @@ CREATE TABLE IF NOT EXISTS `queue` (
 --
 
 CREATE TABLE IF NOT EXISTS `race_records` (
-  `id` mediumint(6) unsigned NOT NULL,
-  `track` smallint(4) NOT NULL,
-  `name` varchar(26) NOT NULL,
-  `time` int(10) NOT NULL
+  `id` int(10) unsigned NOT NULL,
+  `track` smallint(5) unsigned NOT NULL,
+  `time` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `server`
+--
+
+CREATE TABLE IF NOT EXISTS `server` (
+  `name` varchar(16) NOT NULL,
+  `value` varchar(40) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `server`
+--
+
+INSERT INTO `server` (`name`, `value`) VALUES
+('player_record', '250');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `stores`
+--
+
+CREATE TABLE IF NOT EXISTS `stores` (
+  `id` int(10) unsigned NOT NULL,
+  `type` smallint(5) unsigned NOT NULL,
+  `name` varchar(24) NOT NULL,
+  `xpick` float(14,4) NOT NULL,
+  `ypick` float(14,4) NOT NULL,
+  `zpick` float(14,4) NOT NULL,
+  `xspawn` float(14,4) NOT NULL,
+  `yspawn` float(14,4) NOT NULL,
+  `zspawn` float(14,4) NOT NULL,
+  `aspawn` float(14,4) NOT NULL,
+  `creator` int(10) unsigned NOT NULL,
+  `date` int(10) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -467,7 +506,7 @@ ALTER TABLE `loginlog`
 -- Indexes for table `ncrecords`
 --
 ALTER TABLE `ncrecords`
-  ADD PRIMARY KEY (`id`);
+  ADD KEY `id` (`id`);
 
 --
 -- Indexes for table `news`
@@ -491,6 +530,18 @@ ALTER TABLE `queue`
 -- Indexes for table `race_records`
 --
 ALTER TABLE `race_records`
+  ADD KEY `id` (`id`);
+
+--
+-- Indexes for table `server`
+--
+ALTER TABLE `server`
+  ADD PRIMARY KEY (`name`);
+
+--
+-- Indexes for table `stores`
+--
+ALTER TABLE `stores`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -556,11 +607,6 @@ ALTER TABLE `gzones`
 ALTER TABLE `houses`
   MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `ncrecords`
---
-ALTER TABLE `ncrecords`
-  MODIFY `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
---
 -- AUTO_INCREMENT for table `news`
 --
 ALTER TABLE `news`
@@ -576,10 +622,10 @@ ALTER TABLE `online`
 ALTER TABLE `queue`
   MODIFY `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `race_records`
+-- AUTO_INCREMENT for table `stores`
 --
-ALTER TABLE `race_records`
-  MODIFY `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `stores`
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `viporder`
 --
@@ -612,6 +658,18 @@ ADD CONSTRAINT `house_items_ibfk_1` FOREIGN KEY (`id`) REFERENCES `houses` (`id`
 --
 ALTER TABLE `loginlog`
 ADD CONSTRAINT `loginlog_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `ncrecords`
+--
+ALTER TABLE `ncrecords`
+ADD CONSTRAINT `ncrecords_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `race_records`
+--
+ALTER TABLE `race_records`
+ADD CONSTRAINT `race_records_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `toys`
