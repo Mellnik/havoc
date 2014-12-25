@@ -8,6 +8,7 @@ Havoc Freeroam SA-MP Server
 - Dialog cleanups.
 - /announce commands have been removed.
 - Removed bullet hit sound from deathmatches.
+- Added enterprise type: Bitcoin Mining Farm
 
 TODO
 ----

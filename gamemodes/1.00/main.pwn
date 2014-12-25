@@ -662,7 +662,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_addpvslots,
 	e_addtoyslots,
 	e_addhouseslots,
-	e_addbizzslots,
+	e_addentslots,
 	e_addhouseitemslots,
 	e_derbywins,
 	e_racewins,
@@ -837,7 +837,7 @@ enum E_PLAYER_ACH_DATA
 	e_ach_bmxmaster, // win /bmx
 	e_ach_settled, // buy a house
 	e_ach_biocalc, // Solve 40 math question
-	e_ach_mademan // rise a bizz to level 20
+	e_ach_mademan // rise an ent to level 20
 };
 
 enum e_credits_matrix
@@ -1014,10 +1014,11 @@ enum E_ENT_TYPE
 	ENT_TYPE_ROBBERY,
 	ENT_TYPE_SMUGGLING,
 	ENT_TYPE_NUDE,
-    ENT_TYPE_METHLAB
+    ENT_TYPE_METHLAB,
+    ENT_TYPE_BTCFARM
 };
 
-enum E_BUSINESS_DATA
+enum E_ENT_DATA
 {
 	/* ORM */
 	ORM:e_ormid,
@@ -1576,13 +1577,14 @@ static const g_aSAZones[][SAZONE_MAIN] = {  // Majority of names and area coordi
 	{"Whetstone",                   {-2997.40,-2892.90,-242.90,-1213.90,-1115.50,900.00}}
 };
 
-static const g_szEnterpriseTypes[5][] =
+static const g_szEnterpriseTypes[6][] =
 {
 	"Loan Sharks",
 	"Robbery",
 	"Smuggling",
 	"Prostitution",
-	"Meth Lab"
+	"Meth Lab",
+	"Bitcoin Mining Farm"
 };
 
 #if WINTER_EDITION == true
@@ -1997,7 +1999,7 @@ static const g_aCreditsProductMatrix[14][e_credits_matrix] =
     {"Custom car slot", 1500, 1, "Permanent", "This item expands your private vehicle slots by 1.\nYou can have 8 pv slots at most."},
     {"House slot", 2000, 1, "Permanent", "This item expands your house slots by 1. You can have 5 house slots at most."},
     {"House item slot", 1000, 1, "Permanent", "This item expands your house item slots by 1. You can have 10 house item slots at most."},
-    {"Enterprise slot", 2000, 1, "Permanent", "This item expands your business slots by 1. You can have 5 business slots at most."},
+    {"Enterprise slot", 2000, 1, "Permanent", "This item expands your enterprise slots by 1. You can have 5 enterprise slots at most."},
     {"Instant name change access", 1000, 1, "Usable 1 time", "This item grants you instant access to /changename."},
     {"20 Medits", 1000, 20, "Usable 20 times", "This item is usable in minigames only. Use /mk to consume 1 medkit.\nHeals you by 50hp in 10 seconds."},
     {"100 Medits", 2500, 100, "Usable 100 times", "This item is usable in minigames only. Use /mk to consume 1 medkit.\nHeals you by 50hp in 10 seconds."},
@@ -2842,7 +2844,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	PlayerPVData[MAX_PLAYERS][MAX_PLAYER_PVS][E_PV_DATA],
   	HouseData[MAX_HOUSES][E_HOUSE_DATA],
   	GZoneData[MAX_GZONES][E_GZONE_DATA],
-  	EnterpriseData[MAX_ENTERPRISES][E_BUSINESS_DATA],
+  	EnterpriseData[MAX_ENTERPRISES][E_ENT_DATA],
   	PVSelect[MAX_PLAYERS],
 	PVCatSel[MAX_PLAYERS],
 	PVVMenuSel[MAX_PLAYERS],
@@ -8866,16 +8868,16 @@ YCMD:bbuy(playerid, params[], help)
 		    player_notice(playerid, "Enterprise not for sale", "");
 		    break;
 		}
-		if(GetPlayerEnterpriseCount(__GetName(playerid)) > PlayerData[playerid][e_addbizzslots]) {
-			SCM(playerid, -1, ""er"You do not have any free business slots");
+		if(GetPlayerEnterpriseCount(__GetName(playerid)) > PlayerData[playerid][e_addentslots]) {
+			SCM(playerid, -1, ""er"You do not have any free enterprise slots");
 			break;
 		}
 	    if(GetPlayerScoreEx(playerid) < 1000) {
-			SCM(playerid, -1, ""er"You need at least 1000 score to start a business");
+			SCM(playerid, -1, ""er"You need at least 1000 score to start a enterprise");
 			break;
 		}
 		if(GetPlayerMoneyEx(playerid) < 1500000) {
-			SCM(playerid, -1, ""er"You need at least $1,500,000 to start a business");
+			SCM(playerid, -1, ""er"You need at least $1,500,000 to start a enterprise");
 			break;
 		}
 		
@@ -8897,13 +8899,13 @@ YCMD:bbuy(playerid, params[], help)
         GivePlayerMoneyEx(playerid, -1500000);
         SQL_SaveAccount(playerid, false, false);
 		
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the business %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
 	    SCMToAll(-1, gstr);
 		
 		orm_update(EnterpriseData[r][e_ormid]);
 		break;
 	}
-	if(!bFound) SCM(playerid, -1, ""er"You aren't near of any business");
+	if(!bFound) SCM(playerid, -1, ""er"You aren't near of any enterprise");
 	return 1;
 }
 
@@ -8933,7 +8935,7 @@ YCMD:bsell(playerid, params[], help)
 			break;
 		}
 		if(strcmp(EnterpriseData[r][e_owner], __GetName(playerid), true)) {
-			SCM(playerid, -1, ""er"You don't own this business");
+			SCM(playerid, -1, ""er"You don't own this enterprise");
 			break;
 		}
 		
@@ -8952,13 +8954,13 @@ YCMD:bsell(playerid, params[], help)
 	    player_notice(playerid, "SUCCESS!", "");
 	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
 	    
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the business %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
 	    SCMToAll(-1, gstr);
 	    
 	    orm_update(EnterpriseData[r][e_ormid]);
 	    break;
 	}
-	if(!bFound) SCM(playerid, -1, ""er"You aren't near of any business");
+	if(!bFound) SCM(playerid, -1, ""er"You aren't near of any enterprise");
 	return 1;
 }
 
@@ -9651,7 +9653,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /breset /hsetprice /hsetscore\n/setbizzlevel /hcreate /bcreate /createstore /gzonecreate");
+		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /breset /hsetprice /hsetscore\n/setentlevel /hcreate /bcreate /createstore /gzonecreate");
 
         ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
 	}
@@ -13484,7 +13486,7 @@ YCMD:vip(playerid, params[], help)
 	new string[2048];
 	
 	strcat(string, ""nef_yellow"Very Important Player (VIP)\n\n"yellow_e"Features:"white"\n Access to VIP vehicles in /v\n $1,000,000 to your bank (/bank)\n");
-	strcat(string, " 2 PV slots + 1 house/bizz slot\n");
+	strcat(string, " 2 PV slots + 1 house/enterprise slot\n");
 	strcat(string, " VIP Chat (/p)\n 100\% armor on spawn\n Jetpack spawn (/jetpack)\n Hydra spawn (/hydra)\n");
 	strcat(string, " Countdown command (/cd)\n Namechange all 14 days (/changename)\n Open/Close Mellnik's Gate (/opengate /closegate)");
 	strcat(string, "\n Spectate players (/spec)\n More interest each PayDay\n Access to VIP Forums\n Access to Beta Changelogs\n Rainbow effect (/rainbow)\n Custom label (/label)\n");
@@ -14195,15 +14197,15 @@ YCMD:hreset(playerid, params[], help)
 	return 1;
 }
 
-YCMD:setbizzlevel(playerid, params[], help)
+YCMD:setentlevel(playerid, params[], help)
 {
     if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL) return SCM(playerid, -1, NO_PERM);
 
 	extract params -> new blevel; else
 	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /setbizzlevel <level>");
+	    return SCM(playerid, NEF_GREEN, "Usage: /setentlevel <level>");
 	}
-	if(blevel > 20 || blevel < 1) return SCM(playerid, -1, ""er"Business level 1 - 20");
+	if(blevel > 20 || blevel < 1) return SCM(playerid, -1, ""er"Enterprise level 1 - 20");
 	
  	new bool:bFound = false;
  	for(new r = 0; r < MAX_ENTERPRISES; r++)
@@ -14223,10 +14225,10 @@ YCMD:setbizzlevel(playerid, params[], help)
 		UpdateDynamic3DTextLabelText(EnterpriseData[r][e_label_id], -1, gstr);
 		orm_update(EnterpriseData[r][e_ormid]);
 		
-		player_notice(playerid, "Business level set", "");
+		player_notice(playerid, "Enterprise level set", "");
 		break;
  	}
- 	if(!bFound) SCM(playerid, -1, ""er"You aren't near of any business");
+ 	if(!bFound) SCM(playerid, -1, ""er"You aren't near of any enterprise");
 	return 1;
 }
 
@@ -14242,7 +14244,7 @@ YCMD:breset(playerid, params[], help)
 		bFound = true;
 
 		if(EnterpriseData[r][e_sold] == 0) {
-		    player_notice(playerid, "Business must be for sale", "");
+		    player_notice(playerid, "Enterprise must be for sale", "");
 		    break;
 		}
 		
@@ -14250,7 +14252,7 @@ YCMD:breset(playerid, params[], help)
 		{
 		    if(!strcmp(EnterpriseData[r][e_owner], __GetName(i), true) && IsPlayerConnected(i))
 		    {
-		        SCM(i, -1, "An admin destroyed your business!");
+		        SCM(i, -1, "An admin destroyed your enterprise!");
 				break;
 		   	}
 		}
@@ -14271,7 +14273,7 @@ YCMD:breset(playerid, params[], help)
 	    orm_update(EnterpriseData[r][e_ormid]);
   		break;
 	}
-    if(!bFound) SCM(playerid, -1, ""er"You aren't near of any business");
+    if(!bFound) SCM(playerid, -1, ""er"You aren't near of any enterprise");
 	return 1;
 }
 
@@ -14336,9 +14338,9 @@ YCMD:bcreate(playerid, params[], help)
 	    }
 	}
 	
-	if(r == -1) return SCM(playerid, -1, ""er"No free bizz slot");
+	if(r == -1) return SCM(playerid, -1, ""er"No free enterprise slot");
 	
-    ResetBusiness(r);
+    ResetEnterprise(r);
   	GetPlayerPos(playerid, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2]);
     strmid(EnterpriseData[r][e_owner], "NoData", 0, MAX_PLAYER_NAME + 1, MAX_PLAYER_NAME + 1);
     
@@ -14355,7 +14357,7 @@ YCMD:bcreate(playerid, params[], help)
     orm_addvar_int(ormid, EnterpriseData[r][e_date], "date");
 
     orm_setkey(ormid, "id");
-	orm_insert(ormid, "OnBusinessLoadEx", "i", r);
+	orm_insert(ormid, "OnEnterpriseLoadEx", "i", r);
     return 1;
 }
 
@@ -15892,25 +15894,25 @@ YCMD:bmenu(playerid, params[], help)
 
     for(new i = 0; i < MAX_PLAYER_ENTERPRISES; i++)
     {
-        if(i > PlayerData[playerid][e_addbizzslots])
+        if(i > PlayerData[playerid][e_addentslots])
         {
-            format(tmp, sizeof(tmp), "Business Slot %i "red"(Locked)\n", i + 1);
+            format(tmp, sizeof(tmp), "Enterprise Slot %i "red"(Locked)\n", i + 1);
         }
         else
 		{
 		    if(i < GetPlayerEnterpriseCount(__GetName(playerid)))
 		    {
-			    format(tmp, sizeof(tmp), "Business Slot %i "green2"(Used)\n", i + 1);
+			    format(tmp, sizeof(tmp), "Enterprise Slot %i "green2"(Used)\n", i + 1);
 		    }
 		    else
 		    {
-			    format(tmp, sizeof(tmp), "Business Slot %i\n", i + 1);
+			    format(tmp, sizeof(tmp), "Enterprise Slot %i\n", i + 1);
 		    }
 		}
 		strcat(string, tmp);
     }
 
-    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE, DIALOG_STYLE_LIST, ""nef" :: Business Menu", string, "Select", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE, DIALOG_STYLE_LIST, ""nef" :: Enterprise Menu", string, "Select", "Cancel");
 	return 1;
 }
 
@@ -16765,7 +16767,7 @@ YCMD:achs(playerid, params[], help)
 		            case 13: format(gstr, sizeof(gstr), ""white"[%s"white"] BMX Master -> Win /bmx\n", tmp[e_ach_bmxmaster]);
 		            case 14: format(gstr, sizeof(gstr), ""white"[%s"white"] Settled -> Purchase a house\n", tmp[e_ach_settled]);
 		            case 15: format(gstr, sizeof(gstr), ""white"[%s"white"] Biocalc -> Solve 40 math questions\n", tmp[e_ach_biocalc]);
-		            case 16: format(gstr, sizeof(gstr), ""white"[%s"white"] Made Man -> Rise a business to level 20\n", tmp[e_ach_mademan]);
+		            case 16: format(gstr, sizeof(gstr), ""white"[%s"white"] Made Man -> Rise a enterprise to level 20\n", tmp[e_ach_mademan]);
 				}
 		    }
 		    
@@ -17588,23 +17590,23 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		    }
 	        case DIALOG_ENTERPRISE:
 	        {
-				format(gstr2, sizeof(gstr2), ""nef" :: Business Menu > Slot: %i", listitem + 1);
+				format(gstr2, sizeof(gstr2), ""nef" :: Enterprise Menu > Slot: %i", listitem + 1);
 
 	            PlayerData[playerid][EnterpriseIdSelected] = listitem;
 
-		        if(listitem > PlayerData[playerid][e_addbizzslots])
+		        if(listitem > PlayerData[playerid][e_addentslots])
 		        {
-		            ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr2, ""nef_green"This business slot is locked.\n\n"white"You may unlock it by purchasing an extra slot at Gold Credits (/gc)", "OK", "");
+		            ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr2, ""nef_green"This enterprise slot is locked.\n\n"white"You may unlock it by purchasing an extra slot at Gold Credits (/gc)", "OK", "");
 		        }
 		        else
 				{
 				    if(listitem >= GetPlayerEnterpriseCount(__GetName(playerid)))
 				    {
-				        player_notice(playerid, "Business slot not in use", "");
+				        player_notice(playerid, "Enterprise slot not in use", "");
 				    }
 				    else
 				    {
-				        ShowPlayerDialog(playerid, DIALOG_ENTERPRISE + 1, DIALOG_STYLE_LIST, gstr2, "Goto This Business\nSet Business Type\nUpgrade Business Level", "Select", "Cancel");
+				        ShowPlayerDialog(playerid, DIALOG_ENTERPRISE + 1, DIALOG_STYLE_LIST, gstr2, "Goto This Enterprise\nSet Enterprise Type\nUpgrade Enterprise Level", "Select", "Cancel");
 				    }
 				}
 	            return true;
@@ -17621,7 +17623,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				{
 				    case 0:
 				    {
-						new r = GetBusinessSlotBySelection(playerid);
+						new r = GetEntpriseSlotBySelection(playerid);
 
 						if(r != -1) {
 				   			SetPlayerPos(playerid, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2]);
@@ -17629,7 +17631,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				   			SetPVarInt(playerid, "doingStunt", 0);
 				   			PlayerData[playerid][tickJoin_bmx] = 0;
 						} else {
-							player_notice(playerid, "Couldn't find the business in that slot", "Report on forums", 5000);
+							player_notice(playerid, "Couldn't find the enterprise in that slot", "Report on forums", 5000);
 						}
 					}
 				    case 1:
@@ -17645,22 +17647,22 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        }
 	        case DIALOG_ENTERPRISE_SET_TYPE:
 	        {
-	            new r = GetBusinessSlotBySelection(playerid);
+	            new r = GetEntpriseSlotBySelection(playerid);
 	            
 				if(r != -1) {
-				    player_notice(playerid, "Business type set", "");
+				    player_notice(playerid, "Enterprise type set", "");
 					EnterpriseData[r][e_type] = E_ENT_TYPE:listitem;
 					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 					UpdateDynamic3DTextLabelText(EnterpriseData[r][e_label_id], -1, gstr);
 					orm_update(EnterpriseData[r][e_ormid]);
 				} else {
-					return player_notice(playerid, "Couldn't find the business in that slot", "Report on forums", 5000);
+					return player_notice(playerid, "Couldn't find the enterprise in that slot", "Report on forums", 5000);
 				}
 				return true;
 	        }
 	        case DIALOG_ENTERPRISE_UPGRADE:
 	        {
-	            new r = GetBusinessSlotBySelection(playerid);
+	            new r = GetEntpriseSlotBySelection(playerid);
 			    
 				if(r != -1) {
 		            if(EnterpriseData[r][e_level] >= MAX_ENTERPRISE_LEVEL)
@@ -17683,10 +17685,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 
 					gstr2[0] = '\0';
-					strcat(gstr2, ""white"You have successfully upgraded your business's level!\n\nCurrent Business Level: ");
-                 	format(gstr, sizeof(gstr), "%i\nCurrent Business Earnings: $%s", EnterpriseData[r][e_level], number_format(GetBusinessEarnings(r)));
+					strcat(gstr2, ""white"You have successfully upgraded your enterprise's level!\n\nCurrent Enterprise Level: ");
+                 	format(gstr, sizeof(gstr), "%i\nCurrent Enterprise Earnings: $%s", EnterpriseData[r][e_level], number_format(GetEnterpriseEarnings(r)));
                  	strcat(gstr2, gstr);
-	                format(gstr, sizeof(gstr), ""nef" :: Business Level Upgrade > Slot: %i", PlayerData[playerid][EnterpriseIdSelected] + 1);
+	                format(gstr, sizeof(gstr), ""nef" :: Enterprise Level Upgrade > Slot: %i", PlayerData[playerid][EnterpriseIdSelected] + 1);
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr, gstr2, "OK", "");
                  	
 					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
@@ -17694,13 +17696,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    
 					orm_update(EnterpriseData[r][e_ormid]);
 				} else {
-					player_notice(playerid, "Couldn't find the business in that slot", "Report on forums", 5000);
+					player_notice(playerid, "Couldn't find the enterprise in that slot", "Report on forums", 5000);
 				}
 	            return true;
 	        }
 	        case DIALOG_CM:
 	        {
-				// How to get credits, Toy slots, pvs slots, house slots, house obj slots, business slot, instant namechange, medkit x20, medkit x100, money boost x2, money boost x3, scoreboost x2, scoreboost x3, master boost
+				// How to get credits, Toy slots, pvs slots, house slots, house obj slots, enterprise slot, instant namechange, medkit x20, medkit x100, money boost x2, money boost x3, scoreboost x2, scoreboost x3, master boost
 				new string[1024];
 	            switch(listitem)
 	            {
@@ -17818,7 +17820,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[3][E_item_credits]);
 	            return true;
 	        }
-	        case DIALOG_CM + 6: // business slot
+	        case DIALOG_CM + 6: // enterprise slot
 	        {
 	            if(GetCredits(playerid) < g_aCreditsProductMatrix[4][E_item_credits])
 	            {
@@ -17827,14 +17829,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                return 1;
 	            }
 
-				if(PlayerData[playerid][e_addbizzslots] >= 4)
+				if(PlayerData[playerid][e_addentslots] >= 4)
 				{
-				    SCM(playerid, -1, ""er"You already have 4 additional business slots!");
+				    SCM(playerid, -1, ""er"You already have 4 additional enterprise slots!");
 				    ShowDialog(playerid, DIALOG_CM);
 				    return 1;
 				}
 
-				PlayerData[playerid][e_addbizzslots]++;
+				PlayerData[playerid][e_addentslots]++;
 				
 				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[4][E_item_credits]));
 				player_notice(playerid, "Item purchased", gstr, 5000);
@@ -19021,8 +19023,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						strcat(cstring, ""red"» "nef_yellow"Gangs\n");
 						strcat(cstring, ""white"Gangs are groups which have been created by players\n\n");
 
-						strcat(cstring, ""red"» "nef_yellow"Houses/Business\n");
-						strcat(cstring, ""white"Houses and business are for sale around San Andreas. Use "yellow"/cmds "white"for more infos");
+						strcat(cstring, ""red"» "nef_yellow"Houses/Enterpises\n");
+						strcat(cstring, ""white"Houses and enterprises are for sale around San Andreas. Use "yellow"/cmds "white"for more infos");
 
 						ShowPlayerDialog(playerid, DIALOG_HELP + 1, DIALOG_STYLE_MSGBOX, ""nef" :: General Help", cstring, "OK", "Back");
 	                }
@@ -19154,18 +19156,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						strcat(cstring, ""yellow"/gangs "white"- online gangs\n");
 						strcat(cstring, ""yellow"/gwars "white"- view ongoing gwars\n");
 		            }
-		            case 3: // House/Business
+		            case 3: // House/Enterprises
 		            {
+						strcat(cstring, ""yellow"/hmenu "white"- house menu\n");
+						strcat(cstring, ""yellow"/bmenu "white"- enterprise menu\n");
 		                strcat(cstring, ""yellow"/upgrade "white"- upgrade your house interior\n");
 						strcat(cstring, ""yellow"/enter "white"- enter a unlocked house\n");
 						strcat(cstring, ""yellow"/buy "white"- buy a house\n");
 						strcat(cstring, ""yellow"/exit "white"- exit your house\n");
 						strcat(cstring, ""yellow"/sell "white"- sell your house\n");
 						strcat(cstring, ""yellow"/hlock "white"- lock or unlock your house\n");
-						strcat(cstring, ""yellow"/gotomyhouse "white"- goto your house\n");
-						strcat(cstring, ""yellow"/gotomybizz "white"- goto your business\n");
-						strcat(cstring, ""yellow"/bbuy "white"- buy a business\n");
-						strcat(cstring, ""yellow"/bsell "white"- sell your business\n");
+						strcat(cstring, ""yellow"/buy "white"- buy a enterprise\n");
+						strcat(cstring, ""yellow"/sell "white"- sell your enterprise\n");
 		            }
 		            case 4: // Private Vehicle
 		            {
@@ -20788,7 +20790,7 @@ function:OnHouseLoad()
 	return 1;
 }
 
-function:OnBusinessLoad()
+function:OnEnterpriseLoad()
 {
 	new rows = cache_get_row_count();
 
@@ -20816,7 +20818,7 @@ function:OnBusinessLoad()
 	return 1;
 }
 
-function:OnBusinessLoadEx(slot)
+function:OnEnterpriseLoadEx(slot)
 {
 	SetupEnterprise(slot);
 	return 1;
@@ -20981,7 +20983,7 @@ ResetGZones()
 	}
 }
 
-ResetBusiness(slot = -1)
+ResetEnterprise(slot = -1)
 {
 	if(slot == -1)
 	{
@@ -21035,8 +21037,8 @@ LoadHouses()
 
 LoadEnterpises()
 {
-	ResetBusiness();
-	mysql_tquery(pSQL, "SELECT * FROM `enterprises`;", "OnBusinessLoad");
+	ResetEnterprise();
+	mysql_tquery(pSQL, "SELECT * FROM `enterprises`;", "OnEnterpriseLoad");
 	return 1;
 }
 
@@ -22054,7 +22056,7 @@ SQL_RegisterAccount(playerid, register, password[])
 	orm_addvar_int(ormid, PlayerData[playerid][e_addpvslots], "addpvslots");
 	orm_addvar_int(ormid, PlayerData[playerid][e_addtoyslots], "addtoyslots");
 	orm_addvar_int(ormid, PlayerData[playerid][e_addhouseslots], "addhouseslots");
-	orm_addvar_int(ormid, PlayerData[playerid][e_addbizzslots], "addbizzslots");
+	orm_addvar_int(ormid, PlayerData[playerid][e_addentslots], "addbizzslots");
 	orm_addvar_int(ormid, PlayerData[playerid][e_addhouseitemslots], "addhouseitemslots");
 	orm_addvar_int(ormid, PlayerData[playerid][e_derbywins], "derbywins");
 	orm_addvar_int(ormid, PlayerData[playerid][e_racewins], "racewins");
@@ -23235,7 +23237,7 @@ server_initialize()
 	Command_AddAltNamed("stopanims", "clearanims");
 	Command_AddAltNamed("bmenu", "gotomybizz");
 	Command_AddAltNamed("credits", "secredits");
-	Command_AddAltNamed("bmenu", "gotomybusiness");
+	Command_AddAltNamed("bmenu", "gotomyenterprise");
     Command_AddAltNamed("mk", "medkit");
     Command_AddAltNamed("mk", "medkits");
     Command_AddAltNamed("toys", "wear");
@@ -23294,8 +23296,7 @@ server_initialize()
 	Command_AddAltNamed("spawn", "kill");
 	Command_AddAltNamed("announce", "ann");
 	Command_AddAltNamed("announce2", "ann2");
-	Command_AddAltNamed("gotomybusiness", "gotomybizz");
-	Command_AddAltNamed("gotomybusiness", "gotomyprop");
+	Command_AddAltNamed("bmenu", "gotomybizz");
 	Command_AddAltNamed("go", "goto");
 	Command_AddAltNamed("slap", "throw");
 	Command_AddAltNamed("giveweapon", "givegun");
@@ -25785,8 +25786,8 @@ function:QueueProcess()
 			new Float:bmul;
 			new BankInterest,
 			    BankInterestVIP,
-			    BusinessInterest,
-			    BusinessInterestVIP;
+			    EnterpriseInterest,
+			    EnterpriseInterestVIP;
 		    
 		    if(PlayerData[i][e_bank] > 0 && PlayerData[i][e_bank] < 1000000 && PlayerData[i][e_time] < 126000)
 		        bmul = 1.5;
@@ -25823,23 +25824,23 @@ function:QueueProcess()
 
 			if(GetPlayerEnterpriseCount(__GetName(i)) > 0)
 			{
-			    BusinessInterest = GetPlayerBusinessEarnings(i);
-			    BusinessInterestVIP = floatround(BusinessInterest / 2.5, floatround_round);
+			    EnterpriseInterest = GetPlayerEnterpriseEarnings(i);
+			    EnterpriseInterestVIP = floatround(EnterpriseInterest / 2.5, floatround_round);
 			    
-			    format(string3, sizeof(string3), "Business earnings: "green"$%s", number_format(BusinessInterest));
+			    format(string3, sizeof(string3), "Enterprise earnings: "green"$%s", number_format(EnterpriseInterest));
 			    
 			   	if(PlayerData[i][e_vip] == 1)
-			   		format(string5, sizeof(string5), "Business earnings "lb_e"(VIP BOOST)"white": "green"$%s", number_format(BusinessInterestVIP));
+			   		format(string5, sizeof(string5), "Enterprise earnings "lb_e"(VIP BOOST)"white": "green"$%s", number_format(EnterpriseInterestVIP));
 				else
-					format(string5, sizeof(string5), "Business earnings "lb_e"(VIP BOOST)"white": "red"---");
+					format(string5, sizeof(string5), "Enterprise earnings "lb_e"(VIP BOOST)"white": "red"---");
 			}
 			else
 			{
-				format(string3, sizeof(string3), "Business earnings: "red"--- (You don't own any business)");
-				format(string5, sizeof(string5), "Business earnings "lb_e"(VIP BOOST)"white": "red"---");
+				format(string3, sizeof(string3), "Enterprise earnings: "red"--- (You don't own any enterprises)");
+				format(string5, sizeof(string5), "Enterprise earnings "lb_e"(VIP BOOST)"white": "red"---");
 			}
 			
-			PlayerData[i][e_bank] = PlayerData[i][e_bank] + BusinessInterest + BusinessInterestVIP + BankInterest + BankInterestVIP;
+			PlayerData[i][e_bank] = PlayerData[i][e_bank] + EnterpriseInterest + EnterpriseInterestVIP + BankInterest + BankInterestVIP;
 			
 			format(string2, sizeof(string2), "Bank balance after PayDay: "green"$%s", number_format(PlayerData[i][e_bank]));
 			
@@ -25981,9 +25982,9 @@ function:OnQueueReceived()
 						{
 							PlayerData[playerid][e_addhouseslots]++;
 						}
-						if(PlayerData[playerid][e_addbizzslots] < 4)
+						if(PlayerData[playerid][e_addentslots] < 4)
 						{
-							PlayerData[playerid][e_addbizzslots]++;
+							PlayerData[playerid][e_addentslots]++;
 						}
 		                
 						SCM(playerid, -1, ""server_sign" "r_besch"You received VIP status + $1,000,000 bank money + 2 PV Slots + 1 House Slot + 1 Bizz Slot!");
@@ -27588,33 +27589,33 @@ function:ShowDialog(playerid, dialogid)
 		}
 		case DIALOG_ENTERPRISE_SET_TYPE:
 		{
-		    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_SET_TYPE, DIALOG_STYLE_LIST, ""nef" :: Select a business type", "Loan Sharks\nRobbery\nSmuggling\nProstitution\nMeth Lab", "Select", "Back");
+		    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_SET_TYPE, DIALOG_STYLE_LIST, ""nef" :: Select an Enterprise type", "Loan Sharks\nRobbery\nSmuggling\nProstitution\nMeth Lab\nBitcoin Mining Farm", "Select", "Back");
 		}
 	    case DIALOG_ENTERPRISE_UPGRADE:
 	    {
 	        new string[512];
 	        
-	        new r = GetBusinessSlotBySelection(playerid);
+	        new r = GetEntpriseSlotBySelection(playerid);
 	        
 			if(r != -1) {
-			    strcat(string, ""white"The higher the level the higher the earnings. Upgrade your business\nlevel to receive more money each payday! Max. level: 20\n\nCurrent Business Level: ");
+			    strcat(string, ""white"The higher the level the higher the earnings. Upgrade your enterprise\nlevel to receive more money each payday! Max. level: 20\n\nCurrent Enterprise Level: ");
 			    
 			    if(EnterpriseData[r][e_level] >= MAX_ENTERPRISE_LEVEL)
 			    {
-				    format(gstr, sizeof(gstr), "%i\nCurrent Business Earnings: $%s\n\nThis business reached it's max. level!", EnterpriseData[r][e_level], number_format(GetBusinessEarnings(r)));
+				    format(gstr, sizeof(gstr), "%i\nCurrent Enterprise Earnings: $%s\n\nThis Enterprise reached it's max. level!", EnterpriseData[r][e_level], number_format(GetEnterpriseEarnings(r)));
 					strcat(string, gstr);
 			    }
 			    else
 			    {
-				    format(gstr, sizeof(gstr), "%i\nCurrent Business Earnings: $%s\nEarnings in next level: $%s\n\nUpgrade now for "yellow_e"$%s"white"!",
+				    format(gstr, sizeof(gstr), "%i\nCurrent Enterprise Earnings: $%s\nEarnings in next level: $%s\n\nUpgrade now for "yellow_e"$%s"white"!",
 						EnterpriseData[r][e_level],
-						number_format(GetBusinessEarnings(r)),
+						number_format(GetEnterpriseEarnings(r)),
 						number_format(g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][E_bearnings]),
 						number_format(g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][E_bupgradeprice]));
 					strcat(string, gstr);
 				}
 				
-	 	        format(gstr, sizeof(gstr), ""nef" :: Business Level Upgrade > Slot: %i", PlayerData[playerid][EnterpriseIdSelected] + 1);
+	 	        format(gstr, sizeof(gstr), ""nef" :: Enterprise Level Upgrade > Slot: %i", PlayerData[playerid][EnterpriseIdSelected] + 1);
 
 	            if(EnterpriseData[r][e_level] == MAX_ENTERPRISE_LEVEL) {
 					ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_UPGRADE, DIALOG_STYLE_MSGBOX, gstr, string, "Back", "");
@@ -27622,14 +27623,14 @@ function:ShowDialog(playerid, dialogid)
 	                ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_UPGRADE, DIALOG_STYLE_MSGBOX, gstr, string, "Upgrade", "Back");
 				}
 			} else {
-                player_notice(playerid, "Couldn't find the business in that slot", "Report on forums", 4000);
+                player_notice(playerid, "Couldn't find the Enterprise in that slot", "Report on forums", 4000);
 			}
 		}
 	    case DIALOG_CM:
 	    {
 	        new string[1024];
 
-	        strcat(string, ""red"How to get Gold Credits\nToy Slots\nCustom car slot\nHouse Slots\nHouse Item Slots\nBusiness Slots\nInstant Namechange Access");
+	        strcat(string, ""red"How to get Gold Credits\nToy Slots\nCustom car slot\nHouse Slots\nHouse Item Slots\nEnterprise Slots\nInstant Namechange Access");
 	        strcat(string, "\nMedkit x20\nMedkit x100\nMoney Boost x2\nMoney Boost x3\nScore Boost x2\nScore Boost x3\nMaster Boost\nReset K/D");
 
 	        ShowPlayerDialog(playerid, DIALOG_CM, DIALOG_STYLE_LIST, ""nef" :: Gold Credits", string, "Select", "Cancel");
@@ -27764,7 +27765,7 @@ function:ShowDialog(playerid, dialogid)
 	    }
 	    case DIALOG_COMMANDS:
 	    {
-        	ShowPlayerDialog(playerid, DIALOG_COMMANDS, DIALOG_STYLE_LIST, ""nef" :: Commands", "General\nAccount\nGang\nHouse/Business\nCustom cars\nOther\nVIP\nGold Credits", "Select", "Cancel");
+        	ShowPlayerDialog(playerid, DIALOG_COMMANDS, DIALOG_STYLE_LIST, ""nef" :: Commands", "General\nAccount\nGang\nHouse/Enterprise\nCustom cars\nOther\nVIP\nGold Credits", "Select", "Cancel");
 		}
 	    case DIALOG_HOUSE_UPGRADE:
 	    {
@@ -28996,7 +28997,7 @@ GetHouseIdByPlayerSlotSel(playerid)
 	return -1;
 }
 
-GetBusinessSlotBySelection(playerid)
+GetEntpriseSlotBySelection(playerid)
 {
 	new idx = 0;
 	for(new r = 0; r < MAX_ENTERPRISES; r++)
@@ -29568,19 +29569,19 @@ function:player_medkit_charge(playerid)
 	return 1;
 }
 
-GetPlayerBusinessEarnings(playerid)
+GetPlayerEnterpriseEarnings(playerid)
 {
 	new __int32 = 0;
 	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
 	    if(strcmp(EnterpriseData[r][e_owner], __GetName(playerid), true)) continue;
 	    
-	    __int32 += GetBusinessEarnings(r);
+	    __int32 += GetEnterpriseEarnings(r);
 	}
 	return __int32;
 }
 
-GetBusinessEarnings(r)
+GetEnterpriseEarnings(r)
 {
 	new __int32 = 0;
 	for(new i = 0; i < sizeof(g_aEnterpriseLevelMatrix); i++)
@@ -30506,7 +30507,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				orm_addvar_int(ormid, PlayerData[playerid][e_addpvslots], "addpvslots");
 				orm_addvar_int(ormid, PlayerData[playerid][e_addtoyslots], "addtoyslots");
 				orm_addvar_int(ormid, PlayerData[playerid][e_addhouseslots], "addhouseslots");
-				orm_addvar_int(ormid, PlayerData[playerid][e_addbizzslots], "addbizzslots");
+				orm_addvar_int(ormid, PlayerData[playerid][e_addentslots], "addbizzslots");
 				orm_addvar_int(ormid, PlayerData[playerid][e_addhouseitemslots], "addhouseitemslots");
 				orm_addvar_int(ormid, PlayerData[playerid][e_derbywins], "derbywins");
 				orm_addvar_int(ormid, PlayerData[playerid][e_racewins], "racewins");
@@ -31292,7 +31293,7 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][e_addpvslots] = 0;
 	PlayerData[playerid][e_addtoyslots] = 0;
 	PlayerData[playerid][e_addhouseslots] = 0;
-	PlayerData[playerid][e_addbizzslots] = 0;
+	PlayerData[playerid][e_addentslots] = 0;
 	PlayerData[playerid][e_addhouseitemslots] = 0;
 	PlayerData[playerid][HouseSlotSelected] = 0;
 	PlayerData[playerid][EnterpriseIdSelected] = 0;
