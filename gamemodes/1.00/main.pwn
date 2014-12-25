@@ -281,13 +281,6 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define REAC_TIME              			(900000)
 #define MAX_STORES                      (80)
 #define MAX_STORE_NAME                  (24)
-
-#define MAX_BANKS    			 		20
-#define MAX_AMMUNATIONS    		 		20
-#define MAX_BURGERSHOTS    		 		20
-#define MAX_CLUCKINBELLS    	 		20
-#define MAX_PIZZASTACKS 		 		20
-#define MAX_TFS                         20
 #define COUNT_DOWN_TILL_RACE_START 		(21)
 #define MAX_RACE_TIME 					(300)
 #define RACE_MAX_CHECKPOINTS            (75)
@@ -2849,25 +2842,6 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	toyslist = mS_INVALID_LISTID,
 	hobjslist = mS_INVALID_LISTID,
 	skinlist = mS_INVALID_LISTID,
-  	BankPickOut[MAX_BANKS],
-  	BankPickInt[MAX_BANKS],
-  	BankPickMenu[MAX_BANKS],
-  	AmmunationPickOut[MAX_AMMUNATIONS],
-  	AmmunationPickInt[MAX_AMMUNATIONS],
-  	BurgerPickOut[MAX_BURGERSHOTS],
-  	BurgerPickInt[MAX_BURGERSHOTS],
-  	CluckinBellPickOut[MAX_CLUCKINBELLS],
-  	CluckinBellPickInt[MAX_CLUCKINBELLS],
-  	PizzaPickOut[MAX_PIZZASTACKS],
-  	PizzaPickInt[MAX_PIZZASTACKS],
-  	TFSPickOut[MAX_TFS],
-  	TFSPickInt[MAX_TFS],
-  	BankMIcon[MAX_BANKS],
-  	CluckinBellMIcon[MAX_CLUCKINBELLS],
-  	BurgerMIcon[MAX_BURGERSHOTS],
-  	AmmunationMIcon[MAX_AMMUNATIONS],
-  	PizzaMIcon[MAX_PIZZASTACKS],
-  	TFSMIcon[MAX_TFS],
   	bool:ReactionOn,
   	g_AdminLCTo,
   	g_AdminLCBack,
@@ -6477,174 +6451,65 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 
  	if(!IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) != PLAYER_STATE_SPECTATING)
 	{
-	    new file[50];
-   		for(new b = 0; b < MAX_BANKS; b++)
-   		{
-   		    format(file, sizeof(file), "/Store/Banks/%i.ini", b);
-  			if(pickupid == BankPickInt[b])
-			{
-				gTeam[playerid] = gFREEROAM;
-				SetPlayerPos(playerid, dini_Float(file, "SpawnOutX"), dini_Float(file, "SpawnOutY"), dini_Float(file, "SpawnOutZ"));
-		        SetPlayerFacingAngle(playerid, dini_Float(file, "SpawnOutAngle"));
-		        SetPlayerInterior(playerid, 0);
-		        SetPlayerVirtualWorld(playerid, 0);
-		        SetCameraBehindPlayer(playerid);
-		        return 1;
-			}
-		}
- 		for(new a = 0; a < MAX_AMMUNATIONS; a++)
+		for(new r = 0; r < MAX_STORES; r++)
 		{
-		    format(file, sizeof(file), "/Store/Ammunations/%i.ini", a);
-			if(pickupid == AmmunationPickInt[a])
-			{
-			    gTeam[playerid] = gFREEROAM;
-				SetPlayerPos(playerid, dini_Float(file, "SpawnOutX"), dini_Float(file, "SpawnOutY"), dini_Float(file, "SpawnOutZ"));
-		        SetPlayerFacingAngle(playerid, dini_Float(file, "SpawnOutAngle"));
-		        SetPlayerInterior(playerid, 0);
-		        SetPlayerVirtualWorld(playerid, 0);
-		        SetCameraBehindPlayer(playerid);
-		        return 1;
-			}
-		}
-		for(new bs = 0; bs < MAX_BURGERSHOTS; bs++)
-		{
-		    format(file, sizeof(file), "/Store/BurgerShots/%i.ini", bs);
-			if(pickupid == BurgerPickInt[bs])
-			{
-			    gTeam[playerid] = gFREEROAM;
-				SetPlayerPos(playerid, dini_Float(file, "SpawnOutX"), dini_Float(file, "SpawnOutY"), dini_Float(file, "SpawnOutZ"));
-		        SetPlayerFacingAngle(playerid, dini_Float(file, "SpawnOutAngle"));
-		        SetPlayerInterior(playerid, 0);
-		        SetPlayerVirtualWorld(playerid, 0);
-		        SetCameraBehindPlayer(playerid);
-		        return 1;
-			}
-		}
-		for(new cb = 0; cb < MAX_CLUCKINBELLS; cb++)
-		{
-		    format(file, sizeof(file), "/Store/CluckinBells/%i.ini", cb);
-			if(pickupid == CluckinBellPickInt[cb])
-			{
-			    gTeam[playerid] = gFREEROAM;
-				SetPlayerPos(playerid, dini_Float(file, "SpawnOutX"), dini_Float(file, "SpawnOutY"), dini_Float(file, "SpawnOutZ"));
-		        SetPlayerFacingAngle(playerid, dini_Float(file, "SpawnOutAngle"));
-		        SetPlayerInterior(playerid, 0);
-		        SetPlayerVirtualWorld(playerid, 0);
-		        SetCameraBehindPlayer(playerid);
-		        return 1;
-			}
-		}
-		for(new ps = 0; ps < MAX_PIZZASTACKS; ps++)
-		{
-		    format(file, sizeof(file), "/Store/WellStackedPizzas/%i.ini", ps);
-			if(pickupid == PizzaPickInt[ps])
-			{
-			    gTeam[playerid] = gFREEROAM;
-				SetPlayerPos(playerid, dini_Float(file, "SpawnOutX"), dini_Float(file, "SpawnOutY"), dini_Float(file, "SpawnOutZ"));
-		        SetPlayerFacingAngle(playerid, dini_Float(file, "SpawnOutAngle"));
-		        SetPlayerInterior(playerid, 0);
-		        SetPlayerVirtualWorld(playerid, 0);
-		        SetCameraBehindPlayer(playerid);
-		        return 1;
-			}
-		}
- 		for(new tfs = 0; tfs < MAX_TFS; tfs++)
-		{
-		    format(file, sizeof(file), "/Store/TwentyFourSeven/%i.ini", tfs);
-			if(pickupid == TFSPickInt[tfs])
-			{
-			    gTeam[playerid] = gFREEROAM;
-				SetPlayerPos(playerid, dini_Float(file, "SpawnOutX"), dini_Float(file, "SpawnOutY"), dini_Float(file, "SpawnOutZ"));
-		        SetPlayerFacingAngle(playerid, dini_Float(file, "SpawnOutAngle"));
-		        SetPlayerInterior(playerid, 0);
-		        SetPlayerVirtualWorld(playerid, 0);
-		        SetCameraBehindPlayer(playerid);
-		        return 1;
-			}
-		}
-
-	    // aout
-		for(new bo = 0; bo < MAX_BANKS; bo++)
-		{
-		    if(pickupid == BankPickOut[bo])
+		    if(pickupid == StoreData[r][e_pickup_int])
 		    {
-		        ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
+		        gTeam[playerid] = gFREEROAM;
+		        SetPlayerPos(playerid, StoreData[r][e_spawn][0], StoreData[r][e_spawn][1], StoreData[r][e_spawn][2]);
+		        SetPlayerFacingAngle(playerid, StoreData[r][e_spawn][3]);
+		        SetPlayerInterior(playerid, 0);
+		        SetPlayerVirtualWorld(playerid, 0);
+		        SetCamerBehindPlayer(playerid);
+		        return 1;
+		    }
+		    else if(pickupid == StoreData[r][e_pickup_out])
+		    {
 		        gTeam[playerid] = STORE;
-		        SetPlayerPos(playerid, 2307.8840, -15.4403, 26.7496);
-				SetPlayerFacingAngle(playerid, 272.2517);
-		        SetPlayerInterior(playerid, 0);
-		        SetPlayerVirtualWorld(playerid, (bo + 1000));
-                return 1;
-			}
-		}
-		for(new ao = 0; ao < MAX_AMMUNATIONS; ao++)
-		{
-  			if(pickupid == AmmunationPickOut[ao])
-		    {
 		        ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-		    	gTeam[playerid] = STORE;
-		        SetPlayerPos(playerid, 315.4236, -140.6816, 999.6016);
-				SetPlayerFacingAngle(playerid, 1.2109);
-		        SetPlayerInterior(playerid, 7);
-		        SetPlayerVirtualWorld(playerid, (ao + 1000));
-		        return 1;
-			}
-		}
-		for(new bso = 0; bso < MAX_BURGERSHOTS; bso++)
-		{
-  			if(pickupid == BurgerPickOut[bso])
-		    {
-		        ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-		    	gTeam[playerid] = STORE;
-		        SetPlayerPos(playerid, 365.3955, -73.8744, 1001.5078);
-				SetPlayerFacingAngle(playerid, 304.0766);
-		        SetPlayerInterior(playerid, 10);
-		        SetPlayerVirtualWorld(playerid, (bso + 1000));
-		        SetPlayerShopName(playerid, "FDBURG");
-		        return 1;
-			}
-
-		}
-		for(new cbo = 0; cbo < MAX_CLUCKINBELLS; cbo++)
-		{
-  			if(pickupid == CluckinBellPickOut[cbo])
-			{
-			    ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-				gTeam[playerid] = STORE;
-		        SetPlayerPos(playerid, 365.0724, -8.9202, 1001.8516);
-				SetPlayerFacingAngle(playerid, 358.4327);
-		        SetPlayerInterior(playerid, 9);
-		        SetPlayerVirtualWorld(playerid, (cbo + 1000));
-		        SetPlayerShopName(playerid, "FDCHICK");
-		        return 1;
-			}
-		}
-		for(new pso = 0; pso < MAX_PIZZASTACKS; pso++)
-		{
-  			if(pickupid == PizzaPickOut[pso])
-		    {
-		        ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-		    	gTeam[playerid] = STORE;
-		        SetPlayerPos(playerid, 370.6657, -129.9993, 1001.4922);
-				SetPlayerFacingAngle(playerid, 358.0357);
-		        SetPlayerInterior(playerid, 5);
-		        SetPlayerVirtualWorld(playerid, (pso + 1000));
-		        SetPlayerShopName(playerid, "FDPIZA");
-		        return 1;
-			}
-		}
-		for(new tfso = 0; tfso < MAX_TFS; tfso++)
-		{
-  			if(pickupid == TFSPickOut[tfso])
-		    {
-		        ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-		    	gTeam[playerid] = STORE;
-		        SetPlayerPos(playerid, -22.3658, -185.1534, 1003.5469);
-				SetPlayerFacingAngle(playerid, 311.6577);
-		        SetPlayerInterior(playerid, 17);
-		        SetPlayerVirtualWorld(playerid, (tfso + 1000));
-		        return 1;
-			}
+		        
+				switch(StoreData[r][e_type])
+				{
+				    case STORE_TYPE_AMMUNATION:
+				    {
+				        SetPlayerPos(playerid, 315.4236, -140.6816, 999.6016);
+						SetPlayerFacingAngle(playerid, 1.2109);
+				        SetPlayerInterior(playerid, 7);
+					}
+				    case STORE_TYPE_BANK:
+				    {
+						SetPlayerPos(playerid, 2307.8840, -15.4403, 26.7496);
+						SetPlayerFacingAngle(playerid, 272.2517);
+						SetPlayerInterior(playerid, 0);
+				    }
+				    case STORE_TYPE_BURGERSHOT:
+					{
+				        SetPlayerPos(playerid, 365.3955, -73.8744, 1001.5078);
+						SetPlayerFacingAngle(playerid, 304.0766);
+				        SetPlayerInterior(playerid, 10);
+				    }
+				    case STORE_TYPE_CLUCKINBELLS:
+				    {
+				        SetPlayerPos(playerid, 365.0724, -8.9202, 1001.8516);
+						SetPlayerFacingAngle(playerid, 358.4327);
+				        SetPlayerInterior(playerid, 9);
+				    }
+				    case STORE_TYPE_247:
+				    {
+				        SetPlayerPos(playerid, -22.3658, -185.1534, 1003.5469);
+						SetPlayerFacingAngle(playerid, 311.6577);
+				        SetPlayerInterior(playerid, 17);
+				    }
+				    case STORE_TYPE_STACKEDPIZZAS:
+				    {
+				        SetPlayerPos(playerid, 370.6657, -129.9993, 1001.4922);
+						SetPlayerFacingAngle(playerid, 358.0357);
+				        SetPlayerInterior(playerid, 5);
+				    }
+				}
+				SetPlayerVirtualWorld(playerid, r + 1000);
+				return 1;
+		    }
 		}
 	}
 	return 1;
