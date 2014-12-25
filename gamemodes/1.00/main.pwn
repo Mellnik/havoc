@@ -642,6 +642,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_ip[MAX_PLAYER_IP + 1],
 	e_email[26],
 	e_level,
+	e_mapper,
 	e_score,
 	e_money,
 	e_bank,
@@ -9557,7 +9558,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /breset /hsetprice /hsetscore\n/setentlevel /hcreate /bcreate /createstore /gzonecreate");
+		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /breset /hsetprice /hsetscore\n/setentlevel /hcreate /ecreate /createstore /gzonecreate");
 
         ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
 	}
@@ -14212,7 +14213,7 @@ YCMD:createrace(playerid, params[], help)
 }
 #endif
 
-YCMD:bcreate(playerid, params[], help)
+YCMD:ecreate(playerid, params[], help)
 {
     if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL)
 	{
@@ -21888,43 +21889,7 @@ SQL_RegisterAccount(playerid, register, password[])
     
     new ORM:ormid = PlayerData[playerid][e_ormid] = orm_create("accounts");
     
- 	orm_addvar_int(ormid, PlayerData[playerid][e_accountid], "id");
-	orm_addvar_string(ormid, PlayerData[playerid][e_name], MAX_PLAYER_NAME + 1, "name");
-	orm_addvar_string(ormid, PlayerData[playerid][e_email], 26, "email");
-	orm_addvar_int(ormid, PlayerData[playerid][e_level], "level");
-	orm_addvar_int(ormid, PlayerData[playerid][e_score], "score");
-	orm_addvar_int(ormid, PlayerData[playerid][e_money], "money");
-	orm_addvar_int(ormid, PlayerData[playerid][e_bank], "bank");
-	orm_addvar_int(ormid, PlayerData[playerid][e_color], "color");
-	orm_addvar_int(ormid, PlayerData[playerid][e_kills], "kills");
-	orm_addvar_int(ormid, PlayerData[playerid][e_deaths], "deaths");
-	orm_addvar_int(ormid, PlayerData[playerid][e_time], "time");
-	orm_addvar_int(ormid, PlayerData[playerid][e_skin], "skin");
-	orm_addvar_int(ormid, PlayerData[playerid][e_payday], "payday");
-	orm_addvar_int(ormid, PlayerData[playerid][e_reaction], "reaction");
-	orm_addvar_int(ormid, PlayerData[playerid][e_mathwins], "mathwins");
-	orm_addvar_int(ormid, PlayerData[playerid][e_houses], "houses");
-	orm_addvar_int(ormid, PlayerData[playerid][e_gangid], "gangid");
-	orm_addvar_int(ormid, PlayerData[playerid][e_gangrank], "gangrank");
-	orm_addvar_int(ormid, PlayerData[playerid][e_addpvslots], "addpvslots");
-	orm_addvar_int(ormid, PlayerData[playerid][e_addtoyslots], "addtoyslots");
-	orm_addvar_int(ormid, PlayerData[playerid][e_addhouseslots], "addhouseslots");
-	orm_addvar_int(ormid, PlayerData[playerid][e_addentslots], "addbizzslots");
-	orm_addvar_int(ormid, PlayerData[playerid][e_addhouseitemslots], "addhouseitemslots");
-	orm_addvar_int(ormid, PlayerData[playerid][e_derbywins], "derbywins");
-	orm_addvar_int(ormid, PlayerData[playerid][e_racewins], "racewins");
-	orm_addvar_int(ormid, PlayerData[playerid][e_tdmwins], "tdmwins");
-	orm_addvar_int(ormid, PlayerData[playerid][e_falloutwins], "falloutwins");
-	orm_addvar_int(ormid, PlayerData[playerid][e_gungamewins], "gungamewins");
-	orm_addvar_int(ormid, PlayerData[playerid][e_eventwins], "eventwins");
-	orm_addvar_int(ormid, PlayerData[playerid][e_wanteds], "wanteds");
-	orm_addvar_int(ormid, PlayerData[playerid][e_vip], "vip");
-	orm_addvar_int(ormid, PlayerData[playerid][e_credits], "credits");
-	orm_addvar_int(ormid, PlayerData[playerid][e_medkits], "medkits");
-	orm_addvar_int(ormid, PlayerData[playerid][e_regdate], "regdate");
-	orm_addvar_int(ormid, PlayerData[playerid][e_lastlogin], "lastlogin");
-	orm_addvar_int(ormid, PlayerData[playerid][e_lastnc], "lastnc");
-	orm_addvar_int(ormid, PlayerData[playerid][e_skinsave], "skinsave");
+    AssemblePlayerORM(ormid, playerid);
 	
 	orm_setkey(ormid, "id");
 	orm_insert(ormid, "OnPlayerRegister", "iiisss", playerid, YHash(__GetName(playerid)), register, password, __GetName(playerid), __GetIP(playerid));
@@ -29510,7 +29475,7 @@ function:OnUnbanAttempt(playerid, unban[])
 
 function:OnUnbanAttempt2()
 {
-	if(cache_get_row_count() > 0)
+	if(cache_get_row_count() == 0)
 		return 0;
 
     new ip[MAX_PLAYER_IP + 1];
@@ -31410,4 +31375,46 @@ AssembleGZoneORM(ORM:_ormid, slot)
     orm_addvar_int(_ormid, GZoneData[slot][e_locked], "locked");
     orm_addvar_int(_ormid, GZoneData[slot][e_date], "date");
     orm_addvar_int(_ormid, GZoneData[slot][e_creator], "creator");
+}
+
+AssemblePlayerORM(ORM:_ormid, slot)
+{
+ 	orm_addvar_int(_ormid, PlayerData[slot][e_accountid], "id");
+	orm_addvar_string(_ormid, PlayerData[slot][e_name], MAX_PLAYER_NAME + 1, "name");
+	orm_addvar_string(_ormid, PlayerData[slot][e_email], 26, "email");
+	orm_addvar_int(_ormid, PlayerData[slot][e_level], "admin");
+	orm_addvar_int(_ormid, PlayerData[slot][e_mapper], "mapper");
+	orm_addvar_int(_ormid, PlayerData[slot][e_score], "score");
+	orm_addvar_int(_ormid, PlayerData[slot][e_money], "money");
+	orm_addvar_int(_ormid, PlayerData[slot][e_bank], "bank");
+	orm_addvar_int(_ormid, PlayerData[slot][e_color], "color");
+	orm_addvar_int(_ormid, PlayerData[slot][e_kills], "kills");
+	orm_addvar_int(_ormid, PlayerData[slot][e_deaths], "deaths");
+	orm_addvar_int(_ormid, PlayerData[slot][e_time], "time");
+	orm_addvar_int(_ormid, PlayerData[slot][e_skin], "skin");
+	orm_addvar_int(_ormid, PlayerData[slot][e_payday], "payday");
+	orm_addvar_int(_ormid, PlayerData[slot][e_reaction], "reaction");
+	orm_addvar_int(_ormid, PlayerData[slot][e_mathwins], "mathwins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_houses], "houses");
+	orm_addvar_int(_ormid, PlayerData[slot][e_gangid], "gangid");
+	orm_addvar_int(_ormid, PlayerData[slot][e_gangrank], "gangrank");
+	orm_addvar_int(_ormid, PlayerData[slot][e_addpvslots], "addpvslots");
+	orm_addvar_int(_ormid, PlayerData[slot][e_addtoyslots], "addtoyslots");
+	orm_addvar_int(_ormid, PlayerData[slot][e_addhouseslots], "addhouseslots");
+	orm_addvar_int(_ormid, PlayerData[slot][e_addentslots], "addentslots");
+	orm_addvar_int(_ormid, PlayerData[slot][e_addhouseitemslots], "addhouseitemslots");
+	orm_addvar_int(_ormid, PlayerData[slot][e_derbywins], "derbywins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_racewins], "racewins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_tdmwins], "tdmwins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_falloutwins], "falloutwins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_gungamewins], "gungamewins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_eventwins], "eventwins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_wanteds], "wanteds");
+	orm_addvar_int(_ormid, PlayerData[slot][e_vip], "vip");
+	orm_addvar_int(_ormid, PlayerData[slot][e_credits], "credits");
+	orm_addvar_int(_ormid, PlayerData[slot][e_medkits], "medkits");
+	orm_addvar_int(_ormid, PlayerData[slot][e_regdate], "regdate");
+	orm_addvar_int(_ormid, PlayerData[slot][e_lastlogin], "lastlogin");
+	orm_addvar_int(_ormid, PlayerData[slot][e_lastnc], "lastnc");
+	orm_addvar_int(_ormid, PlayerData[slot][e_skinsave], "skinsave");
 }
