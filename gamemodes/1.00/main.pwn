@@ -737,6 +737,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	bool:bDerbyWinner,
 	bool:bDerbyAFK,
 	bool:bDerbyHealthBarShowing,
+	iHouseUpgradeSel,
 	Float:fDerbyVehicleHealth,
 	Float:fDerbyVehicleDamage,
 	Float:fDerbyCDamage,
@@ -8808,6 +8809,52 @@ YCMD:bsell(playerid, params[], help)
 	return 1;
 }
 
+YCMD:houses(playerid, params[], help)
+{
+    if(!islogged(playerid)) return notlogged(playerid);
+
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
+
+	new player_houses = GetPlayerHouseCount(playerid);
+	if(player_houses == 0) return SCM(playerid, -1, ""er"You don't own any houses.");
+
+	new string[512];
+	for(new i = 0, count = 0; i < MAX_HOUSES; i++)
+	{
+	    if(HouseData[i][e_ormid] == ORM:-1)
+	        continue;
+
+		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
+		    format(gstr, sizeof(gstr), ""white"[Slot %i] House ID: %i [%s"white"] Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), number_format(HouseData[i][e_value]));
+		    strcat(string, gstr);
+		}
+	}
+
+	ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU, DIALOG_STYLE_LIST, ""nef" :: House Menu", string, "Select", "Cancel");
+	return 1;
+}
+
+YCMD:upgrade(playerid, params[], help)
+{
+	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
+    if(!islogged(playerid)) return notlogged(playerid);
+
+	new i = -1;
+	if((i = GetNearestHouse(playerid)) != -1)
+	{
+		if(HouseData[i][e_owner] != PlayerData[playerid][e_accountid])
+		    return SCM(playerid, -1, ""er"This house does not belong to you");
+
+        iHouseUpgradeSel = i;
+		ShowDialog(playerid, DIALOG_HOUSE_UPGRADE);
+	}
+	else
+	{
+	    SCM(playerid, -1, ""er"You aren't near if any house");
+	}
+	return 1;
+}
+
 YCMD:buy(playerid, params[], help)
 {
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
@@ -8852,6 +8899,7 @@ YCMD:buy(playerid, params[], help)
         GivePlayerMoneyEx(playerid, -HouseData[i][e_value]);
         PlayerData[playerid][tickLastBuy] = tick;
 		SQL_SaveAccount(playerid, false, false);
+		PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
 		player_notice(playerid, "House bought", "");
 	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the house %i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(HouseData[i][e_value]));
 	    SCMToAll(-1, gstr);
@@ -8877,57 +8925,33 @@ YCMD:sell(playerid, params[], help)
 		}
 	}
 	
-    new bool:found = false;
-	for(new i = 0; i < houseid; i++)
+	new i = -1;
+	if((i = GetNearestHouse(playerid)) != -1)
 	{
-	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z])) continue;
-	    found = true;
-
-	    if(!HouseData[i][sold])
-		{
-			SCM(playerid, -1, ""er"House cannot be sold!");
-			break;
-		}
-	    if(strcmp(HouseData[i][Owner], __GetName(playerid), true))
-		{
-			SCM(playerid, -1, ""er"You don't own this house!");
-			break;
-		}
-	    strmid(HouseData[i][Owner], "ForSale", 0, 25, 25);
-	    HouseData[i][sold] = 0;
-	    HouseData[i][locked] = 1;
-
-		for(new ii = 0; ii < MAX_HOUSE_ITEMS; ii++)
-		{
-			if(HouseData[i][E_Obj_Model][ii] != 0)
-			{
-			    DestroyDynamicObject(HouseData[i][E_Obj_ObjectID][ii]);
-			    DestroyDynamic3DTextLabel(HouseData[i][E_Obj_Label][ii]);
-			    HouseData[i][E_Obj_Label][ii] = Text3D:-1;
-			    HouseData[i][E_Obj_ObjectID][ii] = -1;
-			    HouseData[i][E_Obj_Model][ii] = 0;
-			}
-		}
-
-	    format(gstr, sizeof(gstr), ""house_mark"\nOwner: ---\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", HouseData[i][e_id], number_format(HouseData[i][price]), HouseData[i][e_score], g_aHouseInteriorTypes[HouseData[i][interior]][intname]);
-	    UpdateDynamic3DTextLabelText(HouseData[i][e_labelid], -1, gstr);
-	    DestroyDynamicMapIcon(HouseData[i][e_iconid]);
-	    DestroyDynamicPickup(HouseData[i][pickid]);
-	    HouseData[i][e_iconid] = CreateDynamicMapIcon(HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z], 31, 1, 0, -1, -1, 150.0);
-	    HouseData[i][pickid] = CreateDynamicPickup(1273, 1, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z], -1, -1, -1, 30.0);
-	    PlayerData[playerid][e_houses]--;
-	    HouseData[i][date] = 0;
-	    GivePlayerMoneyEx(playerid, floatround(HouseData[i][price] / 4));
-	    player_notice(playerid, "House sold", "");
-	    SQL_SaveHouse(i, true);
-	    SQL_SaveAccount(playerid, false, false);
+		if(HouseData[i][e_owner] != PlayerData[playerid][e_accountid])
+		    return SCM(playerid, -1, ""er"This house does not belong to you");
+		    
+        HouseData[i][e_owner] = 0;
+        HouseData[i][e_date] = 0;
+        HouseData[i][e_locked] = 0;
+		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
+		DestoryDynamicPickup(HouseData[i][e_pickid]);
+		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
+		SetupHouse(i);
+		orm_update(HouseData[i][e_ormid]);
+        
+        GivePlayerMoneyEx(playerid, floatround(HouseData[i][e_value] / 4));
 	    PlayerData[playerid][tickLastSell] = tick;
+	    SQL_SaveAccount(playerid, false, false);
 	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the house %i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(floatround(HouseData[i][price] / 4)));
+	    player_notice(playerid, "House sold", "");
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the house %i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(floatround(HouseData[i][e_value] / 4)));
 	    SCMToAll(-1, gstr);
-	    break;
+ 	}
+	else
+	{
+	    SCM(playerid, -1, ""er"You aren't near if any house");
 	}
-	if(!found) SCM(playerid, -1, ""er"You aren't near of any house");
 	return 1;
 }
 
@@ -15584,37 +15608,6 @@ YCMD:pornos(playerid, params[], help)
 	return 1;
 }
 
-YCMD:hmenu(playerid, params[], help)
-{
-    if(!islogged(playerid)) return notlogged(playerid);
-    
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
-    new string[512], tmp[64];
-    
-    for(new i = 0; i < MAX_PLAYER_HOUSES; i++)
-    {
-        if(i > PlayerData[playerid][e_addhouseslots])
-        {
-            format(tmp, sizeof(tmp), "House Slot %i "red"(Locked)\n", i + 1);
-        }
-        else
-		{
-		    if(i < PlayerData[playerid][e_houses])
-		    {
-			    format(tmp, sizeof(tmp), "House Slot %i "green2"(Used)\n", i + 1);
-		    }
-		    else
-		    {
-			    format(tmp, sizeof(tmp), "House Slot %i\n", i + 1);
-		    }
-		}
-		strcat(string, tmp);
-    }
-
-    ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU, DIALOG_STYLE_LIST, ""nef" :: House Menu", string, "Select", "Cancel");
-	return 1;
-}
-
 YCMD:emenu(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
@@ -18090,167 +18083,23 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        }
 	        case DIALOG_HOUSE_MENU:
 	        {
-				format(gstr, sizeof(gstr), ""nef" :: House Menu > Slot: %i", listitem + 1);
-				
-	            PlayerData[playerid][HouseSlotSelected] = listitem;
-	            
-		        if(listitem > PlayerData[playerid][e_addhouseslots])
-		        {
-		            ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr, ""nef_green"This house slot is locked.\n\n"white"You may unlock it by purchasing an extra slot at Gold Credits (/gc)", "OK", "");
-		        }
-		        else
+	            if(++listitem > GetPlayerHouseCount(playerid))
+	                return true;
+	                
+				if(gTeam[playerid] != gFREEROAM)
+					return true;
+	                
+				for(new i = 0, count = 0; i < MAX_HOUSES; i++)
 				{
-				    if(listitem >= PlayerData[playerid][e_houses])
-				    {
-				        player_notice(playerid, "House slot is not in use", "");
-				    }
-				    else
-				    {
-				        ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU + 1, DIALOG_STYLE_LIST, gstr, "Goto This House\nUpgrade Interior\nManage House Items", "Select", "Cancel");
-				    }
-				}
-	            return true;
-	        }
-	        case DIALOG_HOUSE_MENU + 1:
-	        {
-				switch(listitem)
-				{
-				    case 0:
-				    {
-				        if(gTeam[playerid] != gFREEROAM)
-						{
-							player_notice(playerid, "You can't do this now", "Type ~y~/exit ~w~to leave");
-							return 1;
-						}
-						
-						new h_id = GetHouseIdByPlayerSlotSel(playerid);
-						
-						if(h_id != -1)
-						{
-				   			SetPlayerPos(playerid, HouseData[h_id][e_x], HouseData[h_id][e_y], HouseData[h_id][e_z]);
+				    if(HouseData[i][e_owner] == HouseData[playerid][e_accountid]) {
+						if(++count == listitem) {
+				   			SetPlayerPos(playerid, HouseData[i][e_pos][0], HouseData[i][e_pos][1], HouseData[i][e_pos][2]);
 				   			PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 				   			SetPVarInt(playerid, "doingStunt", 0);
 				   			PlayerData[playerid][tickJoin_bmx] = 0;
 						}
-						else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
-				    }
-				    case 1:
-				    {
-				        if(gTeam[playerid] != gFREEROAM)
-						{
-							player_notice(playerid, "Get out to upgrade the house", "");
-							return 1;
-						}
-						
-				        ShowDialog(playerid, DIALOG_HOUSE_UPGRADE);
-				    }
-				    case 2:
-				    {
-				        if(gTeam[playerid] != HOUSE) return player_notice(playerid, "You are not in your house", "");
-
-						new h_id = GetHouseIdByPlayerSlotSel(playerid);
-
-						if(h_id != -1)
-						{
-                            if(GetPlayerVirtualWorld(playerid) != (HouseData[h_id][e_id] + 1000)) return SCM(playerid, -1, ""er"You need to be in the house you selected!");
-                            
-							new string[1024];
-							format(gstr2, sizeof(gstr2), ""nef" :: House Menu > Slot: %i > House Items", PlayerData[playerid][HouseSlotSelected] + 1);
-
-							for(new i = 0; i < MAX_HOUSE_ITEMS; i++)
-							{
-								if(i > PlayerData[playerid][e_addhouseitemslots] + 2)
-								{
-								    format(gstr, sizeof(gstr), "House Item Slot %i "red"(Locked)\n", i + 1);
-								}
-							    else
-							    {
-								    if(HouseData[h_id][E_Obj_Model][i] == 0)
-									{
-									    format(gstr, sizeof(gstr), "House Item Slot %i\n", i + 1);
-									}
-									else
-									{
-									    format(gstr, sizeof(gstr), "House Item Slot %i "green2"(Used)\n", i + 1);
-									}
-								}
-								strcat(string, gstr);
-							}
-
-							ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU + 2, DIALOG_STYLE_LIST, gstr2, string, "Select", "Cancel");
-						}
-						else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
 				    }
 				}
-	            return true;
-	        }
-	        case DIALOG_HOUSE_MENU + 2:
-	        {
-	            if(gTeam[playerid] != HOUSE) return SCM(playerid, -1, ""er"You need to be in your house!");
-
-				format(gstr, sizeof(gstr), ""nef" :: House Menu > Slot: %i > Item Slot %i", PlayerData[playerid][HouseSlotSelected] + 1, listitem + 1);
-
-				if(listitem > PlayerData[playerid][e_addhouseitemslots] + 2)
-				{
-				    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr, ""nef_green"This house item slot is locked.\n\n"white"You may unlock it by purchasing an extra slot at Gold Credits (/gc)", "OK", "");
-				}
-				else
-				{
-		        	PlayerData[playerid][houseobj_selected] = listitem;
-
-	                new h_id = GetHouseIdByPlayerSlotSel(playerid);
-
-					if(h_id != -1)
-					{
-					    if(GetPlayerVirtualWorld(playerid) != (HouseData[h_id][e_id] + 1000)) return SCM(playerid, -1, ""er"You need to be in the house you selected!");
-					    
-	                    if(HouseData[h_id][E_Obj_Model][listitem] == 0)
-	                    {
-	                        ShowModelSelectionMenu(playerid, hobjslist, "Select House Item", 0x0500009C, 0x050000FF, 0xFAFAFA4D);
-	                    }
-	                    else
-	                    {
-	                        ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU + 3, DIALOG_STYLE_LIST, gstr, "Edit House Item Position\n"grey"Remove House Item", "Select", "Cancel");
-	                    }
-					}
-					else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
-				}
-	            return true;
-	        }
-	        case DIALOG_HOUSE_MENU + 3:
-	        {
-	            if(gTeam[playerid] != HOUSE) return SCM(playerid, -1, ""er"You need to be in your house!");
-
-                new h_id = GetHouseIdByPlayerSlotSel(playerid);
-
-				if(h_id != -1)
-				{
-				    if(GetPlayerVirtualWorld(playerid) != (HouseData[h_id][e_id] + 1000)) return SCM(playerid, -1, ""er"You need to be in the house you selected!");
-				    
-		            switch(listitem)
-		            {
-		                case 0:
-		                {
-		                    new Float:POS[3];
-		                    GetDynamicObjectPos(HouseData[h_id][E_Obj_ObjectID][PlayerData[playerid][houseobj_selected]], POS[0], POS[1], POS[2]);
-		                    if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS[0], POS[1], POS[2]))
-		                    {
-		                        return SCM(playerid, -1, ""er"You need to be closer to the object!");
-		                    }
-		                    EditDynamicObject(playerid, HouseData[h_id][E_Obj_ObjectID][PlayerData[playerid][houseobj_selected]]);
-		                }
-		                case 1:
-		                {
-		                    HouseData[h_id][E_Obj_Model][PlayerData[playerid][houseobj_selected]] = 0;
-		                    DestroyDynamicObject(HouseData[h_id][E_Obj_ObjectID][PlayerData[playerid][houseobj_selected]]);
-		                    DestroyDynamic3DTextLabel(HouseData[h_id][E_Obj_Label][PlayerData[playerid][houseobj_selected]]);
-		                    HouseData[h_id][E_Obj_Label][PlayerData[playerid][houseobj_selected]] = Text3D:-1;
-		                    HouseData[h_id][E_Obj_ObjectID][PlayerData[playerid][houseobj_selected]] = -1;
-		                    player_notice(playerid, "House item has been removed", "");
-		                }
-		            }
-				}
-				else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
 	            return true;
 	        }
 	        case DIALOG_PV_SELECT_SLOT:
@@ -18864,7 +18713,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                strcat(cstring, ""blue"/buy "white"- buy a house which is for sale\n");
 		                strcat(cstirng, ""blue"/enter "white"- enter the house or press 'F'\n");
 		                strcat(cstring, ""blue"/houses "white"- view all your houses and go to them\n");
-		                strcat(cstring, ""blue"/sell "white"- sell your house and get 50% of value in return\n");
+		                strcat(cstring, ""blue"/sell "white"- sell your house and get 25% of value in return\n");
 		                strcat(cstring, ""blue"/sellto <player id> <price> "white"- sell your house to another player\n");
 		                strcat(cstring, ""blue"/upgrade "white"- upgrade your house interior\n");
 		                strcat(cstring, ""blue"/lock "white"- (un)lock the house\n");
@@ -19004,8 +18853,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		    }
 	        case DIALOG_HOUSE_UPGRADE:
 	        {
-				PlayerData[playerid][HouseIntSelected] = listitem;
-
 				format(gstr2, sizeof(gstr2), ""white"House Upgrade\n\n- Interior: %s\n- Price: $%s\n\nClick \"Upgrade\" in order to apply the new interior.\n"green"* "white"All House Items will be removed in this slot!", g_aHouseInteriorTypes[listitem][intname], number_format(g_aHouseInteriorTypes[listitem][price]));
 				ShowPlayerDialog(playerid, DIALOG_HOUSE_UPGRADE + 1, DIALOG_STYLE_MSGBOX, ""nef" :: House Upgrade", gstr2, "Upgrade", "Cancel");
 				return true;
@@ -19014,60 +18861,46 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        {
 		        if(gTeam[playerid] != gFREEROAM)
 				{
-					player_notice(playerid, "Get out to upgrade the house", "");
+					player_notice(playerid, "You must be in freeroam mode to upgrade", "");
 					return 1;
 				}
-	            if(GetPlayerMoneyEx(playerid) < g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][price])
-	            {
+				
+	            if(GetPlayerMoneyEx(playerid) < g_aHouseInteriorTypes[PlayerData[playerid][iHouseUpgradeSel]][price])
 	                return SCM(playerid, -1, ""er"You can't afford that interior");
+
+				if(HouseData[iHouseUpgradeSel][e_owner] != PlayerData[playerid][e_accountid])
+				    return SCM(playerid, -1, ""er"This house does not belong to you");
+				    
+  	            if(PlayerData[playerid][HouseIntSelected] == HouseData[iHouseUpgradeSel][e_interior])
+         			return SCM(playerid, -1, ""er"This house already got the interior");
+				    
+				HouseData[i][e_locked] = 1;
+
+				/* Remove all players from house */
+	            for(new pid = 0; pid < MAX_PLAYERS; pid++)
+	            {
+	                if(gTeam[pid] == HOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[iHouseUpgradeSel][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[iHouseUpgradeSel][e_id] + 1000))
+	                {
+	                    gTeam[pid] = gFREEROAM;
+	                    SetPlayerPos(pid, HouseData[iHouseUpgradeSel][e_pos][0], HouseData[iHouseUpgradeSel][e_pos][1], HouseData[iHouseUpgradeSel][e_pos][2]);
+						ResetPlayerWorld(pid);
+	                }
 	            }
 
-				new h_id = GetHouseIdByPlayerSlotSel(playerid);
+				DestroyDynamic3DTextLabel(HouseData[iHouseUpgradeSel][e_labelid]);
+                HouseData[iHouseUpgradeSel][e_labelid] = Text3D:-1;
+	            SetupHouse(iHouseUpgradeSel);
+	            
+	            GivePlayerMoneyEx(playerid, -g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][price]);
+	            HouseData[iHouseUpgradeSel][e_interior] = PlayerData[playerid][HouseIntSelected];
+       			SetPlayerPos(pid, HouseData[iHouseUpgradeSel][e_pos][0], HouseData[iHouseUpgradeSel][e_pos][1], HouseData[iHouseUpgradeSel][e_pos][2]);
+				ResetPlayerWorld(playerid);
+				gTeam[playerid] = gFREEROAM;
 				
-				if(h_id != -1)
-				{
-	  	            if(PlayerData[playerid][HouseIntSelected] == HouseData[h_id][interior])
-		            {
-	         			return SCM(playerid, -1, ""er"This house already got the interior");
-		            }
-
-                    HouseData[h_id][locked] = 1;
-
-		            for(new pid = 0; pid < MAX_PLAYERS; pid++)
-		            {
-		                if(gTeam[pid] == HOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[h_id][interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[h_id][e_id] + 1000))
-		                {
-		                    gTeam[pid] = gFREEROAM;
-		                    SetPlayerPos(pid, HouseData[h_id][e_x], HouseData[h_id][e_y], HouseData[h_id][e_z]);
-							ResetPlayerWorld(pid);
-		                }
-		            }
-
-					for(new ii = 0; ii < MAX_HOUSE_ITEMS; ii++)
-					{
-						if(HouseData[h_id][E_Obj_Model][ii] != 0)
-						{
-						    DestroyDynamicObject(HouseData[h_id][E_Obj_ObjectID][ii]);
-						    DestroyDynamic3DTextLabel(HouseData[h_id][E_Obj_Label][ii]);
-						    HouseData[h_id][E_Obj_Label][ii] = Text3D:-1;
-						    HouseData[h_id][E_Obj_ObjectID][ii] = -1;
-						    HouseData[h_id][E_Obj_Model][ii] = 0;
-						}
-					}
-					
-	                GivePlayerMoneyEx(playerid, -g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][price]);
-	                HouseData[h_id][interior] = PlayerData[playerid][HouseIntSelected];
-	       			SetPlayerPos(playerid, HouseData[h_id][e_x], HouseData[h_id][e_y], HouseData[h_id][e_z]);
-					ResetPlayerWorld(playerid);
-					gTeam[playerid] = gFREEROAM;
-	      		    format(gstr, sizeof(gstr), ""house_mark"\nOwner: %s\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", __GetName(playerid), HouseData[h_id][e_id], number_format(HouseData[h_id][price]), HouseData[h_id][e_score], g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][intname]);
-	    			UpdateDynamic3DTextLabelText(HouseData[h_id][e_labelid], -1, gstr);
-	                SQL_SaveHouse(h_id, true);
-	                SQL_SaveAccount(playerid, false, false);
-	                SCM(playerid, GREEN, "Successfully upgraded the interior!");
-                }
-                else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
-	            return true;
+				orm_update(HouseData[iHouseUpgradeSel][e_ormid]);
+                SQL_SaveAccount(playerid, false, false);
+                SCM(playerid, GREEN, "Successfully upgraded the interior!");
+				return true;
 	        }
 	        case DIALOG_TOPLIST:
 	        {
@@ -22915,12 +22748,13 @@ server_initialize()
 	Command_AddAltNamed("changepass", "changepassword");
 	Command_AddAltNamed("serverstats", "serverstat");
 	Command_AddAltNamed("armourall", "armorall");
-	Command_AddAltNamed("hmenu", "myhouse");
-	Command_AddAltNamed("hmenu", "myhouses");
-	Command_AddAltNamed("hmenu", "houses");
-	Command_AddAltNamed("hmenu", "upgrades");
-	Command_AddAltNamed("hmenu", "houseupgrades");
-	Command_AddAltNamed("hmenu", "houseupgrade");
+	Command_AddAltNamed("houses", "myhouse");
+	Command_AddAltNamed("houses", "myhouses");
+	Command_AddAltNamed("houses", "houses");
+	Command_AddAltNamed("houses", "upgrades");
+	Command_AddAltNamed("houses", "houseupgrades");
+	Command_AddAltNamed("houses", "houseupgrade");
+	Command_AddAltNamed("houses", "hmenu");
 	Command_AddAltNamed("settings", "setting");
 	Command_AddAltNamed("settings", "cp");
 	Command_AddAltNamed("m", "minigames");
@@ -30848,6 +30682,7 @@ ResetPlayerVars(playerid)
 	SetPVarInt(playerid, "inCNR", 0);
 
 	strmid(PlayerData[playerid][e_email], "NoData", 0, 26, 26);
+	PlayerData[playerid][iHouseUpgradeSel] = 0;
 	PlayerData[playerid][fOldPos][0] = 2012.4763;
 	PlayerData[playerid][fOldPos][1] = -2448.1399;
 	PlayerData[playerid][fOldPos][2] = 14.6396;
@@ -31114,15 +30949,20 @@ RandomWeapons(playerid)
 
 EnterHouse(playerid, i)
 {
-    if(HouseData[i][locked])
+    if(HouseData[i][e_owner] == 0)
+	{
+		return SCM(playerid, -1, ""er"This house does not belong to anyone");
+	}
+
+    if(HouseData[i][e_locked])
 	{
 		return SCM(playerid, -1, ""er"This house is locked");
 	}
 
     gTeam[playerid] = HOUSE;
-    SetPlayerInterior(playerid, g_aHouseInteriorTypes[HouseData[i][interior]][interior]);
+    SetPlayerInterior(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][interior]);
 	SetPlayerVirtualWorld(playerid, HouseData[i][e_id] + 1000);
-	SetPlayerPos(playerid, g_aHouseInteriorTypes[HouseData[i][interior]][house_x], g_aHouseInteriorTypes[HouseData[i][interior]][house_y], g_aHouseInteriorTypes[HouseData[i][interior]][house_z]);
+	SetPlayerPos(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][house_x], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_y], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_z]);
 	player_notice(playerid, "House entered", "type ~y~/exit ~w~to leave", 4000);
 	SCM(playerid, -1, ""er"Type /exit to leave the house");
 	return 1;
@@ -31327,11 +31167,15 @@ SetupHouse(slot, owner[])
 			HouseData[r][e_pvslots]);
 	}
 
-	HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 40.0, .worldid = 0, .iteriorid = 0);
-	HouseData[r][e_pickid] = CreateDynamicPickup(HouseData[r][e_owner] == 0 ? 1273 : 1272, 1, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 40.0);
+	if(HouseData[r][e_labelid] == Text3D:-1)
+		HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 40.0, .worldid = 0, .iteriorid = 0);
+		
+    if(HouseData[r][e_pickid] == -1)
+		HouseData[r][e_pickid] = CreateDynamicPickup(HouseData[r][e_owner] == 0 ? 1273 : 1272, 1, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 40.0);
 
 	if(HouseData[r][e_owner] == 0) {
-	    HouseData[r][e_iconid] = CreateDynamicMapIcon(HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], 31, 1, .worldid = 0, .interiorid = 0, .streamdistance = 150.0);
+	    if(HouseData[r][e_iconid] == -1)
+			HouseData[r][e_iconid] = CreateDynamicMapIcon(HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], 31, 1, .worldid = 0, .interiorid = 0, .streamdistance = 150.0);
 	}
 	return 1;
 }
