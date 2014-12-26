@@ -13846,52 +13846,6 @@ YCMD:race(playerid, params[], help)
 	return 1;
 }
 
-/*
-YCMD:sethouseowner(playerid, params[], help)
-{
-    if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL) return SCM(playerid, -1, NO_PERM);
-
-	new owner[128];
-	if(sscanf(params, "s[128]", owner))
-	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /sethouseowner <name>");
-	}
-
-	if(strlen(owner) > 21 || strlen(owner) < 3) return SCM(playerid, -1, ""er"Invalid name");
-	
-	mysql_escape_string(owner, owner, pSQL, sizeof(owner));
-	format(gstr, sizeof(gstr), "SELECT `Houses`, `AdditionalHouseSlots` FROM `accounts` WHERE `Name` = '%s'", owner);
-	mysql_query(pSQL, gstr, false);
-
-	new houses = 0, addslots = 0;
-	if(cache_get_row_count(pSQL) == 0)
-	{
-		return SCM(playerid, -1, ""er"Player does not exist");
-	}
-	else
-	{
-	    houses = cache_get_row_int(0, 0, pSQL);
-	    slots = cache_get_row_int(0, 1, pSQL);
-	}
-	
-	if(houses
-	
- 	new bool:found = false;
-	for(new i = 0; i < houseid; i++)
-	{
-	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z])) continue;
-	    found = true;
-
-	    if(HouseData[i][sold] == 1) return SCM(playerid, -1, ""er"House connot be sold");
-
-
-		player_notice(playerid, "~g~~h~~h~House price has been set!", 2000);
-	    break;
-	}
-    if(!found) SCM(playerid, -1, ""er"You need to stand in the house pickup (Entrance)");
-	return 1;
-}*/
-
 YCMD:hsetvalue(playerid, params[], help)
 {
     if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL) return SCM(playerid, -1, NO_PERM);
