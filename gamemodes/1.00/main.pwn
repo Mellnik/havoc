@@ -1011,7 +1011,7 @@ enum E_ENT_DATA
 	
 	/* DATA */
 	e_id,
-	e_owner[MAX_PLAYER_NAME + 1],
+	e_owner,
 	Float:e_pos[3],
 	E_ENT_TYPE:e_type,
 	e_level,
@@ -1019,6 +1019,7 @@ enum E_ENT_DATA
 	e_date,
 
 	/* INTERNAL */
+	e_namecache[MAX_PLAYER_NAME + 1],
 	Text3D:e_labelid,
 	e_iconid,
 	e_pickupid
@@ -8686,8 +8687,8 @@ YCMD:bbuy(playerid, params[], help)
 		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
 		DestroyDynamicMapIcon(EnterpriseData[r][e_iconid]);
 		EnterpriseData[r][e_iconid] = -1;
-		
-		SetupEnterprise(r);
+		strmid(EnterpriseData[r][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
+		SetupEnterprise(r, EnterpriseData[i][e_namecache]);
 		
 		PlayerData[playerid][tickLastPBuy] = tick;
 		
@@ -8744,7 +8745,7 @@ YCMD:bsell(playerid, params[], help)
 		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
 		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
 
-        SetupEnterprise(r);
+        SetupEnterprise(r, "<null>");
 
 	    PlayerData[playerid][tickLastPSell] = tick;
 	    
@@ -8846,7 +8847,7 @@ YCMD:buy(playerid, params[], help)
 		DestroyDynamicPickup(HouseData[i][e_pickid]);
 		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
 		strmid(HouseData[i][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
-		SetupHouse(i, __GetName(playerid));
+		SetupHouse(i, HouseData[i][e_namecache]);
         orm_update(HouseData[i][e_ormid]);
 
         GivePlayerMoneyEx(playerid, -HouseData[i][e_value]);
@@ -13975,7 +13976,7 @@ YCMD:breset(playerid, params[], help)
 		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
 		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
 
-        SetupEnterprise(r);
+        SetupEnterprise(r, "<null>");
 
 	    player_notice(playerid, "SUCCESS!", "");
 
@@ -20192,6 +20193,10 @@ function:OnEnterpriseLoad()
 
 	for(new r = 0; r < rows && r < MAX_ENTERPRISES; r++)
 	{
+		new owner[MAX_PLAYER_NAME + 1];
+		cache_get_field_content(r, "name", owner, pSQL, sizeof(owner));
+		strmid(EnterpriseData[r][e_namecache], owner, 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
+	
 	    new ORM:ormid = EnterpriseData[r][e_ormid] = orm_create("enterprises");
 	    
         AssembleEnterpriseORM(ormid, r);
@@ -20199,7 +20204,7 @@ function:OnEnterpriseLoad()
 	    orm_setkey(ormid, "id");
 		orm_apply_cache(ormid, r);
 		
-		SetupEnterprise(r);
+		SetupEnterprise(r, owner);
 	}
 	
 	Log(LOG_INIT, "%i enterprises loaded in %i microseconds", rows, cache_get_query_exec_time(UNIT_MICROSECONDS));
@@ -20208,7 +20213,7 @@ function:OnEnterpriseLoad()
 
 function:OnEnterpriseLoadEx(slot)
 {
-	SetupEnterprise(slot);
+	SetupEnterprise(slot, "<null>");
 	return 1;
 }
 
@@ -20369,7 +20374,7 @@ LoadHouses()
 LoadEnterpises()
 {
 	ResetEnterprise();
-	mysql_tquery(pSQL, "SELECT * FROM `enterprises`;", "OnEnterpriseLoad");
+	mysql_tquery(pSQL, "SELECT enterprises.*, accounts.name FROM enterprises LEFT JOIN accounts ON enterprises.owner = accounts.id;", "OnEnterpriseLoad");
 	return 1;
 }
 
@@ -30935,15 +30940,15 @@ SetupHouse(slot, owner[])
 	return 1;
 }
 
-SetupEnterprise(slot)
+SetupEnterprise(slot, owner[])
 {
 	if(slot < 0 || slot > MAX_ENTERPRISES) return 0;
 	new r = slot;
 
-	if(EnterpriseData[r][e_sold]) {
-        format(gstr2, sizeof(gstr2), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-	} else {
+	if(EnterpriseData[r][e_owner] == 0) {
 	    format(gstr2, sizeof(gstr2), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+	} else {
+        format(gstr2, sizeof(gstr2), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], owner, g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 	}
 
 	EnterpriseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 30.0, .worldid = 0);
@@ -30972,6 +30977,7 @@ ResetEnterprise(slot = -1)
 		    EnterpriseData[r][e_labelid] = Text3D:-1;
 		    EnterpriseData[r][e_iconid] = -1;
 		    EnterpriseData[r][e_pickupid] = -1;
+		    EnterpriseData[r][e_namecache][0] = '\0';
 		}
 	}
 	else
@@ -30990,6 +30996,7 @@ ResetEnterprise(slot = -1)
 	    EnterpriseData[r][e_labelid] = Text3D:-1;
 	    EnterpriseData[r][e_iconid] = -1;
 	    EnterpriseData[r][e_pickupid] = -1;
+	    EnterpriseData[r][e_namecache][0] = '\0';
 	}
 	return 1;
 }
