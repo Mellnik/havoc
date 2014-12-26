@@ -1041,6 +1041,7 @@ enum E_HOUSE_DATA
 	e_creator,
 	
 	/* INTERNAL */
+	e_namecache[MAX_PLAYER_NAME + 1],
 	Text3D:e_labelid,
 	e_pickid,
 	e_iconid
@@ -8844,7 +8845,8 @@ YCMD:buy(playerid, params[], help)
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
 		DestroyDynamicPickup(HouseData[i][e_pickid]);
 		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
-		SetupHouse(i, "<null>");
+		strmid(HouseData[i][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
+		SetupHouse(i, __GetName(playerid));
         orm_update(HouseData[i][e_ormid]);
 
         GivePlayerMoneyEx(playerid, -HouseData[i][e_value]);
@@ -13864,7 +13866,7 @@ YCMD:hsetvalue(playerid, params[], help)
 	    
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
         HouseData[i][e_labelid] = Text3D:-1;
-        SetupHouse(i, "<null>");
+        SetupHouse(i, HouseData[i][e_namecache]);
 	    
 	    orm_update(HouseData[i][e_ormid]);
 	}
@@ -18714,7 +18716,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 				DestroyDynamic3DTextLabel(HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_labelid]);
                 HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_labelid] = Text3D:-1;
-	            SetupHouse(PlayerData[playerid][iHouseUpgradeSel], "<null>");
+	            SetupHouse(PlayerData[playerid][iHouseUpgradeSel], HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_namecache]);
 	            
 	            GivePlayerMoneyEx(playerid, -g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][price]);
 	            HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_interior] = PlayerData[playerid][HouseIntSelected];
@@ -20136,6 +20138,7 @@ function:OnHouseLoad()
 	{
 		new owner[MAX_PLAYER_NAME + 1];
 		cache_get_field_content(r, "name", owner, pSQL, sizeof(owner));
+		strmid(HouseData[r][e_namecache], owner, 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
 	
 	    new ORM:ormid = HouseData[r][e_ormid] = orm_create("houses");
 	    
@@ -31009,6 +31012,7 @@ ResetHouse(slot = -1)
             HouseData[r][e_labelid] = Text3D:-1;
             HouseData[r][e_pickid] = -1;
             HouseData[r][e_iconid] = -1;
+            HouseData[r][e_namecache][0] = '\0';
 		}
 	}
 	else
@@ -31028,6 +31032,7 @@ ResetHouse(slot = -1)
         HouseData[r][e_labelid] = Text3D:-1;
         HouseData[r][e_pickid] = -1;
         HouseData[r][e_iconid] = -1;
+        HouseData[r][e_namecache][0] = '\0';
 	}
 	return 1;
 }

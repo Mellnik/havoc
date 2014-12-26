@@ -6,13 +6,6 @@ Havoc Freeroam SA-MP Server
 - Businesses have been renamed to Enterprises.
 - Added enterprise type: Bitcoin Mining Farm.
 - More accurate unixtime conversion.
-- Dialog cleanups to avoid unnecessary overhead.
-- Removed announce commands for admins.
-- Removed bullet hit sound from deathmatches.
-- Renamed /toggletp to /tgo.
-- Renamed /bmenu to /emenu.
-- Renamed /specoff to /unspec.
-- Renamed /gsetrank to /grank.
 - Stores system has been rewritten. Stores now load and save from database.
 - Bans now include serverside information; Can be viewed at https://havocserver.com/bans
 - Account IDs rather than playernames are now being used for internal data handlers.
@@ -33,6 +26,13 @@ Havoc Freeroam SA-MP Server
    * Command /password to lock a house and set a password dialog.
    * Command /sellto <player id> <price> to sell your house to another player.
    * Removed house item system.
+- Dialog cleanups to avoid unnecessary overhead.
+- Removed announce commands for admins.
+- Removed bullet hit sound from deathmatches.
+- Renamed /toggletp to /tgo.
+- Renamed /bmenu to /emenu.
+- Renamed /specoff to /unspec.
+- Renamed /gsetrank to /grank.
   
 
 TODO
