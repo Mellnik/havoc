@@ -12,6 +12,7 @@
 #include <cstring>
 #include <limits>
 #include <ctime>
+#include <fstream>
 
 #include "native.h"
 #include "teleport.h"
@@ -29,6 +30,23 @@ cell AMX_NATIVE_CALL Native::Init(AMX *amx, cell *params)
 		logprintf("[HAVOC] Version mismatch 0x%X, expect 0x%X.", clientVersion, CORE_VERSION);
 		return 0;
 	}	
+	return 1;
+}
+
+/* ServerLog(const file[], const data[]) */
+cell AMX_NATIVE_CALL Native::ServerLog(AMX *amx, cell *params)
+{
+	static const unsigned ParamCount = 2;
+	PARAM_CHECK(ParamCount, "ServerLog");
+	
+	char *file = NULL, *data = NULL;
+	amx_StrParam(amx, params[1], file);
+	amx_StrParam(amx, params[2], data);
+	
+	std::ofstream outfile;
+	outfile.open(file, std::ofstream::app);
+	outfile << data;
+	outfile.close();
 	return 1;
 }
 

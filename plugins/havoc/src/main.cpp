@@ -46,6 +46,7 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload()
 const AMX_NATIVE_INFO PluginNatives[] =
 {
 	{"NC_Init", Native::Init},
+	{"NC_ServerLog", Native::ServerLog},
 	{"NC_AddTeleport", Native::AddTeleport},
 	{"NC_ProcessTeleportRequest", Native::ProcessTeleportRequest},
 	{"NC_GetTeleportDialogString", Native::GetTeleportDialogString},

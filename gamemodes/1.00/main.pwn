@@ -3928,9 +3928,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[])
 public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 {
 	format(gstr, sizeof(gstr), "[%02d:%02d:%02d] [%i]%s req:%s success:%i\r\n", gTime[3], gTime[4], gTime[5], playerid, __GetName(playerid), cmdtext, success);
-	new File:hLogCommand = fopen("/Log/cmdlog.txt", io_append);
-	fwrite(hLogCommand, gstr);
-	fclose(hLogCommand);
+	NC_ServerLog("cmdlog.txt", gstr);
 
 	if(!success) {
 	    player_notice(playerid, "Unknown command", "Type ~y~/c ~w~for all commands");
@@ -4783,9 +4781,7 @@ public OnPlayerText(playerid, text[])
 	strmid(LastPlayerText[playerid], text, 0, 144, 144);
 
 	format(gstr2, sizeof(gstr2), "[%02d:%02d:%02d] [%i]%s: %s\r\n", gTime[3], gTime[4], gTime[5], playerid, __GetName(playerid), text);
-	new File:hLogChat = fopen("/Log/chatlog.txt", io_append);
-	fwrite(hLogChat, gstr2);
-	fclose(hLogChat);
+	NC_ServerLog("chatlog.txt", gstr2);
 
 	if(IsAd(text))
 	{
