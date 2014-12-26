@@ -8679,7 +8679,7 @@ YCMD:bbuy(playerid, params[], help)
 			break;
 		}
 		
-		strmid(EnterpriseData[r][e_owner], __GetName(playerid), 0, MAX_PLAYER_NAME + 1, MAX_PLAYER_NAME + 1);
+        EnterpriseData[r][e_owner] = PlayerData[playerid][e_accountid];
 		EnterpriseData[r][e_sold] = 1;
 		EnterpriseData[r][e_date] = gettime();
 		
@@ -8732,12 +8732,12 @@ YCMD:bsell(playerid, params[], help)
 			SCM(playerid, -1, ""er"Enterprise can't be sold");
 			break;
 		}
-		if(strcmp(EnterpriseData[r][e_owner], __GetName(playerid), true)) {
+		if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_account]) {
 			SCM(playerid, -1, ""er"You don't own this enterprise");
 			break;
 		}
 		
-	    strmid(EnterpriseData[r][e_owner], "NoData", 0, MAX_PLAYER_NAME + 1, MAX_PLAYER_NAME + 1);
+	    EnterpriseData[r][e_owner] = 0;
 	    EnterpriseData[r][e_sold] = 0;
         EnterpriseData[r][e_level] = 1;
         EnterpriseData[r][e_date] = 0;
@@ -13927,7 +13927,7 @@ YCMD:setentlevel(playerid, params[], help)
 		EnterpriseData[r][e_level] = blevel;
 		
 		if(EnterpriseData[r][e_sold]) {
-	        format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+	        format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 		} else {
 		    format(gstr, sizeof(gstr), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 		}
@@ -13960,15 +13960,14 @@ YCMD:breset(playerid, params[], help)
 		
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(!strcmp(EnterpriseData[r][e_owner], __GetName(i), true) && IsPlayerConnected(i))
+		    if(EnterpriseData[r][e_owner] == PlayerData[i][e_accountid] && IsPlayerConnected(i))
 		    {
 		        SCM(i, -1, "An admin destroyed your enterprise!");
 				break;
 		   	}
 		}
-		
-		strmid(EnterpriseData[r][e_owner], "NoData", 0, MAX_PLAYER_NAME + 1, MAX_PLAYER_NAME + 1);
-		
+
+		EnterpriseData[r][e_owner] = 0;
 	    EnterpriseData[r][e_sold] = 0;
         EnterpriseData[r][e_level] = 1;
         EnterpriseData[r][e_date] = 0;
@@ -14052,7 +14051,6 @@ YCMD:ecreate(playerid, params[], help)
 	
     ResetEnterprise(r);
   	GetPlayerPos(playerid, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2]);
-    strmid(EnterpriseData[r][e_owner], "NoData", 0, MAX_PLAYER_NAME + 1, MAX_PLAYER_NAME + 1);
     
     new ORM:ormid = EnterpriseData[r][e_ormid] = orm_create("enterprises");
 
@@ -16942,11 +16940,15 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
 
 			for(new r = 0; r < MAX_ENTERPRISES; r++)
 			{
-				if(strcmp(EnterpriseData[r][e_owner], oldname, true)) continue;
+			    if(EnterpriseData[r][e_ormid] == ORM:-1)
+			        continue;
+			        
+				if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_accountid])
+					continue;
 
-                strmid(EnterpriseData[r][e_owner], newname, 0, 25, 25);
+                strmid(EnterpriseData[r][e_namecache], newname, 0, 25, 25);
 
-                format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+                format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 			    UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
 			    orm_update(EnterpriseData[r][e_ormid]);
 			}
@@ -17202,7 +17204,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				if(r != -1) {
 				    player_notice(playerid, "Enterprise type set", "");
 					EnterpriseData[r][e_type] = E_ENT_TYPE:listitem;
-					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 					UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
 					orm_update(EnterpriseData[r][e_ormid]);
 				} else {
@@ -17241,7 +17243,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                format(gstr, sizeof(gstr), ""nef" :: Enterprise Level Upgrade > Slot: %i", PlayerData[playerid][EnterpriseIdSelected] + 1);
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr, gstr2, "OK", "");
                  	
-					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 					UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
 				    
 					orm_update(EnterpriseData[r][e_ormid]);
@@ -28227,7 +28229,7 @@ GetEntpriseSlotBySelection(playerid)
 	new idx = 0;
 	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
-        if(!strcmp(EnterpriseData[r][e_owner], __GetName(playerid), true) && EnterpriseData[r][e_sold] == 1)
+	    if(EnterpriseData[r][e_owner] == PlayerData[playerid][e_accountid])
         {
             if(idx == PlayerData[playerid][EnterpriseIdSelected])
             {
@@ -28794,7 +28796,8 @@ GetPlayerEnterpriseEarnings(playerid)
 	new __int32 = 0;
 	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
-	    if(strcmp(EnterpriseData[r][e_owner], __GetName(playerid), true)) continue;
+	    if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_accountid])
+			continue;
 	    
 	    __int32 += GetEnterpriseEarnings(r);
 	}
@@ -30837,7 +30840,7 @@ AssemblePlayerORM(ORM:_ormid, slot)
 AssembleEnterpriseORM(ORM:_ormid, slot)
 {
     orm_addvar_int(_ormid, EnterpriseData[slot][e_id], "id");
-    orm_addvar_string(_ormid, EnterpriseData[slot][e_owner], MAX_PLAYER_NAME + 1, "owner");
+    orm_addvar_int(_ormid, EnterpriseData[slot][e_owner], "owner");
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][0], "xpos");
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][1], "ypos");
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][2], "zpos");
@@ -30968,8 +30971,7 @@ ResetEnterprise(slot = -1)
 		{
 		    EnterpriseData[r][e_ormid] = ORM:-1;
 		    EnterpriseData[r][e_id] = 0;
-		    EnterpriseData[r][e_owner][0] = '\0';
-			strcat(EnterpriseData[r][e_owner], "NoData", MAX_PLAYER_NAME + 1);
+		    EnterpriseData[r][e_owner] = 0;
 			EnterpriseData[r][e_type] = E_ENT_TYPE:0;
 		    EnterpriseData[r][e_level] = 1;
 		    EnterpriseData[r][e_sold] = 0;
@@ -30987,8 +30989,7 @@ ResetEnterprise(slot = -1)
 
 	    EnterpriseData[r][e_ormid] = ORM:-1;
 	    EnterpriseData[r][e_id] = 0;
-	    EnterpriseData[r][e_owner][0] = '\0';
-		strcat(EnterpriseData[r][e_owner], "NoData", MAX_PLAYER_NAME + 1);
+	    EnterpriseData[r][e_owner] = 0;
 		EnterpriseData[r][e_type] = E_ENT_TYPE:0;
 	    EnterpriseData[r][e_level] = 1;
 	    EnterpriseData[r][e_sold] = 0;
