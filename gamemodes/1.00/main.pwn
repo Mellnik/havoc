@@ -764,7 +764,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	SUSPECT:bwSuspect,
 	BoostDeplete,
 	Float:fOldPos[4],
-	HouseSlotSelected,
 	EnterpriseIdSelected,
 	DrawnNumber,
 	ExitType,
@@ -8797,7 +8796,7 @@ YCMD:upgrade(playerid, params[], help)
 		if(HouseData[i][e_owner] != PlayerData[playerid][e_accountid])
 		    return SCM(playerid, -1, ""er"This house does not belong to you");
 
-        iHouseUpgradeSel = i;
+		PlayerData[playerid][iHouseUpgradeSel] = i;
 		ShowDialog(playerid, DIALOG_HOUSE_UPGRADE);
 	}
 	else
@@ -8843,7 +8842,7 @@ YCMD:buy(playerid, params[], help)
 		HouseData[i][e_owner] = PlayerData[i][e_accountid];
 		HouseData[i][e_date] = gettime();
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
-		DestoryDynamicPickup(HouseData[i][e_pickid]);
+		DestroyDynamicPickup(HouseData[i][e_pickid]);
 		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
 		SetupHouse(i, "<null>");
         orm_update(HouseData[i][e_ormid]);
@@ -8887,7 +8886,7 @@ YCMD:sell(playerid, params[], help)
         HouseData[i][e_date] = 0;
         HouseData[i][e_locked] = 0;
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
-		DestoryDynamicPickup(HouseData[i][e_pickid]);
+		DestroyDynamicPickup(HouseData[i][e_pickid]);
 		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
 		SetupHouse(i, "<null>");
 		orm_update(HouseData[i][e_ormid]);
@@ -13865,7 +13864,7 @@ YCMD:hsetvalue(playerid, params[], help)
 	    
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
         HouseData[i][e_labelid] = Text3D:-1;
-        SetupHouse(iHouseUpgradeSel, "<null>");
+        SetupHouse(i, "<null>");
 	    
 	    orm_update(HouseData[i][e_ormid]);
 	}
@@ -13890,7 +13889,7 @@ YCMD:hreset(playerid, params[], help)
         HouseData[i][e_date] = 0;
         HouseData[i][e_locked] = 0;
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
-		DestoryDynamicPickup(HouseData[i][e_pickid]);
+		DestroyDynamicPickup(HouseData[i][e_pickid]);
 		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
 		SetupHouse(i, "<null>");
 
@@ -14068,14 +14067,14 @@ YCMD:hcreate(playerid, params[], help)
 		return SCM(playerid, -1, NO_PERM);
 	}
 
-	extract params -> new value, interior, pvslots; else
+	extract params -> new value, inter, pvslots; else
 	{
 	    return SCM(playerid, NEF_GREEN, "Usage: /hcreate <value> <interior> <pvslots>");
 	}
 
-	if(value > 1000000000 || value < 1) return SCM(playerid, ""er"Value $1 - $1kkk");
-	if(interior > 13 || value < 0) return SCM(playerid, ""er"Interior: 1 - 13");
-	if(pvslots < 0 || slots > 20) return SCM(playerid, ""er"Private vehicle slots: 0 - 20");
+	if(value > 1000000000 || value < 1) return SCM(playerid, -1, ""er"Value $1 - $1kkk");
+	if(inter > 13 || inter < 0) return SCM(playerid, -1, ""er"Interior: 1 - 13");
+	if(pvslots < 0 || pvslots > 20) return SCM(playerid, -1, ""er"Private vehicle slots: 0 - 20");
 
 	new count = 0;
 	for(new i = 0; i < MAX_HOUSES; i++) {
@@ -14102,7 +14101,7 @@ YCMD:hcreate(playerid, params[], help)
   	GetPlayerPos(playerid, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2]);
   	HouseData[r][e_pvslots] = pvslots;
     HouseData[r][e_value] = value;
-    HouseData[r][e_interior] = interior;
+    HouseData[r][e_interior] = inter;
     HouseData[r][e_date] = gettime();
     HouseData[r][e_creator] = PlayerData[playerid][e_accountid];
 
@@ -15342,7 +15341,7 @@ YCMD:stats(playerid, params[], help)
 			gangnam,
 			vip,
 			PlayerData[player1][e_medkits],
-			PlayerData[player1][e_houses],
+			GetPlayerHouseCount(player1),
 			GetPlayerEnterpriseCount(__GetName(player1)),
 			PlayerData[player1][e_wanteds],
 			UTConvert(PlayerData[player1][e_lastlogin]));
@@ -16925,19 +16924,18 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
         {
             GetPlayerName(playerid, PlayerData[playerid][e_name], MAX_PLAYER_NAME + 1);
 
-            if(PlayerData[playerid][e_houses] > 0)
-            {
-				for(new i = 0; i < houseid; i++)
-				{
-    				if(strcmp(HouseData[i][Owner], oldname, true)) continue;
-
-                    strmid(HouseData[i][Owner], newname, 0, 25, 25);
-
-				    format(query, sizeof(query), ""house_mark"\nOwner: %s\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", __GetName(playerid), HouseData[i][e_id], number_format(HouseData[i][price]), HouseData[i][e_score], g_aHouseInteriorTypes[HouseData[i][interior]][intname]);
-				    UpdateDynamic3DTextLabelText(HouseData[i][e_labelid], -1, query);
-				    SQL_SaveHouse(i);
-				}
-            }
+			for(new i = 0; i < MAX_HOUSES; i++)
+			{
+			    if(HouseData[i][e_ormid] == ORM:-1)
+			        continue;
+			        
+			    if(HouseData[i][e_owner] == PlayerData[i][e_accountid])
+			    {
+					DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
+			        HouseData[i][e_labelid] = Text3D:-1;
+			        SetupHouse(i, newname);
+			    }
+			}
 
 			for(new r = 0; r < MAX_ENTERPRISES; r++)
 			{
@@ -17917,7 +17915,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                
 				for(new i = 0, count = 0; i < MAX_HOUSES; i++)
 				{
-				    if(HouseData[i][e_owner] == HouseData[playerid][e_accountid]) {
+				    if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
 						if(++count == listitem) {
 				   			SetPlayerPos(playerid, HouseData[i][e_pos][0], HouseData[i][e_pos][1], HouseData[i][e_pos][2]);
 				   			PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
@@ -18537,7 +18535,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            case 3: // Houses
 		            {
 		                strcat(cstring, ""blue"/buy "white"- buy a house which is for sale\n");
-		                strcat(cstirng, ""blue"/enter "white"- enter the house or press 'F'\n");
+		                strcat(cstring, ""blue"/enter "white"- enter the house or press 'F'\n");
 		                strcat(cstring, ""blue"/houses "white"- view all your houses and go to them\n");
 		                strcat(cstring, ""blue"/sell "white"- sell your house and get 25% of value in return\n");
 		                strcat(cstring, ""blue"/sellto <player id> <price> "white"- sell your house to another player\n");
@@ -18695,36 +18693,36 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            if(GetPlayerMoneyEx(playerid) < g_aHouseInteriorTypes[PlayerData[playerid][iHouseUpgradeSel]][price])
 	                return SCM(playerid, -1, ""er"You can't afford that interior");
 
-				if(HouseData[iHouseUpgradeSel][e_owner] != PlayerData[playerid][e_accountid])
+				if(HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_owner] != PlayerData[playerid][e_accountid])
 				    return SCM(playerid, -1, ""er"This house does not belong to you");
 				    
-  	            if(PlayerData[playerid][HouseIntSelected] == HouseData[iHouseUpgradeSel][e_interior])
+  	            if(PlayerData[playerid][HouseIntSelected] == HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_interior])
          			return SCM(playerid, -1, ""er"This house already got the interior");
 				    
-				HouseData[i][e_locked] = 1;
+				HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_locked] = 1;
 
 				/* Remove all players from house */
 	            for(new pid = 0; pid < MAX_PLAYERS; pid++)
 	            {
-	                if(gTeam[pid] == HOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[iHouseUpgradeSel][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[iHouseUpgradeSel][e_id] + 1000))
+	                if(gTeam[pid] == HOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_id] + 1000))
 	                {
 	                    gTeam[pid] = gFREEROAM;
-	                    SetPlayerPos(pid, HouseData[iHouseUpgradeSel][e_pos][0], HouseData[iHouseUpgradeSel][e_pos][1], HouseData[iHouseUpgradeSel][e_pos][2]);
+	                    SetPlayerPos(pid, HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_pos][0], HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_pos][1], HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_pos][2]);
 						ResetPlayerWorld(pid);
 	                }
 	            }
 
-				DestroyDynamic3DTextLabel(HouseData[iHouseUpgradeSel][e_labelid]);
-                HouseData[iHouseUpgradeSel][e_labelid] = Text3D:-1;
-	            SetupHouse(iHouseUpgradeSel, "<null>");
+				DestroyDynamic3DTextLabel(HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_labelid]);
+                HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_labelid] = Text3D:-1;
+	            SetupHouse(PlayerData[playerid][iHouseUpgradeSel], "<null>");
 	            
 	            GivePlayerMoneyEx(playerid, -g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][price]);
-	            HouseData[iHouseUpgradeSel][e_interior] = PlayerData[playerid][HouseIntSelected];
-       			SetPlayerPos(pid, HouseData[iHouseUpgradeSel][e_pos][0], HouseData[iHouseUpgradeSel][e_pos][1], HouseData[iHouseUpgradeSel][e_pos][2]);
+	            HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_interior] = PlayerData[playerid][HouseIntSelected];
+       			SetPlayerPos(playerid, HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_pos][0], HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_pos][1], HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_pos][2]);
 				ResetPlayerWorld(playerid);
 				gTeam[playerid] = gFREEROAM;
 				
-				orm_update(HouseData[iHouseUpgradeSel][e_ormid]);
+				orm_update(HouseData[PlayerData[playerid][iHouseUpgradeSel]][e_ormid]);
                 SQL_SaveAccount(playerid, false, false);
                 SCM(playerid, GREEN, "Successfully upgraded the interior!");
 				return true;
@@ -21464,55 +21462,6 @@ SQL_BanAccount(playerid, adminid, reason[], lift = 0)
 	mysql_tquery(pSQL, query);
 }
 
-SQL_SaveHouse(house, bool:save_items = false)
-{
-    new query[1024];
-    
-    format(query, sizeof(query), "UPDATE `houses` SET `Owner` = '%s', `XPos` = %.2f, `YPos` = %.2f, `ZPos` = %.2f, `Interior` = %i, `Price` = %i, `Score` = %i, `Sold` = %i, `Locked` = %i, `Date` = %i WHERE `ID` = %i LIMIT 1;",
-		HouseData[house][Owner],
-		HouseData[house][e_x],
-		HouseData[house][e_y],
-		HouseData[house][e_z],
-		HouseData[house][interior],
-		HouseData[house][price],
-		HouseData[house][e_score],
-		HouseData[house][sold],
-		HouseData[house][locked],
-		HouseData[house][date],
-		HouseData[house][e_id]);
-
-    mysql_tquery(pSQL, "START TRANSACTION;");
-    mysql_tquery(pSQL, query);
-		
-	if(save_items)
-	{
-		new Float:POS[6];
-		for(new i = 0; i < MAX_HOUSE_ITEMS; i++)
-		{
-			if(HouseData[house][E_Obj_Model][i] != 0) {
-			    GetDynamicObjectPos(HouseData[house][E_Obj_ObjectID][i], POS[0], POS[1], POS[2]);
-			    GetDynamicObjectRot(HouseData[house][E_Obj_ObjectID][i], POS[3], POS[4], POS[5]);
-
-			    format(query, sizeof(query), "UPDATE `houses` SET `ObjSlot%i` = '%i,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f' WHERE `ID` = %i LIMIT 1;",
-				    i,
-				    HouseData[house][E_Obj_Model][i],
-				    POS[0],
-				    POS[1],
-				    POS[2],
-				    POS[3],
-				    POS[4],
-				    POS[5],
-				    HouseData[house][e_id]);
-			} else {
-			    format(query, sizeof(query), "UPDATE `houses` SET `ObjSlot%i` = '0,0.0,0.0,0.0,0.0,0.0,0.0' WHERE `ID` = %i LIMIT 1;", i, HouseData[house][e_id]);
-			}
-			mysql_tquery(pSQL, query);
-		}
-	}
-	
-	mysql_tquery(pSQL, "COMMIT;");
-}
-
 SQL_FinalGangKick(playerid)
 {
 	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `gangid` = 0, `gangrank` = 0 WHERE `name` = '%e' LIMIT 1;", PlayerData[playerid][GangKickMem]);
@@ -22435,7 +22384,6 @@ server_initialize()
     g_SpawnAreas[4] = CreateDynamicSphere(-2338.0479, -1636.5223, 485.6543, 13.5); // <- MC sphere
 
 	toyslist = LoadModelSelectionMenu("Other/toys.txt");
-	hobjslist = LoadModelSelectionMenu("Other/hobjs.txt");
 	skinlist = LoadModelSelectionMenu("Other/skins.txt");
 
 	#if WINTER_EDITION == true
@@ -28224,26 +28172,9 @@ GetNearestHouse(playerid)
 
 	for(new r = 0; r < MAX_HOUSES; r++)
 	{
-		if(4.0 > ((fPOS[0] - HouseData[r][e_pos][0]) * (fPOS[0] - HouseData[r][e_pos][0])) + ((fPOS[1] - HouseData[r][e_pos][1]) * (fPOS[1] - HouseData[r][e_pos][1])) + ((fPOS[2] - HouseData[r][e_pos][2]) * (fPOS[2] - HouseData[i][e_pos][2])))
+		if(4.0 > ((fPOS[0] - HouseData[r][e_pos][0]) * (fPOS[0] - HouseData[r][e_pos][0])) + ((fPOS[1] - HouseData[r][e_pos][1]) * (fPOS[1] - HouseData[r][e_pos][1])) + ((fPOS[2] - HouseData[r][e_pos][2]) * (fPOS[2] - HouseData[r][e_pos][2])))
 		{
 		    return r;
-		}
-	}
-	return -1;
-}
-
-GetHouseIdByPlayerSlotSel(playerid)
-{
-	new idx = 0;
-	for(new i = 0; i < houseid; i++)
-	{
-        if(!strcmp(HouseData[i][Owner], __GetName(playerid), true) && HouseData[i][sold] == 1)
-        {
-            if(idx == PlayerData[playerid][HouseSlotSelected])
-            {
-            	return i;
-			}
-			else idx++;
 		}
 	}
 	return -1;
@@ -28274,7 +28205,7 @@ GetPlayerHouseCount(playerid)
 	new count = 0;
 	for(new i = 0; i < MAX_HOUSES; i++)
 	{
-	    if(HouseData[i][e_orm] == ORM:-1)
+	    if(HouseData[i][e_ormid] == ORM:-1)
 	        continue;
 	        
 		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid])
@@ -28412,28 +28343,23 @@ ExitPlayer(playerid)
 	    }
 		case HOUSE:
 		{
-		    new bool:found = false;
-			for(new i = 0; i < houseid; i++)
+			for(new i = 0; i < MAX_HOUSES; i++)
 			{
-		    	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 1000))
+			    if(HouseData[i][e_ormid] == ORM:-1)
+			        continue;
+
+		    	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 1000))
 				{
-				    found = true;
-				    
 				    LoadMap(playerid);
-			    	SetPlayerPos(playerid, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z]);
+			    	SetPlayerPos(playerid, HouseData[i][e_pos][0], HouseData[i][e_pos][1], HouseData[i][e_pos][2]);
 			    	SetPlayerInterior(playerid, 0);
 			    	SetPlayerVirtualWorld(playerid, 0);
-			    	CancelEdit(playerid);
-			    	
+
 			    	gTeam[playerid] = gFREEROAM;
-			    	break;
-		    	}
-		    	else continue;
+			    	return 0;
+				}
 			}
-			if(!found)
-			{
-				return SCM(playerid, -1, ""er"Go to the house door to exit!");
-			}
+			SCM(playerid, -1, ""er"Go to the house door to exit!");
 			return 0;
 		}
 		case gTDM_VOTING:
@@ -30565,7 +30491,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][e_addhouseslots] = 0;
 	PlayerData[playerid][e_addentslots] = 0;
 	PlayerData[playerid][e_addhouseitemslots] = 0;
-	PlayerData[playerid][HouseSlotSelected] = 0;
 	PlayerData[playerid][EnterpriseIdSelected] = 0;
 	PlayerData[playerid][DrawnNumber] = -1;
 	PlayerData[playerid][pTrailerVehicle] = INVALID_VEHICLE_ID;
@@ -30995,7 +30920,7 @@ SetupHouse(slot, owner[])
 	}
 
 	if(HouseData[r][e_labelid] == Text3D:-1)
-		HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 40.0, .worldid = 0, .iteriorid = 0);
+		HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 40.0, .worldid = 0, .interiorid = 0);
 		
     if(HouseData[r][e_pickid] == -1)
 		HouseData[r][e_pickid] = CreateDynamicPickup(HouseData[r][e_owner] == 0 ? 1273 : 1272, 1, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 40.0);

@@ -26,12 +26,13 @@ Havoc Freeroam SA-MP Server
 	  	    5000       3
 		   10000       4
 		   25000       5
-   * /hlock has been merged into /lock
-   * /hmenu has been removed
-   * /houses now shows all of your houses, select to teleports
-   * /upgrade to upgrade your house interior
-   * Command /password to lock a house and set a password dialog
-   * Command /sellto <player id> <price> to sell your house to another player
+   * /hlock has been merged into /lock.
+   * /hmenu has been removed.
+   * /houses now shows all of your houses, select to teleports.
+   * /upgrade to upgrade your house interior.
+   * Command /password to lock a house and set a password dialog.
+   * Command /sellto <player id> <price> to sell your house to another player.
+   * Removed house item system.
   
 
 TODO
