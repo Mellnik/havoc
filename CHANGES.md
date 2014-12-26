@@ -18,8 +18,14 @@ Havoc Freeroam SA-MP Server
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/mappers).
 - Namechanges are now attached to an account id rather than a name. This prevents confusion.
-
 - House system has been fully rewritten.
+  Every player can now own up to 5 houses:
+  Needed score:      Allowed houses:
+           500       1
+		  2000       2
+		  5000       3
+		 10000       4
+		 25000       5
 
 TODO
 ----

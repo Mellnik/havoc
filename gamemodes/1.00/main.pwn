@@ -653,7 +653,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_payday,
 	e_reaction,
 	e_mathwins,
-	e_houses,
 	e_gangid,
 	e_gangrank,
 	e_addpvslots,
@@ -6822,27 +6821,12 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
 			if(Key(KEY_SECONDARY_ATTACK))
 			{
-				// Fast Distance Check
-				
-				new Float:fPOS[3];
-				GetPlayerPos(playerid, fPOS[0], fPOS[1], fPOS[2]);
-				
-				for(new i = 0; i < houseid; i++)
+				new i = -1;
+				if((i = GetNearestHouse(playerid)) != -1)
 				{
-					if(4.0 > ((fPOS[0] - HouseData[i][e_x]) * (fPOS[0] - HouseData[i][e_x])) + ((fPOS[1] - HouseData[i][e_y]) * (fPOS[1] - HouseData[i][e_y])) + ((fPOS[2] - HouseData[i][e_z]) * (fPOS[2] - HouseData[i][e_z])))
-					{
-						EnterHouse(playerid, i);
-						return 1;
-					}
+				    EnterHouse(playerid, i);
+				    return 1;
 				}
-				
-				/*
-			    if(GetNearestHouse(playerid) != -1)
-			    {
-			        Command_ReProcess(playerid, "/enter", false);
-			        return 1;
-			    }
-				*/
 			}
 
 			if(PlayerData[playerid][bSuperJump] && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT && Key(KEY_JUMP))
@@ -8838,61 +8822,44 @@ YCMD:buy(playerid, params[], help)
 		}
 	}
 	
-	new bool:found = false;
-	for(new i = 0; i < houseid; i++)
+	new i = -1;
+	if((i = GetNearestHouse(playerid)) != -1)
 	{
-	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z])) continue;
-        found = true;
+		if(HouseData[i][e_owner] != 0)
+		    return SCM(playerid, -1, ""er"This house is already sold");
+		    
+		if(GetPlayerMoneyEx(playerid) < HouseData[i][e_value])
+		    return SCM(playerid, -1, ""er"You can't afford this house");
 
-	    if(HouseData[i][sold])
-		{
-			SCM(playerid, -1, ""er"House is not buyable");
-			break;
+		new player_houses = GetPlayerHouseCount(playerid);
+		if(player_houses >= MAX_PLAYER_HOUSES)
+		    return SCM(playerid, -1, ""er"You already own the maximum amount of houses");
+		    
+		new needed_score;
+		if(player_houses >= GetAllowedHouseCount(playerid, needed_score)) {
+		    format(gstr, sizeof(gstr), ""er"You need %i score to buy another house", needed_score);
+			return SCM(playerid, -1, gstr);
 		}
-		if(PlayerData[playerid][e_houses] > PlayerData[playerid][e_addhouseslots])
-		{
-			SCM(playerid, -1, ""er"You have no free house slot!");
-			break;
-		}
-	    if(GetPlayerScoreEx(playerid) < HouseData[i][e_score])
-		{
-			SCM(playerid, -1, ""er"You need more score for this House!");
-			break;
-		}
-		if(GetPlayerMoneyEx(playerid) < HouseData[i][price])
-		{
-			SCM(playerid, -1, ""er"You need more money to buy this House!");
-			break;
-		}
+		
+		HouseData[i][e_owner] = PlayerData[i][e_accountid];
+		HouseData[i][e_date] = gettime();
+		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
+		DestoryDynamicPickup(HouseData[i][e_pickid]);
+		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
+		SetupHouse(i);
+        orm_update(HouseData[i][e_ormid]);
 
-		strmid(HouseData[i][Owner], __GetName(playerid), 0, 25, 25);
-	    HouseData[i][sold] = 1;
-
-	    format(gstr, sizeof(gstr), ""house_mark"\nOwner: %s\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", __GetName(playerid), HouseData[i][e_id], number_format(HouseData[i][price]), HouseData[i][e_score], g_aHouseInteriorTypes[HouseData[i][interior]][intname]);
-	    UpdateDynamic3DTextLabelText(HouseData[i][e_labelid], -1, gstr);
-	    DestroyDynamicMapIcon(HouseData[i][e_iconid]);
-	    DestroyDynamicPickup(HouseData[i][pickid]);
-	    HouseData[i][e_iconid] = -1; //CreateDynamicMapIcon(HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z], 32, 1, 0, -1, -1, 150.0);
-	    HouseData[i][pickid] = CreateDynamicPickup(1272, 1, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z], -1, -1, -1, 30.0);
-	    GivePlayerMoneyEx(playerid, -HouseData[i][price]);
-	    HouseData[i][date] = gettime();
-	    PlayerData[playerid][e_houses]++;
-	    player_notice(playerid, "House bought", "");
-	    SQL_SaveHouse(i);
-	    SQL_SaveAccount(playerid, false, false);
-	    PlayerData[playerid][tickLastBuy] = tick;
-	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the house %i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(HouseData[i][price]));
+        GivePlayerMoneyEx(playerid, -HouseData[i][e_value]);
+        PlayerData[playerid][tickLastBuy] = tick;
+		SQL_SaveAccount(playerid, false, false);
+		player_notice(playerid, "House bought", "");
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the house %i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(HouseData[i][e_value]));
 	    SCMToAll(-1, gstr);
-	    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""white"House bought!", ""white"You can now use these commands:\n\n/hmenu\n/hlock\n/enter\n/exit\n/sell\n\nCustomize your house's interior by using /hmenu", "OK", "");
-
-	    if(PlayerAchData[playerid][e_ach_settled][0] == 0)
-	    {
-	        GivePlayerAchievement(playerid, e_ach_settled, "Settled", "Congrats you earned $30,000!~n~and 10 score!~n~~w~Type /ach to view your achievements.");
-		}
-		break;
 	}
-	if(!found) SCM(playerid, -1, ""er"You aren't near of any house");
+	else
+	{
+	    SCM(playerid, -1, ""er"You aren't near if any house");
+	}
 	return 1;
 }
 
@@ -28594,12 +28561,12 @@ GetNearestHouse(playerid)
 	new Float:fPOS[3];
 	GetPlayerPos(playerid, fPOS[0], fPOS[1], fPOS[2]);
 
-	for(new i = 0; i < houseid; i++)
+	for(new r = 0; r < MAX_HOUSES; r++)
 	{
-	    if(GetDistance3D(fPOS[0], fPOS[1], fPOS[2], HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z]) > 2.0) continue;
-	    //if(!IsPlayerInRangeOfPoint(playerid, 1.5, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z])) continue;
-
-	    return i;
+		if(4.0 > ((fPOS[0] - HouseData[r][e_pos][0]) * (fPOS[0] - HouseData[r][e_pos][0])) + ((fPOS[1] - HouseData[r][e_pos][1]) * (fPOS[1] - HouseData[r][e_pos][1])) + ((fPOS[2] - HouseData[r][e_pos][2]) * (fPOS[2] - HouseData[i][e_pos][2])))
+		{
+		    return r;
+		}
 	}
 	return -1;
 }
@@ -28619,6 +28586,40 @@ GetHouseIdByPlayerSlotSel(playerid)
 		}
 	}
 	return -1;
+}
+
+GetAllowedHouseCount(playerid, &score)
+{
+	static const houses_per_score[MAX_PLAYER_HOUSES][2] = {
+	    {500, 1},
+	    {2000, 2},
+	    {5000, 3},
+	    {10000, 4},
+	    {25000, 5}
+	};
+	for(new i = sizeof(houses_per_score); i >= 0; i--)
+	{
+	    if(GetPlayerScoreEx(playerid) <= houses_per_score[i][0]) {
+			score = houses_per_score[i][0];
+		    return houses_per_score[i][1];
+		}
+	}
+	score = houses_per_score[0][0];
+	return 0;
+}
+
+GetPlayerHouseCount(playerid)
+{
+	new count = 0;
+	for(new i = 0; i < MAX_HOUSES; i++)
+	{
+	    if(HouseData[i][e_orm] == ORM:-1)
+	        continue;
+	        
+		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid])
+		    count++;
+	}
+	return count;
 }
 
 GetEntpriseSlotBySelection(playerid)
@@ -30925,7 +30926,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][tMedkit] = -1;
 	PlayerData[playerid][iMedkitTime] = 0;
 	PlayerData[playerid][e_payday] = 60;
-  	PlayerData[playerid][e_houses] = 0;
 	PlayerData[playerid][GCPlayer] = INVALID_PLAYER_ID;
 	PlayerData[playerid][GCNameHash] = 0;
 	PlayerData[playerid][GCOffer] = 0;
@@ -31211,7 +31211,6 @@ AssemblePlayerORM(ORM:_ormid, slot)
 	orm_addvar_int(_ormid, PlayerData[slot][e_payday], "payday");
 	orm_addvar_int(_ormid, PlayerData[slot][e_reaction], "reaction");
 	orm_addvar_int(_ormid, PlayerData[slot][e_mathwins], "mathwins");
-	orm_addvar_int(_ormid, PlayerData[slot][e_houses], "houses");
 	orm_addvar_int(_ormid, PlayerData[slot][e_gangid], "gangid");
 	orm_addvar_int(_ormid, PlayerData[slot][e_gangrank], "gangrank");
 	orm_addvar_int(_ormid, PlayerData[slot][e_addpvslots], "addpvslots");
