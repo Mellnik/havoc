@@ -8845,7 +8845,7 @@ YCMD:buy(playerid, params[], help)
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
 		DestoryDynamicPickup(HouseData[i][e_pickid]);
 		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
-		SetupHouse(i);
+		SetupHouse(i, "<null>");
         orm_update(HouseData[i][e_ormid]);
 
         GivePlayerMoneyEx(playerid, -HouseData[i][e_value]);
@@ -8889,7 +8889,7 @@ YCMD:sell(playerid, params[], help)
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
 		DestoryDynamicPickup(HouseData[i][e_pickid]);
 		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
-		SetupHouse(i);
+		SetupHouse(i, "<null>");
 		orm_update(HouseData[i][e_ormid]);
         
         GivePlayerMoneyEx(playerid, floatround(HouseData[i][e_value] / 4));
@@ -9434,7 +9434,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /breset /hsetprice /hsetscore\n/setentlevel /hcreate /ecreate /createstore /gzonecreate");
+		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /breset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /createstore /gzonecreate");
 
         ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
 	}
@@ -13892,63 +13892,33 @@ YCMD:sethouseowner(playerid, params[], help)
 	return 1;
 }*/
 
-YCMD:hsetprice(playerid, params[], help)
+YCMD:hsetvalue(playerid, params[], help)
 {
     if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL) return SCM(playerid, -1, NO_PERM);
 
-	extract params -> new hprice; else
+	extract params -> new hvalue; else
 	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /hsetprice <price>");
+	    return SCM(playerid, NEF_GREEN, "Usage: /hsetvalue <amount>");
 	}
 
- 	new bool:found = false;
-	for(new i = 0; i < houseid; i++)
+    if(hvalue > 500000000 || hvalue < 1)
+        return SCM(playerid, -1, ""er"Invalid value");
+
+	new i = -1;
+	if((i = GetNearestHouse(playerid)) != -1)
 	{
-	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z])) continue;
-	    found = true;
-
-	    if(HouseData[i][sold] == 1) return SCM(playerid, -1, ""er"House connot be sold");
-
-	    HouseData[i][price] = hprice;
-
- 	   	format(gstr, sizeof(gstr), ""house_mark"\nOwner: ---\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", HouseData[i][e_id], number_format(HouseData[i][price]), HouseData[i][e_score], g_aHouseInteriorTypes[HouseData[i][interior]][intname]);
-	    UpdateDynamic3DTextLabelText(HouseData[i][e_labelid], -1, gstr);
-	    SQL_SaveHouse(i);
-
-		player_notice(playerid, "House price has been set", "");
-	    break;
+	    HouseData[i][e_value] = hvalue;
+	    
+		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
+        HouseData[i][e_labelid] = Text3D:-1;
+        SetupHouse(iHouseUpgradeSel, "<null>");
+	    
+	    orm_update(HouseData[i][e_ormid]);
 	}
-    if(!found) SCM(playerid, -1, ""er"You need to stand in the house pickup (Entrance)");
-	return 1;
-}
-
-YCMD:hsetscore(playerid, params[], help)
-{
-    if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL) return SCM(playerid, -1, NO_PERM);
-
-	extract params -> new hscore; else
+	else
 	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /hsetscore <score>");
+	    SCM(playerid, -1, ""er"You aren't near if any house");
 	}
-
- 	new bool:found = false;
-	for(new i = 0; i < houseid; i++)
-	{
-	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z])) continue;
-	    found = true;
-
-	    if(HouseData[i][sold] == 1) return SCM(playerid, -1, ""er"House connot be sold");
-
-	    HouseData[i][e_score] = hscore;
-
- 	   	format(gstr, sizeof(gstr), ""house_mark"\nOwner: ---\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", HouseData[i][e_id], number_format(HouseData[i][price]), HouseData[i][e_score], g_aHouseInteriorTypes[HouseData[i][interior]][intname]);
-	    UpdateDynamic3DTextLabelText(HouseData[i][e_labelid], -1, gstr);
-	    SQL_SaveHouse(i);
-
-		player_notice(playerid, "House score has been set", "");
-	    break;
-	}
-    if(!found) SCM(playerid, -1, ""er"You need to stand in the house pickup (Entrance)");
 	return 1;
 }
 
@@ -13956,56 +13926,28 @@ YCMD:hreset(playerid, params[], help)
 {
     if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL) return SCM(playerid, -1, NO_PERM);
 
- 	new bool:found = false;
-	for(new i = 0; i < houseid; i++)
+	new i = -1;
+	if((i = GetNearestHouse(playerid)) != -1)
 	{
-	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z])) continue;
-	    found = true;
+	    if(HouseData[i][e_owner] == 0)
+	        return SCM(playerid, -1, ""er"House is not sold");
+	
+        HouseData[i][e_owner] = 0;
+        HouseData[i][e_date] = 0;
+        HouseData[i][e_locked] = 0;
+		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
+		DestoryDynamicPickup(HouseData[i][e_pickid]);
+		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
+		SetupHouse(i, "<null>");
 
-		if(HouseData[i][sold] == 0) return SCM(playerid, -1, ""er"House is not sold");
+	    orm_update(HouseData[i][e_ormid]);
 
-		new player = __GetPlayerID(HouseData[i][Owner]);
-		if(player != INVALID_PLAYER_ID)
-		{
-	        PlayerData[player][e_houses]--;
-	        SCM(player, -1, "An admin destroyed your house!");
-			SQL_SaveAccount(player, false, false);
-		}
-		else
-		{
-			format(gstr, sizeof(gstr), "UPDATE `accounts` SET `houses` = `houses` - 1 WHERE `name` = '%s' LIMIT 1;", HouseData[i][Owner]);
-			mysql_tquery(pSQL, gstr, "", "");
-		}
-		
-	    strmid(HouseData[i][Owner], "ForSale", 0, 25, 25);
-	    HouseData[i][sold] = 0;
-        HouseData[i][locked] = 1;
-        HouseData[i][date] = 0;
-		for(new ii = 0; ii < MAX_HOUSE_ITEMS; ii++)
-		{
-			if(HouseData[i][E_Obj_Model][ii] != 0)
-			{
-			    DestroyDynamicObject(HouseData[i][E_Obj_ObjectID][ii]);
-			    DestroyDynamic3DTextLabel(HouseData[i][E_Obj_Label][ii]);
-			    HouseData[i][E_Obj_Label][ii] = Text3D:-1;
-			    HouseData[i][E_Obj_ObjectID][ii] = -1;
-			    HouseData[i][E_Obj_Model][ii] = 0;
-			}
-		}
-        
-		SQL_SaveHouse(i, true);
-
-	    format(gstr, sizeof(gstr), ""house_mark"\nOwner: ---\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", HouseData[i][e_id], number_format(HouseData[i][price]), HouseData[i][e_score], g_aHouseInteriorTypes[HouseData[i][interior]][intname]);
-	    UpdateDynamic3DTextLabelText(HouseData[i][e_labelid], -1, gstr);
-	    DestroyDynamicMapIcon(HouseData[i][e_iconid]);
-	    DestroyDynamicPickup(HouseData[i][pickid]);
-	    HouseData[i][e_iconid] = CreateDynamicMapIcon(HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z], 31, 1, 0, -1, -1, 150.0);
-	    HouseData[i][pickid] = CreateDynamicPickup(1273, 1, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z], -1, -1, -1, 30.0);
-
-		player_notice(playerid, "The house has been reset", "");
-  		break;
+        player_notice(playerid, "The house has been reset", "");
 	}
-    if(!found) SCM(playerid, -1, ""er"You need to stand in the house pickup (Entrance)");
+	else
+	{
+	    SCM(playerid, -1, ""er"You aren't near if any house");
+	}
 	return 1;
 }
 
@@ -18820,7 +18762,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 				DestroyDynamic3DTextLabel(HouseData[iHouseUpgradeSel][e_labelid]);
                 HouseData[iHouseUpgradeSel][e_labelid] = Text3D:-1;
-	            SetupHouse(iHouseUpgradeSel);
+	            SetupHouse(iHouseUpgradeSel, "<null>");
 	            
 	            GivePlayerMoneyEx(playerid, -g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][price]);
 	            HouseData[iHouseUpgradeSel][e_interior] = PlayerData[playerid][HouseIntSelected];
