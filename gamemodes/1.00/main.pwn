@@ -1015,7 +1015,6 @@ enum E_ENT_DATA
 	Float:e_pos[3],
 	E_ENT_TYPE:e_type,
 	e_level,
-	e_sold,
 	e_date,
 
 	/* INTERNAL */
@@ -8662,7 +8661,7 @@ YCMD:bbuy(playerid, params[], help)
 	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
 		bFound = true;
 		
-		if(EnterpriseData[r][e_sold] != 0) {
+		if(EnterpriseData[r][e_owner] != 0) {
 		    player_notice(playerid, "Enterprise not for sale", "");
 		    break;
 		}
@@ -8680,7 +8679,6 @@ YCMD:bbuy(playerid, params[], help)
 		}
 		
         EnterpriseData[r][e_owner] = PlayerData[playerid][e_accountid];
-		EnterpriseData[r][e_sold] = 1;
 		EnterpriseData[r][e_date] = gettime();
 		
 		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
@@ -8728,17 +8726,12 @@ YCMD:bsell(playerid, params[], help)
 	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
 		bFound = true;
 
-	    if(!EnterpriseData[r][e_sold]) {
-			SCM(playerid, -1, ""er"Enterprise can't be sold");
-			break;
-		}
 		if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_account]) {
 			SCM(playerid, -1, ""er"You don't own this enterprise");
 			break;
 		}
 		
 	    EnterpriseData[r][e_owner] = 0;
-	    EnterpriseData[r][e_sold] = 0;
         EnterpriseData[r][e_level] = 1;
         EnterpriseData[r][e_date] = 0;
 
@@ -13926,7 +13919,7 @@ YCMD:setentlevel(playerid, params[], help)
 		
 		EnterpriseData[r][e_level] = blevel;
 		
-		if(EnterpriseData[r][e_sold]) {
+		if(EnterpriseData[r][e_owner] != 0) {
 	        format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 		} else {
 		    format(gstr, sizeof(gstr), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
@@ -13953,8 +13946,8 @@ YCMD:breset(playerid, params[], help)
 	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
 		bFound = true;
 
-		if(EnterpriseData[r][e_sold] == 0) {
-		    player_notice(playerid, "Enterprise must be for sale", "");
+		if(EnterpriseData[r][e_owner] == 0) {
+		    player_notice(playerid, "Enterprise must not be for sale", "");
 		    break;
 		}
 		
@@ -13968,7 +13961,6 @@ YCMD:breset(playerid, params[], help)
 		}
 
 		EnterpriseData[r][e_owner] = 0;
-	    EnterpriseData[r][e_sold] = 0;
         EnterpriseData[r][e_level] = 1;
         EnterpriseData[r][e_date] = 0;
 
@@ -30846,7 +30838,6 @@ AssembleEnterpriseORM(ORM:_ormid, slot)
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][2], "zpos");
     orm_addvar_int(_ormid, _:EnterpriseData[slot][e_type], "type");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_level], "level");
-    orm_addvar_int(_ormid, EnterpriseData[slot][e_sold], "sold");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_date], "date");
 }
 
@@ -30957,7 +30948,7 @@ SetupEnterprise(slot, owner[])
 	EnterpriseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 30.0, .worldid = 0);
     EnterpriseData[r][e_pickupid] = CreateDynamicPickup(1274, 1, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], .worldid = 0, .streamdistance = 50.0);
 
-	if(!EnterpriseData[r][e_sold]) {
+	if(EnterpriseData[r][e_owner] == 0) {
 	    EnterpriseData[r][e_iconid] = CreateDynamicMapIcon(EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 52, 1, .worldid = 0, .streamdistance = 150.0);
 	}
 	return 1;
@@ -30974,7 +30965,6 @@ ResetEnterprise(slot = -1)
 		    EnterpriseData[r][e_owner] = 0;
 			EnterpriseData[r][e_type] = E_ENT_TYPE:0;
 		    EnterpriseData[r][e_level] = 1;
-		    EnterpriseData[r][e_sold] = 0;
 		    EnterpriseData[r][e_date] = 0;
 		    EnterpriseData[r][e_labelid] = Text3D:-1;
 		    EnterpriseData[r][e_iconid] = -1;
@@ -30992,7 +30982,6 @@ ResetEnterprise(slot = -1)
 	    EnterpriseData[r][e_owner] = 0;
 		EnterpriseData[r][e_type] = E_ENT_TYPE:0;
 	    EnterpriseData[r][e_level] = 1;
-	    EnterpriseData[r][e_sold] = 0;
 	    EnterpriseData[r][e_date] = 0;
 	    EnterpriseData[r][e_labelid] = Text3D:-1;
 	    EnterpriseData[r][e_iconid] = -1;
