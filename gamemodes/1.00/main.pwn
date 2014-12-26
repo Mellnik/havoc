@@ -412,7 +412,6 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define COOLDOWN_CMD_ROB                (10000)
 #define COOLDOWN_CMD_BUY                (2000)
 #define COOLDOWN_CMD_PBUY               (2000)
-#define COOLDOWN_CMD_LOCK               (1000)
 #define COOLDOWN_CMD_GIVECASH           (120000)
 #define COOLDOWN_CMD_REPORT             (30000)
 #define COOLDOWN_CMD_SELL               (2000)
@@ -8959,9 +8958,53 @@ YCMD:lock(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
     
-    if(gTeam[playerid] == gFREEROAM)
+    if(gTeam[playerid] == HOUSE)
     {
-		if(GetPlayerState(playerid) == PLAYER_STATE_PASSENGER || GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+		for(new i = 0; i < MAX_HOUSES; i++)
+		{
+		    if(HouseData[i][e_ormid] == ORM:-1)
+		        continue;
+		        
+			if(IsPlayerInRangeOfPoint(playerid, 100.0, g_aHouseInteriorTypes[HouseData[i][e_interior]][house_x], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_y], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_z])
+				&& GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior]
+				&& GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 1000))
+			{
+			    if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid])
+				{
+					HouseData[i][e_locked] = !HouseData[i][e_locked];
+					player_notice(playerid, "House:", HouseData[i][e_locked] ? ("~g~locked") : ("~r~unlocked"));
+					PlayerPlaySound(playerid, 1027, 0.0, 0.0, 0.0);
+				}
+				else
+				{
+				    SCM(playerid, -1, ""er"This house doesn't belong to you");
+				}
+				return 1;
+			}
+		}
+    }
+    else if(gTeam[playerid] == gFREEROAM)
+	{
+	    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+	    {
+			new i = -1;
+			if((i = GetNearestHouse(playerid)) != -1)
+			{
+			    if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid])
+				{
+					HouseData[i][e_locked] = !HouseData[i][e_locked];
+					player_notice(playerid, "House:", HouseData[i][e_locked] ? ("~g~locked") : ("~r~unlocked"));
+					PlayerPlaySound(playerid, 1027, 0.0, 0.0, 0.0);
+				}
+				else
+				{
+				    SCM(playerid, -1, ""er"This house doesn't belong to you");
+				}
+				return 1;
+			}
+		}
+		
+ 		if(GetPlayerState(playerid) == PLAYER_STATE_PASSENGER || GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 		{
 		    new vehicle = -1;
 		    if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
@@ -8975,17 +9018,17 @@ YCMD:lock(playerid, params[], help)
                     vehicle = GetPlayerVehicleID(playerid);
 			    }
 			}
-			
+
 			if(vehicle != -1)
 			{
 			    new vehicle_params[7];
 			    GetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
-			    
+
 			    if(vehicle_params[3] == -1)
 			        vehicle_params[3] = 1;
 				else
 					vehicle_params[3] = vehicle_params[3] == 0 ? 1 : 0;
-			    
+
 		        SetVehicleParamsEx(vehicle, vehicle_params[0], vehicle_params[1], vehicle_params[2], vehicle_params[3], vehicle_params[4], vehicle_params[5], vehicle_params[6]);
 
 		        player_notice(playerid, "Vehicle:~n~", vehicle_params[3] == 0 ? ("~r~~h~Unlocked") : ("~g~~h~Locked"));
@@ -8993,74 +9036,8 @@ YCMD:lock(playerid, params[], help)
 		        return 1;
 			}
 		}
-		else player_notice(playerid, "You have to be in a vehicle", "");
-    }
-	else
-	{
-  		SCM(playerid, RED, NOT_AVAIL);
 	}
-	return 1;
-}
-
-YCMD:hlock(playerid, params[], help)
-{
-	if(gTeam[playerid] == gFREEROAM || gTeam[playerid] == HOUSE)
-	{
-		new tick = GetTickCountEx();
-
-		if((PlayerData[playerid][tickLastLocked] + COOLDOWN_CMD_LOCK) >= tick)
-		{
-	    	return player_notice(playerid, "Command is on cooldown!", "");
-		}
-
-	    new bool:found = false;
-		for(new i = 0; i < houseid; i++)
-		{
-			if(IsPlayerInRangeOfPoint(playerid, 1.5, HouseData[i][e_x], HouseData[i][e_y], HouseData[i][e_z]))
-			{
-				found = true;
-				if(strcmp(HouseData[i][Owner], __GetName(playerid), true))
-				{
-					SCM(playerid, -1, ""er"This isn't your House!");
-					break;
-				}
-				if(!HouseData[i][locked])
-				{
-				    player_notice(playerid, "House:", "~g~locked");
-				}
-				else player_notice(playerid, "House:", "~r~unlocked");
-
-	   			HouseData[i][locked] = (HouseData[i][locked]) ? (0) : (1);
-	            PlayerPlaySound(playerid, 1027, 0.0, 0.0, 0.0);
-	            SQL_SaveHouse(i);
-			}
-			else if(IsPlayerInRangeOfPoint(playerid, 100.0, g_aHouseInteriorTypes[HouseData[i][interior]][house_x], g_aHouseInteriorTypes[HouseData[i][interior]][house_y], g_aHouseInteriorTypes[HouseData[i][interior]][house_z]) && GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 1000))
-			{
-				found = true;
-				if(strcmp(HouseData[i][Owner], __GetName(playerid), true))
-				{
-					SCM(playerid, -1, ""er"This isn't your House!");
-					break;
-				}
-
-				if(!HouseData[i][locked])
-					player_notice(playerid, "House:", "~g~locked");
-				else
-					player_notice(playerid, "House:", "~r~unlocked");
-
-	            HouseData[i][locked] = HouseData[i][locked] ? 0 : 1;
-	            PlayerPlaySound(playerid, 1027, 0.0, 0.0, 0.0);
-	            SQL_SaveHouse(i);
-			}
-			else continue;
-		}
-		PlayerData[playerid][tickLastLocked] = tick;
-		if(!found) SCM(playerid, -1, ""er"You aren't near of any house!");
-	}
-	else
-	{
-  		SCM(playerid, RED, NOT_AVAIL);
-	}
+	SCM(playerid, -1, ""er"You either have to be in a car or at a house");
 	return 1;
 }
 
