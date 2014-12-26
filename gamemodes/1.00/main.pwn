@@ -18858,12 +18858,68 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            }
 	            return true;
 	        }
-		    case DIALOG_COMMANDS:
+		    case DIALOG_COMMANDS: // "General\nAccount\nGangs\nHouses\nEnterprises\nPrivate Vehicles\nVery Important Player (VIP)\nOther"
 		    {
 		        new cstring[2048];
 		        
 		        switch(listitem)
 		        {
+		            case 0: // General
+		            {
+		            
+		            }
+		            case 1: // Account
+		            {
+		            
+		            }
+		            case 2: // Gangs
+		            {
+						strcat(cstring, ""blue"/gregister "white"- create a gang\n");
+						strcat(cstring, ""blue"/gjoin "white"- accept gang invitation\n");
+						strcat(cstring, ""blue"/gdeny "white"- deny an invitation\n");
+						strcat(cstring, ""blue"/gleave "white"- leave your gang\n");
+						strcat(cstring, ""blue"/gmenu "white"- gang menu\n");
+						strcat(cstring, ""blue"/gcolor <Red 0-255> <Green 0-255> <Blue 0-255> "white"- set gang color\n");
+						strcat(cstring, ""blue"/grank "white"- set a players gang rank\n");
+						strcat(cstring, ""blue"/gcar <(optional) vehicle id>"white"- spawn gang vehicle or set it\n");
+                        strcat(cstring, ""blue"/ginvite "white"- invite a player to your gang\n");
+                        strcat(cstring, ""blue"/gkick "white"- kick a player off your gang\n");
+						strcat(cstring, ""blue"/gwar "white"- start a gang war in a zone\n");
+						strcat(cstring, ""blue"/gcapture "white"- recapture a zone while it is being attacked\n");
+						strcat(cstring, ""blue"/gzones "white"- show gang zones owned by your gang\n");
+						strcat(cstring, ""blue"/gangs "white"- view online gangs\n");
+						strcat(cstring, ""blue"/gwars "white"- view ongoing gang wars\n");
+						strcat(cstring, ""blue"/grename <new name> <new tag> "white"- rename your gang\n");
+						strcat(cstring, ""blue"/gclose "white"- delete your gang (Gang Founder only)\n");
+		            }
+		            case 3: // Houses
+		            {
+		                strcat(cstring, ""blue"/buy "white"- buy a house which is for sale\n");
+		                strcat(cstirng, ""blue"/enter "white"- enter the house or press 'F'\n");
+		                strcat(cstring, ""blue"/houses "white"- view all your houses and go to them\n");
+		                strcat(cstring, ""blue"/sell "white"- sell your house and get 50% of value in return\n");
+		                strcat(cstring, ""blue"/sellto <player id> <price> "white"- sell your house to another player\n");
+		                strcat(cstring, ""blue"/upgrade "white"- upgrade your house interior\n");
+		                strcat(cstring, ""blue"/lock "white"- (un)lock the house\n");
+						strcat(cstring, ""blue"/password "white"- set house password\n");
+		            }
+		            case 4: // Enterprises
+		            {
+		            
+		            }
+		            case 5: // Private Vehicles
+		            {
+		            
+		            }
+		            case 6: // VIP
+		            {
+		            
+		            }
+		            case 7: // Other
+		            {
+		            
+		            }
+		        
 		            case 0: // General
 		            {
 		                strcat(cstring, ""yellow"/toys "white"- player toys\n");
@@ -18902,22 +18958,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            }
 		            case 2: // Gang
 		            {
-						strcat(cstring, ""yellow"/gregister "white"- create a gang\n");
-						strcat(cstring, ""yellow"/gwar "white"- start a war against another gang\n");
-						strcat(cstring, ""yellow"/gzones "white"- view your zones\n");
-						strcat(cstring, ""yellow"/gcapture "white"- recapture a zone while it is begin attacked\n");
-						strcat(cstring, ""yellow"/gmenu "white"- gang menu\n");
-						strcat(cstring, ""yellow"/gcolor "white"- set the gang color\n");
-						strcat(cstring, ""yellow"/gcar "white"- set the gang vehicle\n");
-						strcat(cstring, ""yellow"/grank "white"- set a players rank\n");
-						strcat(cstring, ""yellow"/ginvite "white"- invite someone to your gang\n");
-						strcat(cstring, ""yellow"/gkick "white"- kick someone off your gang\n");
-						strcat(cstring, ""yellow"/gjoin "white"- join a gang\n");
-						strcat(cstring, ""yellow"/gleave "white"- leave the gang you are in\n");
-						strcat(cstring, ""yellow"/gclose "white"- destroy your gang\n");
-						strcat(cstring, ""yellow"/gdeny "white"- deny an invitation\n");
-						strcat(cstring, ""yellow"/gangs "white"- online gangs\n");
-						strcat(cstring, ""yellow"/gwars "white"- view ongoing gwars\n");
+
 		            }
 		            case 3: // House/Enterprises
 		            {
@@ -27348,7 +27389,7 @@ function:ShowDialog(playerid, dialogid)
 	    }
 	    case DIALOG_COMMANDS:
 	    {
-        	ShowPlayerDialog(playerid, DIALOG_COMMANDS, DIALOG_STYLE_LIST, ""nef" :: Commands", "General\nAccount\nGang\nHouse/Enterprise\nCustom cars\nOther\nVIP\nGold Credits", "Select", "Cancel");
+        	ShowPlayerDialog(playerid, DIALOG_COMMANDS, DIALOG_STYLE_LIST, ""nef" :: Commands", "General\nAccount\nGangs\nHouses\nEnterprises\nPrivate Vehicles\nVery Important Player (VIP)\nOther", "Select", "Cancel");
 		}
 	    case DIALOG_HOUSE_UPGRADE:
 	    {
