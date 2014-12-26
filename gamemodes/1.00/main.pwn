@@ -411,11 +411,9 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define COOLDOWN_CMD_AR                 (1000)
 #define COOLDOWN_CMD_ROB                (10000)
 #define COOLDOWN_CMD_BUY                (2000)
-#define COOLDOWN_CMD_PBUY               (2000)
 #define COOLDOWN_CMD_GIVECASH           (120000)
 #define COOLDOWN_CMD_REPORT             (30000)
 #define COOLDOWN_CMD_SELL               (2000)
-#define COOLDOWN_CMD_PSELL              (2000)
 #define COOLDOWN_CMD_CHANGEPASS         (30000)
 #define COOLDOWN_CMD_PM                 (3000)
 #define COOLDOWN_CMD_HITMAN             (30000)
@@ -691,9 +689,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	tickLastLocked,
 	tickLastBIKEC,
   	tickLastBuy,
-  	tickLastPBuy,
   	tickLastSell,
-  	tickLastPSell,
   	tickLastPW,
   	tickLastChat,
   	tickLastPM,
@@ -8640,121 +8636,6 @@ YCMD:buygc(playerid, params[], help)
 	return 1;
 }
 
-YCMD:bbuy(playerid, params[], help)
-{
-	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
-    if(!islogged(playerid)) return notlogged(playerid);
-
-	new tick = GetTickCountEx();
-	if(PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL)
-	{
-		if((PlayerData[playerid][tickLastPBuy] + COOLDOWN_CMD_PBUY) >= tick)
-		{
-	    	return player_notice(playerid, "Command is on cooldown!", "");
-		}
-	}
-
-	new bool:bFound = false;
-	for(new r = 0; r < MAX_ENTERPRISES; r++)
-	{
-	    if(EnterpriseData[r][e_ormid] == ORM:-1) continue;
-	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
-		bFound = true;
-		
-		if(EnterpriseData[r][e_owner] != 0) {
-		    player_notice(playerid, "Enterprise not for sale", "");
-		    break;
-		}
-		if(GetPlayerEnterpriseCount(__GetName(playerid)) > PlayerData[playerid][e_addentslots]) {
-			SCM(playerid, -1, ""er"You do not have any free enterprise slots");
-			break;
-		}
-	    if(GetPlayerScoreEx(playerid) < 1000) {
-			SCM(playerid, -1, ""er"You need at least 1000 score to start a enterprise");
-			break;
-		}
-		if(GetPlayerMoneyEx(playerid) < 1500000) {
-			SCM(playerid, -1, ""er"You need at least $1,500,000 to start a enterprise");
-			break;
-		}
-		
-        EnterpriseData[r][e_owner] = PlayerData[playerid][e_accountid];
-		EnterpriseData[r][e_date] = gettime();
-		
-		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
-		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
-		DestroyDynamicMapIcon(EnterpriseData[r][e_iconid]);
-		EnterpriseData[r][e_iconid] = -1;
-		strmid(EnterpriseData[r][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
-		SetupEnterprise(r, EnterpriseData[i][e_namecache]);
-		
-		PlayerData[playerid][tickLastPBuy] = tick;
-		
-		player_notice(playerid, "SUCCESS!", "");
-        PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
-        GivePlayerMoneyEx(playerid, -1500000);
-        SQL_SaveAccount(playerid, false, false);
-		
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
-	    SCMToAll(-1, gstr);
-		
-		orm_update(EnterpriseData[r][e_ormid]);
-		break;
-	}
-	if(!bFound) SCM(playerid, -1, ""er"You aren't near of any enterprise");
-	return 1;
-}
-
-YCMD:bsell(playerid, params[], help)
-{
-	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
-    if(!islogged(playerid)) return notlogged(playerid);
-
-	new tick = GetTickCountEx();
-	if(PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL)
-	{
-		if((PlayerData[playerid][tickLastPSell] + COOLDOWN_CMD_PSELL) >= tick)
-		{
-	    	return player_notice(playerid, "Command is on cooldown!", "");
-		}
-	}
-
-	new bool:bFound = false;
-	for(new r = 0; r < MAX_ENTERPRISES; r++)
-	{
-	    if(EnterpriseData[r][e_ormid] == ORM:-1) continue;
-	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
-		bFound = true;
-
-		if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_account]) {
-			SCM(playerid, -1, ""er"You don't own this enterprise");
-			break;
-		}
-		
-	    EnterpriseData[r][e_owner] = 0;
-        EnterpriseData[r][e_level] = 1;
-        EnterpriseData[r][e_date] = 0;
-
-		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
-		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
-
-        SetupEnterprise(r, "<null>");
-
-	    PlayerData[playerid][tickLastPSell] = tick;
-	    
-	    player_notice(playerid, "SUCCESS!", "");
-	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
-	    
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
-	    SCMToAll(-1, gstr);
-	    
-	    orm_update(EnterpriseData[r][e_ormid]);
-	    break;
-	}
-	if(!bFound) SCM(playerid, -1, ""er"You aren't near of any enterprise");
-	return 1;
-}
-
 YCMD:houses(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
@@ -8850,11 +8731,53 @@ YCMD:buy(playerid, params[], help)
 		player_notice(playerid, "House bought", "");
 	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the house %i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(HouseData[i][e_value]));
 	    SCMToAll(-1, gstr);
+	    return 1;
 	}
-	else
+
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
-	    SCM(playerid, -1, ""er"You aren't near if any house");
+	    if(EnterpriseData[r][e_ormid] == ORM:-1) continue;
+	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
+
+		if(EnterpriseData[r][e_owner] != 0) {
+		    player_notice(playerid, "Enterprise not for sale", "");
+		    return 1;
+		}
+		if(GetPlayerEnterpriseCount(__GetName(playerid)) > PlayerData[playerid][e_addentslots]) {
+			SCM(playerid, -1, ""er"You do not have any free enterprise slots");
+			return 1;
+		}
+	    if(GetPlayerScoreEx(playerid) < 1000) {
+			SCM(playerid, -1, ""er"You need at least 1000 score to start a enterprise");
+			return 1;
+		}
+		if(GetPlayerMoneyEx(playerid) < 1500000) {
+			SCM(playerid, -1, ""er"You need at least $1,500,000 to start a enterprise");
+			return 1;
+		}
+
+        EnterpriseData[r][e_owner] = PlayerData[playerid][e_accountid];
+		EnterpriseData[r][e_date] = gettime();
+
+		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
+		DestroyDynamicMapIcon(EnterpriseData[r][e_iconid]);
+		EnterpriseData[r][e_iconid] = -1;
+		strmid(EnterpriseData[r][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
+		SetupEnterprise(r, EnterpriseData[i][e_namecache]);
+        PlayerData[playerid][tickLastBuy] = tick;
+		player_notice(playerid, "Enterprise bought", "");
+        PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
+        GivePlayerMoneyEx(playerid, -1500000);
+        SQL_SaveAccount(playerid, false, false);
+
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
+	    SCMToAll(-1, gstr);
+
+		orm_update(EnterpriseData[r][e_ormid]);
+		return 1;
 	}
+	SCM(playerid, -1, ""er"You must be near a house or enterprise");
 	return 1;
 }
 
@@ -8894,11 +8817,40 @@ YCMD:sell(playerid, params[], help)
 	    player_notice(playerid, "House sold", "");
 	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the house %i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(floatround(HouseData[i][e_value] / 4)));
 	    SCMToAll(-1, gstr);
+	    return 1;
  	}
-	else
+
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
-	    SCM(playerid, -1, ""er"You aren't near if any house");
+	    if(EnterpriseData[r][e_ormid] == ORM:-1) continue;
+	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
+
+		if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_accountid]) {
+			SCM(playerid, -1, ""er"You don't own this enterprise");
+			return 1;
+		}
+
+	    EnterpriseData[r][e_owner] = 0;
+        EnterpriseData[r][e_level] = 1;
+        EnterpriseData[r][e_date] = 0;
+
+		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
+
+        SetupEnterprise(r, "<null>");
+
+	    PlayerData[playerid][tickLastSell] = tick;
+
+	    player_notice(playerid, "Enterprise sold", "");
+	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
+
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
+	    SCMToAll(-1, gstr);
+
+	    orm_update(EnterpriseData[r][e_ormid]);
+	    return 1;
 	}
+    SCM(playerid, -1, ""er"You must be near a house or enterprise");
 	return 1;
 }
 
@@ -10497,41 +10449,6 @@ YCMD:car(playerid, params[], help)
 	else
 	{
    		SCM(playerid, RED, NOT_AVAIL);
-	}
-	return 1;
-}
-
-YCMD:locate(playerid, params[], help)
-{
-    new player;
- 	if(sscanf(params, "r", player))
-	{
-		return SCM(playerid, NEF_GREEN, "Usage: /locate <playerid>");
-  	}
-  	
-    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
-	if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
-
-	if(IsPlayerAvail(player))
-	{
-        if(gTeam[player] != gFREEROAM) return SCM(playerid, -1, ""er"Player is in a minigame!");
-
-		new zone[MAX_ZONE_NAME],
-		    zone_ret = GetPlayer2DZone(player, zone, sizeof(zone));
-		    
-		if(zone_ret == 0)
-		{
-			player_notice(playerid, "Location not found", "");
-		}
-		else
-		{
-			format(gstr, sizeof(gstr), ""nef" "GREY_E"%s(%i) has been located in '%s'", __GetName(player), player, zone);
-    		SCM(playerid, -1, gstr);
-		}
-	}
-	else
-	{
-	    SCM(playerid, -1, ""er"Player is not connected");
 	}
 	return 1;
 }
@@ -13922,7 +13839,7 @@ YCMD:setentlevel(playerid, params[], help)
 		if(EnterpriseData[r][e_owner] != 0) {
 	        format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 		} else {
-		    format(gstr, sizeof(gstr), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+		    format(gstr, sizeof(gstr), ""enterprise_mark"\n"nef_green"FOR SALE! Type /buy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 		}
 		
 		UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
@@ -22420,8 +22337,9 @@ server_initialize()
     Command_AddAltNamed("rv", "respawnvehicles");
     Command_AddAltNamed("rv", "resetvehicles");
     Command_AddAltNamed("ah", "fh");
-    Command_AddAltNamed("find", "locate");
-    Command_AddAltNamed("locate", "loc");
+    Command_AddAltNamed("id", "find");
+    Command_AddAltNamed("id", "locate");
+    Command_AddAltNamed("id", "loc");
     Command_AddAltNamed("anims", "a");
     Command_AddAltNamed("vs", "wang");
     Command_AddAltNamed("vs", "vehicleshop");
@@ -22477,8 +22395,8 @@ server_initialize()
 	Command_AddAltNamed("sb", "speedboost");
 	Command_AddAltNamed("sj", "superjump");
 	Command_AddAltNamed("sj", "superman");
-	Command_AddAltNamed("bbuy", "pbuy");
-	Command_AddAltNamed("bsell", "psell");
+	Command_AddAltNamed("buy", "bbuy");
+	Command_AddAltNamed("sell", "bsell");
 	Command_AddAltNamed("lock", "pvlock");
 	Command_AddAltNamed("unlock", "pvunlock");
 	Command_AddAltNamed("tdm", "bg");
@@ -30540,9 +30458,7 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][tickLastLocked] = 0;
 	PlayerData[playerid][tickLastBIKEC] = 0;
   	PlayerData[playerid][tickLastBuy] = 0;
-  	PlayerData[playerid][tickLastPBuy] = 0;
   	PlayerData[playerid][tickLastSell] = 0;
-  	PlayerData[playerid][tickLastPSell] = 0;
   	PlayerData[playerid][tickLastPW] = 0;
   	PlayerData[playerid][tickLastChat] = 0;
   	PlayerData[playerid][tickLastPM] = 0;

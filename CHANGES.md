@@ -33,7 +33,8 @@ Havoc Freeroam SA-MP Server
 - Renamed /bmenu to /emenu.
 - Renamed /specoff to /unspec.
 - Renamed /gsetrank to /grank.
-  
+- Removed /locate. Now redirects to /id.
+- /sell /buy can now be used for houses and enterprises.
 
 TODO
 ----
@@ -54,12 +55,11 @@ TODO
 - Sone info mit gametext http://puu.sh/dJbkW/46ca58a7c8.jpg
 - Fixed money format bug ($-,1000) http://puu.sh/dJboY/95e82ee65a.jpg
 
-- Remove /locate?
+- Nach jedem house/auto/gang/entprise/register kauf sollte ein dialog kommen wit cmds die man nun nutzen kann.
 - Internal safetly handlers for score and money ranges.
 - Improved spawn points to be more safe for players.
 - Duel wins and defeats are now being saved within your account.
 - Time bans are now being deleted automatically upon expiration.
-- /sell /buy can now be used for houses and enterprises.
 - Now using salted whirlpool for password hashing.
 - Improved playing time counter for more accurate timings.
 - New, better UI.
