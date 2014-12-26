@@ -32,3 +32,7 @@ native NC_OutputTeleportInfo();
 native NC_ServerLog(const file[], const data[]);
 native NC_UnixtimeToDate(dest[], unixtime, len = sizeof(dest));
 native NC_StringReplace(const transform[], const from[], const to[], dest[], len = sizeof(dest));
+
+// Security
+native NC_Whirlpool(const data[], dest[], len = sizeof(dest));
+native NC_CSPRNG(string_len, dest[], len = sizeof(dest));

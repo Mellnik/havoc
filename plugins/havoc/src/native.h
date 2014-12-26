@@ -26,6 +26,8 @@ namespace Native
 	cell AMX_NATIVE_CALL OutputTeleportInfo(AMX *amx, cell *params);
 	cell AMX_NATIVE_CALL UnixtimeToDate(AMX *amx, cell *params);
 	cell AMX_NATIVE_CALL StringReplace(AMX *amx, cell *params);
+	cell AMX_NATIVE_CALL Whirlpool(AMX *amx, cell *params);
+	cell AMX_NATIVE_CALL CSPRNG(AMX *amx, cell *params);
 }
 
 #endif /* _NATIVE_H_ */

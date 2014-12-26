@@ -1,12 +1,18 @@
 GPP = g++
 GCC = gcc
 OUTPUT = "bin/havoc.so"
-COMPILER_FLAGS = -std=gnu++11 -c -m32 -fPIC -g -DLINUX -w -I./include/ -I./include/SDK/amx/
-LIBRARIES = -lrt
+COMPILER_FLAGS = -std=gnu++11 -c -m32 -fPIC -O3 -DLINUX -w -I./include/ -I./include/SDK/amx/
+LIBRARIES = ./lib/*.a -lrt
+CRYPTOPP_SRC_DIR = ./include/cryptopp
 
-all: compile clean
+all: havoc clean
 
-compile:
+cryptlib:
+	$(MAKE) -C $(CRYPTOPP_SRC_DIR) static
+	mkdir -p lib
+	cp $(CRYPTOPP_SRC_DIR)/libcryptopp.a ./lib
+
+havoc:
 	$(GCC) $(COMPILER_FLAGS) ./include/SDK/amx/*.c
 	$(GPP) $(COMPILER_FLAGS) ./include/SDK/*.cpp
 	$(GPP) $(COMPILER_FLAGS) ./src/*.cpp

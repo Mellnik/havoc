@@ -14,13 +14,18 @@
 #include <ctime>
 #include <fstream>
 
+#include <cryptopp/fitlers.h>
+#include <cryptopp/integer.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/whrlpool.h>
+
 #include "native.h"
 #include "teleport.h"
 
 /* NC_Init(nc_version) */
 cell AMX_NATIVE_CALL Native::Init(AMX *amx, cell *params)
 {
-	static const unsigned ParamCount = 1;
+	static const uint32_t ParamCount = 1;
 	PARAM_CHECK(ParamCount, "NC_Init");
 	
 	int32_t clientVersion = params[1];
@@ -36,7 +41,7 @@ cell AMX_NATIVE_CALL Native::Init(AMX *amx, cell *params)
 /* ServerLog(const file[], const data[]) */
 cell AMX_NATIVE_CALL Native::ServerLog(AMX *amx, cell *params)
 {
-	static const unsigned ParamCount = 2;
+	static const uint32_t ParamCount = 2;
 	PARAM_CHECK(ParamCount, "ServerLog");
 	
 	char *file = NULL, *data = NULL;
@@ -53,7 +58,7 @@ cell AMX_NATIVE_CALL Native::ServerLog(AMX *amx, cell *params)
 /* NC_AddTeleport(tp_category, const tp_name[], const tp_cmd[], Float:x, Float:y, Float:z) */
 cell AMX_NATIVE_CALL Native::AddTeleport(AMX *amx, cell *params)
 {
-	static const unsigned ParamCount = 6;
+	static const uint32_t ParamCount = 6;
 	PARAM_CHECK(ParamCount, "NC_AddTeleport");
 	
 	if (params[1] < 0 || params[1] >= MAX_TELE_CATEGORIES)
@@ -98,7 +103,7 @@ cell AMX_NATIVE_CALL Native::AddTeleport(AMX *amx, cell *params)
 /* NC_GetTeleportDialogString(tp_category, dest[], len = sizeof(dest)) */
 cell AMX_NATIVE_CALL Native::GetTeleportDialogString(AMX *amx, cell *params)
 {
-	static const unsigned ParamCount = 3;
+	static const uint32_t ParamCount = 3;
 	PARAM_CHECK(ParamCount, "NC_GetTeleportDialogString");
 	
 	if (params[1] < 0 || params[1] >= MAX_TELE_CATEGORIES)
@@ -122,7 +127,7 @@ cell AMX_NATIVE_CALL Native::GetTeleportDialogString(AMX *amx, cell *params)
 /* NC_ProcessTeleportRequest(tp_category, input, dest[], len = sizeof(dest)) */
 cell AMX_NATIVE_CALL Native::ProcessTeleportRequest(AMX *amx, cell *params)
 {
-	static const unsigned ParamCount = 4;
+	static const uint32_t ParamCount = 4;
 	PARAM_CHECK(ParamCount, "NC_ProcessTeleportRequest");
 
 	if (params[1] < 0 || params[1] > MAX_TELE_CATEGORIES)
@@ -170,7 +175,7 @@ cell AMX_NATIVE_CALL Native::OutputTeleportInfo(AMX *amx, cell *params)
 /* NC_UnixtimeToDate(dest[], unixtime, len = sizeof(dest)) */
 cell AMX_NATIVE_CALL Native::UnixtimeToDate(AMX *amx, cell *params)
 {
-	static const unsigned ParamCount = 3;
+	static const uint32_t ParamCount = 3;
 	PARAM_CHECK(ParamCount, "NC_UnixtimeToDate");
 	
 	if (params[2] < 0 || params[2] > std::numeric_limits<int>::max())
@@ -200,7 +205,7 @@ cell AMX_NATIVE_CALL Native::UnixtimeToDate(AMX *amx, cell *params)
 /* NC_StringReplace(const transform[], const from[], const to[], dest[], len = sizeof(dest)) */
 cell AMX_NATIVE_CALL Native::StringReplace(AMX *amx, cell *params)
 {
-	static const unsigned ParamCount = 5;
+	static const uint32_t ParamCount = 5;
 	PARAM_CHECK(ParamCount, "NC_StringReplace");
 	
 	char *_arg1 = NULL, *_arg2 = NULL, *_arg3 = NULL;
@@ -235,4 +240,83 @@ cell AMX_NATIVE_CALL Native::StringReplace(AMX *amx, cell *params)
 	
 	amx_SetString(amx_Addr, transform.c_str(), 0, 0, params[5] > 0 ? params[5] : transform.length() + 1);
 	return static_cast<cell>(begin);
+}
+
+/* NC_Whirlpool(const data[], dest[], len = sizeof(dest)) */
+cell AMX_NATIVE_CALL Native::Whirlpool(AMX *amx, cell *params)
+{
+	static const uint32_t ParamCount = 3;
+	PARAM_CHECK(ParamCount, "NC_Whirlpool");
+
+	char *str = NULL;
+	amx_StrParam(amx, params[1], str);
+	
+	if (str == NULL)
+		return 0;
+	
+	std::string hash;
+	CryptoPP::Whirlpool h_Whirlpool;
+	CryptoPP::StringSource(str, true, new CryptoPP::HashFilter(h_Whirlpool, new CryptoPP::HexEncoder(new CryptoPP::StringSink(hash))));
+	
+	cell *amx_Addr = NULL;
+	amx_GetAddr(amx, params[2], &amx_Addr);
+	if (amx_Addr == NULL)
+	{
+		logprintf("[HAVOC] [debug] CRASH DETECTED! amx_Addr = NULL from amx_GetAddr in Whirlpool");
+		return 0;
+	}
+	
+	amx_SetString(amx_Addr, hash.c_str(), 0, 0, params[3] > 0 ? params[3] : hash.length() + 1);
+	return 1;
+}
+
+/* NC_CSPRNG(string_len, dest[], len = sizeof(dest)) */
+cell AMX_NATIVE_CALL Native::CSPRNG(AMX *amx, cell *params)
+{
+	static const uint32_t ParamCount = 3;
+	PARAM_CHECK(ParamCount, "NC_CSPRNG");
+	
+	if (params[1] < 1)
+	{
+		logprintf("[HAVOC] Invalid string_len in NC_CSPRNG");
+		return 0;
+	}
+	
+	std::string random_output;
+	CryptoPP::AutoSeededRandomPool RNG;
+	CryptoPP::Integer rand_num(RNG, 32);
+	
+	for (uint32_t i = 0; i < static_cast<uint32_t>(params[1]); ++i)
+	{
+		uint32_t num;
+		
+		if (!rand_num.IsConvertableToLong())
+			num = std::numeric_limits<unsigned>::max() + static_cast<unsigned>(rand_num.AbsoluteValue().ConvertToLong());
+		else
+			num = static_cast<uint32_t>(rand_num.AbsoluteValue().ConvertToLong());
+			
+        num = num % 122;
+        if (48 > num)
+			num += 48;
+		
+        if (57 < num && 65 > num)
+            num += 7;
+		
+        if (90 < num && 97 > num)
+            num += 6;
+		
+        random_output += static_cast<char>(num);
+        rand_num.Randomize(RNG, 32);
+	}
+	
+	cell *amx_Addr = NULL;
+	amx_GetAddr(amx, params[2], &amx_Addr);
+	if (amx_Addr == NULL)
+	{
+		logprintf("[HAVOC] [debug] CRASH DETECTED! amx_Addr = NULL from amx_GetAddr in CSPRNG");
+		return 0;
+	}
+	
+	amx_SetString(amx_Addr, random_output.c_str(), 0, 0, params[3] > 0 ? params[3] : random_output.length() + 1);
+	return 1;
 }

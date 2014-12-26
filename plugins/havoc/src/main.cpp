@@ -53,6 +53,8 @@ const AMX_NATIVE_INFO PluginNatives[] =
 	{"NC_OutputTeleportInfo", Native::OutputTeleportInfo},
 	{"NC_UnixtimeToDate", Native::UnixtimeToDate},
 	{"NC_StringReplace", Native::StringReplace},
+	{"NC_Whirlpool", Native::Whirlpool},
+	{"NC_CSPRNG", Native::CSPRNG},
 	{NULL, NULL}
 };
 
