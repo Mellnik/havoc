@@ -1035,6 +1035,7 @@ enum E_HOUSE_DATA
 	e_id,
 	e_owner,
 	Float:e_pos[3],
+	e_pvslots,
 	e_interior,
 	e_value,
 	e_locked,
@@ -2804,7 +2805,6 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	beach_weps,
   	beach_m,
 	bb_mcc,
-  	houseid,
   	Text3D:Label_Elevator,
   	Text3D:Label_Floors[21],
   	PlayerText:DynamicAchTD[MAX_PLAYERS][2],
@@ -2844,7 +2844,6 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	Text:TXTRandomInfo,
 	Text:NEFLOGO[3],
 	toyslist = mS_INVALID_LISTID,
-	hobjslist = mS_INVALID_LISTID,
 	skinlist = mS_INVALID_LISTID,
   	bool:ReactionOn,
   	g_AdminLCTo,
@@ -6597,45 +6596,6 @@ public OnPlayerModelSelection(playerid, response, listid, modelid)
 		    {
 		        GivePlayerAchievement(playerid, e_ach_styler, "Styler", "Congrats you earned $30,000!~n~and 10 score!~n~~w~Type /ach to view your achievements.");
 		    }
-	    }
-	}
-	else if(listid == hobjslist)
-	{
-	    if(response)
-	    {
-	        if(IsPlayerInAnyVehicle(playerid)) return SCM(playerid, -1, ""er"You can not be in a vehicle!");
-	        if(gTeam[playerid] != HOUSE) return SCM(playerid, -1, ""er"You need to be in your house!");
-	        
-			new h_id = GetHouseIdByPlayerSlotSel(playerid);
-
-			if(h_id != -1)
-			{
-			    if(GetPlayerVirtualWorld(playerid) != (HouseData[h_id][e_id] + 1000)) return SCM(playerid, -1, ""er"You need to be in the house you selected!");
-			    
-			    if(GetPlayerMoneyEx(playerid) < 5000)
-			    {
-					SCM(playerid, -1, ""er"Each house item costs $5,000");
-					return 1;
-			    }
-			    GivePlayerMoneyEx(playerid, -5000);
-		    
-			    new Float:POS[4], str[128];
-			    format(str, sizeof(str), "/hmenu to edit\nSlot ID: %i - Item ID: %i", PlayerData[playerid][houseobj_selected] + 1, modelid);
-				GetPlayerPos(playerid, POS[0], POS[1], POS[2]);
-				GetPlayerFacingAngle(playerid, POS[3]);
-				
-				POS[0] += (1.2 * floatsin(-POS[3], degrees));
-				POS[1] += (1.2 * floatcos(-POS[3], degrees));
-			    
-			    HouseData[h_id][E_Obj_Model][PlayerData[playerid][houseobj_selected]] = modelid;
-				HouseData[h_id][E_Obj_ObjectID][PlayerData[playerid][houseobj_selected]] = CreateDynamicObject(modelid, POS[0], POS[1], POS[2], 0.0, 0.0, 0.0, HouseData[h_id][e_id] + 1000, -1, -1);
-				HouseData[h_id][E_Obj_Label][PlayerData[playerid][houseobj_selected]] = CreateDynamic3DTextLabel(str, LIGHT_YELLOW, POS[0], POS[1], POS[2]+0.5, 3.5, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, HouseData[h_id][e_id] + 1000);
-				
-				EditDynamicObject(playerid, HouseData[h_id][E_Obj_ObjectID][PlayerData[playerid][houseobj_selected]]);
-
-				SCM(playerid, GREEN, "Successfully bought the house item for $5,000!");
-			}
-			else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
 	    }
 	}
 	return 1;
@@ -14291,10 +14251,14 @@ YCMD:hcreate(playerid, params[], help)
 		return SCM(playerid, -1, NO_PERM);
 	}
 
-	extract params -> new value, interior; else
+	extract params -> new value, interior, pvslots; else
 	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /hcreate <value> <interior>");
+	    return SCM(playerid, NEF_GREEN, "Usage: /hcreate <value> <interior> <pvslots>");
 	}
+
+	if(value > 1000000000 || value < 1) return SCM(playerid, ""er"Value $1 - $1kkk");
+	if(interior > 13 || value < 0) return SCM(playerid, ""er"Interior: 1 - 13");
+	if(pvslots < 0 || slots > 20) return SCM(playerid, ""er"Private vehicle slots: 0 - 20");
 
 	new count = 0;
 	for(new i = 0; i < MAX_HOUSES; i++) {
@@ -14319,6 +14283,7 @@ YCMD:hcreate(playerid, params[], help)
 
     ResetHouse(r);
   	GetPlayerPos(playerid, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2]);
+  	HouseData[r][e_pvslots] = pvslots;
     HouseData[r][e_value] = value;
     HouseData[r][e_interior] = interior;
     HouseData[r][e_date] = gettime();
@@ -31308,16 +31273,18 @@ SetupHouse(slot, owner[])
 	new r = slot;
 
 	if(HouseData[r][e_owner] == 0) {
-	    format(gstr2, sizeof(gstr2), ""house_mark"\nFOR SALE! Type "nef_green"/buy "white"to purchase.\nID: %i\nPrice: $%s\nInterior: %s",
+	    format(gstr2, sizeof(gstr2), ""house_mark"\nFOR SALE! Type "nef_green"/buy "white"to purchase.\nID: %i\nPrice: $%s\nInterior: %s\nPrivate Vehicle Slots: %i",
 	        HouseData[r][e_id],
 			number_format(HouseData[r][e_value]),
-			g_aHouseInteriorTypes[HouseData[r][e_interior]][intname]);
+			g_aHouseInteriorTypes[HouseData[r][e_interior]][intname],
+			HouseData[r][e_pvslots]);
 	} else {
-	    format(gstr2, sizeof(gstr2), ""house_mark"Owner: %s\nID: %i\nValue: $%s\nInterior: %s",
+	    format(gstr2, sizeof(gstr2), ""house_mark"Owner: %s\nID: %i\nValue: $%s\nInterior: %s\nPrivate Vehicle Slots: %i",
 	        owner,
 	        HouseData[r][e_id],
 			number_format(HouseData[r][e_value]),
-			g_aHouseInteriorTypes[HouseData[r][e_interior]][intname]);
+			g_aHouseInteriorTypes[HouseData[r][e_interior]][intname],
+			HouseData[r][e_pvslots]);
 	}
 
 	HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 40.0, .worldid = 0, .iteriorid = 0);
@@ -31397,6 +31364,7 @@ ResetHouse(slot = -1)
 		    HouseData[r][e_ormid] = ORM:-1;
 		    HouseData[r][e_id] = 0;
 		    HouseData[r][e_owner] = 0;
+		    HouseData[r][e_pvslots] = 0;
             HouseData[r][e_interior] = 0;
             HouseData[r][e_value] = 0;
             HouseData[r][e_locked] = 0;
@@ -31415,6 +31383,7 @@ ResetHouse(slot = -1)
 	    HouseData[r][e_ormid] = ORM:-1;
 	    HouseData[r][e_id] = 0;
 	    HouseData[r][e_owner] = 0;
+	    HouseData[r][e_pvslots] = 0;
         HouseData[r][e_interior] = 0;
         HouseData[r][e_value] = 0;
         HouseData[r][e_locked] = 0;
