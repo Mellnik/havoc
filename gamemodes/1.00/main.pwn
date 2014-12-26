@@ -11658,7 +11658,7 @@ YCMD:gdestroy(playerid, params[], help)
 	return 1;
 }
 
-YCMD:gcreate(playerid, params[], help)
+YCMD:gregister(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
     
@@ -11684,7 +11684,7 @@ YCMD:gcreate(playerid, params[], help)
 
 	if(sscanf(params, "s[143]s[143]", ntmp, ttmp))
 	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /gcreate <gang-name> <gang-tag>");
+	    return SCM(playerid, NEF_GREEN, "Usage: /gregister <gang-name> <gang-tag>");
 	}
 	if(strlen(ntmp) > MAX_GANG_NAME || strlen(ntmp) < MIN_GANG_NAME || isnull(ntmp))
 	{
@@ -11736,7 +11736,7 @@ YCMD:gcapture(playerid, params[], help)
     if(!islogged(playerid)) return notlogged(playerid);
 
     if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
-    if(PlayerData[playerid][e_gangid] == 0) return SCM(playerid, -1, ""er"You aren't in any gang! Create a gang /gcreate or join one.");
+    if(PlayerData[playerid][e_gangid] == 0) return SCM(playerid, -1, ""er"You aren't in any gang! Create a gang /gregister or join one.");
     
 	new bool:bFound = false;
 	for(new r = 0; r < MAX_GZONES; r++)
@@ -11887,7 +11887,7 @@ YCMD:gwar(playerid, params[], help)
     if(!islogged(playerid)) return notlogged(playerid);
 
     if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
-	if(PlayerData[playerid][e_gangid] == 0) return SCM(playerid, -1, ""er"You aren't in any gang! Create a gang /gcreate or join one.");
+	if(PlayerData[playerid][e_gangid] == 0) return SCM(playerid, -1, ""er"You aren't in any gang! Create a gang /gregister or join one.");
 	if(PlayerData[playerid][e_gangrank] < GANG_POS_SENIOR_MEMBER) return SCM(playerid, -1, ""er"You you need to be at least Senior Member in your gang!");
 
 	new bool:bFound = false;
@@ -12146,7 +12146,7 @@ YCMD:gleave(playerid, params[], help)
 	return 1;
 }
 
-YCMD:gsetrank(playerid, params[], help)
+YCMD:grank(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
     
@@ -16455,7 +16455,7 @@ YCMD:toggletoys(playerid, params[], help)
 	return 1;
 }
 
-YCMD:toggletp(playerid, params[], help)
+YCMD:tgo(playerid, params[], help)
 {
 	if(!islogged(playerid)) return notlogged(playerid);
 
@@ -18946,14 +18946,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            }
 		            case 2: // Gang
 		            {
-						strcat(cstring, ""yellow"/gcreate "white"- create a gang\n");
+						strcat(cstring, ""yellow"/gregister "white"- create a gang\n");
 						strcat(cstring, ""yellow"/gwar "white"- start a war against another gang\n");
 						strcat(cstring, ""yellow"/gzones "white"- view your zones\n");
 						strcat(cstring, ""yellow"/gcapture "white"- recapture a zone while it is begin attacked\n");
 						strcat(cstring, ""yellow"/gmenu "white"- gang menu\n");
 						strcat(cstring, ""yellow"/gcolor "white"- set the gang color\n");
 						strcat(cstring, ""yellow"/gcar "white"- set the gang vehicle\n");
-						strcat(cstring, ""yellow"/gsetrank "white"- set a players rank\n");
+						strcat(cstring, ""yellow"/grank "white"- set a players rank\n");
 						strcat(cstring, ""yellow"/ginvite "white"- invite someone to your gang\n");
 						strcat(cstring, ""yellow"/gkick "white"- kick someone off your gang\n");
 						strcat(cstring, ""yellow"/gjoin "white"- join a gang\n");
@@ -19237,7 +19237,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						strcat(cstring, ""yellow"/gmenu "white"- gang menu\n");
 						strcat(cstring, ""yellow"/gcolor "white"- set the gang color\n");
 						strcat(cstring, ""yellow"/gcar "white"- set the gang vehicle\n");
-						strcat(cstring, ""yellow"/gsetrank "white"- set a players rank\n");
+						strcat(cstring, ""yellow"/grank "white"- set a players rank\n");
 						strcat(cstring, ""yellow"/ginvite "white"- invite someone to your gang\n");
 						strcat(cstring, ""yellow"/gkick "white"- kick someone off your gang\n");
 						strcat(cstring, ""yellow"/gjoin "white"- join a gang\n");
@@ -19258,7 +19258,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            }
 		            case 4: // edit rank
 		            {
-		                Command_ReProcess(playerid, "/gsetrank", false);
+		                Command_ReProcess(playerid, "/grank", false);
 		            }
 		            case 5: // kick player
 					{
@@ -22983,8 +22983,12 @@ server_initialize()
     Command_AddAltNamed("xmas", "christmas");
     Command_AddAltNamed("xmas", "christ");
 	#endif
+	Command_AddAltNamed("grank", "glevel");
+	Command_AddAltNamed("gregister", "gcreate");
 	Command_AddAltNamed("unspec", "specoff");
-	Command_AddAltNamed("toggletp", "togtp");
+	Command_AddAltNamed("tgo", "toggletp");
+	Command_AddAltNamed("tgo", "togtp");
+	Command_AddAltNamed("tgo", "gos");
 	Command_AddAltNamed("spectate", "spec");
 	Command_AddAltNamed("togglegc", "toggc");
 	Command_AddAltNamed("lock", "carlock");
@@ -23004,7 +23008,6 @@ server_initialize()
     Command_AddAltNamed("rocketdm", "rocket");
     Command_AddAltNamed("gmenu", "gstats");
     Command_AddAltNamed("gmenu", "gmembers");
-    Command_AddAltNamed("gsetrank", "gsetlevel");
     Command_AddAltNamed("rv", "respawnvehicles");
     Command_AddAltNamed("rv", "resetvehicles");
     Command_AddAltNamed("ah", "fh");

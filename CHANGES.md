@@ -4,22 +4,43 @@ Havoc Freeroam SA-MP Server
 1.00 (1st Feb 2015)
 -------------------
 - Businesses have been renamed to Enterprises.
-- Better unixtime conversion.
-- Dialog cleanups.
-- /announce commands have been removed.
-- Removed bullet hit sound from deathmatches.
 - Added enterprise type: Bitcoin Mining Farm.
+- Better accurate unixtime conversion.
+- Dialog cleanups to avoid unnecessary overhead.
+- Removed announce commands for admins.
+- Removed bullet hit sound from deathmatches.
+- Renamed /toggletp to /tgo.
 - Renamed /bmenu to /emenu.
 - Renamed /specoff to /unspec.
+- Renamed /gsetrank to /grank.
 - Stores system has been rewritten. Stores now load and save from database.
 - Bans now include serverside information; Can be viewed at https://havocserver.com/bans
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/mappers).
-- Internal safetly handlers for score and money ranges.
 - Namechanges are now attached to an account id rather than a name. This prevents confusion.
 
 TODO
 ----
+- Remove makes total registered players 10000
+- Add random messages like * Online players: 
+- Add /gstats
+- Add custom teleports saved in database
+- Add commands: http://puu.sh/dJb5c/46aa9b26f6.jpg
+- Add toggle commands like /tgo http://puu.sh/dJbax/ab6bc3faf3.jpg
+- add altnamed /id -> find
+- http://puu.sh/dJb8H/9089f52700.jpg
+- Add mute message in GameTexts http://puu.sh/dJbc2/a0e5912058.jpg
+- GZones http://puu.sh/dJbe0/70d6368c92.jpg
+- Stats: http://puu.sh/dJbfL/513da7751c.jpg
+- After register: http://puu.sh/dJbgC/00b62979eb.jpg
+- More stats: http://puu.sh/dJbjf/956204b1f2.jpg
+- http://puu.sh/dJbjT/2610536230.jpg
+- Sone info mit gametext http://puu.sh/dJbkW/46ca58a7c8.jpg
+- Fixed money format bug ($-,1000) http://puu.sh/dJboY/95e82ee65a.jpg
+
+- Remove /locate?
+- Internal safetly handlers for score and money ranges.
+- Improved spawn points to be more safe for players.
 - Duel wins and defeats are now being saved within your account.
 - Time bans are now being deleted automatically upon expiration.
 - /sell /buy can now be used for houses and enterprises.
