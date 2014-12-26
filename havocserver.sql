@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Dec 25, 2014 at 08:07 PM
+-- Generation Time: Dec 26, 2014 at 11:15 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -166,7 +166,6 @@ CREATE TABLE IF NOT EXISTS `enterprises` (
   `zpos` float(14,4) NOT NULL,
   `type` tinyint(3) unsigned NOT NULL,
   `level` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `sold` tinyint(3) unsigned NOT NULL,
   `date` int(10) unsigned NOT NULL,
   `creator` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -218,30 +217,12 @@ CREATE TABLE IF NOT EXISTS `houses` (
   `xpos` float(14,4) NOT NULL,
   `ypos` float(14,4) NOT NULL,
   `zpos` float(14,4) NOT NULL,
+  `pvslots` tinyint(3) unsigned NOT NULL,
   `interior` tinyint(3) unsigned NOT NULL,
-  `price` int(10) unsigned NOT NULL,
-  `score` mediumint(8) unsigned NOT NULL,
-  `sold` tinyint(4) NOT NULL,
+  `value` int(10) unsigned NOT NULL,
   `locked` tinyint(4) NOT NULL,
   `date` int(10) unsigned NOT NULL,
   `creator` int(10) unsigned NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `house_items`
---
-
-CREATE TABLE IF NOT EXISTS `house_items` (
-  `id` int(10) unsigned NOT NULL,
-  `object` mediumint(8) unsigned NOT NULL,
-  `xpos` float(14,4) NOT NULL,
-  `ypos` float(14,4) NOT NULL,
-  `zpos` float(14,4) NOT NULL,
-  `xrot` float(14,4) NOT NULL,
-  `yrot` float(14,4) NOT NULL,
-  `zrot` float(14,4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -509,12 +490,6 @@ ALTER TABLE `houses`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `house_items`
---
-ALTER TABLE `house_items`
-  ADD KEY `id` (`id`);
-
---
 -- Indexes for table `loginlog`
 --
 ALTER TABLE `loginlog`
@@ -670,12 +645,6 @@ ADD CONSTRAINT `achievements_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`
 --
 ALTER TABLE `bans`
 ADD CONSTRAINT `bans_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `house_items`
---
-ALTER TABLE `house_items`
-ADD CONSTRAINT `house_items_ibfk_1` FOREIGN KEY (`id`) REFERENCES `houses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `loginlog`

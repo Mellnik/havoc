@@ -9429,7 +9429,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /breset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /createstore /gzonecreate");
+		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /ereset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /createstore /gzonecreate");
 
         ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
 	}
@@ -13935,7 +13935,7 @@ YCMD:setentlevel(playerid, params[], help)
 	return 1;
 }
 
-YCMD:breset(playerid, params[], help)
+YCMD:ereset(playerid, params[], help)
 {
     if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL) return SCM(playerid, -1, NO_PERM);
 
