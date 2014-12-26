@@ -6964,53 +6964,6 @@ public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ)
     return 1;
 }
 
-public OnPlayerEditDynamicObject(playerid, objectid, response, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz)
-{
-    CancelEdit(playerid);
-	if(!IsValidDynamicObject(objectid)) return 1;
-
-    if(response == EDIT_RESPONSE_CANCEL)
-    {
-        player_notice(playerid, "House item edition canceled", "");
-    }
-    else if(response == EDIT_RESPONSE_FINAL)
-    {
-        if(gTeam[playerid] != HOUSE) return SCM(playerid, -1, ""er"You need to be in your house!");
-		new h_id = GetHouseIdByPlayerSlotSel(playerid);
-
-		if(h_id != -1)
-		{
-		    if(GetPlayerVirtualWorld(playerid) != (HouseData[h_id][e_id] + 1000)) return SCM(playerid, -1, ""er"You need to be in the house you selected!");
-			if(GetDistance3D(x, y, z, g_aHouseInteriorTypes[HouseData[h_id][interior]][house_x], g_aHouseInteriorTypes[HouseData[h_id][interior]][house_y], g_aHouseInteriorTypes[HouseData[h_id][interior]][house_z]) > 200.0) return SCM(playerid, -1, ""er"You are not near your house");
-
-	        player_notice(playerid, "House item position saved", "");
-	        MoveDynamicObject(objectid, x, y, z, 5.0, rx, ry, rz);
-	        
-	        new str[64];
-	        format(str, sizeof(str), "/hmenu to edit\nSlot ID: %i - Item ID: %i", PlayerData[playerid][houseobj_selected] + 1, HouseData[h_id][E_Obj_Model][PlayerData[playerid][houseobj_selected]]);
-	        DestroyDynamic3DTextLabel(HouseData[h_id][E_Obj_Label][PlayerData[playerid][houseobj_selected]]);
-	        HouseData[h_id][E_Obj_Label][PlayerData[playerid][houseobj_selected]] = CreateDynamic3DTextLabel(str, LIGHT_YELLOW, x, y, z+0.5, 3.5, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, HouseData[h_id][e_id] + 1000);
-	        /* OPTIMIZATION?:
-			Streamer_SetFloatData(STREAMER_TYPE_3D_TEXT_LABEL,
-                HouseData[h_id][E_Obj_Label][PlayerData[playerid][houseobj_selected]],
-                E_STREAMER_X,
-                x);
-			Streamer_SetFloatData(STREAMER_TYPE_3D_TEXT_LABEL,
-                HouseData[h_id][E_Obj_Label][PlayerData[playerid][houseobj_selected]],
-                E_STREAMER_Y,
-                y);
-			Streamer_SetFloatData(STREAMER_TYPE_3D_TEXT_LABEL,
-                HouseData[h_id][E_Obj_Label][PlayerData[playerid][houseobj_selected]],
-                E_STREAMER_Z,
-                z);
-		 */
-			SQL_SaveHouse(h_id, true);
-		}
-		else player_notice(playerid, "Couldn't find the house in that slot", "Report on forums", 5000);
-    }
-    return 1;
-}
-
 public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
 {
 	if(index < 0 || response < 0 || modelid < 0)
@@ -18712,7 +18665,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            {
 		            
 		            }
-		        
+				}
+		        /*
 		            case 0: // General
 		            {
 		                strcat(cstring, ""yellow"/toys "white"- player toys\n");
@@ -18797,7 +18751,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 					case 6: return Command_ReProcess(playerid, "/vip", false);
 					case 7: return Command_ReProcess(playerid, "/credits", false);
-		        }
+		        }*/
 
 				ShowPlayerDialog(playerid, DIALOG_COMMANDS + 1, DIALOG_STYLE_LIST, ""nef" :: Commands", cstring, "OK", "Back");
 				return true;

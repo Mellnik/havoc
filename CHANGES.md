@@ -19,13 +19,20 @@ Havoc Freeroam SA-MP Server
 - Players can now have an offical mapper status (/mappers).
 - Namechanges are now attached to an account id rather than a name. This prevents confusion.
 - House system has been fully rewritten.
-  Every player can now own up to 5 houses:
-  Needed score:      Allowed houses:
-           500       1
-		  2000       2
-		  5000       3
-		 10000       4
-		 25000       5
+  * Every player can now own up to 5 houses:
+    Needed score:      Allowed houses:
+             500       1
+	  	    2000       2
+	  	    5000       3
+		   10000       4
+		   25000       5
+   * /hlock has been merged into /lock
+   * /hmenu has been removed
+   * /houses now shows all of your houses, select to teleports
+   * /upgrade to upgrade your house interior
+   * Command /password to lock a house and set a password dialog
+   * Command /sellto <player id> <price> to sell your house to another player
+  
 
 TODO
 ----
