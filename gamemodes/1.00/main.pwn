@@ -272,7 +272,6 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 // Houses
 #define MAX_HOUSES 						(600)
 #define MAX_PLAYER_HOUSES 				(5)
-#define MAX_HOUSE_OBJECTS               (10)
 
 // Enterprises
 #define MAX_ENTERPRISES                 (700)
@@ -987,27 +986,6 @@ enum E_GZONE_DATA
 	e_areaid
 };
 
-enum E_HOUSE_DATA
-{
-	e_id,
-	Owner[25],
-	Float:e_x,
-	Float:e_y,
-	Float:e_z,
-	interior,
-	price,
-	e_score,
-	Text3D:e_labelid,
-	sold,
-	locked,
-	pickid,
-	e_iconid,
-	E_Obj_Model[MAX_HOUSE_OBJECTS],
-	E_Obj_ObjectID[MAX_HOUSE_OBJECTS],
-	Text3D:E_Obj_Label[MAX_HOUSE_OBJECTS],
-	date
-};
-
 enum E_STORE_TYPE
 {
 	STORE_TYPE_AMMUNATION,
@@ -1046,6 +1024,27 @@ enum E_ENT_DATA
 	Text3D:e_labelid,
 	e_iconid,
 	e_pickupid
+};
+
+enum E_HOUSE_DATA
+{
+	/* ORM */
+	ORM:e_ormid,
+	
+	/* DATA */
+	e_id,
+	e_owner,
+	Float:e_pos[3],
+	e_interior,
+	e_value,
+	e_locked,
+	e_date,
+	e_creator,
+	
+	/* INTERNAL */
+	Text3D:e_labelid,
+	e_pickid,
+	e_iconid
 };
 
 enum e_ent_matrix
@@ -8971,7 +8970,7 @@ YCMD:sell(playerid, params[], help)
 	    HouseData[i][sold] = 0;
 	    HouseData[i][locked] = 1;
 
-		for(new ii = 0; ii < MAX_HOUSE_OBJECTS; ii++)
+		for(new ii = 0; ii < MAX_HOUSE_ITEMS; ii++)
 		{
 			if(HouseData[i][E_Obj_Model][ii] != 0)
 			{
@@ -14101,7 +14100,7 @@ YCMD:hreset(playerid, params[], help)
 	    HouseData[i][sold] = 0;
         HouseData[i][locked] = 1;
         HouseData[i][date] = 0;
-		for(new ii = 0; ii < MAX_HOUSE_OBJECTS; ii++)
+		for(new ii = 0; ii < MAX_HOUSE_ITEMS; ii++)
 		{
 			if(HouseData[i][E_Obj_Model][ii] != 0)
 			{
@@ -14292,49 +14291,45 @@ YCMD:hcreate(playerid, params[], help)
 		return SCM(playerid, -1, NO_PERM);
 	}
 
-	extract params -> new h_price, h_score, h_int; else
+	extract params -> new value, interior; else
 	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /hcreate <price> <score> <interior>");
+	    return SCM(playerid, NEF_GREEN, "Usage: /hcreate <value> <interior>");
 	}
 
-	if(h_int > 13 || h_int < 0) return SCM(playerid, -1, ""er"Interior 0 - 13");
-	if(h_score > 1000000 || h_score < 1) return SCM(playerid, -1, ""er"Score 1 - 1,000,000");
-	if(h_price > 1000000000 || h_price < 1) return SCM(playerid, -1, ""er"Price 1 - 1,000,000,000");
+	new count = 0;
+	for(new i = 0; i < MAX_HOUSES; i++) {
+	    if(HouseData[i][e_ormid] != ORM:-1) {
+			++count;
+	    }
+	}
 
-	new Float:POS[3];
+	if(count >= MAX_HOUSES) {
+	    return SCM(playerid, -1, ""er"Max houses reached");
+	}
 
-	GetPlayerPos(playerid, POS[0], POS[1], POS[2]);
+	new r = -1;
+	for(new i = 0; i < MAX_HOUSES; i++) {
+	    if(HouseData[i][e_ormid] == ORM:-1) {
+	        r = i;
+	        break;
+	    }
+	}
 
-	HouseData[houseid][e_x] = POS[0];
-	HouseData[houseid][e_y] = POS[1];
-	HouseData[houseid][e_z] = POS[2];
-	HouseData[houseid][e_score] = h_score;
-	HouseData[houseid][price] = h_price;
-	HouseData[houseid][interior] = h_int;
-	HouseData[houseid][locked] = 1;
-	HouseData[houseid][sold] = 0;
-	HouseData[houseid][date] = 0;
+	if(r == -1) return SCM(playerid, -1, ""er"No free house slot");
 
-	strmid(HouseData[houseid][Owner], "ForSale", 0, 25, 25);
+    ResetHouse(r);
+  	GetPlayerPos(playerid, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2]);
+    HouseData[r][e_value] = value;
+    HouseData[r][e_interior] = interior;
+    HouseData[r][e_date] = gettime();
+    HouseData[r][e_creator] = PlayerData[playerid][e_accountid];
 
-	new query[255];
-	
-	format(query, sizeof(query), "INSERT INTO `houses` (`ID`, `Owner`, `XPos`, `YPos`, `ZPos`, `Interior`, `Price`, `Score`, `Sold`, `Locked`, `Date`) VALUES (NULL, '%s', %.2f, %.2f, %.2f, %i, %i, %i, %i, %i, %i);",
-	    HouseData[houseid][Owner],
-		HouseData[houseid][e_x],
-		HouseData[houseid][e_y],
-		HouseData[houseid][e_z],
-	    HouseData[houseid][interior],
-	    HouseData[houseid][price],
-	    HouseData[houseid][e_score],
-	    HouseData[houseid][sold],
-	    HouseData[houseid][locked],
-		HouseData[houseid][date]);
+    new ORM:ormid = HouseData[r][e_ormid] = orm_create("houses");
 
-    mysql_tquery(pSQL, query, "", "");
-    mysql_tquery(pSQL, "SELECT * FROM `houses` ORDER BY `ID` DESC LIMIT 1;", "OnHouseLoadEx", "i", houseid);
+	AssembleHouseORM(ormid, r);
 
-    houseid++;
+    orm_setkey(ormid, "id");
+	orm_insert(ormid, "OnHouseLoadEx", "i", r);
     return 1;
 }
 
@@ -18230,7 +18225,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 							new string[1024];
 							format(gstr2, sizeof(gstr2), ""nef" :: House Menu > Slot: %i > House Items", PlayerData[playerid][HouseSlotSelected] + 1);
 
-							for(new i = 0; i < MAX_HOUSE_OBJECTS; i++)
+							for(new i = 0; i < MAX_HOUSE_ITEMS; i++)
 							{
 								if(i > PlayerData[playerid][e_addhouseitemslots] + 2)
 								{
@@ -19075,7 +19070,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                }
 		            }
 
-					for(new ii = 0; ii < MAX_HOUSE_OBJECTS; ii++)
+					for(new ii = 0; ii < MAX_HOUSE_ITEMS; ii++)
 					{
 						if(HouseData[h_id][E_Obj_Model][ii] != 0)
 						{
@@ -20502,94 +20497,32 @@ public OnDynamicObjectMoved(objectid)
 	return 1;
 }
 
-function:OnHouseLoadEx(index)
+function:OnHouseLoad()
 {
-	new rows, fields;
-	cache_get_data(rows, fields, pSQL);
-	
-	if(rows > 0)
+	new rows = cache_get_row_count();
+
+	for(new r = 0; r < rows && r < MAX_HOUSES; r++)
 	{
-		new	line[144], buffer[100];
-
-	    HouseData[index][e_id] = cache_get_row_int(0, 0, pSQL);
-		cache_get_row(0, 1, buffer, pSQL, sizeof(buffer));
-		strmid(HouseData[index][Owner], buffer, 0, 25, 25);
-
-        HouseData[index][e_x] = cache_get_row_float(0, 2, pSQL);
-        HouseData[index][e_y] = cache_get_row_float(0, 3, pSQL);
-        HouseData[index][e_z] = cache_get_row_float(0, 4, pSQL);
-		HouseData[index][interior] = cache_get_row_int(0, 5, pSQL);
-		HouseData[index][price] = cache_get_row_int(0, 6, pSQL);
-		HouseData[index][e_score] = cache_get_row_int(0, 7, pSQL);
-		HouseData[index][sold] = cache_get_row_int(0, 8, pSQL);
-		HouseData[index][locked] = cache_get_row_int(0, 9, pSQL);
-
-		format(line, sizeof(line), ""house_mark"\nOwner: ---\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", HouseData[index][e_id], number_format(HouseData[index][price]), HouseData[index][e_score], g_aHouseInteriorTypes[HouseData[index][interior]][intname]);
-
-		HouseData[index][e_labelid] = CreateDynamic3DTextLabel(line, (HouseData[index][sold]) ? (0xFF0000FF) : (0x00FF00FF), HouseData[index][e_x], HouseData[index][e_y], floatadd(HouseData[index][e_z], 0.3), 30.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, -1, -1, 30.0);
-		HouseData[index][pickid] = CreateDynamicPickup((HouseData[index][sold]) ? (1272) : (1273), 1, HouseData[index][e_x], HouseData[index][e_y], HouseData[index][e_z], -1, -1, -1, 30.0);
-		HouseData[index][e_iconid] = CreateDynamicMapIcon(HouseData[index][e_x], HouseData[index][e_y], HouseData[index][e_z], 31, 1, 0, -1, -1, 150.0);
-
-		index++;
+		new owner[MAX_PLAYER_NAME + 1];
+		cache_get_field_content(r, "name", owner, pSQL, sizeof(owner));
+	
+	    new ORM:ormid = HouseData[r][e_ormid] = orm_create("houses");
+	    
+        AssembleHouseORM(ormid, r);
+        
+		orm_setkey(ormid, "id");
+		orm_apply_cache(ormid, r);
+		
+		SetupHouse(r, owner);
 	}
+
+	Log(LOG_INIT, "%i houses loaded in %i microseconds", rows, cache_get_query_exec_time(UNIT_MICROSECONDS));
 	return 1;
 }
 
-function:OnHouseLoad()
+function:OnHouseLoadEx(slot)
 {
-	new rows, fields;
-	cache_get_data(rows, fields, pSQL);
-
-	if(rows > 0)
-	{
-		new	Float:postal[6];
-
-		for(new i = 0; i < rows; i++)
-		{
-		    HouseData[houseid][e_id] = cache_get_row_int(i, 0, pSQL);
-			cache_get_row(i, 1, gstr, pSQL, sizeof(gstr));
-			strmid(HouseData[houseid][Owner], gstr, 0, 25, 25);
-
-	        HouseData[houseid][e_x] = cache_get_row_float(i, 2, pSQL);
-	        HouseData[houseid][e_y] = cache_get_row_float(i, 3, pSQL);
-	        HouseData[houseid][e_z] = cache_get_row_float(i, 4, pSQL);
-			HouseData[houseid][interior] = cache_get_row_int(i, 5, pSQL);
-			HouseData[houseid][price] = cache_get_row_int(i, 6, pSQL);
-			HouseData[houseid][e_score] = cache_get_row_int(i, 7, pSQL);
-			HouseData[houseid][sold] = cache_get_row_int(i, 8, pSQL);
-			HouseData[houseid][locked] = cache_get_row_int(i, 9, pSQL);
-
-			if(!HouseData[houseid][sold])
-			{
-			    format(gstr2, sizeof(gstr2), ""house_mark"\nOwner: ---\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", HouseData[houseid][e_id], number_format(HouseData[houseid][price]), HouseData[houseid][e_score], g_aHouseInteriorTypes[HouseData[houseid][interior]][intname]);
-			}
-			else
-			{
-			    format(gstr2, sizeof(gstr2), ""house_mark"\nOwner: %s\nID: %i\nPrice: $%s\nScore: %i\nInterior: %s", HouseData[houseid][Owner], HouseData[houseid][e_id], number_format(HouseData[houseid][price]), HouseData[houseid][e_score], g_aHouseInteriorTypes[HouseData[houseid][interior]][intname]);
-
-				for(new ii = 0; ii < MAX_HOUSE_OBJECTS; ii++)
-				{
-				    cache_get_row(i, ii + 10, gstr, pSQL, sizeof(gstr));
-				    sscanf(gstr, "p<,>iffffff", HouseData[houseid][E_Obj_Model][ii], postal[0], postal[1], postal[2], postal[3], postal[4], postal[5]);
-					if(HouseData[houseid][E_Obj_Model][ii] != 0)
-					{
-					    format(gstr, sizeof(gstr), "/hmenu to edit\nSlot ID: %i - Item ID: %i", ii + 1, HouseData[houseid][E_Obj_Model][ii]);
-						HouseData[houseid][E_Obj_ObjectID][ii] = CreateDynamicObject(HouseData[houseid][E_Obj_Model][ii], postal[0], postal[1], postal[2], postal[3], postal[4], postal[5], HouseData[houseid][e_id] + 1000, -1, -1);
-                        HouseData[houseid][E_Obj_Label][ii] = CreateDynamic3DTextLabel(gstr, LIGHT_YELLOW, postal[0], postal[1], postal[2]+0.5, 3.5, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, HouseData[houseid][e_id] + 1000);
-					}
-				}
-			}
-
-            HouseData[houseid][date] = cache_get_row_int(i, 20, pSQL);
-
-			HouseData[houseid][e_labelid] = CreateDynamic3DTextLabel(gstr2, HouseData[houseid][sold] ? 0xFF0000FF : 0x00FF00FF, HouseData[houseid][e_x], HouseData[houseid][e_y], floatadd(HouseData[houseid][e_z], 0.3), 30.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, 0, -1, -1, 30.0);
-			HouseData[houseid][pickid] = CreateDynamicPickup(HouseData[houseid][sold] ? 1272 : 1273, 1, HouseData[houseid][e_x], HouseData[houseid][e_y], HouseData[houseid][e_z], -1, -1, -1, 30.0);
-			if(!HouseData[houseid][sold]) HouseData[houseid][e_iconid] = CreateDynamicMapIcon(HouseData[houseid][e_x], HouseData[houseid][e_y], HouseData[houseid][e_z], 31, 1, 0, -1, -1, 150.0);
-			
-			houseid++;
-		}
-	}
-	Log(LOG_INIT, "%i houses loaded in %i microseconds", houseid, cache_get_query_exec_time(UNIT_MICROSECONDS));
+	SetupHouse(slot, "<null>");
 	return 1;
 }
 
@@ -20642,72 +20575,6 @@ function:OnEnterpriseLoad()
 function:OnEnterpriseLoadEx(slot)
 {
 	SetupEnterprise(slot);
-	return 1;
-}
-
-SetupStore(slot)
-{
-	if(slot < 0 || slot > MAX_STORES) return 0;
-	new r = slot;
-
-    format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", StoreData[r][e_name]);
-   	StoreData[r][e_labelid] = CreateDynamic3DTextLabel(gstr, WHITE, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] + 0.6, 25.0, .worldid = 0, .streamdistance = 25.0);
-    StoreData[r][e_pickup_out] = CreateDynamicPickup(1559, 1, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
-
-	switch(StoreData[r][e_type])
-	{
-	    case STORE_TYPE_BANK:
-	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 2304.69, -16.19, 26.74, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_pickup_menu] = CreateDynamicPickup(1559, 1, 2311.63, -3.89, 26.74, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 25, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
-	    }
-	    case STORE_TYPE_AMMUNATION:
-	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 315.81, -143.65, 999.60, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 6, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
-	    }
-	    case STORE_TYPE_BURGERSHOT:
-	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 362.87, -75.17, 1001.50, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 10, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
-	    }
-	    case STORE_TYPE_CLUCKINBELLS:
-	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 364.87, -11.74, 1001.85, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 14, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
-	    }
-	    case STORE_TYPE_247:
-	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, -25.884, -185.868, 1003.546, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 17, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
-	    }
-		case STORE_TYPE_STACKEDPIZZAS:
-		{
-		    StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 372.36, -133.50, 1001.49, (slot + 1000), .streamdistance = 50.0);
-		    StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 29, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
-		}
-	}
-	return 1;
-}
-
-SetupEnterprise(slot)
-{
-	if(slot < 0 || slot > MAX_ENTERPRISES) return 0;
-	new r = slot;
-
-	if(EnterpriseData[r][e_sold]) {
-        format(gstr2, sizeof(gstr2), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-	} else {
-	    format(gstr2, sizeof(gstr2), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-	}
-	
-	EnterpriseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 30.0, .worldid = 0);
-    EnterpriseData[r][e_pickupid] = CreateDynamicPickup(1274, 1, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], .worldid = 0, .streamdistance = 50.0);
-    
-	if(!EnterpriseData[r][e_sold]) {
-	    EnterpriseData[r][e_iconid] = CreateDynamicMapIcon(EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 52, 1, .worldid = 0, .streamdistance = 150.0);
-	}
 	return 1;
 }
 
@@ -20842,44 +20709,6 @@ ResetGZones()
         GZoneData[r][e_defender] = 0;
 		GZoneData[r][e_pickupid] = -1;
 	}
-}
-
-ResetEnterprise(slot = -1)
-{
-	if(slot == -1)
-	{
-		for(new r = 0; r < MAX_ENTERPRISES; r++)
-		{
-		    EnterpriseData[r][e_ormid] = ORM:-1;
-		    EnterpriseData[r][e_id] = 0;
-		    EnterpriseData[r][e_owner][0] = '\0';
-			strcat(EnterpriseData[r][e_owner], "NoData", MAX_PLAYER_NAME + 1);
-			EnterpriseData[r][e_type] = E_ENT_TYPE:0;
-		    EnterpriseData[r][e_level] = 1;
-		    EnterpriseData[r][e_sold] = 0;
-		    EnterpriseData[r][e_date] = 0;
-		    EnterpriseData[r][e_labelid] = Text3D:-1;
-		    EnterpriseData[r][e_iconid] = -1;
-		    EnterpriseData[r][e_pickupid] = -1;
-		}
-	}
-	else
-	{
-	    if(slot < 0 || slot > MAX_ENTERPRISES) return 0;
-	    new r = slot;
-	    
-	    EnterpriseData[r][e_ormid] = ORM:-1;
-	    EnterpriseData[r][e_id] = 0;
-	    EnterpriseData[r][e_owner][0] = '\0';
-		strcat(EnterpriseData[r][e_owner], "NoData", MAX_PLAYER_NAME + 1);
-		EnterpriseData[r][e_type] = E_ENT_TYPE:0;
-	    EnterpriseData[r][e_level] = 1;
-	    EnterpriseData[r][e_sold] = 0;
-	    EnterpriseData[r][e_date] = 0;
-	    EnterpriseData[r][e_labelid] = Text3D:-1;
-	    EnterpriseData[r][e_iconid] = -1;
-	    EnterpriseData[r][e_pickupid] = -1;
-	}
 	return 1;
 }
 
@@ -20898,7 +20727,8 @@ LoadStores()
 
 LoadHouses()
 {
-	mysql_tquery(pSQL, "SELECT * FROM `houses`;", "OnHouseLoad");
+    ResetHouse();
+	mysql_tquery(pSQL, "SELECT hosues.*, accounts.name FROM houses LEFT JOIN accounts ON houses.owner = accounts.id;", "OnHouseLoad");
 	return 1;
 }
 
@@ -22024,7 +21854,7 @@ SQL_SaveHouse(house, bool:save_items = false)
 	if(save_items)
 	{
 		new Float:POS[6];
-		for(new i = 0; i < MAX_HOUSE_OBJECTS; i++)
+		for(new i = 0; i < MAX_HOUSE_ITEMS; i++)
 		{
 			if(HouseData[house][E_Obj_Model][i] != 0) {
 			    GetDynamicObjectPos(HouseData[house][E_Obj_ObjectID][i], POS[0], POS[1], POS[2]);
@@ -31410,4 +31240,189 @@ AssembleEnterpriseORM(ORM:_ormid, slot)
     orm_addvar_int(_ormid, EnterpriseData[slot][e_level], "level");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_sold], "sold");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_date], "date");
+}
+
+AssembleHouseORM(ORM:_ormid, slot)
+{
+	orm_addvar_int(_ormid, HouseData[slot][e_id], "id");
+	orm_addvar_int(_ormid, HouseData[slot][e_owner], "owner");
+	orm_addvar_float(_ormid, HouseData[slot][e_pos][0], "xpos");
+	orm_addvar_float(_ormid, HouseData[slot][e_pos][1], "ypos");
+	orm_addvar_float(_ormid, HouseData[slot][e_pos][2], "zpos");
+	orm_addvar_int(_ormid, HouseData[slot][e_interior], "interior");
+	orm_addvar_int(_ormid, HouseData[slot][e_value], "value");
+	orm_addvar_int(_ormid, HouseData[slot][e_locked], "locked");
+	orm_addvar_int(_ormid, HouseData[slot][e_date], "date");
+	orm_addvar_int(_ormid, HouseData[slot][e_creator], "creator");
+}
+
+SetupStore(slot)
+{
+	if(slot < 0 || slot > MAX_STORES) return 0;
+	new r = slot;
+
+    format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", StoreData[r][e_name]);
+   	StoreData[r][e_labelid] = CreateDynamic3DTextLabel(gstr, WHITE, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] + 0.6, 25.0, .worldid = 0, .streamdistance = 25.0);
+    StoreData[r][e_pickup_out] = CreateDynamicPickup(1559, 1, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
+
+	switch(StoreData[r][e_type])
+	{
+	    case STORE_TYPE_BANK:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 2304.69, -16.19, 26.74, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_pickup_menu] = CreateDynamicPickup(1559, 1, 2311.63, -3.89, 26.74, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 25, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
+	    }
+	    case STORE_TYPE_AMMUNATION:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 315.81, -143.65, 999.60, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 6, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
+	    }
+	    case STORE_TYPE_BURGERSHOT:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 362.87, -75.17, 1001.50, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 10, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
+	    }
+	    case STORE_TYPE_CLUCKINBELLS:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 364.87, -11.74, 1001.85, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 14, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
+	    }
+	    case STORE_TYPE_247:
+	    {
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, -25.884, -185.868, 1003.546, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 17, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
+	    }
+		case STORE_TYPE_STACKEDPIZZAS:
+		{
+		    StoreData[r][e_pickup_in] = CreateDynamicPickup(1559, 1, 372.36, -133.50, 1001.49, (slot + 1000), .streamdistance = 50.0);
+		    StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 29, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
+		}
+	}
+	return 1;
+}
+
+SetupHouse(slot, owner[])
+{
+	if(slot < 0 || slot > MAX_HOUSES) return 0;
+	new r = slot;
+
+	if(HouseData[r][e_owner] == 0) {
+	    format(gstr2, sizeof(gstr2), ""house_mark"\nFOR SALE! Type "nef_green"/buy "white"to purchase.\nID: %i\nPrice: $%s\nInterior: %s",
+	        HouseData[r][e_id],
+			number_format(HouseData[r][e_value]),
+			g_aHouseInteriorTypes[HouseData[r][e_interior]][intname]);
+	} else {
+	    format(gstr2, sizeof(gstr2), ""house_mark"Owner: %s\nID: %i\nValue: $%s\nInterior: %s",
+	        owner,
+	        HouseData[r][e_id],
+			number_format(HouseData[r][e_value]),
+			g_aHouseInteriorTypes[HouseData[r][e_interior]][intname]);
+	}
+
+	HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 40.0, .worldid = 0, .iteriorid = 0);
+	HouseData[r][e_pickid] = CreateDynamicPickup(HouseData[r][e_owner] == 0 ? 1273 : 1272, 1, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 40.0);
+
+	if(HouseData[r][e_owner] == 0) {
+	    HouseData[r][e_iconid] = CreateDynamicMapIcon(HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], 31, 1, .worldid = 0, .interiorid = 0, .streamdistance = 150.0);
+	}
+	return 1;
+}
+
+SetupEnterprise(slot)
+{
+	if(slot < 0 || slot > MAX_ENTERPRISES) return 0;
+	new r = slot;
+
+	if(EnterpriseData[r][e_sold]) {
+        format(gstr2, sizeof(gstr2), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_owner], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+	} else {
+	    format(gstr2, sizeof(gstr2), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+	}
+
+	EnterpriseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 30.0, .worldid = 0);
+    EnterpriseData[r][e_pickupid] = CreateDynamicPickup(1274, 1, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], .worldid = 0, .streamdistance = 50.0);
+
+	if(!EnterpriseData[r][e_sold]) {
+	    EnterpriseData[r][e_iconid] = CreateDynamicMapIcon(EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 52, 1, .worldid = 0, .streamdistance = 150.0);
+	}
+	return 1;
+}
+
+ResetEnterprise(slot = -1)
+{
+	if(slot == -1)
+	{
+		for(new r = 0; r < MAX_ENTERPRISES; r++)
+		{
+		    EnterpriseData[r][e_ormid] = ORM:-1;
+		    EnterpriseData[r][e_id] = 0;
+		    EnterpriseData[r][e_owner][0] = '\0';
+			strcat(EnterpriseData[r][e_owner], "NoData", MAX_PLAYER_NAME + 1);
+			EnterpriseData[r][e_type] = E_ENT_TYPE:0;
+		    EnterpriseData[r][e_level] = 1;
+		    EnterpriseData[r][e_sold] = 0;
+		    EnterpriseData[r][e_date] = 0;
+		    EnterpriseData[r][e_labelid] = Text3D:-1;
+		    EnterpriseData[r][e_iconid] = -1;
+		    EnterpriseData[r][e_pickupid] = -1;
+		}
+	}
+	else
+	{
+	    if(slot < 0 || slot > MAX_ENTERPRISES) return 0;
+	    new r = slot;
+
+	    EnterpriseData[r][e_ormid] = ORM:-1;
+	    EnterpriseData[r][e_id] = 0;
+	    EnterpriseData[r][e_owner][0] = '\0';
+		strcat(EnterpriseData[r][e_owner], "NoData", MAX_PLAYER_NAME + 1);
+		EnterpriseData[r][e_type] = E_ENT_TYPE:0;
+	    EnterpriseData[r][e_level] = 1;
+	    EnterpriseData[r][e_sold] = 0;
+	    EnterpriseData[r][e_date] = 0;
+	    EnterpriseData[r][e_labelid] = Text3D:-1;
+	    EnterpriseData[r][e_iconid] = -1;
+	    EnterpriseData[r][e_pickupid] = -1;
+	}
+	return 1;
+}
+
+ResetHouse(slot = -1)
+{
+	if(slot == -1)
+	{
+		for(new r = 0; r < MAX_HOUSES; r++)
+		{
+		    HouseData[r][e_ormid] = ORM:-1;
+		    HouseData[r][e_id] = 0;
+		    HouseData[r][e_owner] = 0;
+            HouseData[r][e_interior] = 0;
+            HouseData[r][e_value] = 0;
+            HouseData[r][e_locked] = 0;
+            HouseData[r][e_date] = 0;
+            HouseData[r][e_creator] = 0;
+            HouseData[r][e_labelid] = Text3D:-1;
+            HouseData[r][e_pickid] = -1;
+            HouseData[r][e_iconid] = -1;
+		}
+	}
+	else
+	{
+	    if(slot < 0 || slot > MAX_HOUSES) return 0;
+	    new r = slot;
+
+	    HouseData[r][e_ormid] = ORM:-1;
+	    HouseData[r][e_id] = 0;
+	    HouseData[r][e_owner] = 0;
+        HouseData[r][e_interior] = 0;
+        HouseData[r][e_value] = 0;
+        HouseData[r][e_locked] = 0;
+        HouseData[r][e_date] = 0;
+        HouseData[r][e_creator] = 0;
+        HouseData[r][e_labelid] = Text3D:-1;
+        HouseData[r][e_pickid] = -1;
+        HouseData[r][e_iconid] = -1;
+	}
+	return 1;
 }

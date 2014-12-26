@@ -5,7 +5,7 @@ Havoc Freeroam SA-MP Server
 -------------------
 - Businesses have been renamed to Enterprises.
 - Added enterprise type: Bitcoin Mining Farm.
-- Better accurate unixtime conversion.
+- More accurate unixtime conversion.
 - Dialog cleanups to avoid unnecessary overhead.
 - Removed announce commands for admins.
 - Removed bullet hit sound from deathmatches.
@@ -18,6 +18,8 @@ Havoc Freeroam SA-MP Server
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/mappers).
 - Namechanges are now attached to an account id rather than a name. This prevents confusion.
+
+- House system has been fully rewritten.
 
 TODO
 ----
@@ -50,7 +52,6 @@ TODO
 - Player bounties are now being saved in the database.
 - All races have been overhauled.
 - Races are now being saved in the datatbase.
-- House system has been fully rewritten.
 - Derby has been rewritten, new maps can now be added easily.
 - All file operations have been removed, everything is now in the Havoc database.
 - Added admin command to reset houses/enterprises which are being owned by banned players.
