@@ -504,11 +504,9 @@ enum (+= 56)
     DIALOG_PLAYER_COLOR,
     DIALOG_CNR_REFILL,
     DIALOG_PV_SELECT_SLOT,
-    DIALOG_CM,
     DIALOG_CNR,
     DIALOG_REFILL_COPS,
     DIALOG_REFILL_ROBBERS,
-    DIALOG_NO_GC,
     DIALOG_DUEL,
     NO_DIALOG_ID
 };
@@ -763,10 +761,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	DrawnNumber,
 	ExitType,
 	iMedkitTime,
-	GCPlayer,
-	GCNameHash,
-	GCOffer,
-	GCPrice,
 	iTransactHousePlayer,
 	iTransactHouseID,
 	iTransactHousePrice,
@@ -29880,9 +29874,7 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][e_skinsave] = -1;
 	PlayerData[playerid][e_addpvslots] = 0;
 	PlayerData[playerid][e_addtoyslots] = 0;
-	PlayerData[playerid][e_addhouseslots] = 0;
 	PlayerData[playerid][e_addentslots] = 0;
-	PlayerData[playerid][e_addhouseitemslots] = 0;
 	PlayerData[playerid][EnterpriseIdSelected] = 0;
 	PlayerData[playerid][DrawnNumber] = -1;
 	PlayerData[playerid][pTrailerVehicle] = INVALID_VEHICLE_ID;
@@ -29904,10 +29896,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][tMedkit] = -1;
 	PlayerData[playerid][iMedkitTime] = 0;
 	PlayerData[playerid][e_payday] = 60;
-	PlayerData[playerid][GCPlayer] = INVALID_PLAYER_ID;
-	PlayerData[playerid][GCNameHash] = 0;
-	PlayerData[playerid][GCOffer] = 0;
-	PlayerData[playerid][GCPrice] = 0;
 	PlayerData[playerid][VIPPlayer] = INVALID_PLAYER_ID;
 	PlayerData[playerid][VIPNameHash] = 0;
 	PlayerData[playerid][VIPOffer] = 0;
@@ -30196,9 +30184,7 @@ AssemblePlayerORM(ORM:_ormid, slot)
 	orm_addvar_int(_ormid, PlayerData[slot][e_gangrank], "gangrank");
 	orm_addvar_int(_ormid, PlayerData[slot][e_addpvslots], "addpvslots");
 	orm_addvar_int(_ormid, PlayerData[slot][e_addtoyslots], "addtoyslots");
-	orm_addvar_int(_ormid, PlayerData[slot][e_addhouseslots], "addhouseslots");
 	orm_addvar_int(_ormid, PlayerData[slot][e_addentslots], "addentslots");
-	orm_addvar_int(_ormid, PlayerData[slot][e_addhouseitemslots], "addhouseitemslots");
 	orm_addvar_int(_ormid, PlayerData[slot][e_derbywins], "derbywins");
 	orm_addvar_int(_ormid, PlayerData[slot][e_racewins], "racewins");
 	orm_addvar_int(_ormid, PlayerData[slot][e_tdmwins], "tdmwins");
