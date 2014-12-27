@@ -6027,13 +6027,6 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		}
 		case 35:
 		{
-			if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT && gTeam[playerid] == gFREEROAM)
-			{
-				ShowDialog(playerid, DIALOG_CM);
-			}
-		}
-		case 36:
-		{
 		    if(GetPVarInt(playerid, "doingStunt") == 0) return SCM(playerid, -1, ""er"You can't use this now");
 		    
 			if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
@@ -6041,7 +6034,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 				CarSpawner(playerid, 481, -1, false);
 			}
 		}
-		case 37: //Skydive5 Prize
+		case 36: //Skydive5 Prize
 		{
 			if(GetPVarInt(playerid, "doingStunt") == 2)
 	  		{
@@ -6062,7 +6055,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the 5th skydive challange~n~~r~~h~~h~8 score and $8,000!");
 			}
 	 	}
-		case 38: //Skydive6 Prize
+		case 37: //Skydive6 Prize
 		{
 			if(GetPVarInt(playerid, "doingStunt") == 2)
 	  		{
@@ -18099,8 +18092,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 						ShowPlayerDialog(playerid, DIALOG_HELP + 6, DIALOG_STYLE_MSGBOX, ""nef" :: What to do here", gstr, "OK", "Back");
 	                }
-	                case 8: Command_ReProcess(playerid, "/credits", false);
-	                case 9: Command_ReProcess(playerid, "/vip", false);
+	                case 8: Command_ReProcess(playerid, "/vip", false);
 	            }
 	            return true;
 	        }
@@ -22306,10 +22298,6 @@ server_load_visuals()
     
 	bb_mcc = CreateDynamicObject(8323, -2322.76880, -1704.56067, 499.98999,   0.00000, 0.00000, 69.30000);
 	SetDynamicObjectMaterialText(bb_mcc, 0, "Welcome to Havoc Freeroam!\nServer time: \n"green"Players online: ", OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_LEFT);
-
-    new object_id = CreateDynamicObject(11317, 1914.20313, -1377.58191, 26.29986,   0.00000, 0.00000, 91.91999); // Gold Credits Wang Cars
-    SetDynamicObjectMaterial(object_id, 2, 19341, "egg_texts", "easter_egg01");
-    SetDynamicObjectMaterial(object_id, 3, 19341, "egg_texts", "easter_egg01");
     
 	MellnikGate = CreateDynamicObject(980, -205.68774, -2285.10693, 30.65776,   0.00000, 0.00000, 122.80286);
 	MellnikRamp = CreateDynamicObject(3115, -153.74190, -2210.68457, 27.16690,   0.00000, 0.00000, -145.55995);
@@ -22426,7 +22414,6 @@ server_load_visuals()
 	CreateDynamicCP(2234.1003,1714.3649,1012.3828, 2.0, CNR_WORLD, -1, -1, 75.0); // Caligulas Exit
 	CreateDynamicCP(1391.6522,2693.8896,10.8203, 1.5, CNR_WORLD, -1, -1, 75.0); // Robbers Gate
 	CreateDynamicCP(1400.9669,2685.9114,10.8203, 1.5, CNR_WORLD, -1, -1, 75.0); // Robbers Gate
-	CreateDynamicCP(666.4440, -1866.7815, 4.9608, 3.0, 0, -1, -1, 100.0); // Gold Credits
 	CreateDynamicCP(3360.8054,-1934.1283,43.3184, 3.5, 0, -1, -1, 50.0); // bmx bike spawn
 	CreateDynamicCP(249.9905, 3772.1204, 18.3780, 12.0, 0, -1, -1, 100.0); // skydive5 checkpoint
 	CreateDynamicCP(-1839.5253, -3856.7036, 16.9936, 12.0, 0, -1, -1, 100.0); // skydive6 checkpoint
@@ -22529,7 +22516,6 @@ server_load_visuals()
 	CreateObject(11237, 217.10001, -1999.30005, 37.10000,   0.00000, 0.00000, 220.00000, 350.0);
 	// beach end*/
     
-    AddTeleport(4, "Gold Credits", "gc", 654.5861, -1867.3845, 5.5861);
 	AddTeleport(6, "Drift", "drift", -344.308, 1528.474, 75.159);
 	AddTeleport(6, "Drift City", "dc", 3431.8589, 484.3132, 1788.7490);
 	AddTeleport(6, "Drift Island", "df", 3075.9263,-3153.9749,49.1486);
@@ -22659,7 +22645,6 @@ server_load_visuals()
 	AddTeleport(5, "Racemap 2", "racemap2", 2741.1375,1969.4594,5269.7466);
 	AddTeleport(5, "Concert", "concert", 1477.8225,-1714.1190,14.1400);
 
-    CreateDynamic3DTextLabel(""white"["nef_green"Gold Credits"white"]", -1, 666.4440, -1866.7815, 4.9608+0.5, 300.0);
     CreateDynamic3DTextLabel(""red">>> SLOW DOWN <<<", RED, 477.7281,1399.4580,735.2565+0.5, 60.0);
     CreateDynamic3DTextLabel(""white"["lila"Mellnik's Office"white"]", -1, 1794.8202,-1311.3057,120.6237+0.5, 35.0);
     CreateDynamic3DTextLabel(""white"["yellow"Admin Liberty City"white"]", -1, 1805.7494,-1302.6721,120.2656+0.5, 35.0);
@@ -24717,191 +24702,6 @@ function:QueueProcess()
 
 function:OnQueueReceived()
 {
-	new rows, fields;
-	cache_get_data(rows, fields, pSQL);
-	
-	if(rows > 0)
-	{
-	    new Cache:Data = cache_save(pSQL);
-	    cache_set_active(Data, pSQL);
-	
-		for(new i = 0; i < rows; i++)
-		{
-		    new action = cache_get_row_int(i, 1, pSQL);
-		    
-		    switch(action)
-			{
-		        case 1: // give a player credits
-		        {
-		            new name[26], credits, payment[21];
-		            cache_get_row(i, 3, gstr2, pSQL, sizeof(gstr2));
-		            
-		            sscanf(gstr2, "p<,>s[25]is[20]",
-		                name,
-		                credits,
-						payment);
-		            
-		            new playerid = __GetPlayerID(name);
-		            if(playerid != INVALID_PLAYER_ID && islogged(playerid))
-		            {
-						AlterPlayerCredits(playerid, credits);
-						
-						format(gstr2, sizeof(gstr2), ""server_sign" "r_besch"You were given %sGC!", number_format(credits));
-						SCM(playerid, -1, gstr2);
-
-						format(gstr2, sizeof(gstr2), "~r~~h~~h~You were given ~b~~h~~h~%sGC ~r~~h~~h~!", number_format(credits));
-						InfoTD_MSG(playerid, 10000, gstr2);
-						SQL_SaveAccount(playerid);
-		            }
-		            else
-		            {
-		                mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `credits` = `credits` + %i WHERE `name` = '%e' LIMIT 1;", credits, name);
-		                mysql_tquery(pSQL, gstr2);
-						mysql_format(pSQL, gstr2, sizeof(gstr2), "INSERT INTO `creditslog` VALUES (NULL, '%e', %i, %i);", name, credits, gettime());
-						mysql_tquery(pSQL, gstr2);
-		            }
-		            
-					format(gstr, sizeof(gstr), "~p~%s received %s credits for donating!", name, number_format(credits));
-                    GameTextForAll(gstr, 10000, 3);
-                    format(gstr, sizeof(gstr), "%s received %s credits for donating!", name, number_format(credits));
-                    SCMToAll(ORANGE, gstr);
-		        }
-		        case 2..6: // alter boost
-		        {
-		            new name[25];
-		            cache_get_row(i, 3, name, pSQL, sizeof(name));
-		            
-		            new playerid = __GetPlayerID(name);
-		            if(playerid != INVALID_PLAYER_ID)
-		            {
-		                switch(action)
-		                {
-		                    case 2:
-							{
-							    if(PlayerData[playerid][Boost] & BOOST_MONEY_x2) PlayerData[playerid][Boost] &= ~BOOST_MONEY_x2;
-							    SCM(playerid, -1, ""server_sign" "green"Your Money Boost x2 ran out!");
-							    player_notice(playerid, "~b~~h~~h~Your Money Boost x2 ran out!", "", 4000);
-							}
-							case 3:
-							{
-							    if(PlayerData[playerid][Boost] & BOOST_MONEY_x3) PlayerData[playerid][Boost] &= ~BOOST_MONEY_x3;
-							    SCM(playerid, -1, ""server_sign" "green"Your Money Boost x3 ran out!");
-							    player_notice(playerid, "~b~~h~~h~Your Money Boost x3 ran out!", "", 4000);
-							}
-							case 4:
-							{
-							    if(PlayerData[playerid][Boost] & BOOST_SCORE_x2) PlayerData[playerid][Boost] &= ~BOOST_SCORE_x2;
-							    SCM(playerid, -1, ""server_sign" "green"Your Score Boost x2 ran out!");
-							    player_notice(playerid, "~b~~h~~h~Your Score Boost x2 ran out!", "", 4000);
-							}
-							case 5:
-							{
-							    if(PlayerData[playerid][Boost] & BOOST_SCORE_x3) PlayerData[playerid][Boost] &= ~BOOST_SCORE_x3;
-							    SCM(playerid, -1, ""server_sign" "green"Your Score Boost x3 ran out!");
-							    player_notice(playerid, "~b~~h~~h~Your Score Boost x3 ran out!", "", 4000);
-							}
-							case 6:
-							{
-							    if(PlayerData[playerid][Boost] & BOOST_MASTER) PlayerData[playerid][Boost] &= ~BOOST_MASTER;
-							    SCM(playerid, -1, ""server_sign" "green"Your Master Boost ran out!");
-							    player_notice(playerid, "~b~~h~~h~Your Master Boost ran out!", "", 4000);
-							}
-		                }
-		            }
-		        }
-		        case 7: // give a player vip
-		        {
-		            new name[26], payment[21];
-                    cache_get_row(i, 3, gstr2, pSQL, sizeof(gstr2));
-                    
-				    sscanf(gstr2, "p<,>s[25]s[20]",
-		                name,
-		                payment);
-
-		            new playerid = __GetPlayerID(name);
-		            if(playerid != INVALID_PLAYER_ID && islogged(playerid))
-		            {
-		                PlayerData[playerid][e_vip] = 1;
-		                PlayerData[playerid][e_bank] += 1000000;
-		                
-		                if(PlayerData[playerid][e_addpvslots] < 7)
-		                {
-		                    PlayerData[playerid][e_addpvslots]++;
-		                }
-		                if(PlayerData[playerid][e_addpvslots] < 7)
-		                {
-		                    PlayerData[playerid][e_addpvslots]++;
-		                }
-						if(PlayerData[playerid][e_addhouseslots] < 4)
-						{
-							PlayerData[playerid][e_addhouseslots]++;
-						}
-						if(PlayerData[playerid][e_addentslots] < 4)
-						{
-							PlayerData[playerid][e_addentslots]++;
-						}
-		                
-						SCM(playerid, -1, ""server_sign" "r_besch"You received VIP status + $1,000,000 bank money + 2 PV Slots + 1 House Slot + 1 Bizz Slot!");
-
-						InfoTD_MSG(playerid, 10000, "~r~~h~~h~You received VIP status + $1,000,000 bank money + 2 PV Slots + 1 House Slot + 1 Bizz Slot!");
-						SQL_SaveAccount(playerid);
-		            }
-		            else
-		            {
-						cache_set_active(Cache:0, pSQL);
-		                
-						mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `addpvslots`, `addhouseslots`, `addbizzslots` FROM `accounts` WHERE `name` = '%e';", name);
-						new Cache:res = mysql_query(pSQL, gstr);
-						
-						if(cache_get_row_count(pSQL) > 0)
-						{
-							new pvslot = cache_get_row_int(0, 0, pSQL),
-							    houseslot = cache_get_row_int(0, 1, pSQL),
-							    propslot = cache_get_row_int(0, 2, pSQL);
-
-			                if(pvslot < 7)
-			                {
-			                    pvslot++;
-			                }
-			                if(pvslot < 7)
-			                {
-			                    pvslot++;
-			                }
-			                if(houseslot < 4)
-			                {
-			                    houseslot++;
-			                }
-			                if(propslot < 4)
-			                {
-			                    propslot++;
-			                }
-
-			                mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `vip` = 1, `bank` = `bank` + 1000000, `addpvslots` = %i, `addhouseslots` = %i, `addbizzslots` = %i WHERE `name` = '%e' LIMIT 1;",
-								pvslot,
-								houseslot,
-								propslot,
-								name);
-
-			                mysql_tquery(pSQL, gstr2, "", "");
-						}
-
-    					cache_delete(res);
-						cache_set_active(Data, pSQL);
-		            }
-		            
-					format(gstr, sizeof(gstr), "~p~%s received VIP for donating!", name);
-                    GameTextForAll(gstr, 10000, 3);
-                    format(gstr, sizeof(gstr), "%s received VIP for donating!", name);
-                    SCMToAll(ORANGE, gstr);
-		        }
-		        default: continue;
-		    }
-			format(gstr2, sizeof(gstr2), "DELETE FROM `queue` WHERE `ID` = %i LIMIT 1;", cache_get_row_int(i, 0, pSQL));
-			mysql_tquery(pSQL, gstr2, "", "");
-		}
-		
-		cache_delete(Data, pSQL);
-	}
 	return 1;
 }
 
@@ -26480,19 +26280,6 @@ function:ShowDialog(playerid, dialogid)
                 player_notice(playerid, "Couldn't find the Enterprise in that slot", "Report on forums", 4000);
 			}
 		}
-	    case DIALOG_CM:
-	    {
-	        new string[1024];
-
-	        strcat(string, ""red"How to get Gold Credits\nToy Slots\nCustom car slot\nHouse Slots\nHouse Item Slots\nEnterprise Slots\nInstant Namechange Access");
-	        strcat(string, "\nMedkit x20\nMedkit x100\nMoney Boost x2\nMoney Boost x3\nScore Boost x2\nScore Boost x3\nMaster Boost\nReset K/D");
-
-	        ShowPlayerDialog(playerid, DIALOG_CM, DIALOG_STYLE_LIST, ""nef" :: Gold Credits", string, "Select", "Cancel");
-	    }
-	    case DIALOG_NO_GC:
-	    {
-	        ShowPlayerDialog(playerid, DIALOG_NO_GC, DIALOG_STYLE_MSGBOX, ""nef" :: Gold Credits", ""nef_green"You don't have enough Gold Credits to perform this action.\n"white"To purchase Gold Credits goto "SVRURLWWW"/credits", "OK", "");
-	    }
 	    case DIALOG_SERVER_STATS:
 	    {
 	        new string[680];
@@ -26614,7 +26401,7 @@ function:ShowDialog(playerid, dialogid)
 	    {
 	        new str[400];
 	        strcat(str, "General Help\nCommands\nShortcuts\nMinigames\nMaps\nSettings\n");
-	        strcat(str, "How do I earn money and score?\nWhat can I do on this server?\nHow do I get Gold Credits?\nHow do I get VIP?\n"grey"ServerIP: "SERVER_IP"");
+	        strcat(str, "How do I earn money and score?\nWhat can I do on this server?\nHow do I get VIP?\n"grey"ServerIP: "SERVER_IP"");
 	        ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_LIST, ""nef" :: Help", str, "OK", "");
 	    }
 	    case DIALOG_COMMANDS:
@@ -26737,19 +26524,16 @@ function:ShowDialog(playerid, dialogid)
 
 function:server_random_broadcast()
 {
-	static const szRandomServerMessages[15][] =
+	static const szRandomServerMessages[12][] =
 	{
 		""yellow_e"- Server - "LB2_E"Visit our site: "SVRURLWWW"",
 		""yellow_e"- Server - "LB2_E"Join Minigames for money and score - /help",
 		""yellow_e"- Server - "LB2_E"Access your player preferences: /settings",
 		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip",
 		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip",
-		""yellow_e"- Server - "LB2_E"Get "SVRSC" Credits (/credits) today! "SVRURLWWW"/gc/",
-		""yellow_e"- Server - "LB2_E"Get "SVRSC" Credits (/credits) today! "SVRURLWWW"/gc/",
 		""yellow_e"- Server - "LB2_E"Join Minigames to earn money and score - /help",
 		""yellow_e"- Server - "LB2_E"Got suggestions? Post them on our forums! ("SVRFORUM")",
 		""yellow_e"- Server - "LB2_E"Use /report to report a player to the admins",
-		""yellow_e"- Server - "LB2_E"Get "SVRSC" Credits (/credits) today! "SVRURLWWW"/gc/",
 		""yellow_e"- Server - "LB2_E"Add "SVRSC" to your favlist! samp."SVRURL":7777",
 		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip/",
 		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!",
