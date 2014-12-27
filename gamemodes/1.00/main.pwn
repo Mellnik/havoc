@@ -8528,6 +8528,37 @@ YCMD:h(playerid, params[], help)
 	return 1;
 }
 
+YCMD:e(playerid, params[], help)
+{
+    if(!islogged(playerid)) return notlogged(playerid);
+
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
+    new string[512], tmp[64];
+
+    for(new i = 0; i < MAX_PLAYER_ENTERPRISES; i++)
+    {
+        if(i > PlayerData[playerid][e_addentslots])
+        {
+            format(tmp, sizeof(tmp), "Enterprise Slot %i "red"(Locked)\n", i + 1);
+        }
+        else
+		{
+		    if(i < GetPlayerEnterpriseCount(playerid))
+		    {
+			    format(tmp, sizeof(tmp), "Enterprise Slot %i "green2"(Used)\n", i + 1);
+		    }
+		    else
+		    {
+			    format(tmp, sizeof(tmp), "Enterprise Slot %i\n", i + 1);
+		    }
+		}
+		strcat(string, tmp);
+    }
+
+    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE, DIALOG_STYLE_LIST, ""nef" :: Enterprise Menu", string, "Select", "Cancel");
+	return 1;
+}
+
 YCMD:upgrade(playerid, params[], help)
 {
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
@@ -8772,7 +8803,7 @@ YCMD:buy(playerid, params[], help)
 		    player_notice(playerid, "Enterprise not for sale", "");
 		    return 1;
 		}
-		if(GetPlayerEnterpriseCount(__GetName(playerid)) > PlayerData[playerid][e_addentslots]) {
+		if(GetPlayerEnterpriseCount(playerid) > PlayerData[playerid][e_addentslots]) {
 			SCM(playerid, -1, ""er"You do not have any free enterprise slots");
 			return 1;
 		}
@@ -15315,7 +15346,7 @@ YCMD:stats(playerid, params[], help)
 			vip,
 			PlayerData[player1][e_medkits],
 			GetPlayerHouseCount(player1),
-			GetPlayerEnterpriseCount(__GetName(player1)),
+			GetPlayerEnterpriseCount(player1),
 			PlayerData[player1][e_wanteds],
 			UTConvert(PlayerData[player1][e_lastlogin]));
 			
@@ -15403,37 +15434,6 @@ YCMD:armourall(playerid, params[], help)
 YCMD:pornos(playerid, params[], help)
 {
     SCM(playerid, RED, "Du kannst mir mal fett ein kauen, kein Godfather.");
-	return 1;
-}
-
-YCMD:e(playerid, params[], help)
-{
-    if(!islogged(playerid)) return notlogged(playerid);
-    
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
-    new string[512], tmp[64];
-
-    for(new i = 0; i < MAX_PLAYER_ENTERPRISES; i++)
-    {
-        if(i > PlayerData[playerid][e_addentslots])
-        {
-            format(tmp, sizeof(tmp), "Enterprise Slot %i "red"(Locked)\n", i + 1);
-        }
-        else
-		{
-		    if(i < GetPlayerEnterpriseCount(__GetName(playerid)))
-		    {
-			    format(tmp, sizeof(tmp), "Enterprise Slot %i "green2"(Used)\n", i + 1);
-		    }
-		    else
-		    {
-			    format(tmp, sizeof(tmp), "Enterprise Slot %i\n", i + 1);
-		    }
-		}
-		strcat(string, tmp);
-    }
-
-    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE, DIALOG_STYLE_LIST, ""nef" :: Enterprise Menu", string, "Select", "Cancel");
 	return 1;
 }
 
@@ -17121,7 +17121,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		        }
 		        else
 				{
-				    if(listitem >= GetPlayerEnterpriseCount(__GetName(playerid)))
+				    if(listitem >= GetPlayerEnterpriseCount(playerid))
 				    {
 				        player_notice(playerid, "Enterprise slot not in use", "");
 				    }
@@ -24662,7 +24662,7 @@ function:QueueProcess()
 			    BankInterestVIP = 0;
 			}
 
-			if(GetPlayerEnterpriseCount(__GetName(i)) > 0)
+			if(GetPlayerEnterpriseCount(i) > 0)
 			{
 			    EnterpriseInterest = GetPlayerEnterpriseEarnings(i);
 			    EnterpriseInterestVIP = floatround(EnterpriseInterest / 2.5, floatround_round);
@@ -27575,6 +27575,47 @@ function:OnNCReceive2(playerid, name[])
 	return 1;
 }
 
+GetPlayerEnterpriseEarnings(playerid)
+{
+	new count = 0;
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
+	{
+	    if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_accountid])
+			continue;
+
+	    count += GetEnterpriseEarnings(r);
+	}
+	return count;
+}
+
+GetEnterpriseEarnings(r)
+{
+	new count = 0;
+	for(new i = 0; i < sizeof(g_aEnterpriseLevelMatrix); i++)
+	{
+		if(i == (EnterpriseData[r][e_level] - 1))
+		{
+		    count = g_aEnterpriseLevelMatrix[i][E_bearnings];
+		    return count;
+		}
+	}
+	return 0;
+}
+
+GetPlayerEnterpriseCount(playerid)
+{
+	new count = 0;
+	for(new i = 0; i < MAX_ENTERPRISES; i++)
+	{
+	    if(EnterpriseData[i][e_ormid] == ORM:-1)
+			continue;
+
+		if(EnterpriseData[i][e_owner] == PlayerData[playerid][e_accountid])
+		    ++count;
+	}
+	return count;
+}
+
 GetNearestHouse(playerid)
 {
 	new Float:fPOS[3];
@@ -28168,44 +28209,6 @@ function:player_medkit_charge(playerid)
 	    InfoTD_MSG(playerid, 1500, "~g~~h~~h~Medkit depleted!");
 	}
 	return 1;
-}
-
-GetPlayerEnterpriseEarnings(playerid)
-{
-	new __int32 = 0;
-	for(new r = 0; r < MAX_ENTERPRISES; r++)
-	{
-	    if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_accountid])
-			continue;
-	    
-	    __int32 += GetEnterpriseEarnings(r);
-	}
-	return __int32;
-}
-
-GetEnterpriseEarnings(r)
-{
-	new __int32 = 0;
-	for(new i = 0; i < sizeof(g_aEnterpriseLevelMatrix); i++)
-	{
-		if(i == (EnterpriseData[r][e_level] - 1))
-		{
-		    __int32 = g_aEnterpriseLevelMatrix[i][E_bearnings];
-		    return __int32;
-		}
-	}
-	return 0;
-}
-
-GetPlayerEnterpriseCount(const name[])
-{
-	mysql_format(pSQL, gstr, sizeof(gstr), "SELECT COUNT(`id`) FROM `enterprises` WHERE `owner` = '%e';", name);
-	
-	new Cache:cache = mysql_query(pSQL, gstr);
-	new count = cache_get_row_int(0, 0);
-	cache_delete(cache);
-	
-	return count;
 }
 
 GetCNRCops()
