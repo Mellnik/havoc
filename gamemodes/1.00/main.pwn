@@ -559,8 +559,8 @@ enum
 	gTDM_TEAM1,
 	gTDM_TEAM2,
 	gTDM_VOTING,
-	MINIGUN,
-	MINIGUN2,
+	gMINIGUN,
+	gMINIGUN2,
 	SNIPER,
 	ROCKETDM,
 	JETPACKDM,
@@ -3285,7 +3285,7 @@ public OnPlayerSpawn(playerid)
 			
             LoadMap(playerid);
 		}
-		case MINIGUN:
+		case gMINIGUN:
 		{
 	        ResetPlayerWeapons(playerid);
 	        GivePlayerWeapon(playerid, 38, 99999);
@@ -3296,7 +3296,7 @@ public OnPlayerSpawn(playerid)
 			SetPlayerPosEx(playerid, Minigun_Spawns[rand][0], Minigun_Spawns[rand][1], floatadd(Minigun_Spawns[rand][2], 2.5));
 			SetPlayerFacingAngle(playerid, Minigun_Spawns[rand][3]);
 		}
-		case MINIGUN2:
+		case gMINIGUN2:
 		{
 	        ResetPlayerWeapons(playerid);
 	        GivePlayerWeapon(playerid, 38, 99999);
@@ -5337,9 +5337,9 @@ public OnPlayerDeath(playerid, killerid, reason)
 				fallout_cancel();
 			}
 	  	}
-		case MINIGUN, MINIGUN2:
+		case gMINIGUN, gMINIGUN2:
 		{
-		    if(IsPlayerAvail(killerid) && (gTeam[killerid] == MINIGUN || gTeam[killerid] == MINIGUN2))
+		    if(IsPlayerAvail(killerid) && (gTeam[killerid] == gMINIGUN || gTeam[killerid] == gMINIGUN2))
 		    {
 				GivePlayerScoreEx(killerid, 1, true, true);
 				GivePlayerMoneyEx(killerid, 2000, true, true);
@@ -9549,12 +9549,12 @@ YCMD:togglegc(playerid, params[], help)
 YCMD:minigun(playerid, params[], help)
 {
     if(PlayerData[playerid][bGWarMode]) return SCM(playerid, -1, ""er"You can't join minigames while being in a Gang War, type /exit");
-    if(gTeam[playerid] == MINIGUN) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gMINIGUN) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
-	gTeam[playerid] = MINIGUN;
+	gTeam[playerid] = gMINIGUN;
 	ResetPlayerWeapons(playerid);
 	GivePlayerWeapon(playerid, 38, 99999);
    	SetPlayerVirtualWorld(playerid, MINIGUN_WORLD);
@@ -9571,12 +9571,12 @@ YCMD:minigun(playerid, params[], help)
 YCMD:minigun2(playerid, params[], help)
 {
     if(PlayerData[playerid][bGWarMode]) return SCM(playerid, -1, ""er"You can't join minigames while being in a Gang War, type /exit");
-    if(gTeam[playerid] == MINIGUN2) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gMINIGUN2) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
-	gTeam[playerid] = MINIGUN2;
+	gTeam[playerid] = gMINIGUN2;
 	ResetPlayerWeapons(playerid);
 	GivePlayerWeapon(playerid, 38, 99999);
    	SetPlayerVirtualWorld(playerid, MINIGUN2_WORLD);
@@ -9594,7 +9594,7 @@ YCMD:minigun2(playerid, params[], help)
 YCMD:sniper(playerid, params[], help)
 {
     if(PlayerData[playerid][bGWarMode]) return SCM(playerid, -1, ""er"You can't join minigames while being in a Gang War, type /exit");
-    if(gTeam[playerid] == MINIGUN) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gMINIGUN) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 
     CheckPlayerGod(playerid);
@@ -24890,7 +24890,7 @@ function:ProcessTick()
 			    {
 			        T_WarPlayers++;
 			    }
-			    case MINIGUN:
+			    case gMINIGUN:
 			    {
 			        T_MinigunPlayers++;
 			    }
@@ -27778,7 +27778,7 @@ ExitPlayer(playerid)
 	        SCM(playerid, -1, ""er"Leave the store by entering the pickup");
 	        return 0;
 	    }
-	    case MINIGUN, SNIPER, ROCKETDM, MINIGUN2:
+	    case gMINIGUN, gMINIGUN2, SNIPER, ROCKETDM:
 	    {
 			gTeam[playerid] = gFREEROAM;
 			
