@@ -5,7 +5,7 @@ COMPILER_FLAGS = -std=gnu++11 -c -m32 -fPIC -O3 -DLINUX -w -I./include/ -I./incl
 LIBRARIES = ./lib/*.a -lrt
 CRYPTOPP_SRC_DIR = ./include/cryptopp
 
-all: havoc clean
+all: cryptlib havoc clean
 
 cryptlib:
 	$(MAKE) -C $(CRYPTOPP_SRC_DIR) static
@@ -17,7 +17,7 @@ havoc:
 	$(GPP) $(COMPILER_FLAGS) ./include/SDK/*.cpp
 	$(GPP) $(COMPILER_FLAGS) ./src/*.cpp
 	mkdir -p bin
-	$(GPP) -m32 -g -fshort-wchar -shared -o $(OUTPUT) *.o $(LIBRARIES)
+	$(GPP) -m32 -O2 -fshort-wchar -shared -o $(OUTPUT) *.o $(LIBRARIES)
 	
 clean:
 	rm -f *.o

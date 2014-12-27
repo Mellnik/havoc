@@ -14,7 +14,8 @@
 #include <ctime>
 #include <fstream>
 
-#include <cryptopp/fitlers.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/filters.h>
 #include <cryptopp/integer.h>
 #include <cryptopp/osrng.h>
 #include <cryptopp/sha.h>
@@ -249,15 +250,16 @@ cell AMX_NATIVE_CALL Native::Whirlpool(AMX *amx, cell *params)
 	static const uint32_t ParamCount = 3;
 	PARAM_CHECK(ParamCount, "NC_Whirlpool");
 
-	char *str = NULL;
-	amx_StrParam(amx, params[1], str);
+	char *_getstr = NULL;
+	amx_StrParam(amx, params[1], _getstr);
 	
-	if (str == NULL)
+	if (_getstr == NULL)
 		return 0;
 	
+	std::string data(_getstr);
 	std::string hash;
 	CryptoPP::Whirlpool h_Whirlpool;
-	CryptoPP::StringSource(str, true, new CryptoPP::HashFilter(h_Whirlpool, new CryptoPP::HexEncoder(new CryptoPP::StringSink(hash))));
+	CryptoPP::StringSource(data, true, new CryptoPP::HashFilter(h_Whirlpool, new CryptoPP::HexEncoder(new CryptoPP::StringSink(hash))));
 	
 	cell *amx_Addr = NULL;
 	amx_GetAddr(amx, params[2], &amx_Addr);
@@ -277,15 +279,16 @@ cell AMX_NATIVE_CALL Native::SHA1(AMX *amx, cell *params)
 	static const uint32_t ParamCount = 3;
 	PARAM_CHECK(ParamCount, "NC_SHA1");
 
-	char *str = NULL;
-	amx_StrParam(amx, params[1], str);
+	char *_getstr = NULL;
+	amx_StrParam(amx, params[1], _getstr);
 	
-	if (str == NULL)
+	if (_getstr == NULL)
 		return 0;
 	
+	std::string data(_getstr);
 	std::string hash;
 	CryptoPP::SHA1 h_SHA1;
-	CryptoPP::StringSource(str, true, new CryptoPP::HashFilter(h_SHA1, new CryptoPP::HexEncoder(new CryptoPP::StringSink(hash))));
+	CryptoPP::StringSource(data, true, new CryptoPP::HashFilter(h_SHA1, new CryptoPP::HexEncoder(new CryptoPP::StringSink(hash))));
 	
 	cell *amx_Addr = NULL;
 	amx_GetAddr(amx, params[2], &amx_Addr);

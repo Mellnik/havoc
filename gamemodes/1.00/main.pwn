@@ -30816,7 +30816,7 @@ AssembleHouseORM(ORM:_ormid, slot)
 	orm_addvar_int(_ormid, HouseData[slot][e_interior], "interior");
 	orm_addvar_int(_ormid, HouseData[slot][e_value], "value");
 	orm_addvar_int(_ormid, HouseData[slot][e_locked], "locked");
-	orm_addvar_string(_ormid, HouseData[slot[e_password], 41, "password");
+	orm_addvar_string(_ormid, HouseData[slot][e_password], 41, "password");
 	orm_addvar_int(_ormid, HouseData[slot][e_date], "date");
 	orm_addvar_int(_ormid, HouseData[slot][e_creator], "creator");
 }
