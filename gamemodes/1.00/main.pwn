@@ -156,7 +156,7 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define ELEVATOR_STATE_WAITING  		(1)
 #define ELEVATOR_STATE_MOVING   		(2)
 #define INVALID_FLOOR           		(-1)
-#define RESPAWN_TIME                    (60)
+#define VEHICLE_RESPAWN_TIME			(60)
 #define SCM SendClientMessage
 #define SCMToAll SendClientMessageToAll
 #define MAX_ZONE_NAME                   (28)
@@ -22667,7 +22667,7 @@ server_load_visuals()
 	new veh_cow[5];
 	for(new i = 0; i < sizeof(veh_cow); i++)
 	{
-	    veh_cow[i] = AddStaticVehicleEx(451, g_aCowCars[i][0], g_aCowCars[i][1], g_aCowCars[i][2], g_aCowCars[i][3], 0, 0, RESPAWN_TIME);
+	    veh_cow[i] = AddStaticVehicleEx(451, g_aCowCars[i][0], g_aCowCars[i][1], g_aCowCars[i][2], g_aCowCars[i][3], 0, 0, VEHICLE_RESPAWN_TIME);
 	    
 		AttachObjectToVehicle(veh_cow_obj[i][0], veh_cow[i], 0.000000, 3.250026, 2.2859988, 0.000000, 0.000000, 93.884956); //Object Model: 16442 |
 		AttachObjectToVehicle(veh_cow_obj[i][1], veh_cow[i], 0.000000, -0.100000, 0.1019988, 24.119995, 0.000000, -179.895095); //Object Model: 1458 |
@@ -22675,22 +22675,22 @@ server_load_visuals()
 	#endif
 
 	//Cop Vehicles
-	veh_cnr[0] = AddStaticVehicleEx(598, 2285.7664, 2430.2393, 2.9800, 0.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[1] = AddStaticVehicleEx(598, 2282.8796, 2444.7170, 3.0999, 90.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[2] = AddStaticVehicleEx(528, 2296.8323, 2451.4624, 3.2577, 270.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[3] = AddStaticVehicleEx(490, 2307.7488, 2431.1436, 3.3698, 180.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[4] = AddStaticVehicleEx(427, 2298.2749, 2460.4929, 3.2459, 270.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[5] = AddStaticVehicleEx(427, 2298.1682, 2456.1875, 3.2459, 270.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[6] = AddStaticVehicleEx(598, 2321.2974, 2417.7664, 10.4536, 90.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[7] = AddStaticVehicleEx(598, 2314.1763, 2417.7959, 10.4536, 90.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[8] = AddStaticVehicleEx(598, 2307.0156, 2417.6638, 10.4536, 90.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[9] = AddStaticVehicleEx(598, 2328.1362, 2417.8223, 10.4536, 90.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[10] = AddStaticVehicleEx(598, 2273.5405, 2463.0112, 10.5051, 0.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[11] = AddStaticVehicleEx(598, 2273.5466, 2456.9402, 10.5051, 180.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[12] = AddStaticVehicleEx(598, 2277.9021, 2462.9363, 10.5051, 0.0000, -1, -1, RESPAWN_TIME);
-	veh_cnr[13] = AddStaticVehicleEx(415, 2282.2024, 2478.4297, 10.5049, 180.0000, 0, 0, RESPAWN_TIME);
-	veh_cnr[14] = AddStaticVehicleEx(415, 2277.7954, 2478.4199, 10.5049, 180.0000, 0, 0, RESPAWN_TIME);
-	veh_cnr[15] = AddStaticVehicleEx(415, 2256.1121, 2442.0830, 10.5049, 180.0000, 0, 0, RESPAWN_TIME);
+	veh_cnr[0] = AddStaticVehicleEx(598, 2285.7664, 2430.2393, 2.9800, 0.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[1] = AddStaticVehicleEx(598, 2282.8796, 2444.7170, 3.0999, 90.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[2] = AddStaticVehicleEx(528, 2296.8323, 2451.4624, 3.2577, 270.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[3] = AddStaticVehicleEx(490, 2307.7488, 2431.1436, 3.3698, 180.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[4] = AddStaticVehicleEx(427, 2298.2749, 2460.4929, 3.2459, 270.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[5] = AddStaticVehicleEx(427, 2298.1682, 2456.1875, 3.2459, 270.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[6] = AddStaticVehicleEx(598, 2321.2974, 2417.7664, 10.4536, 90.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[7] = AddStaticVehicleEx(598, 2314.1763, 2417.7959, 10.4536, 90.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[8] = AddStaticVehicleEx(598, 2307.0156, 2417.6638, 10.4536, 90.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[9] = AddStaticVehicleEx(598, 2328.1362, 2417.8223, 10.4536, 90.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[10] = AddStaticVehicleEx(598, 2273.5405, 2463.0112, 10.5051, 0.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[11] = AddStaticVehicleEx(598, 2273.5466, 2456.9402, 10.5051, 180.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[12] = AddStaticVehicleEx(598, 2277.9021, 2462.9363, 10.5051, 0.0000, -1, -1, VEHICLE_RESPAWN_TIME);
+	veh_cnr[13] = AddStaticVehicleEx(415, 2282.2024, 2478.4297, 10.5049, 180.0000, 0, 0, VEHICLE_RESPAWN_TIME);
+	veh_cnr[14] = AddStaticVehicleEx(415, 2277.7954, 2478.4199, 10.5049, 180.0000, 0, 0, VEHICLE_RESPAWN_TIME);
+	veh_cnr[15] = AddStaticVehicleEx(415, 2256.1121, 2442.0830, 10.5049, 180.0000, 0, 0, VEHICLE_RESPAWN_TIME);
 
 	//Robber Vehicles
 	veh_cnr[16] = AddStaticVehicle(415,1265.0553,2647.0955,10.5763,358.8606,randomColors[random(23)], randomColors[random(23)]); // robber car
@@ -22763,23 +22763,23 @@ server_load_visuals()
 	veh_cnr[79] = AddStaticVehicle(522,2315.1082,2466.6951,2.8463,90.7273,0,154); // Police NRG
 
 	// CNR LVAir Vehicles.
-	veh_cnr[80] = AddStaticVehicleEx(411,1306.25061035,1278.93981934,10.62031269,0.24719238,-1,-1,RESPAWN_TIME); //Infernus
-	veh_cnr[81] = AddStaticVehicleEx(411,1309.57360840,1279.07617188,10.56885719,0.24719238,-1,-1,RESPAWN_TIME); //Infernus
-	veh_cnr[82] = AddStaticVehicleEx(411,1312.77416992,1279.08898926,10.56885719,0.24719238,-1,-1,RESPAWN_TIME); //Infernus
-	veh_cnr[83] = AddStaticVehicleEx(522,1329.80957031,1279.55419922,10.48069000,0.0,-1,-1,RESPAWN_TIME); //NRG-500
-	veh_cnr[84] = AddStaticVehicleEx(522,1328.10888672,1279.55383301,10.48069000,0.0,-1,-1,RESPAWN_TIME); //NRG-500
-	veh_cnr[85] = AddStaticVehicleEx(522,1326.20581055,1279.62536621,10.48069000,0.0,-1,-1,RESPAWN_TIME); //NRG-500
-	veh_cnr[86] = AddStaticVehicleEx(522,1324.45275879,1279.59948730,10.48069000,0.0,-1,-1,RESPAWN_TIME); //NRG-500
-	veh_cnr[87] = AddStaticVehicleEx(429,1282.96484375,1290.23681641,10.57031250,270.99975586,-1,-1,RESPAWN_TIME); //Banshee
-	veh_cnr[88] = AddStaticVehicleEx(451,1283.08300781,1293.23046875,10.68155670,271.99951172,-1,-1,RESPAWN_TIME); //Turismo
-	veh_cnr[89] = AddStaticVehicleEx(477,1271.44482422,1290.71228027,10.67031288,270.0,-1,-1,RESPAWN_TIME); //ZR-350
-	veh_cnr[90] = AddStaticVehicleEx(506,1283.20556641,1300.58459473,10.65430450,270.0,-1,-1,RESPAWN_TIME); //Super GT
-	veh_cnr[91] = AddStaticVehicleEx(541,1283.12548828,1303.69567871,10.54988289,271.74682617,-1,-1,RESPAWN_TIME); //Bullet
-	veh_cnr[92] = AddStaticVehicleEx(402,1271.57556152,1294.70288086,10.75295925,272.0,-1,-1,RESPAWN_TIME); //Buffalo
-	veh_cnr[93] = AddStaticVehicleEx(559,1271.28588867,1300.21789551,10.56702328,270.0,-1,-1,RESPAWN_TIME); //Jester
-	veh_cnr[94] = AddStaticVehicleEx(560,1271.01367188,1304.30175781,10.62528801,271.25000000,-1,-1,RESPAWN_TIME); //Sultan
-	veh_cnr[95] = AddStaticVehicleEx(562,1271.05859375,1308.47912598,10.57386208,270.0,-1,-1,RESPAWN_TIME); //Elegy
-	veh_cnr[96] = AddStaticVehicleEx(480,1282.87402344,1306.90576172,10.67031288,270.49987793,-1,-1,RESPAWN_TIME); //Comet
+	veh_cnr[80] = AddStaticVehicleEx(411,1306.25061035,1278.93981934,10.62031269,0.24719238,-1,-1,VEHICLE_RESPAWN_TIME); //Infernus
+	veh_cnr[81] = AddStaticVehicleEx(411,1309.57360840,1279.07617188,10.56885719,0.24719238,-1,-1,VEHICLE_RESPAWN_TIME); //Infernus
+	veh_cnr[82] = AddStaticVehicleEx(411,1312.77416992,1279.08898926,10.56885719,0.24719238,-1,-1,VEHICLE_RESPAWN_TIME); //Infernus
+	veh_cnr[83] = AddStaticVehicleEx(522,1329.80957031,1279.55419922,10.48069000,0.0,-1,-1,VEHICLE_RESPAWN_TIME); //NRG-500
+	veh_cnr[84] = AddStaticVehicleEx(522,1328.10888672,1279.55383301,10.48069000,0.0,-1,-1,VEHICLE_RESPAWN_TIME); //NRG-500
+	veh_cnr[85] = AddStaticVehicleEx(522,1326.20581055,1279.62536621,10.48069000,0.0,-1,-1,VEHICLE_RESPAWN_TIME); //NRG-500
+	veh_cnr[86] = AddStaticVehicleEx(522,1324.45275879,1279.59948730,10.48069000,0.0,-1,-1,VEHICLE_RESPAWN_TIME); //NRG-500
+	veh_cnr[87] = AddStaticVehicleEx(429,1282.96484375,1290.23681641,10.57031250,270.99975586,-1,-1,VEHICLE_RESPAWN_TIME); //Banshee
+	veh_cnr[88] = AddStaticVehicleEx(451,1283.08300781,1293.23046875,10.68155670,271.99951172,-1,-1,VEHICLE_RESPAWN_TIME); //Turismo
+	veh_cnr[89] = AddStaticVehicleEx(477,1271.44482422,1290.71228027,10.67031288,270.0,-1,-1,VEHICLE_RESPAWN_TIME); //ZR-350
+	veh_cnr[90] = AddStaticVehicleEx(506,1283.20556641,1300.58459473,10.65430450,270.0,-1,-1,VEHICLE_RESPAWN_TIME); //Super GT
+	veh_cnr[91] = AddStaticVehicleEx(541,1283.12548828,1303.69567871,10.54988289,271.74682617,-1,-1,VEHICLE_RESPAWN_TIME); //Bullet
+	veh_cnr[92] = AddStaticVehicleEx(402,1271.57556152,1294.70288086,10.75295925,272.0,-1,-1,VEHICLE_RESPAWN_TIME); //Buffalo
+	veh_cnr[93] = AddStaticVehicleEx(559,1271.28588867,1300.21789551,10.56702328,270.0,-1,-1,VEHICLE_RESPAWN_TIME); //Jester
+	veh_cnr[94] = AddStaticVehicleEx(560,1271.01367188,1304.30175781,10.62528801,271.25000000,-1,-1,VEHICLE_RESPAWN_TIME); //Sultan
+	veh_cnr[95] = AddStaticVehicleEx(562,1271.05859375,1308.47912598,10.57386208,270.0,-1,-1,VEHICLE_RESPAWN_TIME); //Elegy
+	veh_cnr[96] = AddStaticVehicleEx(480,1282.87402344,1306.90576172,10.67031288,270.49987793,-1,-1,VEHICLE_RESPAWN_TIME); //Comet
 	veh_cnr[97] = AddStaticVehicle(487,1296.6503,1255.1896,19.5204,359.1064,0,1); // Cop Heli
 	veh_cnr[98] = AddStaticVehicle(487,1358.5673,1271.2000,10.9968,357.7185,149,0); // Cop Heli2
 	veh_cnr[99] = AddStaticVehicle(476,1280.4342,1322.4233,11.5314,269.4824,149,0); // Ruster 1
