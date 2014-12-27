@@ -764,6 +764,10 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	iTransactHouseID,
 	iTransactHousePrice,
 	iTransactHouseNameHash,
+	iTransactEntPlayer,
+	iTransactEntID,
+	iTransactEntPrice,
+	iTransactEntNameHash,
 	VIPPlayer,
 	VIPNameHash,
 	VIPOffer,
@@ -8671,6 +8675,30 @@ YCMD:accept(playerid, params[], help)
         return SCM(playerid, NEF_GREEN, "Usage: /accept <option>");
     }
     
+ 	if(!strcmp(gstr, "vip", true))
+	{
+    	if(PlayerData[playerid][e_vip] == 1) return SCM(playerid, -1, ""er"You can't use this command as VIP");
+
+		if(!PlayerData[playerid][bVIPLInv])
+		{
+		    return SCM(playerid, -1, ""er"You got no invitation");
+		}
+
+		if(gTeam[playerid] != gFREEROAM)
+		{
+		    Command_ReProcess(playerid, "/exit", false);
+		}
+
+		SetPlayerPos(playerid, -2640.762939,1406.682006,906.460937);
+		SetPlayerInterior(playerid, 3);
+	    gTeam[playerid] = VIPL;
+	    ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
+
+		SCM(playerid, -1, ""yellow_e"You've used your invitation");
+
+		PlayerData[playerid][bVIPLInv] = false;
+		return 1;
+	}
     if(!strcmp(gstr, "house", true))
     {
         if(PlayerData[playerid][iTransactHousePlayer] == INVALID_PLAYER_ID)
@@ -8739,30 +8767,6 @@ YCMD:accept(playerid, params[], help)
 	    PlayerData[playerid][iTransactHouseNameHash] = 0;
 		return 1;
     }
-	if(!strcmp(gstr, "vip", true))
-	{
-    	if(PlayerData[playerid][e_vip] == 1) return SCM(playerid, -1, ""er"You can't use this command as VIP");
-
-		if(!PlayerData[playerid][bVIPLInv])
-		{
-		    return SCM(playerid, -1, ""er"You got no invitation");
-		}
-
-		if(gTeam[playerid] != gFREEROAM)
-		{
-		    Command_ReProcess(playerid, "/exit", false);
-		}
-
-		SetPlayerPos(playerid, -2640.762939,1406.682006,906.460937);
-		SetPlayerInterior(playerid, 3);
-	    gTeam[playerid] = VIPL;
-	    ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-
-		SCM(playerid, -1, ""yellow_e"You've used your invitation");
-
-		PlayerData[playerid][bVIPLInv] = false;
-		return 1;
-	}
     SCM(playerid, -1, ""er"Unknown option");
 	return 1;
 }
@@ -8888,13 +8892,13 @@ YCMD:sellto(playerid, params[], help)
 		}
 	}
 
-	new otherid, hprice;
+	new otherid, ask_price;
 	if(sscanf(params, "ri", otherid, hprice))
 	{
 	    return SCM(playerid, NEF_GREEN, "Usage: /sellto <playerid> <price>");
 	}
 	
-	if(hprice < 1 || hprice > 500000000) return SCM(playerid, -1, ""er"Price range: $1 - $500,000,000");
+	if(ask_price < 1 || ask_price > 500000000) return SCM(playerid, -1, ""er"Price range: $1 - $500,000,000");
     if(otherid == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
 	if(!IsPlayerConnected(otherid)) return SCM(playerid, -1, ""er"Player not connected!");
 	if(!islogged(otherid)) return SCM(playerid, -1, ""er"This player is not registered!");
@@ -8921,21 +8925,52 @@ YCMD:sellto(playerid, params[], help)
 
 	    PlayerData[otherid][iTransactHousePlayer] = playerid;
 	    PlayerData[otherid][iTransactHouseID] = r;
-	    PlayerData[otherid][iTransactHousePrice] = hprice;
+	    PlayerData[otherid][iTransactHousePrice] = ask_price;
 	    PlayerData[otherid][iTransactHouseNameHash] = YHash(__GetName(playerid));
 
-	    format(gstr, sizeof(gstr), ""blue"You have offered %s(%i) your house (ID: %i) for $%s", __GetName(otherid), otherid, r, number_format(hprice));
+	    format(gstr, sizeof(gstr), ""blue"You have offered %s(%i) your house (ID: %i) for $%s", __GetName(otherid), otherid, r, number_format(ask_price));
 	    SCM(playerid, -1, gstr);
-	    format(gstr, sizeof(gstr), ""blue"%s(%i) is offering you their house (ID: %i) for $%s, type '/accept house' to buy it", __GetName(playerid), playerid, r, number_format(hprice));
+	    format(gstr, sizeof(gstr), ""blue"%s(%i) is offering you their house (ID: %i) for $%s, type '/accept house' to buy it", __GetName(playerid), playerid, r, number_format(ask_price));
 	    SCM(otherid, -1, gstr);
 
 		PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 		PlayerPlaySound(otherid, 1057, 0.0, 0.0, 0.0);
+		return 1;
 	}
-	else
+	
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
-	    SCM(playerid, -1, ""er"You aren't near if any house");
+	    if(EnterpriseData[r][e_ormid] == ORM:-1) continue;
+	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
+
+		if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_accountid])
+			return SCM(playerid, -1, ""er"This enterprise does not belong to you");
+
+		new player_houses = GetPlayerEnterpriseCount(otherid);
+		if(player_houses >= MAX_PLAYER_ENTERPRISES)
+		    return SCM(playerid, -1, ""er"This player already owns the maxium amount of enterprises");
+
+		new needed_score;
+		if(player_houses >= GetAllowedEnterpriseCount(otherid, needed_score)) {
+		    format(gstr, sizeof(gstr), ""er"This player needs %i score to buy another enterprise", needed_score);
+			return SCM(playerid, -1, gstr);
+		}
+		
+	    PlayerData[otherid][iTransactEntPlayer] = playerid;
+	    PlayerData[otherid][iTransactEntID] = r;
+	    PlayerData[otherid][iTransactEntPrice] = ask_price;
+	    PlayerData[otherid][iTransactEntNameHash] = YHash(__GetName(playerid));
+
+	    format(gstr, sizeof(gstr), ""blue"You have offered %s(%i) your enterprise (ID: %i) for $%s", __GetName(otherid), otherid, r, number_format(ask_price));
+	    SCM(playerid, -1, gstr);
+	    format(gstr, sizeof(gstr), ""blue"%s(%i) is offering you their enterprise (ID: %i) for $%s, type '/accept enterprise' to buy it", __GetName(playerid), playerid, r, number_format(ask_price));
+	    SCM(otherid, -1, gstr);
+
+		PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
+		PlayerPlaySound(otherid, 1057, 0.0, 0.0, 0.0);
+		return 1;
 	}
+    SCM(playerid, -1, ""er"You must be near a house or enterprise");
 	return 1;
 }
 
@@ -9003,7 +9038,7 @@ YCMD:sell(playerid, params[], help)
 	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
 
 		if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_accountid]) {
-			SCM(playerid, -1, ""er"You don't own this enterprise");
+			SCM(playerid, -1, ""er"This enterprise does not belong to you");
 			return 1;
 		}
 
@@ -9022,7 +9057,6 @@ YCMD:sell(playerid, params[], help)
 	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
 	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
 	    SCMToAll(-1, gstr);
-
 	    return 1;
 	}
     SCM(playerid, -1, ""er"You must be near a house or enterprise");
@@ -29843,6 +29877,10 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][iTransactHouseID] = -1;
 	PlayerData[playerid][iTransactHousePrice] = 0;
 	PlayerData[playerid][iTransactHouseNameHash] = 0;
+	PlayerData[playerid][iTransactEntPlayer] = INVALID_PLAYER_ID;
+	PlayerData[playerid][iTransactEntID] = -1;
+	PlayerData[playerid][iTransactEntPrice] = 0;
+	PlayerData[playerid][iTransactEntNameHash] = 0;
 	PlayerData[playerid][iHouseLastSel] = 0;
 	PlayerData[playerid][iEnterpriseLastSel] = 0;
 	PlayerData[playerid][fOldPos][0] = 2012.4763;
