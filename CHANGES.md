@@ -10,7 +10,7 @@ Havoc Freeroam SA-MP Server
 - Bans now include serverside information; Can be viewed at https://havocserver.com/bans
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/mappers).
-- Namechanges are now attached to an account id rather than a name. This prevents confusion.
+- Namechanges are now attached to an account id rather than a name to prevent confusion.
 - House system has been fully rewritten.
   * Every player can now own up to 5 houses:
     Needed score:      Allowed houses:
@@ -19,14 +19,15 @@ Havoc Freeroam SA-MP Server
 	  	    5000       3
 		   10000       4
 		   25000       5
-   * /hlock has been merged into /lock.
-   * /hmenu has been removed.
    * /houses now shows all of your houses, select to teleports.
    * /upgrade to upgrade your house interior.
-   * Command /password to lock a house and set a password dialog.
-   * Command /sellto <player id> <price> to sell your house to another player.
+   * /password to lock a house and set a password dialog.
+   * /sellto <player id> <price> to sell your house to another player.
    * Added '/accept house' to accept house offers.
    * Removed house item system.
+   * /hlock has been merged into /lock.
+   * /hmenu has been removed.
+- Merged old /accept command into '/accept vip'
 - Dialog cleanups to avoid unnecessary overhead.
 - Removed announce commands for admins.
 - Removed bullet hit sound from deathmatches.
@@ -39,6 +40,7 @@ Havoc Freeroam SA-MP Server
 
 TODO
 ----
+- GC System has been removed
 - Beim connecten ein whitescreen? http://puu.sh/dLaIH/e79bbcea3e.jpg
 - Remove makes total registered players 10000
 - Add random messages like * Online players: 

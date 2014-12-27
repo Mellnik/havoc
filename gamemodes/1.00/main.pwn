@@ -8726,11 +8726,11 @@ YCMD:accept(playerid, params[], help)
         if(PlayerData[playerid][iTransactHousePlayer] == INVALID_PLAYER_ID)
             return SCM(playerid, -1, ""er"You don't have any house offers");
             
-		new r = PlayerData[otherid][iTransactHouseID];
+		new r = PlayerData[playerid][iTransactHouseID];
 		if(HouseData[r][e_ormid] == ORM:-1)
 		    return SCM(playerid, -1, ""er"You does not exist, report on forums");
 		    
-		if(GetPlayerMoneyEx(playerid) < PlayerData[player][iTransactHousePrice])
+		if(GetPlayerMoneyEx(playerid) < PlayerData[playerid][iTransactHousePrice])
             return SCM(playerid, -1, ""er"You can't afford this offer");
             
 		new dist_check = GetNearestHouse(playerid);
@@ -8741,7 +8741,7 @@ YCMD:accept(playerid, params[], help)
 		if(!IsPlayerAvail(otherid))
 		    return SCM(playerid, -1, ""er"The seller has gone offline");
 		    
-		if(YHash(__GetName(otherid) != PlayerData[playerid][iTransactHouseNameHash])
+		if(YHash(__GetName(otherid)) != PlayerData[playerid][iTransactHouseNameHash])
 		    return SCM(playerid, -1, ""er"The seller has gone offline");
 		    
 		if(HouseData[r][e_owner] != PlayerData[otherid][e_accountid])
@@ -8757,13 +8757,13 @@ YCMD:accept(playerid, params[], help)
             }
         }
         
-        HouseData[r][e_owner] == PlayerData[playerid][e_playerid];
+        HouseData[r][e_owner] = PlayerData[playerid][e_accountid];
         HouseData[r][e_date] = gettime();
         HouseData[r][e_password][0] = '\0';
         HouseData[r][e_locked] = 0;
 		DestroyDynamic3DTextLabel(HouseData[r][e_labelid]);
 		strmid(HouseData[r][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
-		SetupHouse(i, HouseData[r][e_namecache]);
+		SetupHouse(r, HouseData[r][e_namecache]);
         orm_update(HouseData[r][e_ormid]);
         
         GivePlayerMoneyEx(otherid, PlayerData[playerid][iTransactHousePrice]);
@@ -8785,6 +8785,30 @@ YCMD:accept(playerid, params[], help)
 	    PlayerData[playerid][iTransactHouseNameHash] = 0;
 		return 1;
     }
+	if(!strcmp(gstr, "vip", true))
+	{
+    	if(PlayerData[playerid][e_vip] == 1) return SCM(playerid, -1, ""er"You can't use this command as VIP");
+
+		if(!PlayerData[playerid][bVIPLInv])
+		{
+		    return SCM(playerid, -1, ""er"You got no invitation");
+		}
+
+		if(gTeam[playerid] != gFREEROAM)
+		{
+		    Command_ReProcess(playerid, "/exit", false);
+		}
+
+		SetPlayerPos(playerid, -2640.762939,1406.682006,906.460937);
+		SetPlayerInterior(playerid, 3);
+	    gTeam[playerid] = VIPL;
+	    ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
+
+		SCM(playerid, -1, ""yellow_e"You've used your invitation");
+
+		PlayerData[playerid][bVIPLInv] = false;
+		return 1;
+	}
     SCM(playerid, -1, ""er"Unknown option");
 	return 1;
 }
@@ -8903,13 +8927,13 @@ YCMD:sellto(playerid, params[], help)
 		}
 	}
 
-	new otherid, price;
-	if(sscanf(params, "ri", otherid, price))
+	new otherid, hprice;
+	if(sscanf(params, "ri", otherid, hprice))
 	{
 	    return SCM(playerid, NEF_GREEN, "Usage: /sellto <playerid> <price>");
 	}
 	
-	if(price < 1 || price > 500000000) return SCM(playerid, -1, ""er"Price range: $1 - $500,000,000);
+	if(hprice < 1 || hprice > 500000000) return SCM(playerid, -1, ""er"Price range: $1 - $500,000,000");
     if(otherid == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
 	if(!IsPlayerConnected(otherid)) return SCM(playerid, -1, ""er"Player not connected!");
 	if(!islogged(otherid)) return SCM(playerid, -1, ""er"This player is not registered!");
@@ -8936,13 +8960,13 @@ YCMD:sellto(playerid, params[], help)
 
 	    PlayerData[otherid][iTransactHousePlayer] = playerid;
 	    PlayerData[otherid][iTransactHouseID] = r;
-	    PlayerData[otherid][iTransactHousePrice] = price;
+	    PlayerData[otherid][iTransactHousePrice] = hprice;
 	    PlayerData[otherid][iTransactHouseNameHash] = YHash(__GetName(playerid));
 
-	    format(gstr, sizeof(gstr), ""blue"You have offered %s(%i) your house (ID: %i) for $%s", __GetName(otherid), otherid, r, number_format(price);
+	    format(gstr, sizeof(gstr), ""blue"You have offered %s(%i) your house (ID: %i) for $%s", __GetName(otherid), otherid, r, number_format(hprice));
 	    SCM(playerid, -1, gstr);
-	    format(gstr, sizeof(gstr), ""blue"%s(%i) is offering you their house (ID: %i) for $%s, type '/accept house' to buy it", __GetName(playerid), playerid, r, number_format(price));
-	    SCM(player, -1, gstr);
+	    format(gstr, sizeof(gstr), ""blue"%s(%i) is offering you their house (ID: %i) for $%s, type '/accept house' to buy it", __GetName(playerid), playerid, r, number_format(hprice));
+	    SCM(otherid, -1, gstr);
 
 		PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 		PlayerPlaySound(otherid, 1057, 0.0, 0.0, 0.0);
@@ -13337,7 +13361,7 @@ YCMD:vipli(playerid, params[], help)
 
 			PlayerData[player][bVIPLInv] = true;
 
-			format(gstr, sizeof(gstr), ""yellow_e"%s(%i) invited you to the VIP Lounge. Type /accept to join.", __GetName(playerid), playerid);
+			format(gstr, sizeof(gstr), ""yellow_e"%s(%i) invited you to the VIP Lounge, type '/accept vip' to join", __GetName(playerid), playerid);
 			SCM(player, -1, gstr);
 
 			format(gstr, sizeof(gstr), ""yellow_e"Invitation sent to %s(%i)", __GetName(player), player);
@@ -13354,31 +13378,6 @@ YCMD:vipli(playerid, params[], help)
 	{
 	    Command_ReProcess(playerid, "/vip", false);
 	}
-	return 1;
-}
-
-YCMD:accept(playerid, params[], help)
-{
-    if(PlayerData[playerid][e_vip] == 1) return SCM(playerid, -1, ""er"You can't use this command as VIP");
-    
-	if(!PlayerData[playerid][bVIPLInv])
-	{
-	    return SCM(playerid, -1, ""er"You got no invitation");
-	}
-	
-	if(gTeam[playerid] != gFREEROAM)
-	{
-	    Command_ReProcess(playerid, "/exit", false);
-	}
-	
-	SetPlayerPos(playerid, -2640.762939,1406.682006,906.460937);
-	SetPlayerInterior(playerid, 3);
-    gTeam[playerid] = VIPL;
-    ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-
-	SCM(playerid, -1, ""yellow_e"You've used your invitation");
-
-	PlayerData[playerid][bVIPLInv] = false;
 	return 1;
 }
 
@@ -17023,12 +17022,13 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
 			    if(HouseData[i][e_ormid] == ORM:-1)
 			        continue;
 			        
-			    if(HouseData[i][e_owner] == PlayerData[i][e_accountid])
-			    {
-					DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
-			        HouseData[i][e_labelid] = Text3D:-1;
-			        SetupHouse(i, newname);
-			    }
+			    if(HouseData[i][e_owner] != PlayerData[i][e_accountid])
+					continue;
+					
+				DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
+				HouseData[i][e_labelid] = Text3D:-1;
+				strmid(HouseData[i][e_namecache], newname, 0, 25, 25);
+		        SetupHouse(i, HouseData[i][e_namecache]);
 			}
 
 			for(new r = 0; r < MAX_ENTERPRISES; r++)
@@ -17040,7 +17040,6 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
 					continue;
 
                 strmid(EnterpriseData[r][e_namecache], newname, 0, 25, 25);
-
                 format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
 			    UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
 			    orm_update(EnterpriseData[r][e_ormid]);
@@ -17052,8 +17051,8 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
             format(query, sizeof(query), "UPDATE `race_records` SET `name` = '%s' WHERE `name` = '%s';", newname, oldname);
             mysql_tquery(pSQL, query, "", "");
             
-            format(query, sizeof(query), "INSERT INTO `ncrecords` VALUES (NULL, '%s', '%s', UNIX_TIMESTAMP());", oldname, newname);
-            mysql_tquery(pSQL, query, "", "");
+            format(query, sizeof(query), "INSERT INTO `ncrecords` VALUES (%i, '%s', '%s', UNIX_TIMESTAMP());", PlayerData[playerid][e_accountid], oldname, newname);
+            mysql_pquery(pSQL, query);
             
             format(query, sizeof(query), "UPDATE `queue` SET `Extra` = '%s' WHERE `Extra` = '%s';", newname, oldname);
             mysql_tquery(pSQL, query, "", "");
