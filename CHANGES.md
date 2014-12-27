@@ -3,7 +3,6 @@ Havoc Freeroam SA-MP Server
 
 1.00 (1st Feb 2015)
 -------------------
-- Businesses have been renamed to Enterprises.
 - More accurate unixtime conversion.
 - Stores system has been rewritten. Stores now load and save from database.
 - Bans now include serverside information; Can be viewed at https://havocserver.com/bans
@@ -34,15 +33,20 @@ Havoc Freeroam SA-MP Server
    * /h now shows all of your houses, select to teleports.
    * /upgrade to upgrade your house interior.
    * /password to lock a house and set a password dialog.
-   * /sellto <player id> <price> to sell your house to another player.
+   * /sellto <playerid> <price> to sell your house to another player. (Does not alter interior)
+   * /sell will reset the interior.
    * /spawn to set the spawn location in your house.
    * Added '/accept house' to accept house offers.
    * Removed house item system.
    * /hlock has been merged into /lock.
    * /hmenu has been removed.
-- Enterprise changes:
+- Enterprise (Business) changes:
+   * Businesses have been renamed to Enterprises.
    * Added type: Bitcoin Mining Farm.
    * /e for a list of your enterprises.
+   * Enterpries now have a value like houses.
+   * /sellto <playerid> <price> to sell your enterprise to another player. (Does not alter level)
+   * /sell resets the level.
 - Merged old /accept command into '/accept vip'
 - Dialog cleanups to avoid unnecessary overhead.
 - Removed announce commands for admins.

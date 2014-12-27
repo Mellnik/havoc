@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Dec 27, 2014 at 03:04 PM
+-- Generation Time: Dec 27, 2014 at 07:51 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `skin` smallint(6) NOT NULL,
   `bounty` int(10) unsigned NOT NULL,
   `payday` tinyint(4) NOT NULL,
-  `reaction` smallint(5) unsigned NOT NULL,
-  `mathwins` smallint(5) unsigned NOT NULL,
+  `reactions` smallint(5) unsigned NOT NULL,
+  `maths` smallint(5) unsigned NOT NULL,
   `gangid` int(10) unsigned NOT NULL,
   `gangrank` tinyint(4) NOT NULL,
   `addpvslots` tinyint(3) unsigned NOT NULL,
@@ -124,35 +124,6 @@ CREATE TABLE IF NOT EXISTS `blacklist` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `creditslog`
---
-
-CREATE TABLE IF NOT EXISTS `creditslog` (
-  `ID` mediumint(6) unsigned NOT NULL,
-  `Player` varchar(24) NOT NULL,
-  `Action` smallint(5) NOT NULL,
-  `Date` int(10) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `creditsorder`
---
-
-CREATE TABLE IF NOT EXISTS `creditsorder` (
-  `ID` mediumint(6) unsigned NOT NULL,
-  `txn_id` varchar(17) NOT NULL,
-  `receiver` varchar(24) NOT NULL,
-  `amount` int(10) NOT NULL,
-  `payment` varchar(10) NOT NULL,
-  `method` tinyint(1) NOT NULL,
-  `issue` varchar(20) NOT NULL DEFAULT 'NONE'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `enterprises`
 --
 
@@ -162,10 +133,11 @@ CREATE TABLE IF NOT EXISTS `enterprises` (
   `xpos` float(14,4) NOT NULL,
   `ypos` float(14,4) NOT NULL,
   `zpos` float(14,4) NOT NULL,
+  `value` int(10) unsigned NOT NULL,
   `type` tinyint(3) unsigned NOT NULL,
   `level` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `date` int(10) unsigned NOT NULL,
-  `creator` int(10) unsigned NOT NULL
+  `creator` int(10) unsigned NOT NULL,
+  `date` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -199,8 +171,8 @@ CREATE TABLE IF NOT EXISTS `gzones` (
   `zpos` float(14,4) NOT NULL,
   `localgang` mediumint(6) unsigned NOT NULL,
   `locked` int(10) unsigned NOT NULL,
-  `date` int(10) unsigned NOT NULL,
-  `creator` int(10) unsigned NOT NULL
+  `creator` int(10) unsigned NOT NULL,
+  `date` int(10) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -221,8 +193,8 @@ CREATE TABLE IF NOT EXISTS `houses` (
   `value` int(10) unsigned NOT NULL,
   `locked` tinyint(4) NOT NULL,
   `password` varchar(40) NOT NULL,
-  `date` int(10) unsigned NOT NULL,
-  `creator` int(10) unsigned NOT NULL
+  `creator` int(10) unsigned NOT NULL,
+  `date` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -258,7 +230,7 @@ CREATE TABLE IF NOT EXISTS `ncrecords` (
 --
 
 CREATE TABLE IF NOT EXISTS `news` (
-  `id` mediumint(6) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
   `author` int(10) unsigned NOT NULL,
   `title` varchar(20) NOT NULL,
   `news` text NOT NULL,
@@ -286,8 +258,8 @@ CREATE TABLE IF NOT EXISTS `online` (
 
 CREATE TABLE IF NOT EXISTS `queue` (
   `id` mediumint(6) unsigned NOT NULL,
-  `action` tinyint(1) NOT NULL,
-  `execdate` int(10) NOT NULL,
+  `action` tinyint(4) NOT NULL,
+  `execdate` int(11) NOT NULL,
   `extra` varchar(100) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -463,18 +435,6 @@ ALTER TABLE `blacklist`
   ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `IP` (`ip`);
 
 --
--- Indexes for table `creditslog`
---
-ALTER TABLE `creditslog`
-  ADD PRIMARY KEY (`ID`);
-
---
--- Indexes for table `creditsorder`
---
-ALTER TABLE `creditsorder`
-  ADD PRIMARY KEY (`ID`);
-
---
 -- Indexes for table `enterprises`
 --
 ALTER TABLE `enterprises`
@@ -585,16 +545,6 @@ ALTER TABLE `accounts`
 ALTER TABLE `blacklist`
   MODIFY `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `creditslog`
---
-ALTER TABLE `creditslog`
-  MODIFY `ID` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `creditsorder`
---
-ALTER TABLE `creditsorder`
-  MODIFY `ID` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
---
 -- AUTO_INCREMENT for table `enterprises`
 --
 ALTER TABLE `enterprises`
@@ -618,7 +568,7 @@ ALTER TABLE `houses`
 -- AUTO_INCREMENT for table `news`
 --
 ALTER TABLE `news`
-  MODIFY `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `online`
 --

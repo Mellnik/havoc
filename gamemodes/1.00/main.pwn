@@ -653,7 +653,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_gangrank,
 	e_addpvslots,
 	e_addtoyslots,
-	e_addentslots,
 	e_derbywins,
 	e_racewins,
 	e_tdmwins,
@@ -1011,6 +1010,7 @@ enum E_ENT_DATA
 	e_id,
 	e_owner,
 	Float:e_pos[3],
+	e_value,
 	E_ENT_TYPE:e_type,
 	e_level,
 	e_date,
@@ -16181,10 +16181,9 @@ YCMD:toys(playerid, params[], help)
     if(!islogged(playerid)) return notlogged(playerid);
     
     if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL) return SCM(playerid, RED, NOT_AVAIL);
-	if(IsPlayerInAnyVehicle(playerid)) return SCM(playerid, -1, ""er"Please exit your vehicle first.");
+	if(IsPlayerInAnyVehicle(playerid)) return SCM(playerid, -1, ""er"Not useable in vehicles");
 
 	new string[512], tmp[64];
-
 	for(new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
 	{
 	    if(i > PlayerData[playerid][e_addtoyslots] + 4)
@@ -30200,6 +30199,7 @@ AssembleEnterpriseORM(ORM:_ormid, slot)
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][0], "xpos");
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][1], "ypos");
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][2], "zpos");
+    orm_addvar_int(_ormid, EnterpriseData[slot][e_value], "value");
     orm_addvar_int(_ormid, _:EnterpriseData[slot][e_type], "type");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_level], "level");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_date], "date");
@@ -30273,15 +30273,15 @@ SetupHouse(slot, owner[])
 	new r = slot;
 
 	if(HouseData[r][e_owner] == 0) {
-	    format(gstr2, sizeof(gstr2), ""house_mark"\nFOR SALE! Type "nef_green"/buy "white"to purchase.\nID: %i\nPrice: $%s\nInterior: %s\nPrivate Vehicle Slots: %i",
+	    format(gstr2, sizeof(gstr2), ""house_mark"\nFOR SALE! Type "nef_green"/buy "white"to purchase\nID: %i\nValue: $%s\nInterior: %s\nPrivate Vehicle Slots: %i",
 	        HouseData[r][e_id],
 			number_format(HouseData[r][e_value]),
 			g_aHouseInteriorTypes[HouseData[r][e_interior]][intname],
 			HouseData[r][e_pvslots]);
 	} else {
-	    format(gstr2, sizeof(gstr2), ""house_mark"Owner: %s\nID: %i\nValue: $%s\nInterior: %s\nPrivate Vehicle Slots: %i",
-	        owner,
+	    format(gstr2, sizeof(gstr2), ""house_mark"ID: %i\nOwner: %s\nValue: $%s\nInterior: %s\nPrivate Vehicle Slots: %i",
 	        HouseData[r][e_id],
+	        owner,
 			number_format(HouseData[r][e_value]),
 			g_aHouseInteriorTypes[HouseData[r][e_interior]][intname],
 			HouseData[r][e_pvslots]);
@@ -30291,7 +30291,7 @@ SetupHouse(slot, owner[])
 		HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 40.0, .worldid = 0, .interiorid = 0);
 		
     if(HouseData[r][e_pickid] == -1)
-		HouseData[r][e_pickid] = CreateDynamicPickup(HouseData[r][e_owner] == 0 ? 1273 : 1272, 1, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 40.0);
+		HouseData[r][e_pickid] = CreateDynamicPickup(HouseData[r][e_owner] == 0 ? 1273 : 1272, 1, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
 
 	if(HouseData[r][e_owner] == 0) {
 	    if(HouseData[r][e_iconid] == -1)
@@ -30306,16 +30306,29 @@ SetupEnterprise(slot, owner[])
 	new r = slot;
 
 	if(EnterpriseData[r][e_owner] == 0) {
-	    format(gstr2, sizeof(gstr2), ""enterprise_mark"\n"nef_green"FOR SALE! Type /bbuy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+	    format(gstr2, sizeof(gstr2), ""enterprise_mark"\nFOR SALE! Type "nef_green"/buy "white"to purchase\nID: %i\nValue: $%s\nType: %s\nLevel: %i",
+			EnterpriseData[r][e_id],
+			number_format(EnterpriseData[r][e_value]),
+			g_szEnterpriseTypes[_:EnterpriseData[r][e_type]],
+			EnterpriseData[r][e_level]);
 	} else {
-        format(gstr2, sizeof(gstr2), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], owner, g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
+        format(gstr2, sizeof(gstr2), ""enterprise_mark"\nID: %i\nOwner: %s\nValue: $%s\nType: %s\nLevel: %i",
+			EnterpriseData[r][e_id],
+			owner,
+			number_format(EnterpriseData[r][e_value]),
+			g_szEnterpriseTypes[_:EnterpriseData[r][e_type]],
+			EnterpriseData[r][e_level]);
 	}
 
-	EnterpriseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 30.0, .worldid = 0);
-    EnterpriseData[r][e_pickupid] = CreateDynamicPickup(1274, 1, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], .worldid = 0, .streamdistance = 50.0);
+	if(EnterpriseData[r][e_labelid] == Text3D:-1)
+		EnterpriseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 40.0, .worldid = 0, .interiorid = 0);
+		
+	if(EnterpriseData[r][e_pickupid] == -1)
+		EnterpriseData[r][e_pickupid] = CreateDynamicPickup(1274, 1, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
 
 	if(EnterpriseData[r][e_owner] == 0) {
-	    EnterpriseData[r][e_iconid] = CreateDynamicMapIcon(EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 52, 1, .worldid = 0, .streamdistance = 150.0);
+	    if(EnterpriseData[r][e_iconid] == -1)
+			EnterpriseData[r][e_iconid] = CreateDynamicMapIcon(EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 52, 1, .worldid = 0, .interiorid = 0, .streamdistance = 150.0);
 	}
 	return 1;
 }
