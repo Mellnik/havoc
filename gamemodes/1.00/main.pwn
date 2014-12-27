@@ -8506,23 +8506,20 @@ YCMD:enter(playerid, params[], help)
 YCMD:h(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
-
     if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
 
-	new player_houses = GetPlayerHouseCount(playerid);
-	if(player_houses == 0) return SCM(playerid, -1, ""er"You don't own any houses.");
-
-	new string[512];
-	for(new i = 0, count = 0; i < MAX_HOUSES; i++)
+	new string[512], count = 0;
+	for(new i = 0; i < MAX_HOUSES; i++)
 	{
 	    if(HouseData[i][e_ormid] == ORM:-1)
 	        continue;
 
 		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
-		    format(gstr, sizeof(gstr), ""white"[Slot %i] House ID: %i [%s"white"] Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), number_format(HouseData[i][e_value]));
+		    format(gstr, sizeof(gstr), ""white"[Slot %i] House ID: %i [%s"white"] [%i PV Slots] Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), HouseData[i][e_pvslots], number_format(HouseData[i][e_value]));
 		    strcat(string, gstr);
 		}
 	}
+	if(count == 0) return SCM(playerid, -1, ""er"You don't own any houses");
 
 	ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU, DIALOG_STYLE_LIST, ""nef" :: House Menu", string, "Goto", "Cancel");
 	return 1;
@@ -8531,30 +8528,21 @@ YCMD:h(playerid, params[], help)
 YCMD:e(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
+    if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
+    
+	new string[512], count = 0;
+	for(new i = 0; i < MAX_PLAYER_ENTERPRISES; i++)
+	{
+	    if(EnterpriseData[i][e_ormid] == ORM:-1)
+	        continue;
 
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
-    new string[512], tmp[64];
-
-    for(new i = 0; i < MAX_PLAYER_ENTERPRISES; i++)
-    {
-        if(i > PlayerData[playerid][e_addentslots])
-        {
-            format(tmp, sizeof(tmp), "Enterprise Slot %i "red"(Locked)\n", i + 1);
-        }
-        else
-		{
-		    if(i < GetPlayerEnterpriseCount(playerid))
-		    {
-			    format(tmp, sizeof(tmp), "Enterprise Slot %i "green2"(Used)\n", i + 1);
-		    }
-		    else
-		    {
-			    format(tmp, sizeof(tmp), "Enterprise Slot %i\n", i + 1);
-		    }
+		if(EnterpriseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
+		    format(gstr, sizeof(gstr), ""white"[Slot %i] Enterprise ID: %i [%s"white"] Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), number_format(HouseData[i][e_value]));
+		    strcat(string, gstr);
 		}
-		strcat(string, tmp);
-    }
-
+	}
+	if(count == 0) return SCM(playerid, -1, ""er"You don't own any houses");
+    
     ShowPlayerDialog(playerid, DIALOG_ENTERPRISE, DIALOG_STYLE_LIST, ""nef" :: Enterprise Menu", string, "Select", "Cancel");
 	return 1;
 }
@@ -19576,11 +19564,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    RemoveFromRaceBuilder(playerid);
 			    return true;
 			}
- 		    case DIALOG_CM + 1 .. DIALOG_CM + 15:
- 		    {
- 		        ShowDialog(playerid, DIALOG_CM);
-				return 1;
- 		    }
 	        case DIALOG_VCONTROL + 1:
 	        {
      			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
