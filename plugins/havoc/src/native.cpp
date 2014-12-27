@@ -17,6 +17,7 @@
 #include <cryptopp/fitlers.h>
 #include <cryptopp/integer.h>
 #include <cryptopp/osrng.h>
+#include <cryptopp/sha.h>
 #include <cryptopp/whrlpool.h>
 
 #include "native.h"
@@ -263,6 +264,34 @@ cell AMX_NATIVE_CALL Native::Whirlpool(AMX *amx, cell *params)
 	if (amx_Addr == NULL)
 	{
 		logprintf("[HAVOC] [debug] CRASH DETECTED! amx_Addr = NULL from amx_GetAddr in Whirlpool");
+		return 0;
+	}
+	
+	amx_SetString(amx_Addr, hash.c_str(), 0, 0, params[3] > 0 ? params[3] : hash.length() + 1);
+	return 1;
+}
+
+/* NC_SHA1(const data[], dest[], len = sizeof(dest)) */
+cell AMX_NATIVE_CALL Native::SHA1(AMX *amx, cell *params)
+{
+	static const uint32_t ParamCount = 3;
+	PARAM_CHECK(ParamCount, "NC_SHA1");
+
+	char *str = NULL;
+	amx_StrParam(amx, params[1], str);
+	
+	if (str == NULL)
+		return 0;
+	
+	std::string hash;
+	CryptoPP::SHA1 h_SHA1;
+	CryptoPP::StringSource(str, true, new CryptoPP::HashFilter(h_SHA1, new CryptoPP::HexEncoder(new CryptoPP::StringSink(hash))));
+	
+	cell *amx_Addr = NULL;
+	amx_GetAddr(amx, params[2], &amx_Addr);
+	if (amx_Addr == NULL)
+	{
+		logprintf("[HAVOC] [debug] CRASH DETECTED! amx_Addr = NULL from amx_GetAddr in SHA1");
 		return 0;
 	}
 	

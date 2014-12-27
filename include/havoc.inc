@@ -35,4 +35,5 @@ native NC_StringReplace(const transform[], const from[], const to[], dest[], len
 
 // Security
 native NC_Whirlpool(const data[], dest[], len = sizeof(dest));
+native NC_SHA1(const data[], dest[], len = sizeof(dest));
 native NC_CSPRNG(string_len, dest[], len = sizeof(dest));
