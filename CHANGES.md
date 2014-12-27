@@ -4,22 +4,34 @@ Havoc Freeroam SA-MP Server
 1.00 (1st Feb 2015)
 -------------------
 - Businesses have been renamed to Enterprises.
-- Added enterprise type: Bitcoin Mining Farm.
 - More accurate unixtime conversion.
 - Stores system has been rewritten. Stores now load and save from database.
 - Bans now include serverside information; Can be viewed at https://havocserver.com/bans
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/mappers).
 - Namechanges are now attached to an account id rather than a name to prevent confusion.
+- New toy slot arrangement:
+	Needed score:	Toy slots:
+				0		1
+			  100		2
+			  250 		3
+			  650		4
+			 1000 		5
+			 2000 		6
+			 5000		7
+			10000		8			
+- Set the maximum attached player objects to 8.			
+- Enterprise/House slots now rise within score:
+	Needed score:      House slots:    Enterprises slots:
+			 500           1                 1
+			2000           2                 2
+			5000           3                 3
+		   10000           4                 4
+		   25000           5                 5
 - House system has been fully rewritten.
-  * Every player can now own up to 5 houses:
-    Needed score:      Allowed houses:
-             500       1
-	  	    2000       2
-	  	    5000       3
-		   10000       4
-		   25000       5
-   * /houses now shows all of your houses, select to teleports.
+   * Every house has fix amount of pv slots which can be used to buy custom cars.
+   * You no longer need a specifc score to buy a house.
+   * /h now shows all of your houses, select to teleports.
    * /upgrade to upgrade your house interior.
    * /password to lock a house and set a password dialog.
    * /sellto <player id> <price> to sell your house to another player.
@@ -28,12 +40,14 @@ Havoc Freeroam SA-MP Server
    * Removed house item system.
    * /hlock has been merged into /lock.
    * /hmenu has been removed.
+- Enterprise changes:
+   * Added type: Bitcoin Mining Farm.
+   * /e for a list of your enterprises.
 - Merged old /accept command into '/accept vip'
 - Dialog cleanups to avoid unnecessary overhead.
 - Removed announce commands for admins.
 - Removed bullet hit sound from deathmatches.
 - Renamed /toggletp to /tgo.
-- Renamed /bmenu to /emenu.
 - Renamed /specoff to /unspec.
 - Renamed /gsetrank to /grank.
 - Removed /locate. Now redirects to /id.
@@ -88,7 +102,6 @@ TODO
 - Houses now determine how many private cars you may held within your account.
 - You can now sell/buy houses/enterprises/pvs on the Havoc forums.
 - Got rid of mSelection, now using an improved UI for toys.
-- Set the maximum attached player objects to 8.
 - New /settings dialog values which are being saved in the database:
   * /tgo (Allow teleports to you)
   * /tpm (Allow private messages)

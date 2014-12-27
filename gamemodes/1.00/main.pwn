@@ -8503,7 +8503,7 @@ YCMD:enter(playerid, params[], help)
 	return 1;
 }
 
-YCMD:houses(playerid, params[], help)
+YCMD:h(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
 
@@ -8524,7 +8524,7 @@ YCMD:houses(playerid, params[], help)
 		}
 	}
 
-	ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU, DIALOG_STYLE_LIST, ""nef" :: House Menu", string, "Select", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU, DIALOG_STYLE_LIST, ""nef" :: House Menu", string, "Goto", "Cancel");
 	return 1;
 }
 
@@ -15406,7 +15406,7 @@ YCMD:pornos(playerid, params[], help)
 	return 1;
 }
 
-YCMD:emenu(playerid, params[], help)
+YCMD:e(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
     
@@ -17188,7 +17188,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				if(r != -1) {
 		            if(EnterpriseData[r][e_level] >= MAX_ENTERPRISE_LEVEL)
 		            {
-						Command_ReProcess(playerid, "/emenu", false);
+						Command_ReProcess(playerid, "/e", false);
 						return 1;
 		            }
                 
@@ -18145,9 +18145,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            }
 		            case 3: // Houses
 		            {
-		                strcat(cstring, ""blue"/buy "white"- buy a house which is for sale\n");
+		                strcat(cstring, ""blue"/h "white"- view all your houses and go to them\n");
 		                strcat(cstring, ""blue"/enter "white"- enter the house or press 'F'\n");
-		                strcat(cstring, ""blue"/houses "white"- view all your houses and go to them\n");
+		                strcat(cstring, ""blue"/buy "white"- buy a house which is for sale\n");
 		                strcat(cstring, ""blue"/sell "white"- sell your house and get 25% of value in return\n");
 		                strcat(cstring, ""blue"/sellto <playerid> <price> "white"- sell your house to another player\n");
 		                strcat(cstring, ""blue"/upgrade "white"- upgrade your house interior\n");
@@ -18157,7 +18157,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            }
 		            case 4: // Enterprises
 		            {
-		            
+		                strcat(cstring, ""blue"/e "white"- view a list of your enterpises\n");
+		                strcat(cstring, ""blue"/buy "white"- buy an enterprise which is for sale\n");
+		                strcat(cstring, ""blue"/sell "white"- sell your enterprise and get 25% of value in return\n");
+		                strcat(cstring, ""blue"/sellto <playerid> <price> "white"- sell your enterprise to another player\n");
+		                strcat(cstring, ""blue"/upgrade "white"- upgrade your enterprise's level\n");
+		                strcat(cstring, ""blue"/setype "white"- set the type of business model\n");
 		            }
 		            case 5: // Private Vehicles
 		            {
@@ -18216,7 +18221,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            case 3: // House/Enterprises
 		            {
 						strcat(cstring, ""yellow"/hmenu "white"- house menu\n");
-						strcat(cstring, ""yellow"/emenu "white"- enterprise menu\n");
+						strcat(cstring, ""yellow"/e "white"- enterprise menu\n");
 		                strcat(cstring, ""yellow"/upgrade "white"- upgrade your house interior\n");
 						strcat(cstring, ""yellow"/enter "white"- enter a unlocked house\n");
 						strcat(cstring, ""yellow"/buy "white"- buy a house\n");
@@ -22075,8 +22080,8 @@ server_initialize()
 	Command_AddAltNamed("stopanims", "stopanimations");
 	Command_AddAltNamed("stopanims", "clearanim");
 	Command_AddAltNamed("stopanims", "clearanims");
-	Command_AddAltNamed("emenu", "gotomybizz");
-	Command_AddAltNamed("emenu", "gotomyenterprise");
+	Command_AddAltNamed("e", "gotomybizz");
+	Command_AddAltNamed("e", "gotomyenterprise");
     Command_AddAltNamed("mk", "medkit");
     Command_AddAltNamed("mk", "medkits");
     Command_AddAltNamed("toys", "wear");
@@ -22135,8 +22140,12 @@ server_initialize()
 	Command_AddAltNamed("spawn", "kill");
 	Command_AddAltNamed("announce", "ann");
 	Command_AddAltNamed("announce2", "ann2");
-	Command_AddAltNamed("emenu", "gotomybizz");
-	Command_AddAltNamed("emenu", "bmenu");
+	Command_AddAltNamed("e", "gotomybizz");
+	Command_AddAltNamed("e", "gotomyenterprise");
+	Command_AddAltNamed("e", "gotomybizz");
+	Command_AddAltNamed("e", "bmenu");
+	Command_AddAltNamed("e", "property");
+	Command_AddAltNamed("e", "propertys");
 	Command_AddAltNamed("go", "goto");
 	Command_AddAltNamed("slap", "throw");
 	Command_AddAltNamed("giveweapon", "givegun");
@@ -22164,13 +22173,12 @@ server_initialize()
 	Command_AddAltNamed("changepass", "changepassword");
 	Command_AddAltNamed("serverstats", "serverstat");
 	Command_AddAltNamed("armourall", "armorall");
-	Command_AddAltNamed("houses", "myhouse");
-	Command_AddAltNamed("houses", "myhouses");
-	Command_AddAltNamed("houses", "houses");
-	Command_AddAltNamed("houses", "upgrades");
-	Command_AddAltNamed("houses", "houseupgrades");
-	Command_AddAltNamed("houses", "houseupgrade");
-	Command_AddAltNamed("houses", "hmenu");
+	Command_AddAltNamed("h", "myhouse");
+	Command_AddAltNamed("h", "myhouses");
+	Command_AddAltNamed("h", "houses");
+	Command_AddAltNamed("h", "houseupgrades");
+	Command_AddAltNamed("h", "houseupgrade");
+	Command_AddAltNamed("h", "hmenu");
 	Command_AddAltNamed("settings", "setting");
 	Command_AddAltNamed("settings", "cp");
 	Command_AddAltNamed("m", "minigames");
@@ -22213,9 +22221,9 @@ server_initialize()
 	Command_AddAltNamed("ar", "arr");
 	Command_AddAltNamed("help", "h");
 	Command_AddAltNamed("rob", "robstore");
-	Command_AddAltNamed("hmenu", "gotomyhouse");
-	Command_AddAltNamed("hmenu", "upgrade");
-	Command_AddAltNamed("hmenu", "housemenu");
+	Command_AddAltNamed("h", "gotomyhouse");
+	Command_AddAltNamed("h", "upgrade");
+	Command_AddAltNamed("h", "housemenu");
 	Command_AddAltNamed("vmenu", "vehiclemenu");
     Command_AddAltNamed("vmenu", "plate");
 	Command_AddAltNamed("new", "news");
@@ -22249,7 +22257,6 @@ server_initialize()
     Command_AddAltNamed("rtests", "topreaction");
     Command_AddAltNamed("vmenu", "mycars");
     Command_AddAltNamed("gmenu", "mygang");
-    Command_AddAltNamed("hmenu", "myhouses");
 	
     AddPlayerClass(3, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
     AddPlayerClass(81, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
