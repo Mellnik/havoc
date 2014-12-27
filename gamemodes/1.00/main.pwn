@@ -8706,7 +8706,7 @@ YCMD:accept(playerid, params[], help)
             
 		new r = PlayerData[playerid][iTransactHouseID];
 		if(HouseData[r][e_ormid] == ORM:-1)
-		    return SCM(playerid, -1, ""er"You does not exist, report on forums");
+		    return SCM(playerid, -1, ""er"This house does not exist, report on forums");
 		    
 		if(GetPlayerMoneyEx(playerid) < PlayerData[playerid][iTransactHousePrice])
             return SCM(playerid, -1, ""er"You can't afford this offer");
@@ -8765,6 +8765,61 @@ YCMD:accept(playerid, params[], help)
 	    PlayerData[playerid][iTransactHouseID] = -1;
 	    PlayerData[playerid][iTransactHousePrice] = 0;
 	    PlayerData[playerid][iTransactHouseNameHash] = 0;
+		return 1;
+    }
+    if(!strcmp(gstr, "enterprise", true))
+    {
+        if(PlayerData[playerid][iTransactEntPlayer] == INVALID_PLAYER_ID)
+            return SCM(playerid, -1, ""er"You don't have any enterprise offers");
+
+		new r = PlayerData[playerid][iTransactEntID];
+		if(EnterpriseData[r][e_ormid] == ORM:-1)
+		    return SCM(playerid, -1, ""er"This enterprise does not exist, report on forums");
+
+		if(GetPlayerMoneyEx(playerid) < PlayerData[playerid][iTransactEntPrice])
+            return SCM(playerid, -1, ""er"You can't afford this offer");
+
+		new dist_check = GetNearestEnterprise(playerid);
+		if(dist_check != r)
+		    return SCM(playerid, -1, ""er"You must be close to the enterprise");
+
+		new otherid = PlayerData[playerid][iTransactEntPlayer];
+		if(!IsPlayerAvail(otherid))
+		    return SCM(playerid, -1, ""er"The seller has gone offline");
+
+		if(YHash(__GetName(otherid)) != PlayerData[playerid][iTransactEntNameHash])
+		    return SCM(playerid, -1, ""er"The seller has gone offline");
+
+		if(EnterpriseData[r][e_owner] != PlayerData[otherid][e_accountid])
+		    return SCM(playerid, -1, ""er"This enterprise does not belong to the seller anymore");
+
+
+        EnterpriseData[r][e_owner] = PlayerData[playerid][e_accountid];
+        EnterpriseData[r][e_date] = gettime();
+        strmid(EnterpriseData[r][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
+
+		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+		EnterpriseData[r][e_labelid] = Text3D:-1;
+
+		SetupEnterprise(r, EnterpriseData[r][e_namecache]);
+        orm_update(EnterpriseData[r][e_ormid]);
+
+        GivePlayerMoneyEx(otherid, PlayerData[playerid][iTransactEntPrice]);
+        GivePlayerMoneyEx(playerid, -PlayerData[playerid][iTransactEntPrice]);
+        SQL_SaveAccount(otherid, false, false);
+        SQL_SaveAccount(playerid, false, false);
+
+	    format(gstr, sizeof(gstr), ""blue"You have accepted %s's offer and bough the enterprise $%s", __GetName(otherid), number_format(PlayerData[playerid][iTransactEntPrice]));
+	    SCM(playerid, -1, gstr);
+	    format(gstr, sizeof(gstr), ""blue"%s(%i) has accepted your offer. You sold enterprise %i for $%s", __GetName(playerid), playerid, r, number_format(PlayerData[playerid][iTransactEntPrice]));
+	    SCM(otherid, -1, gstr);
+	    format(gstr, sizeof(gstr), ""orange"[NEF] %s(%i) has sold their enterprise (ID %i) to %s(%i) for $%s", __GetName(otherid), otherid, r, __GetName(playerid), playerid, number_format(PlayerData[playerid][iTransactEntPrice]));
+	    SCMToAll(-1, gstr);
+
+	    PlayerData[playerid][iTransactEntPlayer] = INVALID_PLAYER_ID;
+	    PlayerData[playerid][iTransactEntID] = -1;
+	    PlayerData[playerid][iTransactEntPrice] = 0;
+	    PlayerData[playerid][iTransactEntNameHash] = 0;
 		return 1;
     }
     SCM(playerid, -1, ""er"Unknown option");
@@ -8893,7 +8948,7 @@ YCMD:sellto(playerid, params[], help)
 	}
 
 	new otherid, ask_price;
-	if(sscanf(params, "ri", otherid, hprice))
+	if(sscanf(params, "ri", otherid, ask_price))
 	{
 	    return SCM(playerid, NEF_GREEN, "Usage: /sellto <playerid> <price>");
 	}
@@ -8938,7 +8993,7 @@ YCMD:sellto(playerid, params[], help)
 		return 1;
 	}
 	
-	for(new r = 0; r < MAX_ENTERPRISES; r++)
+	for(r = 0; r < MAX_ENTERPRISES; r++)
 	{
 	    if(EnterpriseData[r][e_ormid] == ORM:-1) continue;
 	    if(!IsPlayerInRangeOfPoint(playerid, 1.5, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2])) continue;
@@ -27653,6 +27708,21 @@ GetNearestHouse(playerid)
 	for(new r = 0; r < MAX_HOUSES; r++)
 	{
 		if(4.0 > ((fPOS[0] - HouseData[r][e_pos][0]) * (fPOS[0] - HouseData[r][e_pos][0])) + ((fPOS[1] - HouseData[r][e_pos][1]) * (fPOS[1] - HouseData[r][e_pos][1])) + ((fPOS[2] - HouseData[r][e_pos][2]) * (fPOS[2] - HouseData[r][e_pos][2])))
+		{
+		    return r;
+		}
+	}
+	return -1;
+}
+
+GetNearestEnterprise(playerid)
+{
+	new Float:fPOS[3];
+	GetPlayerPos(playerid, fPOS[0], fPOS[1], fPOS[2]);
+
+	for(new r = 0; r < MAX_ENTERPRISES; r++)
+	{
+		if(4.0 > ((fPOS[0] - EnterpriseData[r][e_pos][0]) * (fPOS[0] - EnterpriseData[r][e_pos][0])) + ((fPOS[1] - EnterpriseData[r][e_pos][1]) * (fPOS[1] - EnterpriseData[r][e_pos][1])) + ((fPOS[2] - EnterpriseData[r][e_pos][2]) * (fPOS[2] - EnterpriseData[r][e_pos][2])))
 		{
 		    return r;
 		}
