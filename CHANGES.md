@@ -25,6 +25,7 @@ Havoc Freeroam SA-MP Server
    * /upgrade to upgrade your house interior.
    * Command /password to lock a house and set a password dialog.
    * Command /sellto <player id> <price> to sell your house to another player.
+   * Added '/accept house' to accept house offers.
    * Removed house item system.
 - Dialog cleanups to avoid unnecessary overhead.
 - Removed announce commands for admins.

@@ -8711,6 +8711,84 @@ YCMD:password(playerid, params[], help)
 	return 1;
 }
 
+YCMD:accept(playerid, params[], help)
+{
+	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
+    if(!islogged(playerid)) return notlogged(playerid);
+    
+    if(sscanf(params, "s[140]", gstr))
+    {
+        return SCM(playerid, NEF_GREEN, "Usage: /accept <option>");
+    }
+    
+    if(!strcmp(gstr, "house", true))
+    {
+        if(PlayerData[playerid][iTransactHousePlayer] == INVALID_PLAYER_ID)
+            return SCM(playerid, -1, ""er"You don't have any house offers");
+            
+		new r = PlayerData[otherid][iTransactHouseID];
+		if(HouseData[r][e_ormid] == ORM:-1)
+		    return SCM(playerid, -1, ""er"You does not exist, report on forums");
+		    
+		if(GetPlayerMoneyEx(playerid) < PlayerData[player][iTransactHousePrice])
+            return SCM(playerid, -1, ""er"You can't afford this offer");
+            
+		new dist_check = GetNearestHouse(playerid);
+		if(dist_check != r)
+		    return SCM(playerid, -1, ""er"You must be close to the house");
+		    
+		new otherid = PlayerData[playerid][iTransactHousePlayer];
+		if(!IsPlayerAvail(otherid))
+		    return SCM(playerid, -1, ""er"The seller has gone offline");
+		    
+		if(YHash(__GetName(otherid) != PlayerData[playerid][iTransactHouseNameHash])
+		    return SCM(playerid, -1, ""er"The seller has gone offline");
+		    
+		if(HouseData[r][e_owner] != PlayerData[otherid][e_accountid])
+		    return SCM(playerid, -1, ""er"This house does not belong to the seller anymore");
+
+        for(new pid = 0; pid < MAX_PLAYERS; pid++)
+        {
+            if(gTeam[pid] == HOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[r][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[r][e_id] + 1000))
+            {
+                gTeam[pid] = gFREEROAM;
+                SetPlayerPos(pid, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2]);
+				ResetPlayerWorld(pid);
+            }
+        }
+        
+        HouseData[r][e_owner] == PlayerData[playerid][e_playerid];
+        HouseData[r][e_date] = gettime();
+        HouseData[r][e_password][0] = '\0';
+        HouseData[r][e_locked] = 0;
+		DestroyDynamic3DTextLabel(HouseData[r][e_labelid]);
+		strmid(HouseData[r][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
+		SetupHouse(i, HouseData[r][e_namecache]);
+        orm_update(HouseData[r][e_ormid]);
+        
+        GivePlayerMoneyEx(otherid, PlayerData[playerid][iTransactHousePrice]);
+        GivePlayerMoneyEx(playerid, -PlayerData[playerid][iTransactHousePrice]);
+        
+        SQL_SaveAccount(otherid, false, false);
+        SQL_SaveAccount(playerid, false, false);
+	    
+	    format(gstr, sizeof(gstr), ""blue"You have accepted %s's offer and bough the house $%s", __GetName(otherid), number_format(PlayerData[playerid][iTransactHousePrice]));
+	    SCM(playerid, -1, gstr);
+	    format(gstr, sizeof(gstr), ""blue"%s(%i) has accepted your offer. You sold house %i for $%s", __GetName(playerid), playerid, r, number_format(PlayerData[playerid][iTransactHousePrice]));
+	    SCM(otherid, -1, gstr);
+	    format(gstr, sizeof(gstr), ""orange"[NEF] %s(%i) has sold their house (ID %i) to %s(%i) for $%s", __GetName(otherid), otherid, r, __GetName(playerid), playerid, number_format(PlayerData[playerid][iTransactHousePrice]));
+	    SCMToAll(-1, gstr);
+
+	    PlayerData[playerid][iTransactHousePlayer] = INVALID_PLAYER_ID;
+	    PlayerData[playerid][iTransactHouseID] = -1;
+	    PlayerData[playerid][iTransactHousePrice] = 0;
+	    PlayerData[playerid][iTransactHouseNameHash] = 0;
+		return 1;
+    }
+    SCM(playerid, -1, ""er"Unknown option");
+	return 1;
+}
+
 YCMD:buy(playerid, params[], help)
 {
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
@@ -8746,6 +8824,7 @@ YCMD:buy(playerid, params[], help)
 		
 		HouseData[i][e_owner] = PlayerData[i][e_accountid];
 		HouseData[i][e_date] = gettime();
+		HouseData[i][e_password][0] = '\0';
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
 		DestroyDynamicPickup(HouseData[i][e_pickid]);
 		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
@@ -8862,7 +8941,7 @@ YCMD:sellto(playerid, params[], help)
 
 	    format(gstr, sizeof(gstr), ""blue"You have offered %s(%i) your house (ID: %i) for $%s", __GetName(otherid), otherid, r, number_format(price);
 	    SCM(playerid, -1, gstr);
-	    format(gstr, sizeof(gstr), ""blue"%s(%i) is offering you their house (ID: %i) for $%s, type /buy to accept", __GetName(playerid), playerid, r, number_format(price));
+	    format(gstr, sizeof(gstr), ""blue"%s(%i) is offering you their house (ID: %i) for $%s, type '/accept house' to buy it", __GetName(playerid), playerid, r, number_format(price));
 	    SCM(player, -1, gstr);
 
 		PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
@@ -8874,6 +8953,7 @@ YCMD:sellto(playerid, params[], help)
 	}
 	return 1;
 }
+
 YCMD:sell(playerid, params[], help)
 {
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
@@ -8894,9 +8974,20 @@ YCMD:sell(playerid, params[], help)
 		if(HouseData[i][e_owner] != PlayerData[playerid][e_accountid])
 		    return SCM(playerid, -1, ""er"This house does not belong to you");
 		    
+        for(new pid = 0; pid < MAX_PLAYERS; pid++)
+        {
+            if(gTeam[pid] == HOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[i][e_id] + 1000))
+            {
+                gTeam[pid] = gFREEROAM;
+                SetPlayerPos(pid, HouseData[i][e_pos][0], HouseData[i][e_pos][1], HouseData[i][e_pos][2]);
+				ResetPlayerWorld(pid);
+            }
+        }
+		    
         HouseData[i][e_owner] = 0;
         HouseData[i][e_date] = 0;
         HouseData[i][e_locked] = 0;
+        HouseData[i][e_password][0] = '\0';
         HouseData[i][e_interior] = HouseData[i][e_originterior];
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
 		DestroyDynamicPickup(HouseData[i][e_pickid]);
@@ -30474,7 +30565,7 @@ ResetPlayerVars(playerid)
 
 	strmid(PlayerData[playerid][e_email], "NoData", 0, 26, 26);
 	PlayerData[playerid][iTransactHousePlayer] = INVALID_PLAYER_ID;
-	PlayerData[playerid][iTransactHouseID] = 0;
+	PlayerData[playerid][iTransactHouseID] = -1;
 	PlayerData[playerid][iTransactHousePrice] = 0;
 	PlayerData[playerid][iTransactHouseNameHash] = 0;
 	PlayerData[playerid][iHouseUpgradeSel] = 0;
