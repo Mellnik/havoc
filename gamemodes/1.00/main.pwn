@@ -655,9 +655,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_gangrank,
 	e_addpvslots,
 	e_addtoyslots,
-	e_addhouseslots,
 	e_addentslots,
-	e_addhouseitemslots,
 	e_derbywins,
 	e_racewins,
 	e_tdmwins,
@@ -666,7 +664,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_eventwins,
 	e_wanteds,
 	e_vip,
-	e_credits,
 	e_medkits,
 	e_regdate,
 	e_lastlogin,
@@ -849,15 +846,6 @@ enum E_PLAYER_ACH_DATA
 	e_ach_settled, // buy a house
 	e_ach_biocalc, // Solve 40 math question
 	e_ach_mademan // rise an ent to level 20
-};
-
-enum e_credits_matrix
-{
-	E_item_name[32],
-	E_item_credits,
-	E_item_quantity,
-	E_item_duration[32],
-	E_item_description[255]
 };
 
 enum e_top_wanteds
@@ -2039,25 +2027,6 @@ static const g_aPVMatrix[101][e_pv_matrix] =
     {10, 513, 1000000, "Stuntplane"},
     {10, 593, 351500, "Dodo"},
     {10, 487, 500000, "Maverick"}
-};
-
-// Toy slots, pvs slots, house slots, house obj slots, enterprise slot, instant namechange, medkit x20, medkit x100, money boost x2, money boost x3, scoreboost x2, scoreboost x3
-static const g_aCreditsProductMatrix[14][e_credits_matrix] =
-{
-	{"Toy slot", 1000, 1, "Permanent", "This item expands your toy slots by 1.You can have 10 toy slots at most."},
-    {"Custom car slot", 1500, 1, "Permanent", "This item expands your private vehicle slots by 1.\nYou can have 8 pv slots at most."},
-    {"House slot", 2000, 1, "Permanent", "This item expands your house slots by 1. You can have 5 house slots at most."},
-    {"House item slot", 1000, 1, "Permanent", "This item expands your house item slots by 1. You can have 10 house item slots at most."},
-    {"Enterprise slot", 2000, 1, "Permanent", "This item expands your enterprise slots by 1. You can have 5 enterprise slots at most."},
-    {"Instant name change access", 1000, 1, "Usable 1 time", "This item grants you instant access to /changename."},
-    {"20 Medits", 1000, 20, "Usable 20 times", "This item is usable in minigames only. Use /mk to consume 1 medkit.\nHeals you by 50hp in 10 seconds."},
-    {"100 Medits", 2500, 100, "Usable 100 times", "This item is usable in minigames only. Use /mk to consume 1 medkit.\nHeals you by 50hp in 10 seconds."},
-    {"Money Boost x2", 1000, 1, "24 Hours", "This item gives an additional double money.\nAfter purchase the boost remains active for 24 hours. You can\nonly have 1 of the 5 available boost active at the same time!"},
-    {"Money Boost x3", 1500, 1, "24 Hours", "This item gives an additional triple money.\nAfter purchase the boost remains active for 24 hours. You can\nonly have 1 of the 5 available boost active at the same time!"},
-    {"Score Boost x2", 1000, 1, "24 Hours", "This item gives an additional double score.\nAfter purchase the boost remains active for 24 hours. You can\nonly have 1 of the 5 available boost active at the same time!"},
-    {"Score Boost x3", 1500, 1, "24 Hours", "This item gives an additional triple score.\nAfter purchase the boost remains active for 24 hours. You can\nonly have 1 of the 5 available boost active at the same time!"},
-    {"Master Boost", 2500, 1, "24 Hours", "The Master Boost gives you an additional triple score and money!\nAfter purchase the boost remains active for 24 hours. You can\nonly have 1 of the 5 available boost active at the same time!"},
-	{"Reset K/D", 3500, 1, "Permanent", "This item sets your kills and deaths to 0. Be careful you can't undo it."}
 };
 
 static const g_aHouseInteriorTypes[15][e_house_type] =
@@ -7421,11 +7390,6 @@ YCMD:vs(playerid, params[], help)
     PortPlayerMapVeh(playerid, g_CarShopTelePos[rand][0], g_CarShopTelePos[rand][1], g_CarShopTelePos[rand][2], g_CarShopTelePos[rand][3], g_CarShopTelePos[rand][0], g_CarShopTelePos[rand][1], g_CarShopTelePos[rand][2], g_CarShopTelePos[rand][3], "Car Shop", "vs");
     return 1;
 }
-YCMD:gc(playerid, params[], help)
-{
-    PortPlayerMap(playerid, 654.5861, -1867.3845, 5.5861, 90.0, "Gold Credits", "gc", true, false);
-    return 1;
-}
 YCMD:ms(playerid, params[], help)
 {
     PortPlayerMapVeh(playerid, 800.6712,-1330.6608,13.1061,226.2979,800.6712,-1330.6608,13.1061,226.2979, "Market Station", "ms", true, false);
@@ -8548,104 +8512,6 @@ YCMD:enter(playerid, params[], help)
 	else
 	{
 	    SCM(playerid, -1, ""er"You aren't near if any house");
-	}
-	return 1;
-}
-
-YCMD:sellgc(playerid, params[], help)
-{
-    if(PlayerData[playerid][e_vip] == 0) return Command_ReProcess(playerid, "/vip", false);
-    if(!islogged(playerid)) return notlogged(playerid);
-	if(PlayerData[playerid][e_credits] <= 0) return SCM(playerid, -1, ""er"You don't own any GC!");
-
-	new player, gc, money;
-	if(sscanf(params, "rii", player, gc, money))
-	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /sellgc <playerid> <gc amount> <money>");
-	}
-
-    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
-	if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
-
-	if(money < 100000 || money > 50000000)
-	{
-	    return SCM(playerid, -1, ""er"$100,000 - $50,000,000!");
-	}
-	
-	if(gc < 1000 || gc > 10000)
-	{
-	    return SCM(playerid, -1, ""er"GC: 1,000 - 10,000!");
-	}
-	
-	if(gc > PlayerData[playerid][e_credits]) return SCM(playerid, -1, ""er"You don't have that much GC.");
-
-	if(IsPlayerAvail(player) && player != playerid)
-	{
-	    if(PlayerData[player][e_credits] >= 10000000) return SCM(playerid, -1, ""er"This player reached the max gc limit of 10kk.");
-        if(!islogged(player)) return SCM(playerid, -1, ""er"This player is not registered!");
-
-	    PlayerData[player][GCPlayer] = playerid;
-	    PlayerData[player][GCOffer] = gc;
-	    PlayerData[player][GCPrice] = money;
-	    PlayerData[player][GCNameHash] = YHash(__GetName(playerid));
-
-	    format(gstr, sizeof(gstr), ""blue"You have offered %s(%i) your %sGC for $%s", __GetName(player), player, number_format(gc), number_format(money));
-	    SCM(playerid, -1, gstr);
-	    format(gstr, sizeof(gstr), ""blue"%s(%i) is offering you their %sGC for $%s, type /buygc to accept", __GetName(playerid), playerid, number_format(gc), number_format(money));
-	    SCM(player, -1, gstr);
-	    
-		PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
-		PlayerPlaySound(player, 1057, 0.0, 0.0, 0.0);
-	}
-	else
-	{
-		SCM(playerid, -1, ""er"That player is not available or yourself");
-	}
-	return 1;
-}
-
-YCMD:buygc(playerid, params[], help)
-{
-    if(!islogged(playerid)) return notlogged(playerid);
-    
-	if(PlayerData[playerid][GCPlayer] == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"No one has offered you GC yet.");
-    if(PlayerData[playerid][e_credits] >= 10000000) return SCM(playerid, -1, ""er"You have reached the max gc limit of 10kk.");
-
-	if(IsPlayerAvail(PlayerData[playerid][GCPlayer]) && PlayerData[PlayerData[playerid][GCPlayer]][e_credits] >= PlayerData[playerid][GCOffer] && PlayerData[playerid][GCNameHash] == YHash(__GetName(PlayerData[playerid][GCPlayer])))
-	{
-		if(GetPlayerMoneyEx(playerid) < PlayerData[playerid][GCPrice]) return SCM(playerid, -1, ""er"You do not have enough money!");
-
-		GivePlayerMoneyEx(PlayerData[playerid][GCPlayer], PlayerData[playerid][GCPrice]);
-		GivePlayerMoneyEx(playerid, -PlayerData[playerid][GCPrice]);
-
-        AlterPlayerCredits(playerid, PlayerData[playerid][GCOffer]);
-        AlterPlayerCredits(PlayerData[playerid][GCPlayer], -PlayerData[playerid][GCOffer]);
-
-		PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
-		PlayerPlaySound(PlayerData[playerid][GCPlayer], 1057, 0.0, 0.0, 0.0);
-
-        SQL_SaveAccount(playerid, false, false);
-		SQL_SaveAccount(PlayerData[playerid][GCPlayer], false, false);
-
-	    format(gstr2, sizeof(gstr2), "INSERT INTO `sells` VALUES (NULL, 2, %i, %i, %i, %i);", PlayerData[playerid][GCOffer], PlayerData[playerid][GCPrice], PlayerData[PlayerData[playerid][GCPlayer]][e_accountid], PlayerData[playerid][e_accountid]);
-	    mysql_tquery(pSQL, gstr2, "", "");
-
-	    format(gstr, sizeof(gstr), ""blue"You have accepted %s's offer and bough %sGC for $%s", __GetName(PlayerData[playerid][GCPlayer]), number_format(PlayerData[playerid][GCOffer]), number_format(PlayerData[playerid][GCPrice]));
-	    SCM(playerid, -1, gstr);
-	    format(gstr, sizeof(gstr), ""blue"%s(%i) has accepted your offer. You sold %sGC for $%s", __GetName(playerid), playerid, number_format(PlayerData[playerid][GCOffer]), number_format(PlayerData[playerid][GCPrice]));
-	    SCM(PlayerData[playerid][GCPlayer], -1, gstr);
-
-	    format(gstr, sizeof(gstr), ""orange"[NEF] %s(%i) has sold their %sGC to %s(%i) for $%s", __GetName(PlayerData[playerid][GCPlayer]), PlayerData[playerid][GCPlayer], number_format(PlayerData[playerid][GCOffer]), __GetName(playerid), playerid, number_format(PlayerData[playerid][GCPrice]));
-	    SCMToAll(-1, gstr);
-
-	    PlayerData[playerid][GCPlayer] = INVALID_PLAYER_ID;
-	    PlayerData[playerid][GCOffer] = 0;
-	    PlayerData[playerid][GCPrice] = 0;
-	    PlayerData[playerid][GCNameHash] = 0;
-	}
-	else
-	{
-		SCM(playerid, -1, ""er"This player has either gone offline or does not have the offered GC anymore.");
 	}
 	return 1;
 }
@@ -15386,12 +15252,6 @@ YCMD:mk(playerid, params[], help)
 	return 1;
 }
 
-YCMD:credits(playerid, params[], help)
-{
-	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, "Gold Credits information", ""white"GC is a virtual currency used throughout all "SVRNAME" gameservers.\nGC can be used to buy in-game items and to add new features. It's a great way to enhance\nyour gaming experience.\n\n"nef_green"Go to "SVRURLWWW"/credits", "OK", "");
-	return 1;
-}
-
 YCMD:stats(playerid, params[], help)
 {
 	new player1,
@@ -15441,7 +15301,7 @@ YCMD:stats(playerid, params[], help)
 		else strmid(vip, "No", 0, 5, 5);
 
  		format(string1, sizeof(string1), ""ngs_blue"Statistics of player "white"%s (%i)\n\n\
-	 	Kills:\t\t\t%i\nDeaths:\t\t\t%i\nK/D:\t\t\t%0.2f\nScore:\t\t\t%i\nMoney:\t\t\t$%s\nBank:\t\t\t$%s\nGold Credits:\t\t%sGC\n",
+	 	Kills:\t\t\t%i\nDeaths:\t\t\t%i\nK/D:\t\t\t%0.2f\nScore:\t\t\t%i\nMoney:\t\t\t$%s\nBank:\t\t\t$%s\n",
    			__GetName(player1),
    			PlayerData[player1][e_accountid],
 	 		PlayerData[player1][e_kills],
@@ -15449,8 +15309,7 @@ YCMD:stats(playerid, params[], help)
         	Float:PlayerData[player1][e_kills] / Float:pDeaths,
         	GetPlayerScoreEx(player1),
         	number_format(GetPlayerMoneyEx(player1)),
-        	number_format(PlayerData[player1][e_bank]),
-			number_format(PlayerData[player1][e_credits]));
+        	number_format(PlayerData[player1][e_bank]));
 
 		format(string2, sizeof(string2), "Race wins:\t\t%i\nDerby wins:\t\t%i\nReaction wins:\t\t%i\nMath wins:\t\t%i\nTDM wins:\t\t%i\nFallout wins:\t\t%i\nGungame wins:\t\t%i\nEvent wins:\t\t%i\nTime until PayDay:\t%i minutes\n",
 	   		PlayerData[player1][e_racewins],
@@ -17093,9 +16952,6 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
 
             format(query, sizeof(query), "UPDATE `online` SET `name` = '%s' WHERE `name` = '%s';", newname, oldname);
             mysql_tquery(pSQL, query, "", "");
-            
-            format(query, sizeof(query), "UPDATE `creditsorder` SET `receiver` = '%s' WHERE `receiver` = '%s';", newname, oldname);
-            mysql_tquery(pSQL, query, "", "");
 
             format(query, sizeof(query), "UPDATE `viporder` SET `receiver` = '%s' WHERE `receiver` = '%s';", newname, oldname);
             mysql_tquery(pSQL, query, "", "");
@@ -17376,368 +17232,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				} else {
 					player_notice(playerid, "Couldn't find the enterprise in that slot", "Report on forums", 5000);
 				}
-	            return true;
-	        }
-	        case DIALOG_CM:
-	        {
-				// How to get credits, Toy slots, pvs slots, house slots, house obj slots, enterprise slot, instant namechange, medkit x20, medkit x100, money boost x2, money boost x3, scoreboost x2, scoreboost x3, master boost
-				new string[1024];
-	            switch(listitem)
-	            {
-	                case 0:
-	                {
-	                    strcat(string, ""white"Gold Credits is a virtual currency which can be used to buy \nin-game items and add new features.");
-	                    strcat(string, "\n\nGoto "SVRURLWWW"/credits to learn more about Gold Credits");
-	                    ShowPlayerDialog(playerid, DIALOG_CM + 1, DIALOG_STYLE_MSGBOX, ""nef" Gold Credits", string, "Back", "");
-	                }
-	                case 1..14:
-	                {
-	                    ShowPlayerDialog(playerid, DIALOG_CM + 1 + listitem, DIALOG_STYLE_MSGBOX, ""nef" Gold Credits", GetItem(listitem - 1), "Buy", "Back");
-	                }
-	            }
-	            return true;
-	        }
-	        case DIALOG_CM + 1:
-	        {
-	            ShowDialog(playerid, DIALOG_CM);
-	            return true;
-	        }
-	        case DIALOG_CM + 2: // toy slot
-	        {
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[0][E_item_credits])
-	            {
-        			SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-	        
-				if(PlayerData[playerid][e_addtoyslots] >= 5)
-				{
-				    SCM(playerid, -1, ""er"You already have 5 additional toy slots!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-				
-				PlayerData[playerid][e_addtoyslots]++;
-				
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[0][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-				
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[0][E_item_credits]);
-				return true;
-	        }
-	        case DIALOG_CM + 3: // pv slot
-	        {
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[1][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(PlayerData[playerid][e_addpvslots] >= 7)
-				{
-				    SCM(playerid, -1, ""er"You already have 7 additional car slots!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][e_addpvslots]++;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[1][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[1][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 4: // house slot
-	        {
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[2][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(PlayerData[playerid][e_addhouseslots] >= 4)
-				{
-				    SCM(playerid, -1, ""er"You already have 4 additional house slots!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][e_addhouseslots]++;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[2][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[2][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 5: // house obj slot
-	        {
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[3][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(PlayerData[playerid][e_addhouseitemslots] >= 7)
-				{
-				    SCM(playerid, -1, ""er"You already have 7 additional house item slots!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][e_addhouseitemslots]++;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[3][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[3][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 6: // enterprise slot
-	        {
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[4][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(PlayerData[playerid][e_addentslots] >= 4)
-				{
-				    SCM(playerid, -1, ""er"You already have 4 additional enterprise slots!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][e_addentslots]++;
-				
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[4][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[4][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 7: // instant nc
-	        {
-	            if(!islogged(playerid)) return notlogged(playerid);
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[5][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(((PlayerData[playerid][e_vip] == 1) ? (PlayerData[playerid][e_lastnc] + 2592000) : (PlayerData[playerid][e_lastnc] + 7776000)) < gettime())
-				{
-				    SCM(playerid, -1, ""er"You can already change your name!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][e_lastnc] = 0;
-                
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[5][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[5][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 8: // 20 medkit
-	        {
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[6][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				PlayerData[playerid][e_medkits] += 20;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[6][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[6][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 9: // 100 medkits
-	        {
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[7][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				PlayerData[playerid][e_medkits] += 100;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[7][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[7][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 10: // mb x2
-	        {
-	            if(!islogged(playerid)) return notlogged(playerid);
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[8][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(PlayerData[playerid][Boost] & BOOST_MONEY_x2 || PlayerData[playerid][Boost] & BOOST_MONEY_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
-				{
-				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][Boost] |= BOOST_MONEY_x2;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[8][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-                format(gstr, sizeof(gstr), "INSERT INTO `queue` VALUES (NULL, 2, UNIX_TIMESTAMP() + 86400, '%s');", __GetName(playerid));
-                mysql_tquery(pSQL, gstr, "", "");
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[8][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 11: // mb x3
-	        {
-	            if(!islogged(playerid)) return notlogged(playerid);
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[9][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(PlayerData[playerid][Boost] & BOOST_MONEY_x2 || PlayerData[playerid][Boost] & BOOST_MONEY_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
-				{
-				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][Boost] |= BOOST_MONEY_x3;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[9][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-				
-                format(gstr, sizeof(gstr), "INSERT INTO `queue` VALUES (NULL, 3, UNIX_TIMESTAMP() + 86400, '%s');", __GetName(playerid));
-                mysql_tquery(pSQL, gstr, "", "");
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[9][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 12: // sb x2
-	        {
-	            if(!islogged(playerid)) return notlogged(playerid);
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[10][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(PlayerData[playerid][Boost] & BOOST_SCORE_x2 || PlayerData[playerid][Boost] & BOOST_SCORE_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
-				{
-				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][Boost] |= BOOST_SCORE_x2;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[10][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-                format(gstr, sizeof(gstr), "INSERT INTO `queue` VALUES (NULL, 4, UNIX_TIMESTAMP() + 86400, '%s');", __GetName(playerid));
-                mysql_tquery(pSQL, gstr, "", "");
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[10][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 13: // sb x3
-	        {
-	            if(!islogged(playerid)) return notlogged(playerid);
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[11][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(PlayerData[playerid][Boost] & BOOST_SCORE_x2 || PlayerData[playerid][Boost] & BOOST_SCORE_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
-				{
-				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][Boost] |= BOOST_SCORE_x3;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[11][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-                format(gstr, sizeof(gstr), "INSERT INTO `queue` VALUES (NULL, 5, UNIX_TIMESTAMP() + 86400, '%s');", __GetName(playerid));
-                mysql_tquery(pSQL, gstr, "", "");
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[11][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 14: // masterb
-	        {
-	            if(!islogged(playerid)) return notlogged(playerid);
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[12][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				if(PlayerData[playerid][Boost] & BOOST_SCORE_x2 || PlayerData[playerid][Boost] & BOOST_SCORE_x3 || PlayerData[playerid][Boost] & BOOST_MONEY_x2 || PlayerData[playerid][Boost] & BOOST_MONEY_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
-				{
-				    SCM(playerid, -1, ""er"You already have a money or master boost running!");
-				    ShowDialog(playerid, DIALOG_CM);
-				    return 1;
-				}
-
-				PlayerData[playerid][Boost] |= BOOST_MASTER;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[12][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-                
-                format(gstr2, sizeof(gstr2), "INSERT INTO `queue` VALUES (NULL, 6, UNIX_TIMESTAMP() + 86400, '%s');", __GetName(playerid));
-                mysql_tquery(pSQL, gstr2, "", "");
-                
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[12][E_item_credits]);
-	            return true;
-	        }
-	        case DIALOG_CM + 15: // kills/deaths reset
-	        {
-	            if(GetCredits(playerid) < g_aCreditsProductMatrix[13][E_item_credits])
-	            {
-				    SCM(playerid, -1, ""er"You don't have enough Gold Credits!");
-				    ShowDialog(playerid, DIALOG_CM);
-	                return 1;
-	            }
-
-				PlayerData[playerid][e_deaths] = 0;
-				PlayerData[playerid][e_kills] = 0;
-
-				format(gstr, sizeof(gstr), "Gold Credits: ~y~-%sGC", number_format(g_aCreditsProductMatrix[13][E_item_credits]));
-				player_notice(playerid, "Item purchased", gstr, 5000);
-				SCM(playerid, NEF_YELLOW, "Your K/D has been reset!");
-				
-				AlterPlayerCredits(playerid, -g_aCreditsProductMatrix[13][E_item_credits]);
 	            return true;
 	        }
 	        case DIALOG_REFILL_COPS:
@@ -22596,7 +22090,6 @@ server_initialize()
 	Command_AddAltNamed("stopanims", "clearanim");
 	Command_AddAltNamed("stopanims", "clearanims");
 	Command_AddAltNamed("emenu", "gotomybizz");
-	Command_AddAltNamed("credits", "secredits");
 	Command_AddAltNamed("emenu", "gotomyenterprise");
     Command_AddAltNamed("mk", "medkit");
     Command_AddAltNamed("mk", "medkits");
@@ -22729,7 +22222,6 @@ server_initialize()
 	Command_AddAltNamed("v", "vehicles");
 	Command_AddAltNamed("v", "vehicle");
 	Command_AddAltNamed("v", "cars");
-	Command_AddAltNamed("credits", "credit");
 	Command_AddAltNamed("ar", "arrest");
 	Command_AddAltNamed("ar", "arest");
 	Command_AddAltNamed("ar", "arr");
@@ -27375,22 +26867,6 @@ function:InitSession(playerid)
 
 	PreloadAnimLib(playerid, "DANCING");
     PreloadAnimLib(playerid, "DANCING");
-
-	// Gold Credits
-	RemoveBuildingForPlayer(playerid, 5575, 1919.5234, -1400.8984, 16.1719, 0.25);
-	RemoveBuildingForPlayer(playerid, 1266, 1978.1484, -1371.1484, 31.9531, 0.25);
-	RemoveBuildingForPlayer(playerid, 708, 1966.7109, -1360.0938, 17.5859, 0.25);
-	RemoveBuildingForPlayer(playerid, 620, 1971.8203, -1411.8750, 14.2500, 0.25);
-	RemoveBuildingForPlayer(playerid, 5390, 1919.5234, -1400.8984, 16.1719, 0.25);
-	RemoveBuildingForPlayer(playerid, 5415, 1916.9375, -1400.8906, 19.5625, 0.25);
-	RemoveBuildingForPlayer(playerid, 5663, 1919.4453, -1400.8828, 19.5234, 0.25);
-	RemoveBuildingForPlayer(playerid, 673, 1958.8828, -1395.1953, 13.3281, 0.25);
-	RemoveBuildingForPlayer(playerid, 5400, 1913.1328, -1370.5000, 17.7734, 0.25);
-	RemoveBuildingForPlayer(playerid, 673, 1933.2422, -1376.1719, 13.3281, 0.25);
-	RemoveBuildingForPlayer(playerid, 1260, 1978.1484, -1371.1484, 31.9531, 0.25);
-	RemoveBuildingForPlayer(playerid, 673, 1858.1875, -1439.6875, 11.9375, 0.25);
-	RemoveBuildingForPlayer(playerid, 5660, 1916.0547, -1426.2422, 16.0313, 0.25);
-	// Gold Credits End
 	return 1;
 }
 
@@ -28235,19 +27711,6 @@ GetPVPriceByModelId(modelid)
 	return -1;
 }
 
-function:AlterPlayerCredits(playerid, amount)
-{
-	format(gstr, sizeof(gstr), "INSERT INTO `creditslog` VALUES (NULL, '%s', %i, %i);", __GetName(playerid), amount, gettime());
-	mysql_tquery(pSQL, gstr);
-	
-	PlayerData[playerid][e_credits] += amount;
-	format(gstr, sizeof(gstr), "UPDATE `accounts` SET `credits` = %i WHERE `name` = '%s' LIMIT 1;", PlayerData[playerid][e_credits], __GetName(playerid));
-	mysql_tquery(pSQL, gstr);
-	
-	PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
-	return 1;
-}
-
 IsAd(const text[])
 {
 	new is1 = 0,
@@ -28794,27 +28257,6 @@ IsNeonBikeModel(modelid)
 	return 0;
 }
 
-GetItem(index)
-{
-	new string[2048], tmp[300];
-	format(string, sizeof(string), ""green"* "white"Item: %s\n"green"* "white"Gold Credits: "white"%sGC\n"green"* "white"Quantity: "white"%i\n"green"* "white"Duration: "white"%s\n",
-		g_aCreditsProductMatrix[index][E_item_name],
-		number_format(g_aCreditsProductMatrix[index][E_item_credits]),
-        g_aCreditsProductMatrix[index][E_item_quantity],
-        g_aCreditsProductMatrix[index][E_item_duration]);
-	
-	format(tmp, sizeof(tmp), ""green"* "white"Item Description:\n%s",
-		g_aCreditsProductMatrix[index][E_item_description]);
-	strcat(string, tmp);
-	return string;
-}
-
-GetCredits(playerid)
-{
-	new c = PlayerData[playerid][e_credits];
-	return c;
-}
-
 function:OnGangRenameAttempt(playerid, newgangname[], newgangtag[], namehash)
 {
 	if(namehash != YHash(__GetName(playerid)))
@@ -29032,7 +28474,7 @@ islogged(playerid)
 
 function:RandomTXTInfo()
 {
-	static const szRandomTdMessages[14][] =
+	static const szRandomTdMessages[13][] =
 	{
 		"~w~Need a ~b~~h~vehicle~w~? Spawn one using ~r~~h~/v~w~!",
 		"~w~Don't wanna get killed? Type ~g~~h~~h~/god",
@@ -29040,7 +28482,6 @@ function:RandomTXTInfo()
 		"~w~Edit your server preferences and features using ~r~~h~/settings~w~!",
 		"~w~Flip your vehicle with the key ~g~~h~~h~'2'",
 		"~w~Join our ~r~~h~forums~w~! Register at ~b~~h~~h~"SVRURLWWW"~w~!",
-		"~w~Get some ~y~Gold Credits ~w~at "SVRURLWWW"/gc/",
 		"~w~Try our ~y~Cops and Robbers ~w~Minigame! ~y~/cnr",
 		"~w~Type ~g~~h~~h~/c ~b~~h~~h~/t~w~ for ~y~commands ~w~and ~y~teleports!",
 		"~w~Go to ~g~~h~~h~/vs ~w~and get your own car which you can tune!",
@@ -30675,7 +30116,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][e_gungamewins] = 0;
 	PlayerData[playerid][e_eventwins] = 0;
 	PlayerData[playerid][e_tdmwins] = 0;
-	PlayerData[playerid][e_credits] = 0;
 	PlayerData[playerid][e_medkits] = 0;
 	PlayerData[playerid][tMedkit] = -1;
 	PlayerData[playerid][iMedkitTime] = 0;
@@ -30983,7 +30423,6 @@ AssemblePlayerORM(ORM:_ormid, slot)
 	orm_addvar_int(_ormid, PlayerData[slot][e_eventwins], "eventwins");
 	orm_addvar_int(_ormid, PlayerData[slot][e_wanteds], "wanteds");
 	orm_addvar_int(_ormid, PlayerData[slot][e_vip], "vip");
-	orm_addvar_int(_ormid, PlayerData[slot][e_credits], "credits");
 	orm_addvar_int(_ormid, PlayerData[slot][e_medkits], "medkits");
 	orm_addvar_int(_ormid, PlayerData[slot][e_regdate], "regdate");
 	orm_addvar_int(_ormid, PlayerData[slot][e_lastlogin], "lastlogin");

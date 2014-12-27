@@ -39,21 +39,11 @@ Havoc Freeroam SA-MP Server
 - Removed /locate. Now redirects to /id.
 - /sell /buy can now be used for houses and enterprises.
 - Flip key has been set to key 'Y'.
-- New /settings dialog values which are being saved in the database:
-  * /tgo (Allow teleports to you)
-  * /tpm (Allow private messages)
-  * /fs (Fight style, now in a dialog)
-  * /speedo (Vehicle speedometer)
-  * Prefered name color
-  * Spawn location (House/Hotspot) 
-  * Prefered skin
-  * Auto Login
-  * /blevel (severity of vehicle boost)
-  * /jlevel (severity of vehicle jumps)
+- Removed Gold Credits system.
+
 
 TODO
 ----
-- GC System has been removed
 - Beim connecten ein whitescreen? http://puu.sh/dLaIH/e79bbcea3e.jpg
 - Remove makes total registered players 10000
 - Add random messages like * Online players: 
@@ -99,3 +89,14 @@ TODO
 - You can now sell/buy houses/enterprises/pvs on the Havoc forums.
 - Got rid of mSelection, now using an improved UI for toys.
 - Set the maximum attached player objects to 8.
+- New /settings dialog values which are being saved in the database:
+  * /tgo (Allow teleports to you)
+  * /tpm (Allow private messages)
+  * /fs (Fight style, now in a dialog)
+  * /speedo (Vehicle speedometer)
+  * Prefered name color
+  * Spawn location (House/Hotspot) 
+  * Prefered skin
+  * Auto Login
+  * /blevel (severity of vehicle boost)
+  * /jlevel (severity of vehicle jumps)
