@@ -23,6 +23,7 @@ Havoc Freeroam SA-MP Server
    * /upgrade to upgrade your house interior.
    * /password to lock a house and set a password dialog.
    * /sellto <player id> <price> to sell your house to another player.
+   * /spawn to set the spawn location in your house.
    * Added '/accept house' to accept house offers.
    * Removed house item system.
    * /hlock has been merged into /lock.
@@ -37,7 +38,18 @@ Havoc Freeroam SA-MP Server
 - Renamed /gsetrank to /grank.
 - Removed /locate. Now redirects to /id.
 - /sell /buy can now be used for houses and enterprises.
-- Flip key has been set to key 'Y'
+- Flip key has been set to key 'Y'.
+- New /settings dialog values which are being saved in the database:
+  * /tgo (Allow teleports to you)
+  * /tpm (Allow private messages)
+  * /fs (Fight style, now in a dialog)
+  * /speedo (Vehicle speedometer)
+  * Prefered name color
+  * Spawn location (House/Hotspot) 
+  * Prefered skin
+  * Auto Login
+  * /blevel (severity of vehicle boost)
+  * /jlevel (severity of vehicle jumps)
 
 TODO
 ----
@@ -81,8 +93,6 @@ TODO
 - Added admin command to set the next derby map manually.
 - Spawnpoints have been remapped.
 - All teleports have been retaken for a better gameplay experience.
-- /settings is now being saved in the database.
-- Many new /settings options 
 - Airport maps have been improved to make it possible to lift off with a plane.
 - Gang score has been reduced if you attack a zone with many members.
 - Houses now determine how many private cars you may held within your account.

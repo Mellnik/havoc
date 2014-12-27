@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Dec 26, 2014 at 11:15 PM
+-- Generation Time: Dec 27, 2014 at 03:04 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -40,7 +40,6 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `score` mediumint(8) unsigned NOT NULL,
   `money` int(11) NOT NULL,
   `bank` int(11) NOT NULL,
-  `color` int(11) NOT NULL,
   `kills` mediumint(8) unsigned NOT NULL,
   `deaths` mediumint(8) unsigned NOT NULL,
   `time` int(10) unsigned NOT NULL,
@@ -69,7 +68,6 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `regip` varchar(16) NOT NULL,
   `lastlogin` int(10) unsigned NOT NULL,
   `lastnc` int(10) unsigned NOT NULL,
-  `skinsave` smallint(6) NOT NULL DEFAULT '-1',
   `timeskick` int(10) unsigned NOT NULL,
   `timeslogin` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -219,8 +217,10 @@ CREATE TABLE IF NOT EXISTS `houses` (
   `zpos` float(14,4) NOT NULL,
   `pvslots` tinyint(3) unsigned NOT NULL,
   `interior` tinyint(3) unsigned NOT NULL,
+  `originterior` tinyint(3) unsigned NOT NULL,
   `value` int(10) unsigned NOT NULL,
   `locked` tinyint(4) NOT NULL,
+  `password` varchar(40) NOT NULL,
   `date` int(10) unsigned NOT NULL,
   `creator` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -330,7 +330,16 @@ INSERT INTO `server` (`name`, `value`) VALUES
 
 CREATE TABLE IF NOT EXISTS `settings` (
   `id` int(10) unsigned NOT NULL,
-  `allow_teleport` tinyint(3) unsigned NOT NULL
+  `allow_teleport` tinyint(3) unsigned NOT NULL,
+  `allow_pm` tinyint(3) unsigned NOT NULL,
+  `fightstyle` tinyint(4) NOT NULL,
+  `speedo` tinyint(3) unsigned NOT NULL,
+  `namecolor` int(11) NOT NULL,
+  `skin` smallint(5) unsigned NOT NULL,
+  `auto_login` tinyint(3) unsigned NOT NULL,
+  `blevel` float(4,2) NOT NULL,
+  `jlevel` float(4,2) NOT NULL,
+  `house_spawn` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

@@ -816,6 +816,20 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
     DuelRequestRecv
 };
 
+enum E_PLAYER_SETTINGS
+{
+	e_allow_teleport,
+	e_allow_pm,
+	e_fightstyle,
+	e_speedo,
+	e_namecolor,
+	e_skin,
+	e_auto_login,
+	Float:e_blevel,
+	Float:e_jlevel,
+	e_house_spawn
+};
+
 enum E_PLAYER_ACH_DATA
 {
     e_ach_styler, // Buy a toy (/toy)
@@ -2853,6 +2867,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	g_AdminLCBack,
   	gLastMap[MAX_PLAYERS],
   	PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
+  	PlayerSettings[MAX_PLAYERS][E_PLAYER_SETTINGS],
   	PlayerAchData[MAX_PLAYERS][E_PLAYER_ACH_DATA][2],
   	PlayerToyData[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][E_TOY_DATA],
   	PlayerPVData[MAX_PLAYERS][MAX_PLAYER_PVS][E_PV_DATA],
@@ -8681,6 +8696,44 @@ YCMD:upgrade(playerid, params[], help)
 	return 1;
 }
 
+YCMD:spawn(playerid, params[], help)
+{
+	if(gTeam[playerid] != gFREEROAM || gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
+    if(!islogged(playerid)) return notlogged(playerid);
+
+	if(PlayerSettings[playerid][e_house_spawn] != 0)
+	{
+	    PlayerSettings[playerid][e_house_spawn] = 0;
+		player_notice(playerid, "Spawn:", "Hotspot");
+	    return 1;
+	}
+
+	new r = -1;
+	if((r = GetNearestHouse(playerid)) != -1)
+	{
+		if(HouseData[r][e_owner] != PlayerData[playerid][e_accountid])
+		    return SCM(playerid, -1, ""er"This house does not belong to you");
+
+		PlayerSettings[playerid][e_house_spawn] = r;
+		player_notice(playerid, "Spawn:", "House");
+		return 1;
+	}
+	for(new i = 0; i < MAX_HOUSES; i++)
+	{
+	    if(HouseData[i][e_ormid] == ORM:-1)
+	        continue;
+
+    	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 1000))
+		{
+		    PlayerSettings[playerid][e_house_spawn] = i;
+		    player_notice(playerid, "Spawn:", "House");
+			return 1;
+		}
+	}
+	SCM(playerid, -1, ""er"You must be at your house");
+	return 1;
+}
+
 YCMD:password(playerid, params[], help)
 {
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
@@ -8759,7 +8812,7 @@ YCMD:accept(playerid, params[], help)
         
         GivePlayerMoneyEx(otherid, PlayerData[playerid][iTransactHousePrice]);
         GivePlayerMoneyEx(playerid, -PlayerData[playerid][iTransactHousePrice]);
-        
+        PlayerSettings[playerid][e_house_spawn] = 0;
         SQL_SaveAccount(otherid, false, false);
         SQL_SaveAccount(playerid, false, false);
 	    
@@ -9011,6 +9064,7 @@ YCMD:sell(playerid, params[], help)
 		orm_update(HouseData[i][e_ormid]);
         
         GivePlayerMoneyEx(playerid, floatround(HouseData[i][e_value] / 4));
+        PlayerSettings[playerid][e_house_spawn] = 0;
 	    PlayerData[playerid][tickLastSell] = tick;
 	    SQL_SaveAccount(playerid, false, false);
 	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
@@ -18619,6 +18673,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                strcat(cstring, ""blue"/upgrade "white"- upgrade your house interior\n");
 		                strcat(cstring, ""blue"/lock "white"- (un)lock the house\n");
 						strcat(cstring, ""blue"/password "white"- set house password\n");
+						strcat(cstring, ""blue"/spawn "white"- set spawn location to your house\n");
 		            }
 		            case 4: // Enterprises
 		            {
