@@ -816,8 +816,8 @@ enum E_PLAYER_SETTINGS
 	e_namecolor,
 	e_skin,
 	e_auto_login,
-	Float:e_blevel,
-	Float:e_jlevel,
+	Float:e_boost_level,
+	Float:e_jump_level,
 	e_house_spawn
 };
 
@@ -1049,9 +1049,9 @@ enum E_HOUSE_DATA
 
 enum e_ent_matrix
 {
-	E_blevel,
-	E_bupgradeprice,
-	E_bearnings
+	e_elevel,
+	e_eupgrade_price,
+	e_eearnings
 };
 
 enum E_STORE_DATA
@@ -17192,12 +17192,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						return 1;
 		            }
                 
-		            if(GetPlayerMoneyEx(playerid) < g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][E_bupgradeprice])
+		            if(GetPlayerMoneyEx(playerid) < g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][e_eupgrade_price])
 		            {
 		                return SCM(playerid, -1, ""er"You don't have enough money!");
 		            }
 
-                    GivePlayerMoneyEx(playerid, -g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][E_bupgradeprice]);
+                    GivePlayerMoneyEx(playerid, -g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][e_eupgrade_price]);
                     EnterpriseData[r][e_level]++;
                     
                     if(PlayerAchData[playerid][e_ach_mademan][0] == 0 && EnterpriseData[r][e_level] == 20)
@@ -26265,8 +26265,8 @@ function:ShowDialog(playerid, dialogid)
 				    format(gstr, sizeof(gstr), "%i\nCurrent Enterprise Earnings: $%s\nEarnings in next level: $%s\n\nUpgrade now for "yellow_e"$%s"white"!",
 						EnterpriseData[r][e_level],
 						number_format(GetEnterpriseEarnings(r)),
-						number_format(g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][E_bearnings]),
-						number_format(g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][E_bupgradeprice]));
+						number_format(g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][e_eearnings]),
+						number_format(g_aEnterpriseLevelMatrix[EnterpriseData[r][e_level]][e_eupgrade_price]));
 					strcat(string, gstr);
 				}
 				
@@ -27595,7 +27595,7 @@ GetEnterpriseEarnings(r)
 	{
 		if(i == (EnterpriseData[r][e_level] - 1))
 		{
-		    count = g_aEnterpriseLevelMatrix[i][E_bearnings];
+		    count = g_aEnterpriseLevelMatrix[i][e_eearnings];
 		    return count;
 		}
 	}
