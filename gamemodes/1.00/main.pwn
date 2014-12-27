@@ -6758,7 +6758,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	    {
 		    if(IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 		    {
-				if(Key(KEY_SUBMISSION))
+				if(Key(KEY_YES))
 				{
 			 		new currentveh, Float:angle;
 				    currentveh = GetPlayerVehicleID(playerid);
@@ -6801,15 +6801,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 						SetVehicleVelocity(vid, POS[0], POS[1], POS[2] + 0.20);
 						SetVehicleHealth(vid, 1000.0);
 						return 1;
-					}
-
-					if(Key(KEY_YES) || Key(KEY_NO))
-					{
-						new Float:POS[3], vid = GetPlayerVehicleID(playerid);
-						GetVehicleVelocity(vid, POS[0], POS[1], POS[2]);
-						SetVehicleVelocity(vid, POS[0] > 0 ? POS[0] * 0.75 : 0.0, POS[1] > 0 ? POS[1] * 0.75 : 0.0, POS[2]);
-						SetVehicleHealth(vid, 1000.0);
-					    return 1;
 					}
 				}
 				else
@@ -15344,17 +15335,6 @@ YCMD:mk(playerid, params[], help)
 YCMD:credits(playerid, params[], help)
 {
 	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, "Gold Credits information", ""white"GC is a virtual currency used throughout all "SVRNAME" gameservers.\nGC can be used to buy in-game items and to add new features. It's a great way to enhance\nyour gaming experience.\n\n"nef_green"Go to "SVRURLWWW"/credits", "OK", "");
-	return 1;
-}
-
-YCMD:info(playerid, params[], help)
-{
-	new string[512];
-	strcat(string, ""white"Foundation\t"grey"Mellnik\n\t\tEpixel\n\n"white"Scripting\t"grey"Mellnik");
-	strcat(string, "\n\n"white"Mapping\t"grey"Tuoppi\n\t\tMellnik\n\t\tAventator\n\t\tMicka\n\t\tLuggi\n\t\tImpulse");
-	strcat(string, "\n\n"white"Web Dev.\t"grey"Epixel\n\t\tMellnik");
-	strcat(string, "\n\n"white"Special Thanks\t"grey"Goldkiller\n\t\tChris"); // Yeah nigga ^^
-	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Credits/Info", string, "OK", "");
 	return 1;
 }
 
