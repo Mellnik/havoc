@@ -413,7 +413,7 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define COOLDOWN_CMD_BUY                (2000)
 #define COOLDOWN_CMD_GIVECASH           (120000)
 #define COOLDOWN_CMD_REPORT             (30000)
-#define COOLDOWN_CMD_SELL               (2000)
+#define COOLDOWN_CMD_SELL               (3000)
 #define COOLDOWN_CMD_CHANGEPASS         (30000)
 #define COOLDOWN_CMD_PM                 (3000)
 #define COOLDOWN_CMD_HITMAN             (30000)
@@ -770,6 +770,10 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	GCNameHash,
 	GCOffer,
 	GCPrice,
+	iTransactHousePlayer,
+	iTransactHouseID,
+	iTransactHousePrice,
+	iTransactHouseNameHash,
 	VIPPlayer,
 	VIPNameHash,
 	VIPOffer,
@@ -1033,6 +1037,7 @@ enum E_HOUSE_DATA
 	Float:e_pos[3],
 	e_pvslots,
 	e_interior,
+	e_originterior,
 	e_value,
 	e_locked,
 	e_password[41],
@@ -8706,7 +8711,6 @@ YCMD:password(playerid, params[], help)
 	return 1;
 }
 
-
 YCMD:buy(playerid, params[], help)
 {
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
@@ -8806,6 +8810,70 @@ YCMD:buy(playerid, params[], help)
 	return 1;
 }
 
+YCMD:sellto(playerid, params[], help)
+{
+	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
+    if(!islogged(playerid)) return notlogged(playerid);
+
+	new tick = GetTickCountEx();
+	if(PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL)
+	{
+		if((PlayerData[playerid][tickLastSell] + COOLDOWN_CMD_SELL) >= tick)
+		{
+	    	return player_notice(playerid, "Command is on cooldown!", "");
+		}
+	}
+
+	new otherid, price;
+	if(sscanf(params, "ri", otherid, price))
+	{
+	    return SCM(playerid, NEF_GREEN, "Usage: /sellto <playerid> <price>");
+	}
+	
+	if(price < 1 || price > 500000000) return SCM(playerid, -1, ""er"Price range: $1 - $500,000,000);
+    if(otherid == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+	if(!IsPlayerConnected(otherid)) return SCM(playerid, -1, ""er"Player not connected!");
+	if(!islogged(otherid)) return SCM(playerid, -1, ""er"This player is not registered!");
+	if(gTeam[otherid] != gFREEROAM) return SCM(playerid, -1, ""er"Player must be in freeroam mode");
+	new Float:fPOS[3];
+	GetPlayerPos(otherid, fPOS[0], fPOS[1], fPOS[2]);
+	if(!IsPlayerInRangeOfPoint(playerid, 5.0, fPOS[0], fPOS[1], fPOS[2])) return SCM(playerid, -1, ""er"The player must be in your range");
+
+	new r = -1;
+	if((r = GetNearestHouse(playerid)) != -1)
+	{
+		if(HouseData[r][e_owner] != PlayerData[playerid][e_accountid])
+		    return SCM(playerid, -1, ""er"This house does not belong to you");
+		    
+		new player_houses = GetPlayerHouseCount(otherid);
+		if(player_houses >= MAX_PLAYER_HOUSES)
+		    return SCM(playerid, -1, ""er"This player already owns the maxium amount of houses");
+		    
+		new needed_score;
+		if(player_houses >= GetAllowedHouseCount(otherid, needed_score)) {
+		    format(gstr, sizeof(gstr), ""er"This player needs %i score to buy another house", needed_score);
+			return SCM(playerid, -1, gstr);
+		}
+
+	    PlayerData[otherid][iTransactHousePlayer] = playerid;
+	    PlayerData[otherid][iTransactHouseID] = r;
+	    PlayerData[otherid][iTransactHousePrice] = price;
+	    PlayerData[otherid][iTransactHouseNameHash] = YHash(__GetName(playerid));
+
+	    format(gstr, sizeof(gstr), ""blue"You have offered %s(%i) your house (ID: %i) for $%s", __GetName(otherid), otherid, r, number_format(price);
+	    SCM(playerid, -1, gstr);
+	    format(gstr, sizeof(gstr), ""blue"%s(%i) is offering you their house (ID: %i) for $%s, type /buy to accept", __GetName(playerid), playerid, r, number_format(price));
+	    SCM(player, -1, gstr);
+
+		PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
+		PlayerPlaySound(otherid, 1057, 0.0, 0.0, 0.0);
+	}
+	else
+	{
+	    SCM(playerid, -1, ""er"You aren't near if any house");
+	}
+	return 1;
+}
 YCMD:sell(playerid, params[], help)
 {
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
@@ -8829,6 +8897,7 @@ YCMD:sell(playerid, params[], help)
         HouseData[i][e_owner] = 0;
         HouseData[i][e_date] = 0;
         HouseData[i][e_locked] = 0;
+        HouseData[i][e_interior] = HouseData[i][e_originterior];
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
 		DestroyDynamicPickup(HouseData[i][e_pickid]);
 		DestroyDynamicMapIcon(HouseData[i][e_iconid]);
@@ -8858,21 +8927,19 @@ YCMD:sell(playerid, params[], help)
 	    EnterpriseData[r][e_owner] = 0;
         EnterpriseData[r][e_level] = 1;
         EnterpriseData[r][e_date] = 0;
-
+        
 		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
 		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
-
         SetupEnterprise(r, "<null>");
 
-	    PlayerData[playerid][tickLastSell] = tick;
+		orm_update(EnterpriseData[r][e_ormid]);
 
+	    PlayerData[playerid][tickLastSell] = tick;
 	    player_notice(playerid, "Enterprise sold", "");
 	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
-
 	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
 	    SCMToAll(-1, gstr);
 
-	    orm_update(EnterpriseData[r][e_ormid]);
 	    return 1;
 	}
     SCM(playerid, -1, ""er"You must be near a house or enterprise");
@@ -14037,6 +14104,7 @@ YCMD:hcreate(playerid, params[], help)
   	HouseData[r][e_pvslots] = pvslots;
     HouseData[r][e_value] = value;
     HouseData[r][e_interior] = inter;
+	HouseData[r][e_originterior] = inter;
     HouseData[r][e_date] = gettime();
     HouseData[r][e_creator] = PlayerData[playerid][e_accountid];
 
@@ -18477,7 +18545,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		                strcat(cstring, ""blue"/enter "white"- enter the house or press 'F'\n");
 		                strcat(cstring, ""blue"/houses "white"- view all your houses and go to them\n");
 		                strcat(cstring, ""blue"/sell "white"- sell your house and get 25% of value in return\n");
-		                strcat(cstring, ""blue"/sellto <player id> <price> "white"- sell your house to another player\n");
+		                strcat(cstring, ""blue"/sellto <playerid> <price> "white"- sell your house to another player\n");
 		                strcat(cstring, ""blue"/upgrade "white"- upgrade your house interior\n");
 		                strcat(cstring, ""blue"/lock "white"- (un)lock the house\n");
 						strcat(cstring, ""blue"/password "white"- set house password\n");
@@ -30405,6 +30473,10 @@ ResetPlayerVars(playerid)
 	SetPVarInt(playerid, "inCNR", 0);
 
 	strmid(PlayerData[playerid][e_email], "NoData", 0, 26, 26);
+	PlayerData[playerid][iTransactHousePlayer] = INVALID_PLAYER_ID;
+	PlayerData[playerid][iTransactHouseID] = 0;
+	PlayerData[playerid][iTransactHousePrice] = 0;
+	PlayerData[playerid][iTransactHouseNameHash] = 0;
 	PlayerData[playerid][iHouseUpgradeSel] = 0;
 	PlayerData[playerid][fOldPos][0] = 2012.4763;
 	PlayerData[playerid][fOldPos][1] = -2448.1399;
@@ -30814,6 +30886,7 @@ AssembleHouseORM(ORM:_ormid, slot)
 	orm_addvar_float(_ormid, HouseData[slot][e_pos][1], "ypos");
 	orm_addvar_float(_ormid, HouseData[slot][e_pos][2], "zpos");
 	orm_addvar_int(_ormid, HouseData[slot][e_interior], "interior");
+	orm_addvar_int(_ormid, HouseData[slot][e_originterior], "originterior");
 	orm_addvar_int(_ormid, HouseData[slot][e_value], "value");
 	orm_addvar_int(_ormid, HouseData[slot][e_locked], "locked");
 	orm_addvar_string(_ormid, HouseData[slot][e_password], 41, "password");
@@ -30968,6 +31041,7 @@ ResetHouse(slot = -1)
 		    HouseData[r][e_owner] = 0;
 		    HouseData[r][e_pvslots] = 0;
             HouseData[r][e_interior] = 0;
+            HouseData[r][e_originterior] = 0;
             HouseData[r][e_value] = 0;
             HouseData[r][e_locked] = 0;
             HouseData[r][e_password][0] = '\0';
@@ -30989,6 +31063,7 @@ ResetHouse(slot = -1)
 	    HouseData[r][e_owner] = 0;
 	    HouseData[r][e_pvslots] = 0;
         HouseData[r][e_interior] = 0;
+        HouseData[r][e_originterior] = 0;
         HouseData[r][e_value] = 0;
         HouseData[r][e_locked] = 0;
         HouseData[r][e_password][0] = '\0';
