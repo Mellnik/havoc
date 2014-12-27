@@ -38,6 +38,7 @@ Havoc Freeroam SA-MP Server
 
 TODO
 ----
+- Beim connecten ein whitescreen? http://puu.sh/dLaIH/e79bbcea3e.jpg
 - Remove makes total registered players 10000
 - Add random messages like * Online players: 
 - Add /gstats

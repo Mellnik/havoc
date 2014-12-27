@@ -488,6 +488,7 @@ enum (+= 56)
     DIALOG_ADMINS,
     DIALOG_COMMANDS,
 	DIALOG_HOUSE_UPGRADE,
+	DIALOG_HOUSE_PASSWORD,
 	DIALOG_HOUSE_MENU,
 	DIALOG_ENTERPRISE,
 	DIALOG_ENTERPRISE_UPGRADE,
@@ -733,6 +734,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	bool:bDerbyAFK,
 	bool:bDerbyHealthBarShowing,
 	iHouseUpgradeSel,
+	iHousePasswordSel,
 	Float:fDerbyVehicleHealth,
 	Float:fDerbyVehicleDamage,
 	Float:fDerbyCDamage,
@@ -1033,6 +1035,7 @@ enum E_HOUSE_DATA
 	e_interior,
 	e_value,
 	e_locked,
+	e_password[41],
 	e_date,
 	e_creator,
 	
@@ -8681,6 +8684,28 @@ YCMD:upgrade(playerid, params[], help)
 	}
 	return 1;
 }
+
+YCMD:password(playerid, params[], help)
+{
+	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
+    if(!islogged(playerid)) return notlogged(playerid);
+
+	new i = -1;
+	if((i = GetNearestHouse(playerid)) != -1)
+	{
+		if(HouseData[i][e_owner] != PlayerData[playerid][e_accountid])
+		    return SCM(playerid, -1, ""er"This house does not belong to you");
+
+		PlayerData[playerid][iHousePasswordSel] = i;
+		ShowPlayerDialog(playerid, DIALOG_HOUSE_PASSWORD, DIALOG_STYLE_INPUT, ""nef" :: House Password", ""white"Set a password for this house. Everyone who would like\nto enter it must type the correct password.", "Set Password", "Cancel");
+	}
+	else
+	{
+	    SCM(playerid, -1, ""er"You aren't near if any house");
+	}
+	return 1;
+}
+
 
 YCMD:buy(playerid, params[], help)
 {
@@ -18588,6 +18613,30 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 				}
 				Command_ReProcess(playerid, command, false);
+		        return true;
+		    }
+		    case DIALOG_HOUSE_PASSWORD:
+		    {
+		        if(strlen(inputtext) == 0)
+		        {
+		            HouseData[PlayerData[playerid][iHousePasswordSel]][e_password][0] = '\0';
+		            SCM(playerid, -1, ""er"House password has been removed");
+		            return true;
+		        }
+		        
+				if(sscanf(inputtext, "s[143]", gstr))
+				{
+				    return SCM(playerid, -1, ""er"House password length: 3 - 32");
+				}
+				if(strlen(gstr) < 3 || strlen(gstr) > 32)
+				{
+				    return SCM(playerid, -1, ""er"House password length: 3 - 32");
+				}
+				new hash[41];
+				NC_SHA1(gstr, hash, sizeof(hash));
+				strmid(HouseData[PlayerData[playerid][iHousePasswordSel]][e_password], hash, 0, 41, 41);
+				SCM(playerid, -1, ""er"House password has been set");
+				orm_update(HouseData[PlayerData[playerid][iHousePasswordSel]][e_ormid]);
 		        return true;
 		    }
 	        case DIALOG_HOUSE_UPGRADE:
@@ -30767,6 +30816,7 @@ AssembleHouseORM(ORM:_ormid, slot)
 	orm_addvar_int(_ormid, HouseData[slot][e_interior], "interior");
 	orm_addvar_int(_ormid, HouseData[slot][e_value], "value");
 	orm_addvar_int(_ormid, HouseData[slot][e_locked], "locked");
+	orm_addvar_string(_ormid, HouseData[slot[e_password], 41, "password");
 	orm_addvar_int(_ormid, HouseData[slot][e_date], "date");
 	orm_addvar_int(_ormid, HouseData[slot][e_creator], "creator");
 }
@@ -30920,6 +30970,7 @@ ResetHouse(slot = -1)
             HouseData[r][e_interior] = 0;
             HouseData[r][e_value] = 0;
             HouseData[r][e_locked] = 0;
+            HouseData[r][e_password][0] = '\0';
             HouseData[r][e_date] = 0;
             HouseData[r][e_creator] = 0;
             HouseData[r][e_labelid] = Text3D:-1;
@@ -30940,6 +30991,7 @@ ResetHouse(slot = -1)
         HouseData[r][e_interior] = 0;
         HouseData[r][e_value] = 0;
         HouseData[r][e_locked] = 0;
+        HouseData[r][e_password][0] = '\0';
         HouseData[r][e_date] = 0;
         HouseData[r][e_creator] = 0;
         HouseData[r][e_labelid] = Text3D:-1;
