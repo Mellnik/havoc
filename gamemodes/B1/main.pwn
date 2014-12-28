@@ -279,6 +279,7 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define MAX_PLAYER_ENTERPRISES          (5)
 
 // Misc
+#define MAX_PLAYER_TOYS                 (6)
 #define REAC_TIME              			(900000)
 #define MAX_STORES                      (80)
 #define MAX_STORE_NAME                  (24)
@@ -2836,7 +2837,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
   	PlayerSettings[MAX_PLAYERS][E_PLAYER_SETTINGS],
   	PlayerAchData[MAX_PLAYERS][E_PLAYER_ACH_DATA][2],
-  	PlayerToyData[MAX_PLAYERS][MAX_PLAYER_ATTACHED_OBJECTS][E_TOY_DATA],
+  	PlayerToyData[MAX_PLAYERS][MAX_PLAYER_TOYS][E_TOY_DATA],
   	PlayerPVData[MAX_PLAYERS][MAX_PLAYER_PVS][E_PV_DATA],
   	HouseData[MAX_HOUSES][E_HOUSE_DATA],
   	GZoneData[MAX_GZONES][E_GZONE_DATA],
@@ -3787,7 +3788,7 @@ public OnPlayerDisconnect(playerid, reason)
         DestroyDynamic3DTextLabel(PlayerData[playerid][VIPLabel]);
         PlayerData[playerid][VIPLabel] = Text3D:-1;
     }
-    for(new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+    for(new i = 0; i < MAX_PLAYER_TOYS; i++)
     {
 		RemovePlayerAttachedObject(playerid, i);
 	}
@@ -16260,27 +16261,15 @@ YCMD:toys(playerid, params[], help)
     if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL) return SCM(playerid, RED, NOT_AVAIL);
 	if(IsPlayerInAnyVehicle(playerid)) return SCM(playerid, -1, ""er"Not useable in vehicles");
 
-	new string[512], tmp[64];
-	for(new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+	new string[255];
+	for(new i = 0; i < MAX_PLAYER_TOYS; i++)
 	{
-	    if(i > PlayerData[playerid][e_addtoyslots] + 4)
-	    {
-		    format(tmp, sizeof(tmp), "Slot %i "red"(Locked)\n", i + 1);
-	    }
+	    if(i <= 4)
+     		format(gstr, sizeof(gstr), "Slot %i %s", i + 1, PlayerToyData[playerid][i][toy_model] == 0 ? (" ") : ("(Used)"));
 	    else
-	    {
-		    if(PlayerToyData[playerid][i][toy_model] == 0)
-			{
-			    format(tmp, sizeof(tmp), "Slot %i\n", i + 1);
-			}
-			else
-			{
-			    format(tmp, sizeof(tmp), "Slot %i "green2"(Used)\n", i + 1);
-			}
-		}
-		strcat(string, tmp);
+    		format(gstr, sizeof(gstr), ""yellow"[VIP] "white"Slot %i %s", i + 1, PlayerToyData[playerid][i][toy_model] == 0 ? (" ") : ("(Used)"));
+		strcat(string, gstr);
 	}
-
 	ShowPlayerDialog(playerid, DIALOG_TOY, DIALOG_STYLE_LIST, ""nef" :: Player Toys", string, "Select", "Cancel");
 	return 1;
 }
@@ -18858,14 +18847,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			case DIALOG_TOY:
 			{
-				format(gstr, sizeof(gstr), ""nef" :: Player Toys > Slot: %i", listitem + 1);
-					
-			    if(listitem > PlayerData[playerid][e_addtoyslots] + 4)
+			    if(PlayerData[playerid][e_vip] == 0 && listitem > 4)
 			    {
-			        ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr, ""nef_green"This toy slot is locked.\n\n"white"You may unlock it by purchasing an extra slot at Gold Credits (/gc)", "OK", "");
+			        no_vip(playerid, "This toy slot is reserved for VIP members.");
 			    }
 			    else
 			    {
+			        format(gstr, sizeof(gstr), ""nef" :: Player Toys > Slot: %i", listitem + 1);
 			        PlayerData[playerid][toy_selected] = listitem;
 			        
 					if(PlayerToyData[playerid][listitem][toy_model] == 0)
@@ -18874,7 +18862,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 					else
 					{
-		            	ShowPlayerDialog(playerid, DIALOG_TOY + 1, DIALOG_STYLE_LIST, gstr, "Edit Toy Position\nChange Bone\n"grey"Remove Toy", "Select", "Close");
+		            	ShowPlayerDialog(playerid, DIALOG_TOY + 1, DIALOG_STYLE_LIST, gstr, "Edit Toy Position\nChange Bone\nRemove Toy", "Select", "Close");
 					}
 			    }
 				return true;
@@ -20868,7 +20856,7 @@ SQL_LoadPlayerAchs(playerid)
 
 SQL_LoadPlayerToys(playerid)
 {
-	mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `toys` WHERE `id` = %i LIMIT 10;", PlayerData[playerid][e_accountid]);
+	mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `toys` WHERE `id` = %i LIMIT %i;", PlayerData[playerid][e_accountid], MAX_PLAYER_TOYS);
 	mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_TOYS_LOAD);
 }
 
@@ -20915,7 +20903,7 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
 		mysql_tquery(pSQL, gstr);
 		
 		new buff[512];
-		for(new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+		for(new i = 0; i < MAX_PLAYER_TOYS; i++)
 		{
 		    if(PlayerToyData[playerid][i][toy_model] != 0)
 		    {
@@ -29248,7 +29236,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	    {
 	        if(cache_get_row_count() > 0)
 	        {
-	            for(new i = 0; i < cache_get_row_count() && i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+	            for(new i = 0; i < cache_get_row_count() && i < MAX_PLAYER_TOYS; i++)
 	            {
 					new r = cache_get_row_int(i, 1);
 					
@@ -29682,7 +29670,7 @@ ResetPlayerPV(playerid)
 
 ResetPlayerToy(playerid)
 {
-	for(new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+	for(new i = 0; i < MAX_PLAYER_TOYS; i++)
 	{
 		PlayerToyData[playerid][i][toy_model] = 0;
 		PlayerToyData[playerid][i][toy_bone] = 1;
@@ -29700,7 +29688,7 @@ ResetPlayerToy(playerid)
 
 RemovePlayerToys(playerid)
 {
-	for(new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+	for(new i = 0; i < MAX_PLAYER_TOYS; i++)
 	{
 	    if(IsPlayerAttachedObjectSlotUsed(playerid, i))
 	    {
@@ -29711,7 +29699,7 @@ RemovePlayerToys(playerid)
 
 AttachPlayerToys(playerid)
 {
-	for(new i = 0; i < MAX_PLAYER_ATTACHED_OBJECTS; i++)
+	for(new i = 0; i < MAX_PLAYER_TOYS; i++)
 	{
 	    if(PlayerToyData[playerid][i][toy_model] != 0)
 	    {
@@ -30477,4 +30465,10 @@ ResetHouse(slot = -1)
         HouseData[r][e_namecache][0] = '\0';
 	}
 	return 1;
+}
+
+no_vip(playerid, msg[])
+{
+	format(gstr2, sizeof(gstr2), ""nef_green"%s\n\n"white"Get your VIP status at www.havocserver.com/vip", msg);
+	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player", gstr2, "OK", "");
 }
