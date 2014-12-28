@@ -563,14 +563,14 @@ enum
 	gMINIGUN2,
 	gSNIPER,
 	gROCKETDM,
-	BG,
+	gJETPACKDM,
 	DM,
-	WAR,
-	CNR,
+	gWAR,
+	gCNR,
 	HOUSE,
 	BUYCAR,
 	gDUEL,
-	GUNGAME,
+	gGUNGAME,
 	FALLOUT,
 	gBUILDRACE,
 	STORE,
@@ -3174,7 +3174,7 @@ public OnPlayerSpawn(playerid)
 		{
 		    SetTimerEx("SetPlayerDerbyStaticMeshes", 10, 0, "i", playerid);
 		}
-		case WAR:
+		case gWAR:
 		{
 			switch(random(4))
 			{
@@ -3318,7 +3318,7 @@ public OnPlayerSpawn(playerid)
 			RandomWeapons(playerid);
 			gTeam[playerid] = gFREEROAM;
 		}
-		case GUNGAME:
+		case gGUNGAME:
   		{
 			ResetPlayerWeapons(playerid);
             LoadMap(playerid);
@@ -3336,7 +3336,7 @@ public OnPlayerSpawn(playerid)
 			if(GunGamePlayers() >= 16) SetPlayerHealth(playerid, 100.0);
 			else SetPlayerHealth(playerid, (25 + 5 * GunGamePlayers()));
 		}
-        case CNR:
+        case gCNR:
         {
 			switch(GetPVarInt(playerid, "inCNR"))
 			{
@@ -3695,7 +3695,7 @@ public OnPlayerDisconnect(playerid, reason)
 		    {
 			    BGTeam2Players--;
 		    }
-		    case CNR:
+		    case gCNR:
 		    {
 		        Streamer_ToggleItemUpdate(playerid, STREAMER_TYPE_OBJECT, 1);
 		        Streamer_ToggleItemUpdate(playerid, STREAMER_TYPE_PICKUP, 1);
@@ -4596,7 +4596,7 @@ public OnPlayerUpdate(playerid)
 
 	switch(gTeam[playerid])
 	{
-	    case GUNGAME:
+	    case gGUNGAME:
 	    {
 			if(!GunGame_Player[playerid][dead])
 			{
@@ -5386,13 +5386,13 @@ public OnPlayerDeath(playerid, killerid, reason)
 				GivePlayerMoneyEx(killerid, 2500, true, true);
 		    }
 		}
-		case DM, WAR, gSAWN:
+		case DM, gWAR, gSAWN:
 		{
   		    if(IsPlayerAvail(killerid))
 		    {
 				switch(gTeam[killerid])
 				{
-				    case DM, WAR, gSAWN:
+				    case DM, gWAR, gSAWN:
 				    {
 				        GivePlayerScoreEx(killerid, 1, true, true);
 						GivePlayerMoneyEx(killerid, 2500, true, true);
@@ -5410,11 +5410,11 @@ public OnPlayerDeath(playerid, killerid, reason)
 		    }
 		    SetPlayerWorldBounds(playerid, 20000.0000, -20000.0000, 20000.0000, -20000.0000);
 		}
-		case CNR:
+		case gCNR:
 		{
   		    if(IsPlayerAvail(killerid))
 		    {
-		        if(gTeam[killerid] == CNR)
+		        if(gTeam[killerid] == gCNR)
 		        {
 			        GivePlayerScoreEx(killerid, 2, true, true);
 					GivePlayerMoneyEx(killerid, 3000, true, true);
@@ -5426,17 +5426,17 @@ public OnPlayerDeath(playerid, killerid, reason)
 				}
 			}
 		}
-		case GUNGAME:
+		case gGUNGAME:
 		{
 			GunGame_Player[playerid][dead] = true;
 
-			if(IsPlayerAvail(killerid) && gTeam[killerid] == GUNGAME)
+			if(IsPlayerAvail(killerid) && gTeam[killerid] == gGUNGAME)
 			{
 		        GivePlayerScoreEx(killerid, 1, true, true);
 				GivePlayerMoneyEx(killerid, 2000, true, true);
 			}
 
-			if(killerid == INVALID_PLAYER_ID || gTeam[killerid] != GUNGAME)
+			if(killerid == INVALID_PLAYER_ID || gTeam[killerid] != gGUNGAME)
 			{
 				SetPlayerCameraPos(playerid, 179.2239, 2097.3289, 93.4786);
 				SetPlayerCameraLookAt(playerid, 178.3643, 2096.8113, 92.8986);
@@ -5468,7 +5468,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 					for(new i = 0; i < MAX_PLAYERS; i++)
 					{
 					    g_Data[i][GG_iPlayer] = i;
-						if(IsPlayerAvail(i) && gTeam[i] == GUNGAME)
+						if(IsPlayerAvail(i) && gTeam[i] == gGUNGAME)
 						{
 							g_Data[i][GG_iLevel] = GunGame_Player[i][level];
 			    		}
@@ -5530,7 +5530,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 					for(new i = 0; i < MAX_PLAYERS; i++)
 				    {
-						if(IsPlayerAvail(i) && gTeam[i] == GUNGAME)
+						if(IsPlayerAvail(i) && gTeam[i] == gGUNGAME)
 						{
 							GunGame_Player[i][level] = 0;
 							ResetPlayerWeapons(i);
@@ -5559,7 +5559,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 						format(gstr, sizeof gstr, "%s reached the last level!", __GetName(killerid));
      				    for(new i = 0; i < MAX_PLAYERS; i++)
 					    {
-							if(IsPlayerAvail(i) && gTeam[i] == GUNGAME)
+							if(IsPlayerAvail(i) && gTeam[i] == gGUNGAME)
 							{
 		                		GameTextForPlayer(i, gstr, 2500, 3);
 							}
@@ -7925,7 +7925,7 @@ YCMD:war(playerid, params[], help)
 	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
-    if(gTeam[playerid] == WAR) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gWAR) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 
     CheckPlayerGod(playerid);
@@ -7952,7 +7952,7 @@ YCMD:war(playerid, params[], help)
 	GivePlayerWeapon(playerid, 10, 1);
 	
 	Command_ReProcess(playerid, "/stopanims", false);
-	gTeam[playerid] = WAR;
+	gTeam[playerid] = gWAR;
 	
 	SetPlayerVirtualWorld(playerid, 5);
 	SetCameraBehindPlayer(playerid);
@@ -8275,7 +8275,7 @@ YCMD:parch(playerid, params[], help)
 
 YCMD:colors(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8304,7 +8304,7 @@ YCMD:colors(playerid, params[], help)
 
 YCMD:random(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8317,7 +8317,7 @@ YCMD:random(playerid, params[], help)
 
 YCMD:red(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8328,7 +8328,7 @@ YCMD:red(playerid, params[], help)
 
 YCMD:yellow(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8339,7 +8339,7 @@ YCMD:yellow(playerid, params[], help)
 
 YCMD:grey(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8350,7 +8350,7 @@ YCMD:grey(playerid, params[], help)
 
 YCMD:pink(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8361,7 +8361,7 @@ YCMD:pink(playerid, params[], help)
 
 YCMD:blue(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8372,7 +8372,7 @@ YCMD:blue(playerid, params[], help)
 
 YCMD:green(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8383,7 +8383,7 @@ YCMD:green(playerid, params[], help)
 
 YCMD:white(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -8394,7 +8394,7 @@ YCMD:white(playerid, params[], help)
 
 YCMD:orange(playerid, params[], help)
 {
-	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
 	{
 	    return SCM(playerid, -1, ""er"You can't use this command while being in TDM or CNR!");
 	}
@@ -9213,7 +9213,7 @@ YCMD:gungame(playerid, params[], help)
 	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
-    if(gTeam[playerid] == GUNGAME) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gGUNGAME) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 
     CheckPlayerGod(playerid);
@@ -9225,7 +9225,7 @@ YCMD:gungame(playerid, params[], help)
 	GunGame_Player[playerid][dead] = true;
 	GunGame_Player[playerid][pw] = true;
 
-	gTeam[playerid] = GUNGAME;
+	gTeam[playerid] = gGUNGAME;
 
     ResetPlayerWeapons(playerid);
     LoadMap(playerid);
@@ -9272,7 +9272,7 @@ YCMD:cnr(playerid, params[], help)
 	
 	ShowPlayerDialog(playerid, DIALOG_CNR, DIALOG_STYLE_LIST, ""YELLOW_E"Choose your side", string, "Select", "Cancel");
 */
-    if(gTeam[playerid] == CNR) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gCNR) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 
 	new robbers = 0, cops = 0;
@@ -10558,7 +10558,7 @@ YCMD:burn(playerid, params[], help)
 			}
 		    switch(gTeam[otherid])
 		    {
-		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, GUNGAME, SPEC, JAIL: return SCM(playerid, -1, ""er"You can't use this command on that player now");
+		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL: return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    }
 			if(!PlayerData[otherid][bDerbyWinner] && gTeam[otherid] == gDERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    
@@ -12924,7 +12924,7 @@ YCMD:slap(playerid, params[], help)
 		{
 		    switch(gTeam[player])
 		    {
-		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, GUNGAME, SPEC, JAIL, HOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
+		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL, HOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    }
 			if(!PlayerData[player][bDerbyWinner] && gTeam[player] == gDERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
 
@@ -13070,7 +13070,7 @@ YCMD:disarm(playerid, params[], help)
 		
 		if(IsPlayerAvail(player) && PlayerData[player][e_level] != MAX_ADMIN_LEVEL)
 		{
-			if(gTeam[player] == GUNGAME) return SCM(playerid, -1, ""er"Cannot disarm player in gungame");
+			if(gTeam[player] == gGUNGAME) return SCM(playerid, -1, ""er"Cannot disarm player in gungame");
 		    if(!IsPlayerAvail(player) || PlayerData[player][e_level] >= PlayerData[playerid][e_level]) return SCM(playerid, -1, ""er"Player is not available or is an higher level admin than you");
 
 			ResetPlayerWeapons(player);
@@ -16684,7 +16684,7 @@ YCMD:fucku(playerid, params[], help)
 
 YCMD:rob(playerid, params[], help)
 {
-	if(gTeam[playerid] == CNR)
+	if(gTeam[playerid] == gCNR)
 	{
 		new tick = GetTickCountEx();
 		if(PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL)
@@ -16740,7 +16740,7 @@ YCMD:rob(playerid, params[], help)
 				{
 		    		if(i == playerid) continue;
 		    		if(IsPlayerInAnyVehicle(i)) continue;
-		    		if(gTeam[i] != CNR) continue;
+		    		if(gTeam[i] != gCNR) continue;
 		    		if(IsPlayerOnDesktop(i)) {
 						SCM(playerid, COLOR_RED, "Server: "GREY2_E"Player is AFK.");
 						continue;
@@ -16808,7 +16808,7 @@ YCMD:ar(playerid, params[], help)
 		{
 	    	if(i == playerid) continue;
       		if(IsPlayerInAnyVehicle(i)) continue;
-      		if(gTeam[i] != CNR) continue;
+      		if(gTeam[i] != gCNR) continue;
 			GetPlayerPos(i, POS[0], POS[1], POS[2]);
 			
    		 	if(IsPlayerInRangeOfPoint(playerid, 3.8, POS[0], POS[1], POS[2]) && GetPlayerInterior(playerid) == GetPlayerInterior(i) && GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(i))
@@ -17376,7 +17376,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
   				{
   					case 0: // Cops
   	    			{
-  	    			    gTeam[playerid] = CNR;
+  	    			    gTeam[playerid] = gCNR;
 
 						SetPVarInt(playerid, "Robber", 0);
 						SetPVarInt(playerid, "Cop", 1);
@@ -17419,7 +17419,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                             return SCM(playerid, -1, ""er"There aren't enough cops in CNR!");
                         }
                         
-   			    		gTeam[playerid] = CNR;
+   			    		gTeam[playerid] = gCNR;
 
 						SetPVarInt(playerid, "Robber", 1);
 						SetPVarInt(playerid, "Cop", 0);
@@ -17468,7 +17468,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                             return SCM(playerid, -1, ""er"There aren't enough cops in CNR!");
                         }
 
-   			    		gTeam[playerid] = CNR;
+   			    		gTeam[playerid] = gCNR;
 
 						SetPVarInt(playerid, "Robber", 1);
 						SetPVarInt(playerid, "Cop", 0);
@@ -17505,7 +17505,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 							return true;
 						}
 
-   			    		gTeam[playerid] = CNR;
+   			    		gTeam[playerid] = gCNR;
 
 						SetPVarInt(playerid, "Robber", 0);
 						SetPVarInt(playerid, "Cop", 3);
@@ -17541,7 +17541,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 							return true;
 						}
 
-    					gTeam[playerid] = CNR;
+    					gTeam[playerid] = gCNR;
 
   	    				SetPVarInt(playerid, "Robber", 0);
 						SetPVarInt(playerid, "Cop", 2);
@@ -24947,7 +24947,7 @@ function:ProcessTick()
 			    {
 					T_DerbyPlayers++;
 			    }
-			    case GUNGAME:
+			    case gGUNGAME:
 			    {
 				    new wp[32],
 						pweapon = GetPlayerWeapon(i);
@@ -24983,7 +24983,7 @@ function:ProcessTick()
 			    {
 			        T_TDMPlayers++;
 			    }
-			    case WAR:
+			    case gWAR:
 			    {
 			        T_WarPlayers++;
 			    }
@@ -24995,7 +24995,7 @@ function:ProcessTick()
 			    {
 			        T_SniperPlayers++;
 			    }
-			    case CNR:
+			    case gCNR:
 			    {
 					T_CNRPlayers++;
 			    }
@@ -25029,7 +25029,7 @@ function:ProcessTick()
 				        }
 				        else
 				        {
-				            gTeam[i] = CNR;
+				            gTeam[i] = gCNR;
 				        }
 
 				    	DeletePVar(i, "JailedByAdmin");
@@ -27821,7 +27821,7 @@ ExitPlayer(playerid)
 			RemoveFromRaceBuilder(playerid);
 			return 0;
 	    }
-	    case CNR:
+	    case gCNR:
 	    {
 	        gTeam[playerid] = gFREEROAM;
 
@@ -27986,7 +27986,7 @@ ExitPlayer(playerid)
 			PlayerData[playerid][tickJoin_bmx] = 0;
 			return 0;
 		}
-		case DM, WAR, gSAWN:
+		case DM, gWAR, gSAWN:
 		{
 			gTeam[playerid] = gFREEROAM;
 			
@@ -28131,7 +28131,7 @@ ExitPlayer(playerid)
 			PlayerData[playerid][tickJoin_bmx] = 0;
 			return 0;
 		}
-		case GUNGAME:
+		case gGUNGAME:
 		{
   			gTeam[playerid] = gFREEROAM;
 
@@ -29865,7 +29865,7 @@ GunGamePlayers()
 {
 	new count = 0;
 	for(new i = 0; i < MAX_PLAYERS; i++) {
-	    if(gTeam[i] == GUNGAME) {
+	    if(gTeam[i] == gGUNGAME) {
 	        ++count;
 		}
 	}
