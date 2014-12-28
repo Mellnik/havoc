@@ -1,25 +1,16 @@
 Havoc Freeroam SA-MP Server
 ===========================
 
-1.00 (1st Feb 2015)
--------------------
-- More accurate unixtime conversion.
+Build 1 (1st Feb 2015)
+----------------------
 - Stores system has been rewritten. Stores now load and save from database.
 - Bans now include serverside information; Can be viewed at https://havocserver.com/bans
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/mappers).
 - Namechanges are now attached to an account id rather than a name to prevent confusion.
+- More accurate unixtime conversion for timings.
 - New toy slot arrangement:
-	Needed score:	Toy slots:
-				0		1
-			  100		2
-			  250 		3
-			  650		4
-			 1000 		5
-			 2000 		6
-			 5000		7
-			10000		8			
-- Set the maximum attached player objects to 8.			
+	Slot 1-4 Usable by everyone, Slot 5-6 VIP only.
 - Enterprise/House slots now rise within score:
 	Needed score:      House slots:    Enterprises slots:
 			 500           1                 1
@@ -47,6 +38,7 @@ Havoc Freeroam SA-MP Server
    * Enterpries now have a value like houses.
    * /sellto <playerid> <price> to sell your enterprise to another player. (Does not alter level)
    * /sell resets the level.
+   * Added '/accept enterprise' to to accept an enterprise offer.
 - Merged old /accept command into '/accept vip'
 - Dialog cleanups to avoid unnecessary overhead.
 - Removed announce commands for admins.
@@ -59,9 +51,9 @@ Havoc Freeroam SA-MP Server
 - Flip key has been set to key 'Y'.
 - Removed Gold Credits system.
 
-
 TODO
 ----
+- Jetpack Deathmatch
 - Beim connecten ein whitescreen? http://puu.sh/dLaIH/e79bbcea3e.jpg
 - Remove makes total registered players 10000
 - Add random messages like * Online players: 
@@ -80,6 +72,7 @@ TODO
 - Sone info mit gametext http://puu.sh/dJbkW/46ca58a7c8.jpg
 - Fixed money format bug ($-,1000) http://puu.sh/dJboY/95e82ee65a.jpg
 
+- VIP restrict /count to range
 - Removed godmode textdraw
 - Nach jedem house/auto/gang/entprise/register kauf sollte ein dialog kommen wit cmds die man nun nutzen kann.
 - Internal safetly handlers for score and money ranges.

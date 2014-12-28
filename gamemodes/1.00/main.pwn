@@ -106,9 +106,9 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 //#define HOSTNAME                        " 	      ..:: NEF ::.. ×Stunt/DM/Race/Minigames×"
 #define HOSTNAME                        "Havoc Freeroam"
 #if IS_RELEASE_BUILD == true
-#define CURRENT_VERSION                 "1.00"
+#define CURRENT_VERSION                 "Build 1"
 #else
-#define CURRENT_VERSION                 "beta-1.00"
+#define CURRENT_VERSION                 "PTS:Build 1"
 #endif
 #define SAMP_VERSION                    "0.3z-R4"
 #define MAX_REPORTS 					(7)
@@ -160,7 +160,7 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define SCM SendClientMessage
 #define SCMToAll SendClientMessageToAll
 #define MAX_ZONE_NAME                   (28)
-#define CAR_SHOPS                       (3)
+#define CUSTOM_CAR_SHOPS				(3)
 #define RGBA(%1,%2,%3,%4) (((((%1) & 0xff) << 24) | (((%2) & 0xff) << 16) | (((%3) & 0xff) << 8) | ((%4) & 0xff)))
 #define UpperToLower(%1) for(new ToLowerChar; ToLowerChar < strlen(%1); ToLowerChar++) if(%1[ToLowerChar] > 64 && %1[ToLowerChar] < 91) %1[ToLowerChar] += 32
 
@@ -561,9 +561,8 @@ enum
 	gTDM_VOTING,
 	gMINIGUN,
 	gMINIGUN2,
-	SNIPER,
-	ROCKETDM,
-	JETPACKDM,
+	gSNIPER,
+	gROCKETDM,
 	BG,
 	DM,
 	WAR,
@@ -2306,13 +2305,13 @@ static const Float:g_ArmorPickups[16][3] =
 	{795.4474, 854.0259, 9.0281},
 	{-669.9799, 972.6474, 11.683}
 };
-static const Float:g_CarShopLocations[CAR_SHOPS][4] =
+static const Float:g_CarShopLocations[CUSTOM_CAR_SHOPS][4] =
 {
 	{2131.2915, -1144.3942, 24.7986, 291.9600},
 	{-1639.0990, 1202.4598, 7.2247, 68.4220},
 	{2106.9548, 1403.5167, 11.1395, 89.2744}
 };
-static const Float:g_CarShopTelePos[CAR_SHOPS][4] =
+static const Float:g_CarShopTelePos[CUSTOM_CAR_SHOPS][4] =
 {
 	{2107.1802, 1378.5853, 10.8618, 1.2502},
 	{2127.6726, -1129.2881, 25.5523, 175.3369},
@@ -2727,7 +2726,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	g_RacePosition[MAX_PLAYERS],
 	m_PlayerRecord,
 	g_sCustomCarCategory[512],
-	g_CustomCarShops[CAR_SHOPS][E_CAR_SHOP],
+	g_CustomCarShops[CUSTOM_CAR_SHOPS][E_CAR_SHOP],
     g_dialogTpString[2000],
 	g_cmdString[32],
 	g_tickProcessTickCalls = 0,
@@ -3265,7 +3264,7 @@ public OnPlayerSpawn(playerid)
 		    RandomBGSpawn(playerid, CurrentBGMap, BG_TEAM2);
 		    SetPlayerHealth(playerid, 100.0);
 		}
-		case ROCKETDM:
+		case gROCKETDM:
 		{
   			ResetPlayerWeapons(playerid);
   			GivePlayerWeapon(playerid, 35, 99999);
@@ -3277,7 +3276,7 @@ public OnPlayerSpawn(playerid)
 			SetPlayerPos(playerid, RocketDM_Spawns[rand][0], RocketDM_Spawns[rand][1], RocketDM_Spawns[rand][2] + 2.5);
 			SetPlayerFacingAngle(playerid, RocketDM_Spawns[rand][3]);
 		}
-		case SNIPER:
+		case gSNIPER:
 		{
   			ResetPlayerWeapons(playerid);
 			SetPlayerVirtualWorld(playerid, SNIPER_WORLD);
@@ -5350,9 +5349,9 @@ public OnPlayerDeath(playerid, killerid, reason)
 				GivePlayerMoneyEx(killerid, 2000, true, true);
 		    }
 		}
-		case SNIPER:
+		case gSNIPER:
 		{
-		    if(IsPlayerAvail(killerid) && gTeam[killerid] == SNIPER)
+		    if(IsPlayerAvail(killerid) && gTeam[killerid] == gSNIPER)
 		    {
 				GivePlayerScoreEx(killerid, 2, true, true);
 				GivePlayerMoneyEx(killerid, 3000, true, true);
@@ -5361,9 +5360,9 @@ public OnPlayerDeath(playerid, killerid, reason)
 		    /*new rand = random(14);
 		    SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid), Sniper_Spawns[rand][0], Sniper_Spawns[rand][1], Sniper_Spawns[rand][2] + 3.5, Sniper_Spawns[rand][3]);*/
 		}
-		case ROCKETDM:
+		case gROCKETDM:
 		{
-		    if(IsPlayerAvail(killerid) && gTeam[killerid] == ROCKETDM)
+		    if(IsPlayerAvail(killerid) && gTeam[killerid] == gROCKETDM)
 		    {
 				GivePlayerScoreEx(killerid, 1, true, true);
 				GivePlayerMoneyEx(killerid, 2000, true, true);
@@ -6332,7 +6331,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 		  		}
 			}
 
-			for(new i = 0; i < CAR_SHOPS; i++)
+			for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
 			{
 			    if(pickupid == g_CustomCarShops[i][e_pickup])
 			    {
@@ -6362,7 +6361,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 		{
 		    if(pickupid == g_CarShopInteriorPickup)
 		    {
-			    for(new i = 0; i < CAR_SHOPS; i++)
+			    for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
 			    {
 			        if(gLastMap[playerid] == g_CustomCarShops[i][e_pickup])
 			        {
@@ -7377,7 +7376,7 @@ YCMD:bayside(playerid, params[], help)
 }
 YCMD:vs(playerid, params[], help)
 {
-	new rand = random(CAR_SHOPS);
+	new rand = random(CUSTOM_CAR_SHOPS);
 
     PortPlayerMapVeh(playerid, g_CarShopTelePos[rand][0], g_CarShopTelePos[rand][1], g_CarShopTelePos[rand][2], g_CarShopTelePos[rand][3], g_CarShopTelePos[rand][0], g_CarShopTelePos[rand][1], g_CarShopTelePos[rand][2], g_CarShopTelePos[rand][3], "Car Shop", "vs");
     return 1;
@@ -9727,7 +9726,7 @@ YCMD:sniper(playerid, params[], help)
 
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
-	gTeam[playerid] = SNIPER;
+	gTeam[playerid] = gSNIPER;
 	ResetPlayerWeapons(playerid);
 	GivePlayerWeapon(playerid, 34, 99999);
 	SetPlayerVirtualWorld(playerid, SNIPER_WORLD);
@@ -9745,12 +9744,12 @@ YCMD:sniper(playerid, params[], help)
 YCMD:rocketdm(playerid, params[], help)
 {
     if(PlayerData[playerid][bGWarMode]) return SCM(playerid, -1, ""er"You can't join minigames while being in a Gang War, type /exit");
-    if(gTeam[playerid] == ROCKETDM) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gROCKETDM) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
-	gTeam[playerid] = ROCKETDM;
+	gTeam[playerid] = gROCKETDM;
 	ResetPlayerWeapons(playerid);
 	GivePlayerWeapon(playerid, 35, 99999);
 	SetPlayerVirtualWorld(playerid, ROCKETDM_WORLD);
@@ -22428,7 +22427,7 @@ server_load_visuals()
         pick_armor[i] = CreateDynamicPickup(1242, 23, g_ArmorPickups[i][0], g_ArmorPickups[i][1], g_ArmorPickups[i][2]);
     }
 
-	for(new i = 0; i < CAR_SHOPS; i++)
+	for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
 	{
 		g_CustomCarShops[i][e_pickup] = CreateDynamicPickup(1559, 23, g_CarShopLocations[i][0], g_CarShopLocations[i][1], g_CarShopLocations[i][2], 0, -1, -1, 200.0);
 		g_CustomCarShops[i][e_mapicon] = CreateDynamicMapIcon(g_CarShopLocations[i][0], g_CarShopLocations[i][1], g_CarShopLocations[i][2], 55, 1, 0, -1, -1, 200.0);
@@ -24992,7 +24991,7 @@ function:ProcessTick()
 			    {
 			        T_MinigunPlayers++;
 			    }
-			    case SNIPER:
+			    case gSNIPER:
 			    {
 			        T_SniperPlayers++;
 			    }
@@ -25000,11 +24999,11 @@ function:ProcessTick()
 			    {
 					T_CNRPlayers++;
 			    }
-			    case ROCKETDM:
+			    case gROCKETDM:
 			    {
 			        T_RocketDMPlayers++;
 			    }
-			    case JETPACKDM:
+			    case gJETPACKDM:
 			    {
 			        T_JPDMPlayers++;
 			    }
@@ -27873,7 +27872,7 @@ ExitPlayer(playerid)
 	    }
 	    case BUYCAR:
 	    {
-		    for(new i = 0; i < CAR_SHOPS; i++)
+		    for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
 		    {
 		        if(gLastMap[playerid] == g_CustomCarShops[i][e_pickup])
 		        {
@@ -27894,7 +27893,7 @@ ExitPlayer(playerid)
 	        SCM(playerid, -1, ""er"Leave the store by entering the pickup");
 	        return 0;
 	    }
-	    case gMINIGUN, gMINIGUN2, SNIPER, ROCKETDM:
+	    case gMINIGUN, gMINIGUN2, gSNIPER, gROCKETDM:
 	    {
 			gTeam[playerid] = gFREEROAM;
 			
