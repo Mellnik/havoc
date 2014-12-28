@@ -567,7 +567,7 @@ enum
 	DM,
 	gWAR,
 	gCNR,
-	HOUSE,
+	gHOUSE,
 	BUYCAR,
 	gDUEL,
 	gGUNGAME,
@@ -3311,7 +3311,7 @@ public OnPlayerSpawn(playerid)
 			SetPlayerPosEx(playerid, Minigun2_Spawns[rand][0], Minigun2_Spawns[rand][1], floatadd(Minigun2_Spawns[rand][2], 2.5));
 			SetPlayerFacingAngle(playerid, Minigun2_Spawns[rand][3]);
 		}
-		case HOUSE:
+		case gHOUSE:
 		{
 			ResetPlayerWorld(playerid);
 			RandomSpawn(playerid);
@@ -7778,7 +7778,7 @@ YCMD:station(playerid, params[], help)
 
 YCMD:myskin(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     if(IsPlayerInAnyVehicle(playerid)) return player_notice(playerid, "Exit your vehicle", "");
 
 	extract params -> new skin; else
@@ -7794,7 +7794,7 @@ YCMD:myskin(playerid, params[], help)
 
 YCMD:skins(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     if(IsPlayerInAnyVehicle(playerid)) return player_notice(playerid, "Exit your vehicle", "");
 
     ShowModelSelectionMenu(playerid, skinlist, "Select Skin", 0x0500009C, 0x050000FF, 0xFAFAFA4D);
@@ -7823,7 +7823,7 @@ YCMD:fallout(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == FALLOUT) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7875,7 +7875,7 @@ YCMD:derby(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gDERBY) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7922,7 +7922,7 @@ YCMD:war(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gWAR) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7969,7 +7969,7 @@ YCMD:dm(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8003,7 +8003,7 @@ YCMD:dm2(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8038,7 +8038,7 @@ YCMD:dm3(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8072,7 +8072,7 @@ YCMD:dm4(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8107,7 +8107,7 @@ YCMD:sawn(playerid, params[], help)
 
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 
     if(gTeam[playerid] == gSAWN) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8510,7 +8510,7 @@ YCMD:enter(playerid, params[], help)
 YCMD:h(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE) return SCM(playerid, RED, NOT_AVAIL);
 
 	new string[512], count = 0;
 	for(new i = 0; i < MAX_HOUSES; i++)
@@ -8607,7 +8607,7 @@ YCMD:upgrade(playerid, params[], help)
 
 YCMD:spawn(playerid, params[], help)
 {
-	if(gTeam[playerid] != gFREEROAM || gTeam[playerid] != HOUSE) return SCM(playerid, RED, NOT_AVAIL);
+	if(gTeam[playerid] != gFREEROAM || gTeam[playerid] != gHOUSE) return SCM(playerid, RED, NOT_AVAIL);
     if(!islogged(playerid)) return notlogged(playerid);
 
 	if(PlayerSettings[playerid][e_house_spawn] != 0)
@@ -8726,7 +8726,7 @@ YCMD:accept(playerid, params[], help)
 
         for(new pid = 0; pid < MAX_PLAYERS; pid++)
         {
-            if(gTeam[pid] == HOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[r][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[r][e_id] + 1000))
+            if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[r][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[r][e_id] + 1000))
             {
                 gTeam[pid] = gFREEROAM;
                 SetPlayerPos(pid, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2]);
@@ -9050,7 +9050,7 @@ YCMD:sell(playerid, params[], help)
 		    
         for(new pid = 0; pid < MAX_PLAYERS; pid++)
         {
-            if(gTeam[pid] == HOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[i][e_id] + 1000))
+            if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[i][e_id] + 1000))
             {
                 gTeam[pid] = gFREEROAM;
                 SetPlayerPos(pid, HouseData[i][e_pos][0], HouseData[i][e_pos][1], HouseData[i][e_pos][2]);
@@ -9121,7 +9121,7 @@ YCMD:lock(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
     
-    if(gTeam[playerid] == HOUSE)
+    if(gTeam[playerid] == gHOUSE)
     {
 		for(new i = 0; i < MAX_HOUSES; i++)
 		{
@@ -9210,7 +9210,7 @@ YCMD:gungame(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gGUNGAME) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -9420,7 +9420,7 @@ YCMD:tdm(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -12924,7 +12924,7 @@ YCMD:slap(playerid, params[], help)
 		{
 		    switch(gTeam[player])
 		    {
-		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL, HOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
+		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL, gHOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    }
 			if(!PlayerData[player][bDerbyWinner] && gTeam[player] == gDERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
 
@@ -13951,7 +13951,7 @@ YCMD:race(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, HOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 
     if(gTeam[playerid] == gRACE) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -16331,7 +16331,7 @@ YCMD:toys(playerid, params[], help)
 {
     if(!islogged(playerid)) return notlogged(playerid);
     
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL) return SCM(playerid, RED, NOT_AVAIL);
 	if(IsPlayerInAnyVehicle(playerid)) return SCM(playerid, -1, ""er"Not useable in vehicles");
 
 	new string[512], tmp[64];
@@ -16470,7 +16470,7 @@ YCMD:anims(playerid, params[], help)
 
 YCMD:stopanims(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
     ClearAnimations(playerid);
 	return 1;
@@ -16478,7 +16478,7 @@ YCMD:stopanims(playerid, params[], help)
 
 YCMD:handsup(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -16488,7 +16488,7 @@ YCMD:handsup(playerid, params[], help)
 
 YCMD:cigar(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -16498,7 +16498,7 @@ YCMD:cigar(playerid, params[], help)
 
 YCMD:carry(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -16508,7 +16508,7 @@ YCMD:carry(playerid, params[], help)
 
 YCMD:piss(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -16519,7 +16519,7 @@ YCMD:piss(playerid, params[], help)
 
 YCMD:wank(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -16529,7 +16529,7 @@ YCMD:wank(playerid, params[], help)
 
 YCMD:crossarms(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
 
 	extract params -> new crossarms; else
 	{
@@ -16550,7 +16550,7 @@ YCMD:crossarms(playerid, params[], help)
 
 YCMD:sit(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
 
     extract params -> new sit; else
     {
@@ -16575,7 +16575,7 @@ YCMD:sit(playerid, params[], help)
 
 YCMD:dance(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
 
     extract params -> new dance; else
     {
@@ -16614,7 +16614,7 @@ YCMD:dance(playerid, params[], help)
 
 YCMD:vomit(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -16624,7 +16624,7 @@ YCMD:vomit(playerid, params[], help)
 
 YCMD:drunk(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
 
@@ -16634,7 +16634,7 @@ YCMD:drunk(playerid, params[], help)
 
 YCMD:wave(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -16644,7 +16644,7 @@ YCMD:wave(playerid, params[], help)
 
 YCMD:lay(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -16654,7 +16654,7 @@ YCMD:lay(playerid, params[], help)
 
 YCMD:smoke(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -16664,7 +16664,7 @@ YCMD:smoke(playerid, params[], help)
 
 YCMD:laugh(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
 
@@ -16674,7 +16674,7 @@ YCMD:laugh(playerid, params[], help)
 
 YCMD:fucku(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
 
@@ -16775,7 +16775,7 @@ YCMD:rob(playerid, params[], help)
 	}
 	else
 	{
-	    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != HOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+	    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
 		Command_ReProcess(playerid, "/stopanims", false);
 		player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
 	    
@@ -18447,7 +18447,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				/* Remove all players from house */
 	            for(new pid = 0; pid < MAX_PLAYERS; pid++)
 	            {
-	                if(gTeam[pid] == HOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[PlayerData[playerid][iHouseLastSel]][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[PlayerData[playerid][iHouseLastSel]][e_id] + 1000))
+	                if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[PlayerData[playerid][iHouseLastSel]][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[PlayerData[playerid][iHouseLastSel]][e_id] + 1000))
 	                {
 	                    gTeam[pid] = gFREEROAM;
 	                    SetPlayerPos(pid, HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][0], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][1], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][2]);
@@ -27907,7 +27907,7 @@ ExitPlayer(playerid)
 			PlayerData[playerid][tickJoin_bmx] = 0;
 			return 0;
 	    }
-		case HOUSE:
+		case gHOUSE:
 		{
 			for(new i = 0; i < MAX_HOUSES; i++)
 			{
@@ -30217,7 +30217,7 @@ EnterHouse(playerid, i)
 		return SCM(playerid, -1, ""er"This house is locked");
 	}
 
-    gTeam[playerid] = HOUSE;
+    gTeam[playerid] = gHOUSE;
     SetPlayerInterior(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][interior]);
 	SetPlayerVirtualWorld(playerid, HouseData[i][e_id] + 1000);
 	SetPlayerPos(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][house_x], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_y], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_z]);
