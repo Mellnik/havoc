@@ -55,6 +55,8 @@ Build 1 (1st Feb 2015)
 
 TODO
 ----
+- gbase http://puu.sh/dMLsJ/308a8ff150.jpg
+- Remove paydays?
 - Jetpack Deathmatch
 - Beim connecten ein whitescreen? http://puu.sh/dLaIH/e79bbcea3e.jpg
 - Remove makes total registered players 10000
@@ -66,13 +68,16 @@ TODO
 - add altnamed /id -> find
 - http://puu.sh/dJb8H/9089f52700.jpg
 - Add mute message in GameTexts http://puu.sh/dJbc2/a0e5912058.jpg
-- GZones http://puu.sh/dJbe0/70d6368c92.jpg
-- Stats: http://puu.sh/dJbfL/513da7751c.jpg
+- GZones http://puu.sh/dJbe0/70d6368c92.jpg http://puu.sh/dMLo3/0a537ea4e3.jpg
+- Stats: http://puu.sh/dJbfL/513da7751c.jpg http://puu.sh/dMLlJ/02980c505f.jpg
 - After register: http://puu.sh/dJbgC/00b62979eb.jpg
 - More stats: http://puu.sh/dJbjf/956204b1f2.jpg
 - http://puu.sh/dJbjT/2610536230.jpg
 - Sone info mit gametext http://puu.sh/dJbkW/46ca58a7c8.jpg
 - Fixed money format bug ($-,1000) http://puu.sh/dJboY/95e82ee65a.jpg
+- You are muted http://puu.sh/dMLpa/738142a012.jpg
+- http://puu.sh/dMLr2/92537b0237.jpg
+- http://puu.sh/dMLs5/657a188d38.jpg
 
 - VIP restrict /count to range
 - Removed godmode textdraw
