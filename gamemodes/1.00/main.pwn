@@ -23364,6 +23364,7 @@ CreateFinalCar(playerid, pv_slot)
 
     TogglePlayerControllable(playerid, true);
     PutPlayerInVehicle(playerid, PlayerPVData[playerid][PVSelect[playerid]][e_vehicleid], 0);
+	SetCameraBehindPlayer(playerid);
     player_notice(playerid, "Custom car purchased", "");
     gTeam[playerid] = gFREEROAM;
 
@@ -29670,6 +29671,7 @@ ResetPlayerPV(playerid)
 	    PlayerPVData[playerid][i][e_color2] = 0;
  	    PlayerPVData[playerid][i][e_neon1] = -1;
 	    PlayerPVData[playerid][i][e_neon2] = -1;
+	    
 		for(new r = 0; r < 17; r++)
 	    {
             PlayerPVData[playerid][i][e_mods][r] = 0;
