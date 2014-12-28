@@ -9640,7 +9640,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/unban /oban /sethealth /healall /armorall /cashfall /scorefall\n\n");
+		strcat(string, "/unban /oban /sethealth /healall /armorall\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
@@ -15901,80 +15901,6 @@ YCMD:weather(playerid, params[], help)
 	format(gstr, sizeof(gstr), "You've set your weather to '%i'", weather);
 	SCM(playerid, BLUE, gstr);
     SCM(playerid, NEF_GREEN, "-> "PINK_E"Weather set! Use /rtime to reset your time and or weather!");
-	return 1;
-}
-
-YCMD:cashfall(playerid, params[], help)
-{
-	if(PlayerData[playerid][e_level] >= 4)
-	{
-		extract params -> new money; else
-		{
-			return SCM(playerid, NEF_GREEN, "Usage: /cashfall <cash>");
-		}
-
-		if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL) {
-			if(money > 50000 || money < 1) return SCM(playerid, -1, ""er"Cash: $1 - $50,000"); // Needs to be increased for eventful requirements. 
-		} else {
-		    if(money > 10000 || money < 1) return SCM(playerid, -1, ""er"Cash: $1 - $10,000");
-		}
-
-        format(gstr, sizeof(gstr), "~g~+$%i USD", money);
-		for(new i = 0; i < MAX_PLAYERS; i++)
-		{
-			if(IsPlayerAvail(i))
-			{
-				PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
-				GivePlayerMoneyEx(i, money, false, true);
-				player_notice(i, "CASHFALL", gstr, 4000);
-			}
-		}
-
-		format(gstr, sizeof(gstr), "Admin %s(%i) has given all players $%s", __GetName(playerid), playerid, number_format(money));
-		SCMToAll(YELLOW, gstr);
-		print(gstr);
-	}
-	else
-	{
-		SCM(playerid, -1, NO_PERM);
-	}
-	return 1;
-}
-
-YCMD:scorefall(playerid, params[], help)
-{
-	if(PlayerData[playerid][e_level] >= 4)
-	{
-		extract params -> new score; else
-		{
-			return SCM(playerid, NEF_GREEN, "Usage: /scorefall <score>");
-		}
-
-		if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL) {
-			if(score > 100 || score < 1) return SCM(playerid, -1, ""er"Score: 1 - 100");
-		} else {
-		    if(score > 100 || score < 1) return SCM(playerid, -1, ""er"Score: 1 - 25");
-		}
-
-        format(gstr, sizeof(gstr), "~y~+%i score", score);
-		for(new i = 0; i < MAX_PLAYERS; i++)
-		{
-			if(IsPlayerAvail(i))
-			{
-				PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
-				GivePlayerScoreEx(i, score, true, true);
-				player_notice(i, "SCOREFALL", gstr, 4000);
-			}
-		}
-		
-		format(gstr, sizeof(gstr), "Admin %s(%i) has given all players %i Score", __GetName(playerid), playerid, score);
-		SCMToAll(YELLOW, gstr);
-		print(gstr);
-	}
-	else
-	{
-		SCM(playerid, -1, NO_PERM);
-	}
 	return 1;
 }
 
