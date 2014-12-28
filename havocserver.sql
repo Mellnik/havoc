@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Dec 27, 2014 at 07:51 PM
+-- Generation Time: Dec 28, 2014 at 03:24 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -240,19 +240,6 @@ CREATE TABLE IF NOT EXISTS `news` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `online`
---
-
-CREATE TABLE IF NOT EXISTS `online` (
-  `id` int(10) unsigned NOT NULL,
-  `name` varchar(24) NOT NULL,
-  `ip` varchar(16) NOT NULL,
-  `date` int(10) unsigned NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `queue`
 --
 
@@ -266,14 +253,58 @@ CREATE TABLE IF NOT EXISTS `queue` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `races`
+--
+
+CREATE TABLE IF NOT EXISTS `races` (
+  `id` int(10) unsigned NOT NULL,
+  `vehicle` smallint(5) unsigned NOT NULL,
+  `type` tinyint(3) unsigned NOT NULL,
+  `world` int(11) NOT NULL,
+  `creator` int(10) unsigned NOT NULL,
+  `date` int(10) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `race_cps`
+--
+
+CREATE TABLE IF NOT EXISTS `race_cps` (
+  `id` int(10) unsigned NOT NULL,
+  `xpos` float(14,4) NOT NULL,
+  `ypos` float(14,4) NOT NULL,
+  `zpos` float(14,4) NOT NULL,
+  `seq` tinyint(3) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `race_records`
 --
 
 CREATE TABLE IF NOT EXISTS `race_records` (
   `id` int(10) unsigned NOT NULL,
-  `track` smallint(5) unsigned NOT NULL,
+  `player` int(10) unsigned NOT NULL,
   `time` int(11) NOT NULL,
   `date` int(10) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `race_startpos`
+--
+
+CREATE TABLE IF NOT EXISTS `race_startpos` (
+  `id` int(10) unsigned NOT NULL,
+  `xpos` float(14,4) NOT NULL,
+  `ypos` float(14,4) NOT NULL,
+  `zpos` float(14,4) NOT NULL,
+  `apos` float(14,4) NOT NULL,
+  `seq` tinyint(3) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -293,6 +324,18 @@ CREATE TABLE IF NOT EXISTS `server` (
 
 INSERT INTO `server` (`name`, `value`) VALUES
 ('player_record', '250');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `session`
+--
+
+CREATE TABLE IF NOT EXISTS `session` (
+  `id` int(10) unsigned NOT NULL,
+  `ip` varchar(16) NOT NULL,
+  `logon` int(10) unsigned NOT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -477,16 +520,22 @@ ALTER TABLE `news`
   ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `id` (`id`);
 
 --
--- Indexes for table `online`
---
-ALTER TABLE `online`
-  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `PlayerName` (`name`);
-
---
 -- Indexes for table `queue`
 --
 ALTER TABLE `queue`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `races`
+--
+ALTER TABLE `races`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `race_cps`
+--
+ALTER TABLE `race_cps`
+  ADD KEY `id` (`id`);
 
 --
 -- Indexes for table `race_records`
@@ -495,10 +544,22 @@ ALTER TABLE `race_records`
   ADD KEY `id` (`id`);
 
 --
+-- Indexes for table `race_startpos`
+--
+ALTER TABLE `race_startpos`
+  ADD KEY `id` (`id`);
+
+--
 -- Indexes for table `server`
 --
 ALTER TABLE `server`
   ADD PRIMARY KEY (`name`);
+
+--
+-- Indexes for table `session`
+--
+ALTER TABLE `session`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `settings`
@@ -570,15 +631,15 @@ ALTER TABLE `houses`
 ALTER TABLE `news`
   MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `online`
---
-ALTER TABLE `online`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
 -- AUTO_INCREMENT for table `queue`
 --
 ALTER TABLE `queue`
   MODIFY `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `races`
+--
+ALTER TABLE `races`
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `stores`
 --
@@ -618,10 +679,22 @@ ALTER TABLE `ncrecords`
 ADD CONSTRAINT `ncrecords_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `race_cps`
+--
+ALTER TABLE `race_cps`
+ADD CONSTRAINT `race_cps_ibfk_1` FOREIGN KEY (`id`) REFERENCES `races` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `race_records`
 --
 ALTER TABLE `race_records`
-ADD CONSTRAINT `race_records_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `race_records_ibfk_1` FOREIGN KEY (`id`) REFERENCES `races` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `race_startpos`
+--
+ALTER TABLE `race_startpos`
+ADD CONSTRAINT `race_startpos_ibfk_1` FOREIGN KEY (`id`) REFERENCES `races` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `settings`
