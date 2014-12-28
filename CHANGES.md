@@ -50,6 +50,7 @@ Build 1 (1st Feb 2015)
 - /sell /buy can now be used for houses and enterprises.
 - Flip key has been set to key 'Y'.
 - Removed Gold Credits system.
+- Chat layout: "[Gang Tag] PlayerName (id) chat message text"
 
 TODO
 ----
