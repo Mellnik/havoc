@@ -55,6 +55,7 @@ Build 1 (1st Feb 2015)
 
 TODO
 ----
+- http://gamerxserver.com/downloads/GamerX-Commands.txt
 - gbase http://puu.sh/dMLsJ/308a8ff150.jpg
 - Remove paydays?
 - Jetpack Deathmatch
