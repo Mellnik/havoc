@@ -4793,7 +4793,7 @@ public OnPlayerText(playerid, text[])
 		    format(gstr, sizeof(gstr), "» You have earned $%s + %i score.", number_format(xCash), xScore);
 		    SCM(playerid, GREEN, gstr);
 
-			format(gstr, sizeof(gstr), "Won the Reaction Test in %2i.%03i seconds!", second, rtime);
+			format(gstr, sizeof(gstr), "Won the reaction test in %2i.%03i seconds!", second, rtime);
 			SetPlayerChatBubble(playerid, gstr, NEF_YELLOW, 40.0, 5000);
 
 			GivePlayerMoneyEx(playerid, xCash, true, true);
