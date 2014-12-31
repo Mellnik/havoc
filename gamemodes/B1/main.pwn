@@ -11123,8 +11123,6 @@ YCMD:tplayer(playerid, params[], help)
 
 YCMD:ncrecords(playerid, params[], help)
 {
-    if(PlayerData[playerid][e_vip] != 1 && PlayerData[playerid][e_level] == 0) return Command_ReProcess(playerid, "/vip", false);
-
 	if(sscanf(params, "s[143]", gstr))
 	{
 		mysql_tquery(pSQL, "SELECT * FROM `ncrecords` ORDER BY `id` DESC LIMIT 10;", "OnNCReceive", "i", playerid);

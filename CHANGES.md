@@ -49,8 +49,15 @@ Build 1 (1st Feb 2015)
 - /sell /buy can now be used for houses and enterprises.
 - Flip key has been set to key 'Y'.
 - Removed Gold Credits system.
-- Chat layout: "[Gang Tag] PlayerName (id) chat message text"
+- Chat layout: "[Gang Tag] PlayerName (id) chat message text".
+- New chat shortcuts:
+  #text = Admin chat
+  *text = VIP chat
+  !text = Gang chat
+  $text = Enable color codes
+- Added color codes for VIPs.
 - Removed /scorefall and /cashfall.
+- Command /ncrecords is now accessible by everyone.
 
 TODO
 ----
@@ -118,7 +125,6 @@ TODO
   * /blevel (severity of vehicle boost)
   * /jlevel (severity of vehicle jumps)
   * Join message (VIP only)
-- Access to /ncrecords is now accessible by everyone.
 - Removed dynamic ramp system.
   
 VIP Features
