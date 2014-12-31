@@ -652,7 +652,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_gangid,
 	e_gangrank,
 	e_addpvslots,
-	e_addtoyslots,
 	e_derbywins,
 	e_racewins,
 	e_tdmwins,
@@ -29919,7 +29918,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][e_color] = 0;
 	PlayerData[playerid][e_skinsave] = -1;
 	PlayerData[playerid][e_addpvslots] = 0;
-	PlayerData[playerid][e_addtoyslots] = 0;
 	PlayerData[playerid][EnterpriseIdSelected] = 0;
 	PlayerData[playerid][DrawnNumber] = -1;
 	PlayerData[playerid][pTrailerVehicle] = INVALID_VEHICLE_ID;

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Dec 28, 2014 at 03:24 PM
+-- Generation Time: Dec 31, 2014 at 06:35 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `score` mediumint(8) unsigned NOT NULL,
   `money` int(11) NOT NULL,
   `bank` int(11) NOT NULL,
+  `pvslots` tinyint(3) unsigned NOT NULL,
   `kills` mediumint(8) unsigned NOT NULL,
   `deaths` mediumint(8) unsigned NOT NULL,
   `time` int(10) unsigned NOT NULL,
@@ -50,10 +51,6 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `maths` smallint(5) unsigned NOT NULL,
   `gangid` int(10) unsigned NOT NULL,
   `gangrank` tinyint(4) NOT NULL,
-  `addpvslots` tinyint(3) unsigned NOT NULL,
-  `addtoyslots` tinyint(3) unsigned NOT NULL,
-  `addhouseslots` tinyint(3) unsigned NOT NULL,
-  `addentslots` tinyint(3) unsigned NOT NULL,
   `winderby` smallint(5) unsigned NOT NULL,
   `winrace` smallint(5) unsigned NOT NULL,
   `wintdm` smallint(5) unsigned NOT NULL,

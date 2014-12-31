@@ -14,13 +14,12 @@ Build 1 (1st Feb 2015)
 - Enterprise/House slots now rise within score:
 	Needed score:      House slots:    Enterprises slots:
 			 500           1                 1
-			2000           2                 2
-			5000           3                 3
+			1000           2                 2
+			3000           3                 3
 		   10000           4                 4
 		   25000           5                 5
 - House system has been fully rewritten.
    * Every house has fix amount of pv slots which can be used to buy custom cars.
-   * You no longer need a specifc score to buy a house.
    * /h now shows all of your houses, select to teleports.
    * /upgrade to upgrade your house interior.
    * /password to lock a house and set a password dialog.
@@ -51,7 +50,7 @@ Build 1 (1st Feb 2015)
 - Flip key has been set to key 'Y'.
 - Removed Gold Credits system.
 - Chat layout: "[Gang Tag] PlayerName (id) chat message text"
-- Removed /scorefall, /cashfall
+- Removed /scorefall and /cashfall.
 
 TODO
 ----
@@ -130,6 +129,7 @@ VIP Features
 - $1,000,000 in-game money to your bank account.
 - Ability to spawn a jetpack (/jetpack).
 - Spawn the Hydra jet at your location (/hydra).
+- Two more /toys slots.
 - Start a countdown for you and players nearby (/cd).
 - Change your nickname all 30 days instead of 90 days.
 - Ability to specate players (/spec <playerid>)
