@@ -15422,7 +15422,7 @@ YCMD:stats(playerid, params[], help)
         	number_format(GetPlayerMoneyEx(player1)),
         	number_format(PlayerData[player1][e_bank]));
 
-		format(string2, sizeof(string2), "Race wins:\t\t%i\nDerby wins:\t\t%i\nReaction wins:\t\t%i\nMath wins:\t\t%i\nTDM wins:\t\t%i\nFallout wins:\t\t%i\nGungame wins:\t\t%i\nEvent wins:\t\t%i\nTime until PayDay:\t%i minutes\n",
+		format(string2, sizeof(string2), "Race wins:\t\t%i\nDerby wins:\t\t%i\nReaction wins:\t\t%i\nMath wins:\t\t%i\nTDM wins:\t\t%i\nFallout wins:\t\t%i\nGungame wins:\t\t%i\nTime until PayDay:\t%i minutes\n",
 	   		PlayerData[player1][e_racewins],
 	   		PlayerData[player1][e_derbywins],
 	   		PlayerData[player1][e_reaction],
@@ -15430,7 +15430,6 @@ YCMD:stats(playerid, params[], help)
 	   		PlayerData[player1][e_tdmwins],
 	   		PlayerData[player1][e_falloutwins],
 	   		PlayerData[player1][e_gungamewins],
-	   		PlayerData[player1][e_eventwins],
 	   		PlayerData[player1][e_payday]);
 
         format(string3, sizeof(string3), "Playing Time:\t\t%s\nGang:\t\t\t%s\nVIP:\t\t\t%s\nMedkits:\t\t%i\nHouses:\t\t%i\nEnterprises:\t\t%i\nWanteds:\t\t%i\nLast log in:\t\t%s",
@@ -15724,7 +15723,7 @@ YCMD:savecolor(playerid, params[], help)
 {
 	if(!islogged(playerid)) return notlogged(playerid);
 
-	if(PlayerData[playerid][e_color] == 0)
+	if(PlayerSettings[playerid][e_namecolor] == 0)
 	{
 	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Color saved! It will be loaded on next login. Use /deletecolor to remove it");
 	}
@@ -15732,7 +15731,7 @@ YCMD:savecolor(playerid, params[], help)
 	{
 	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Saved color overwritten! It will be loaded on next login. Use /deletecolor to remove it");
 	}
-    PlayerData[playerid][e_color] = GetPlayerColor(playerid);
+    PlayerSettings[playerid][e_namecolor] = GetPlayerColor(playerid);
 	return 1;
 }
 
@@ -15740,7 +15739,7 @@ YCMD:deletecolor(playerid, params[], help)
 {
 	if(!islogged(playerid)) return notlogged(playerid);
 
-	if(PlayerData[playerid][e_color] == 0)
+	if(PlayerSettings[playerid][e_namecolor] == 0)
 	{
 	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"You have no saved color yet!");
 	}
@@ -15748,7 +15747,7 @@ YCMD:deletecolor(playerid, params[], help)
 	{
 	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Color has been deleted!");
 	}
-    PlayerData[playerid][e_color] = 0;
+    PlayerSettings[playerid][e_namecolor] = 0;
 	return 1;
 }
 
@@ -17942,7 +17941,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 					case 5:
 					{
-					    if(PlayerData[playerid][e_color] == 0)
+					    if(PlayerSettings[playerid][e_namecolor] == 0)
 					    {
 					        Command_ReProcess(playerid, "/savecolor", false);
 					    }
@@ -26684,14 +26683,14 @@ GetPlayerSettings(playerid)
 	    strcat(string, gstr);
 	}
 
-	if(PlayerData[playerid][e_color] == 0)
+	if(PlayerSettings[playerid][e_namecolor] == 0)
 	{
 	    format(gstr, sizeof(gstr), ""white"6)\tSaved Color\tRandom\n");
 	    strcat(string, gstr);
 	}
 	else
 	{
-	    format(gstr, sizeof(gstr), ""white"6)\tSaved Color\t{%06x}Saved Color\n", PlayerData[playerid][e_color] >>> 8);
+	    format(gstr, sizeof(gstr), ""white"6)\tSaved Color\t{%06x}Saved Color\n", PlayerSettings[playerid][e_namecolor] >>> 8);
 	    strcat(string, gstr);
 	}
 
@@ -29115,9 +29114,9 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				format(gstr, sizeof(gstr), ""server_sign" "r_besch"You've been online for %s", GetPlayingTimeFormat(playerid));
 				SCM(playerid, -1, gstr);
 				
-				if(PlayerData[playerid][e_color] != 0)
+				if(PlayerSettings[playerid][e_namecolor] != 0)
 				{
-				    SetPlayerColor(playerid, PlayerData[playerid][e_color]);
+				    SetPlayerColor(playerid, PlayerSettings[playerid][e_namecolor]);
 				    SCM(playerid, -1, ""server_sign" "r_besch"Your saved color has been set. (/deletecolor to remove)");
 				}
 
@@ -29849,7 +29848,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][Boost] = BOOST:0;
 	PlayerData[playerid][bwSuspect] = SUSPECT:0;
 	PlayerData[playerid][BoostDeplete] = 0;
-	PlayerData[playerid][e_color] = 0;
 	PlayerData[playerid][e_skinsave] = -1;
 	PlayerData[playerid][e_addpvslots] = 0;
 	PlayerData[playerid][EnterpriseIdSelected] = 0;
@@ -29867,7 +29865,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][e_racewins] = 0;
 	PlayerData[playerid][e_falloutwins] = 0;
 	PlayerData[playerid][e_gungamewins] = 0;
-	PlayerData[playerid][e_eventwins] = 0;
 	PlayerData[playerid][e_tdmwins] = 0;
 	PlayerData[playerid][e_medkits] = 0;
 	PlayerData[playerid][tMedkit] = -1;
@@ -29946,6 +29943,8 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][DuelLocation] = 0;
 	PlayerData[playerid][DuelRequest] = INVALID_PLAYER_ID;
 	PlayerData[playerid][DuelRequestRecv] = INVALID_PLAYER_ID;
+
+    PlayerSettings[playerid][e_namecolor] = 0;
 
     if(PlayerData[playerid][pPreviewVehicle] != INVALID_VEHICLE_ID)
     {
