@@ -40,7 +40,6 @@ Build 1 (1st Feb 2015)
    * Added '/accept enterprise' to to accept an enterprise offer.
 - Merged old /accept command into '/accept vip'
 - Dialog cleanups to avoid unnecessary overhead.
-- Removed announce commands for admins.
 - Removed bullet hit sound from deathmatches.
 - Renamed /toggletp to /tgo.
 - Renamed /specoff to /unspec.
@@ -55,9 +54,13 @@ Build 1 (1st Feb 2015)
   *text = VIP chat
   !text = Gang chat
   $text = Enable color codes
-- Added color codes for VIPs.
-- Removed /scorefall and /cashfall.
+  @text = Reply to a private message
+- Added color codes for VIPs: <blue> <red> <green> <yellow>
+- Removed /scorefall, /cashfall and announce commands.
 - Command /ncrecords is now accessible by everyone.
+- Removed dynamic ramps.
+- You can now sell/buy houses/enterprises/custom cars on the Havoc Forums.
+- Removed godmode textdraw
 
 TODO
 ----
@@ -87,7 +90,6 @@ TODO
 - http://puu.sh/dMLs5/657a188d38.jpg
 
 - VIP restrict /count to range
-- Removed godmode textdraw
 - Nach jedem house/auto/gang/entprise/register kauf sollte ein dialog kommen wit cmds die man nun nutzen kann.
 - Internal safetly handlers for score and money ranges.
 - Improved spawn points to be more safe for players.
@@ -111,7 +113,6 @@ TODO
 - Airport maps have been improved to make it possible to lift off with a plane.
 - Gang score has been reduced if you attack a zone with many members.
 - Houses now determine how many private cars you may held within your account.
-- You can now sell/buy houses/enterprises/pvs on the Havoc forums.
 - Got rid of mSelection, now using an improved UI for toys.
 - New /settings dialog values which are being saved in the database:
   * /tgo (Allow teleports to you)
@@ -125,7 +126,6 @@ TODO
   * /blevel (severity of vehicle boost)
   * /jlevel (severity of vehicle jumps)
   * Join message (VIP only)
-- Removed dynamic ramp system.
   
 VIP Features
 ------------
@@ -135,11 +135,11 @@ VIP Features
 - $1,000,000 in-game money to your bank account.
 - Ability to spawn a jetpack (/jetpack).
 - Spawn the Hydra jet at your location (/hydra).
-- Two more /toys slots.
+- Additional slot 5 and 6 in /toys.
 - Start a countdown for you and players nearby (/cd).
 - Change your nickname all 30 days instead of 90 days.
 - Ability to specate players (/spec <playerid>)
-- The rainbow effects changes the color of your car very fast. (/rainbow)
+- The rainbow effects changes the color of your car very fast (/rainbow).
 - Labels:
 /label - attach the label
 /dlabel - detach the label
@@ -152,6 +152,7 @@ VIP Features
 - Attach a trailer to your truck (/trailer).
 - Refill your health and armor for $5,000 (/harefill).
 - Expand your forums inbox to 10,000 PMs.
+- Chat color codes: <blue> <red> <green> <yellow>
 
 - exclusive pvs nicht mehr spawnbar für normale spieler?
 - Mehr Zinsen?

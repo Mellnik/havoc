@@ -630,7 +630,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 {
 	/* ORM */
 	ORM:e_ormid,
-	
+
 	/* PLAYER DATA */
 	e_accountid,
 	e_name[MAX_PLAYER_NAME + 1],
@@ -641,11 +641,12 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_score,
 	e_money,
 	e_bank,
-	e_color,
+	e_pvslots,
 	e_kills,
 	e_deaths,
 	e_time,
 	e_skin,
+	e_bounty,
 	e_payday,
 	e_reaction,
 	e_mathwins,
@@ -657,14 +658,16 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_tdmwins,
 	e_falloutwins,
 	e_gungamewins,
-	e_eventwins,
 	e_wanteds,
+	e_duelwins,
+	e_duellost,
 	e_vip,
 	e_medkits,
 	e_regdate,
 	e_lastlogin,
 	e_lastnc,
-	e_skinsave,
+	e_timeskick,
+	e_timeslogin,
 
 	/* INTERNAL */
     tickLastAr,
@@ -715,7 +718,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	bool:bTextdraws,
 	bool:bRainbow,
 	bool:bVehicleInfo,
-	bool:bRampActive,
 	bool:bCaps,
 	bool:bGod,
 	bool:bGWarMode,
@@ -2813,7 +2815,6 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	Text:TXTFalloutData,
 	Text:TXTToyBox,
 	Text:TXTToyInfo,
-	Text:TXTGodTD,
 	Text:CheckTD,
 	Text:NewMsgTD,
     Text:AchTD[6],
@@ -3118,7 +3119,6 @@ public OnPlayerSpawn(playerid)
 			{
 			    SetPlayerHealth(playerid, 99999.0);
 			    ResetPlayerWeapons(playerid);
-			    TextDrawShowForPlayer(playerid, TXTGodTD);
 			}
 			else
 			{
@@ -4729,6 +4729,9 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 
 public OnPlayerText(playerid, text[])
 {
+	if(bGlobalShutdown)
+	    return 0;
+
     if(PlayerData[playerid][bOpenSeason])
 		return 0;
 
@@ -4737,22 +4740,16 @@ public OnPlayerText(playerid, text[])
 	    SCM(playerid, -1, ""er"You need to spawn to use the chat!");
 	    return 0;
 	}
-
 	if(PlayerData[playerid][bMuted])
 	{
 	    SCM(playerid, RED, "You are muted! Please wait until the time is over!");
 	    return 0;
 	}
-
-	if(bGlobalShutdown)
-	    return 0;
-
 	if((PlayerData[playerid][iCoolDownChat] + COOLDOWN_CHAT) >= GetTickCountEx())
 	{
 		player_notice(playerid, "1 message every second", "");
 	    return 0;
 	}
-
 	if(strfind(text, "/q", true) != -1 || strfind(text, "/ q", true) != -1 || strfind(text, "/quit", true) != -1 || strfind(text, "/ quit", true) != -1)
   		return 0;
 
@@ -4777,37 +4774,40 @@ public OnPlayerText(playerid, text[])
 
 	if(xTestBusy)
 	{
-		if(!strcmp(xChars, text, false) && ReactionOn)
-		{
-            ReactionOn = false;
+	    if(ReactionOn)
+	    {
+			if(!strcmp(xChars, text, false))
+			{
+	            ReactionOn = false;
+	            xTestBusy = false;
 
-		    new rtime = GetTickCountEx() - tickReactionStart,
-		        second = rtime / 1000;
+			    new rtime = GetTickCountEx() - tickReactionStart,
+			        second = rtime / 1000;
 
-			rtime = rtime - second * 1000;
+				rtime = rtime - second * 1000;
 
-			format(gstr, sizeof(gstr), "["vlila"REACTION"white"]: {%06x}%s(%i) "white"has won the reaction test in %2i.%03i seconds!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, second, rtime);
-		    SCMToAll(WHITE, gstr);
+				format(gstr, sizeof(gstr), "["vlila"REACTION"white"]: {%06x}%s(%i) "white"has won the reaction test in %2i.%03i seconds!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, second, rtime);
+			    SCMToAll(WHITE, gstr);
 
-		    format(gstr, sizeof(gstr), "» You have earned $%s + %i score.", number_format(xCash), xScore);
-		    SCM(playerid, GREEN, gstr);
+			    format(gstr, sizeof(gstr), "» You have earned $%s + %i score.", number_format(xCash), xScore);
+			    SCM(playerid, GREEN, gstr);
 
-			format(gstr, sizeof(gstr), "Won the reaction test in %2i.%03i seconds!", second, rtime);
-			SetPlayerChatBubble(playerid, gstr, NEF_YELLOW, 40.0, 5000);
+				format(gstr, sizeof(gstr), "Won the reaction test in %2i.%03i seconds!", second, rtime);
+				SetPlayerChatBubble(playerid, gstr, NEF_YELLOW, 40.0, 5000);
 
-			GivePlayerMoneyEx(playerid, xCash, true, true);
+				GivePlayerMoneyEx(playerid, xCash, true, true);
 
-		    PlayerData[playerid][e_reaction]++;
-		    
-		    if(PlayerAchData[playerid][e_ach_toofast][0] == 0 && PlayerData[playerid][e_reaction] >= 10)
-		    {
-		        GivePlayerAchievement(playerid, e_ach_toofast, "Too Fast", "Congrats you earned $30,000!~n~and 10 score!~n~~w~Type /ach to view your achievements.");
+			    PlayerData[playerid][e_reaction]++;
+
+			    if(PlayerAchData[playerid][e_ach_toofast][0] == 0 && PlayerData[playerid][e_reaction] >= 10)
+			    {
+			        GivePlayerAchievement(playerid, e_ach_toofast, "Too Fast", "Congrats you earned $30,000!~n~and 10 score!~n~~w~Type /ach to view your achievements.");
+				}
+
+				GivePlayerScoreEx(playerid, xScore, true, true);
+				tReactionTimer = SetTimer("xReactionTest", REAC_TIME, true);
+			    return 0;
 			}
-		    
-			GivePlayerScoreEx(playerid, xScore, true, true);
-			tReactionTimer = SetTimer("xReactionTest", REAC_TIME, true);
-		    xTestBusy = false;
-		    return 0;
 		}
 	}
 
@@ -4832,7 +4832,13 @@ public OnPlayerText(playerid, text[])
 	    Command_ReProcess(playerid, string, false);
 		return 0;
 	}
-
+	if(text[0] == '*' && PlayerData[playerid][e_vip] == 1)
+	{
+	    new string[144 + 3];
+	    format(string, sizeof(string), "/p %s", text[1]);
+	    Command_ReProcess(playerid, string, false);
+		return 0;
+	}
 	if(text[0] == '!' && PlayerData[playerid][e_gangrank] != 0)
 	{
 	    format(gstr, sizeof(gstr), ""gang_sign" {%06x}%s(%i)"r_besch": %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, text[1]);
@@ -4844,9 +4850,7 @@ public OnPlayerText(playerid, text[])
 	}
 
 	if(!PlayerData[playerid][bCaps])
-	{
 	    UpperToLower(text);
-	}
 
     PlayerData[playerid][iCoolDownChat] = GetTickCountEx();
 
@@ -5026,7 +5030,6 @@ public OnPlayerDeath(playerid, killerid, reason)
 	SetPVarInt(playerid, "doingStunt", 0);
 	PlayerData[playerid][tickJoin_bmx] = 0;
 
-    TextDrawHideForPlayer(playerid, TXTGodTD);
     PlayerTextDrawHide(playerid, TXTWantedsTD[playerid]);
 
 	switch(random(7))
@@ -6742,22 +6745,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 				    return 1;
 				}
 
-				if(Key(KEY_FIRE) && GetPVarInt(playerid, "Ramped") == 1)
-				{
-				    if(!PlayerData[playerid][bRampActive])
-				    {
-					    new vehIDr = GetPlayerVehicleID(playerid), Float:vPOS[4], Float:salttmp;
-						GetVehiclePos(vehIDr, vPOS[0], vPOS[1], vPOS[2]);
-						GetVehicleZAngle(vehIDr, vPOS[3]);
-						salttmp = (floatpower(GetPlayerPing(playerid), 0.25) * 6.0 + 5.0);
-						vPOS[0] += (floatsin(-vPOS[3], degrees) * salttmp);
-						vPOS[1] += (floatcos(-vPOS[3], degrees) * salttmp);
-						SetTimerEx("DestroyRampObject", 3000, false, "ii", CreateDynamicObject(1632, vPOS[0], vPOS[1], vPOS[2], 0, 0, vPOS[3]), playerid);
-						PlayerData[playerid][bRampActive] = true;
-					}
-				    return 1;
-				}
-
 				if(PlayerData[playerid][bSpeedBoost])
 				{
 					if(Key(KEY_FIRE))
@@ -8153,7 +8140,6 @@ YCMD:hidef(playerid, params[], help)
 	TextDrawHideForPlayer(playerid, NEFLOGO[1]);
 	TextDrawHideForPlayer(playerid, NEFLOGO[2]);
     TextDrawHideForPlayer(playerid, TXTRandomInfo);
-    TextDrawHideForPlayer(playerid, TXTGodTD);
     PlayerTextDrawHide(playerid, TXTWantedsTD[playerid]);
 	#if WINTER_EDITION == true
 	TextDrawHideForPlayer(playerid, TXTWinterEdition);
@@ -8172,7 +8158,6 @@ YCMD:showf(playerid, params[], help)
 	TextDrawShowForPlayer(playerid, NEFLOGO[2]);
     TextDrawShowForPlayer(playerid, TXTRandomInfo);
 	PlayerTextDrawShow(playerid, TXTWantedsTD[playerid]);
-	if(PlayerData[playerid][bGod]) TextDrawShowForPlayer(playerid, TXTGodTD);
 	#if WINTER_EDITION == true
 	TextDrawShowForPlayer(playerid, TXTWinterEdition);
 	#endif
@@ -13497,10 +13482,10 @@ YCMD:god(playerid, params[], help)
 	    if(PlayerData[playerid][bGod])
 	    {
 			PlayerData[playerid][bGod] = false;
+			player_notice(playerid, "GODMODE:", "~r~OFF");
 	        SetPVarInt(playerid, "HadGod", 0);
 	 		SCM(playerid, COLOR_RED, ""nef" "GREY_E"You have disabled god-mode. You can now lose health in stunt zones.");
 			SCM(playerid, COLOR_RED, "> "YELLOW_E"You can now freely use weapons.");
-	        TextDrawHideForPlayer(playerid, TXTGodTD);
 	        SetPlayerHealth(playerid, 100.0);
 	        RandomWeapons(playerid);
 	    }
@@ -13514,13 +13499,13 @@ YCMD:god(playerid, params[], help)
 				}
 			}
 			
+			player_notice(playerid, "GODMODE:", "~g~ON");
 	        new Float:HP;
 	        GetPlayerHealth(playerid, HP);
 			if(HP < 30 && !silent) return player_notice(playerid, "~b~~h~Can't activate god,", "~b~~h~Health below 30");
 	        SetPVarInt(playerid, "HadGod", 1);
 		    SCM(playerid, COLOR_RED, ""nef" "GREY_E"You have enabled god-mode. You will now have infinite health in stunt zones.");
 			SCM(playerid, COLOR_RED, "> "YELLOW_E"You will not be able to use weapons with godmode enabled, type /god again to disable.");
-	        TextDrawShowForPlayer(playerid, TXTGodTD);
 	        ResetPlayerWeapons(playerid);
 	        SetPlayerHealth(playerid, 999999.0);
 			PlayerTextDrawSetString(playerid, TXTWantedsTD[playerid], "~y~[] ~w~0");
@@ -14963,35 +14948,6 @@ YCMD:trailer(playerid, params[], help)
 	    Command_ReProcess(playerid, "/vip", false);
 	}
 	return 1;
-}
-
-YCMD:ramp(playerid, params[], help)
-{
-    if(PlayerData[playerid][e_vip] == 1)
-	{
-		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-		{
-		    return SCM(playerid, -1, ""er"You must be a driver in a vehicle to use vehicle control!");
-		}
-
-		if(GetPVarInt(playerid, "Ramped") == 0)
-		{
-			SetPVarInt(playerid, "Ramped", 1);
-			SCM(playerid, GREEN, "You have turned ramp spawning ON!");
-	  		SCM(playerid, YELLOW, "Press 'FIRE' (CTRL) key in a vehicle to spawn a ramp");
-	    	SCM(playerid, YELLOW, "To disable ramp spawning, type /ramp again");
-		}
-		else
-		{
-			SetPVarInt(playerid, "Ramped", 0);
-	 		SCM(playerid, GREEN, "You have turned ramp spawning OFF!");
-		}
-	}
-	else
-	{
-        Command_ReProcess(playerid, "/vip", false);
-	}
-    return 1;
 }
 
 YCMD:vmenu(playerid, params[], help)
@@ -21710,18 +21666,6 @@ server_load_textdraws()
 	TextDrawSetShadow(CheckTD, 0);
 	TextDrawSetOutline(CheckTD, 0);
 	TextDrawFont(CheckTD, 4);
-	
-	TXTGodTD = TextDrawCreate(499.000000, 106.000000, "~y~~h~GODMODE ENABLED");
-	TextDrawBackgroundColor(TXTGodTD, 168430202);
-	TextDrawFont(TXTGodTD, 1);
-	TextDrawLetterSize(TXTGodTD, 0.319999, 1.399999);
-	TextDrawColor(TXTGodTD, -1);
-	TextDrawSetOutline(TXTGodTD, 1);
-	TextDrawSetProportional(TXTGodTD, 1);
-	TextDrawUseBox(TXTGodTD, 1);
-	TextDrawBoxColor(TXTGodTD, 168430202);
-	TextDrawTextSize(TXTGodTD, 607.000000, 3.000000);
-	TextDrawSetSelectable(TXTGodTD, 0);
 
 	TXTWelcome[0] = TextDrawCreate(435.000000, 106.000000, "~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~");
 	TextDrawBackgroundColor(TXTWelcome[0], 255);
@@ -26834,12 +26778,6 @@ function:ChangeColors(playerid)
 	return true;
 }
 
-function:DestroyRampObject(objid, playerid)
-{
-	DestroyDynamicObject(objid);
-	PlayerData[playerid][bRampActive] = false;
-}
-
 GetVehicleModelSeats(modelid)
 {
     static const gVehicleSeats[] =
@@ -27231,7 +27169,6 @@ function:Maths()
 
 CheckPlayerGod(playerid)
 {
-	TextDrawHideForPlayer(playerid, TXTGodTD);
 	SetPlayerHealth(playerid, 100.0);
 	PlayerData[playerid][bGod] = false;
 }
@@ -29891,7 +29828,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][bTextdraws] = true;
 	PlayerData[playerid][bRainbow] = false;
 	PlayerData[playerid][bVehicleInfo] = false;
-	PlayerData[playerid][bRampActive] = false;
 	PlayerData[playerid][bCaps] = true;
 	PlayerData[playerid][bGod] = false;
 	PlayerData[playerid][bGWarMode] = false;
@@ -30145,7 +30081,6 @@ SetPlayerGWarMode(playerid)
 	if(PlayerData[playerid][bGod])
 	{
         SetPVarInt(playerid, "HadGod", 0);
-        TextDrawHideForPlayer(playerid, TXTGodTD);
         PlayerData[playerid][bGod] = false;
         RandomWeapons(playerid);
 		SetPlayerHealth(playerid, 100.0);
@@ -30213,29 +30148,32 @@ AssemblePlayerORM(ORM:_ormid, slot)
 	orm_addvar_int(_ormid, PlayerData[slot][e_score], "score");
 	orm_addvar_int(_ormid, PlayerData[slot][e_money], "money");
 	orm_addvar_int(_ormid, PlayerData[slot][e_bank], "bank");
-	orm_addvar_int(_ormid, PlayerData[slot][e_color], "color");
+	orm_addvar_int(_ormid, PlayerData[slot][e_pvslots], "pvslots");
 	orm_addvar_int(_ormid, PlayerData[slot][e_kills], "kills");
 	orm_addvar_int(_ormid, PlayerData[slot][e_deaths], "deaths");
 	orm_addvar_int(_ormid, PlayerData[slot][e_time], "time");
 	orm_addvar_int(_ormid, PlayerData[slot][e_skin], "skin");
+	orm_addvar_int(_ormid, PlayerData[slot][e_bounty], "bounty");
 	orm_addvar_int(_ormid, PlayerData[slot][e_payday], "payday");
-	orm_addvar_int(_ormid, PlayerData[slot][e_reaction], "reaction");
-	orm_addvar_int(_ormid, PlayerData[slot][e_mathwins], "mathwins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_reaction], "reactions");
+	orm_addvar_int(_ormid, PlayerData[slot][e_mathwins], "maths");
 	orm_addvar_int(_ormid, PlayerData[slot][e_gangid], "gangid");
 	orm_addvar_int(_ormid, PlayerData[slot][e_gangrank], "gangrank");
-	orm_addvar_int(_ormid, PlayerData[slot][e_derbywins], "derbywins");
-	orm_addvar_int(_ormid, PlayerData[slot][e_racewins], "racewins");
-	orm_addvar_int(_ormid, PlayerData[slot][e_tdmwins], "tdmwins");
-	orm_addvar_int(_ormid, PlayerData[slot][e_falloutwins], "falloutwins");
-	orm_addvar_int(_ormid, PlayerData[slot][e_gungamewins], "gungamewins");
-	orm_addvar_int(_ormid, PlayerData[slot][e_eventwins], "eventwins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_derbywins], "winderby");
+	orm_addvar_int(_ormid, PlayerData[slot][e_racewins], "winrace");
+	orm_addvar_int(_ormid, PlayerData[slot][e_tdmwins], "windtm");
+	orm_addvar_int(_ormid, PlayerData[slot][e_falloutwins], "winfallout");
+	orm_addvar_int(_ormid, PlayerData[slot][e_gungamewins], "wingungame");
 	orm_addvar_int(_ormid, PlayerData[slot][e_wanteds], "wanteds");
+	orm_addvar_int(_ormid, PlayerData[slot][e_duelwins], "duelwins");
+	orm_addvar_int(_ormid, PlayerData[slot][e_duellost], "duellost");
 	orm_addvar_int(_ormid, PlayerData[slot][e_vip], "vip");
 	orm_addvar_int(_ormid, PlayerData[slot][e_medkits], "medkits");
 	orm_addvar_int(_ormid, PlayerData[slot][e_regdate], "regdate");
 	orm_addvar_int(_ormid, PlayerData[slot][e_lastlogin], "lastlogin");
 	orm_addvar_int(_ormid, PlayerData[slot][e_lastnc], "lastnc");
-	orm_addvar_int(_ormid, PlayerData[slot][e_skinsave], "skinsave");
+	orm_addvar_int(_ormid, PlayerData[slot][e_timeskick], "timeskick");
+	orm_addvar_int(_ormid, PlayerData[slot][e_timeslogin], "timeslogin");
 }
 
 AssembleEnterpriseORM(ORM:_ormid, slot)
