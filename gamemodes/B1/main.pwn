@@ -3006,7 +3006,7 @@ public OnPlayerRequestClass(playerid, classid)
 		PlayerData[playerid][bAllowSpawn] = false;
 		KickEx(playerid);*/
 	    new rand = random(4);
-	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerData[playerid][e_skinsave] != -1 ? PlayerData[playerid][e_skinsave] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
+	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
         SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
 		return 0;
 	}
@@ -3014,7 +3014,7 @@ public OnPlayerRequestClass(playerid, classid)
     PlayerData[playerid][bFirstSpawn] = true;
 
     new rand = random(4);
-    SetSpawnInfoEx(playerid, NO_TEAM, PlayerData[playerid][e_skinsave] != -1 ? PlayerData[playerid][e_skinsave] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
+    SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
 
 	TextDrawShowForPlayer(playerid, TXTTeleportInfo);
 	HidePlayerInfoTextdraws(playerid);
@@ -3028,7 +3028,7 @@ public OnPlayerRequestClass(playerid, classid)
 	TextDrawShowForPlayer(playerid, TXTWinterEdition);
 	#endif
 
-	if(PlayerData[playerid][e_skinsave] != -1)
+	if(PlayerSettings[playerid][e_skin] != -1)
 	{
 	    SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
 	    SCM(playerid, -1, ""server_sign" "r_besch"Your saved skin has been set. (/deleteskin to remove)");
@@ -6751,7 +6751,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 					{
 						new Float:POS[3], vid = GetPlayerVehicleID(playerid);
 						GetVehicleVelocity(vid, POS[0], POS[1], POS[2]);
-						SetVehicleVelocity(vid, POS[0] * 1.3, POS[1] * 1.3, POS[2] * 1.3);
+						SetVehicleVelocity(vid, POS[0] * PlayerData[playerid][e_boost_level], POS[1] * PlayerData[playerid][e_boost_level], POS[2] * PlayerData[playerid][e_boost_level]);
 						if(IsComponentIdCompatible(GetVehicleModel(vid), 1010)) AddVehicleComponent(vid, 1010);
 						return 1;
 			   		}
@@ -6760,7 +6760,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 					{
 						new Float:POS[3], vid = GetPlayerVehicleID(playerid);
 						GetVehicleVelocity(vid, POS[0], POS[1], POS[2]);
-						SetVehicleVelocity(vid, POS[0], POS[1], POS[2] + 0.20);
+						SetVehicleVelocity(vid, POS[0], POS[1], POS[2] + PlayerSettings[playerid][e_jump_level]);
 						SetVehicleHealth(vid, 1000.0);
 						return 1;
 					}
@@ -15685,7 +15685,7 @@ YCMD:saveskin(playerid, params[], help)
 {
 	if(!islogged(playerid)) return notlogged(playerid);
 
-	if(PlayerData[playerid][e_skinsave] == -1)
+	if(PlayerSettings[playerid][e_skin] == -1)
 	{
 	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Skin saved! Skipping class selection next login. Use /deleteskin to remove it");
 	}
@@ -15696,7 +15696,7 @@ YCMD:saveskin(playerid, params[], help)
 	new skin = GetPlayerSkin(playerid);
 	
 	if(IsValidSkin(skin)) {
-    	PlayerData[playerid][e_skinsave] = skin;
+    	PlayerSettings[playerid][e_skin] = skin;
 	} else {
 		player_notice(playerid, "Invalid skin id", "");
 	}
@@ -15707,7 +15707,7 @@ YCMD:deleteskin(playerid, params[], help)
 {
 	if(!islogged(playerid)) return notlogged(playerid);
 
-	if(PlayerData[playerid][e_skinsave] == -1)
+	if(PlayerSettings[playerid][e_skin] == -1)
 	{
 	    player_notice(playerid, "You have no saved skin", "");
 	}
@@ -15715,7 +15715,7 @@ YCMD:deleteskin(playerid, params[], help)
 	{
 	    player_notice(playerid, "Saved skin has been deleted", "");
 	}
-    PlayerData[playerid][e_skinsave] = -1;
+    PlayerSettings[playerid][e_skin] = -1;
 	return 1;
 }
 
@@ -17953,7 +17953,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 					case 6:
 					{
-					    if(PlayerData[playerid][e_skinsave] == -1)
+					    if(PlayerSettings[playerid][e_skin] == -1)
 					    {
 					        Command_ReProcess(playerid, "/saveskin", false);
 					    }
@@ -26694,14 +26694,14 @@ GetPlayerSettings(playerid)
 	    strcat(string, gstr);
 	}
 
-	if(PlayerData[playerid][e_skinsave] == -1)
+	if(PlayerSettings[playerid][e_skin] == -1)
 	{
 	    format(gstr, sizeof(gstr), ""white"7)\tSaved Skin\tRandom\n");
 	    strcat(string, gstr);
 	}
 	else
 	{
-	    format(gstr, sizeof(gstr), ""white"7)\tSaved Skin\tID: %i\n", PlayerData[playerid][e_skinsave]);
+	    format(gstr, sizeof(gstr), ""white"7)\tSaved Skin\tID: %i\n", PlayerSettings[playerid][e_skin]);
 	    strcat(string, gstr);
 	}
 
@@ -29077,8 +29077,8 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				orm_setkey(ormid, "id");
 				orm_apply_cache(ormid, 0);
 
-				if(!IsValidSkin(PlayerData[playerid][e_skinsave])) {
-				    PlayerData[playerid][e_skinsave] = -1;
+				if(!IsValidSkin(PlayerSettings[playerid][e_skin])) {
+				    PlayerSettings[playerid][e_skin] = -1;
 				}
 				
 				PlayerData[playerid][ConnectTime] = gettime();
@@ -29848,7 +29848,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][Boost] = BOOST:0;
 	PlayerData[playerid][bwSuspect] = SUSPECT:0;
 	PlayerData[playerid][BoostDeplete] = 0;
-	PlayerData[playerid][e_skinsave] = -1;
 	PlayerData[playerid][e_addpvslots] = 0;
 	PlayerData[playerid][EnterpriseIdSelected] = 0;
 	PlayerData[playerid][DrawnNumber] = -1;
@@ -29943,6 +29942,17 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][DuelLocation] = 0;
 	PlayerData[playerid][DuelRequest] = INVALID_PLAYER_ID;
 	PlayerData[playerid][DuelRequestRecv] = INVALID_PLAYER_ID;
+
+	PlayerSettigns[playerid][e_allow_teleport] = 1;
+	PlayerSettigns[playerid][e_allow_pm] = 1;
+	PlayerSettigns[playerid][e_fightstyle] = 4;
+	PlayerSettigns[playerid][e_speedo] = 0;
+	PlayerSettigns[playerid][e_namecolor] = 0;
+	PlayerSettigns[playerid][e_skin] = -1;
+	PlayerSettigns[playerid][e_auto_login] = 1;
+	PlayerSettigns[playerid][e_boost_level] = 1.30;
+	PlayerSettigns[playerid][e_jump_level] = 0.20;
+	PlayerSettigns[playerid][e_house_spawn] = 0;
 
     PlayerSettings[playerid][e_namecolor] = 0;
 
