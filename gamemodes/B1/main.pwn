@@ -2700,7 +2700,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	PlayerPVTMPPlate[MAX_PLAYERS][13],
  	GunGame_Player[MAX_PLAYERS][e_gungame_data],
   	DerbyMapVotes[9],
-  	CurrentDerbyMap = 1,
+  	CurrentDerbyMap = 0,
   	BGGameTime = DEFAULT_BG_TIME,
   	FalloutGameTime = DEFAULT_FALLOUT_TIME,
   	DerbyGameTime = DEFAULT_DERBY_TIME,
@@ -23491,16 +23491,14 @@ function:DerbyVoting()
 		}
 		return 1;
 	}
-
-	if(highestmapvotes == DerbyMapVotes[0]) StartDerbyMap1();
-	else if(highestmapvotes == DerbyMapVotes[1]) StartDerbyMap2();
-	else if(highestmapvotes == DerbyMapVotes[2]) StartDerbyMap3();
-    else if(highestmapvotes == DerbyMapVotes[3]) StartDerbyMap4();
-    else if(highestmapvotes == DerbyMapVotes[4]) StartDerbyMap5();
-    else if(highestmapvotes == DerbyMapVotes[5]) StartDerbyMap6();
-    else if(highestmapvotes == DerbyMapVotes[6]) StartDerbyMap7();
-    else if(highestmapvotes == DerbyMapVotes[7]) StartDerbyMap8();
-    else if(highestmapvotes == DerbyMapVotes[8]) StartDerbyMap9();
+	
+	for(new i = 0; i < MAX_DERBY_MAPS; i++)
+	{
+	    if(highestmapvotes == DerbyMapVotes[i])
+	    {
+	        derby_start_map(i);
+	    }
+	}
 	return 1;
 }
 
@@ -24509,15 +24507,15 @@ function:DerbyFallOver()
 	static CURRENT_FALLOVER;
 	switch(CurrentDerbyMap)
 	{
-	    case 1: CURRENT_FALLOVER = DERBY_FALLOVER_M1;
-	    case 2: CURRENT_FALLOVER = DERBY_FALLOVER_M2; // <-- ;) ?
-	    case 3: CURRENT_FALLOVER = DERBY_FALLOVER_M3; // <-- ;) ? wasch war da falsch    -> http://www.youtube.com/watch?v=1zrtdDQlYOY
-	    case 4: CURRENT_FALLOVER = DERBY_FALLOVER_M4;
-	    case 5: CURRENT_FALLOVER = DERBY_FALLOVER_M5;
-	    case 6: CURRENT_FALLOVER = DERBY_FALLOVER_M6;
-	    case 7: CURRENT_FALLOVER = DERBY_FALLOVER_M7;
-	    case 8: CURRENT_FALLOVER = DERBY_FALLOVER_M8;
-	    case 9: CURRENT_FALLOVER = DERBY_FALLOVER_M9;
+	    case 0: CURRENT_FALLOVER = DERBY_FALLOVER_M1;
+	    case 1: CURRENT_FALLOVER = DERBY_FALLOVER_M2; // <-- ;) ?
+	    case 2: CURRENT_FALLOVER = DERBY_FALLOVER_M3; // <-- ;) ? wasch war da falsch    -> http://www.youtube.com/watch?v=1zrtdDQlYOY
+	    case 3: CURRENT_FALLOVER = DERBY_FALLOVER_M4;
+	    case 4: CURRENT_FALLOVER = DERBY_FALLOVER_M5;
+	    case 5: CURRENT_FALLOVER = DERBY_FALLOVER_M6;
+	    case 6: CURRENT_FALLOVER = DERBY_FALLOVER_M7;
+	    case 7: CURRENT_FALLOVER = DERBY_FALLOVER_M8;
+	    case 8: CURRENT_FALLOVER = DERBY_FALLOVER_M9;
 	}
 
 	new Float:POS[3], string[64];
@@ -25007,15 +25005,15 @@ function:ProcessTick()
  		--DerbyGameTime;
    		switch(CurrentDerbyMap)
 	    {                                    
-			case 1: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Lighthouse", GameTimeConvert(DerbyGameTime), DerbyPlayers);
-		    case 2: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Truncat", GameTimeConvert(DerbyGameTime), DerbyPlayers);
-		    case 3: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~SkySkiing", GameTimeConvert(DerbyGameTime), DerbyPlayers);
-		    case 4: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Townhall", GameTimeConvert(DerbyGameTime), DerbyPlayers);
-		    case 5: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Glazz", GameTimeConvert(DerbyGameTime), DerbyPlayers);
-		    case 6: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Rambo", GameTimeConvert(DerbyGameTime), DerbyPlayers);
-		    case 7: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~SilverGround", GameTimeConvert(DerbyGameTime), DerbyPlayers);
-		    case 8: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Anubis", GameTimeConvert(DerbyGameTime), DerbyPlayers);
-		    case 9: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Confusing", GameTimeConvert(DerbyGameTime), DerbyPlayers);
+			case 0: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Lighthouse", GameTimeConvert(DerbyGameTime), DerbyPlayers);
+		    case 1: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Truncat", GameTimeConvert(DerbyGameTime), DerbyPlayers);
+		    case 2: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~SkySkiing", GameTimeConvert(DerbyGameTime), DerbyPlayers);
+		    case 3: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Townhall", GameTimeConvert(DerbyGameTime), DerbyPlayers);
+		    case 4: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Glazz", GameTimeConvert(DerbyGameTime), DerbyPlayers);
+		    case 5: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Rambo", GameTimeConvert(DerbyGameTime), DerbyPlayers);
+		    case 6: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~SilverGround", GameTimeConvert(DerbyGameTime), DerbyPlayers);
+		    case 7: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Anubis", GameTimeConvert(DerbyGameTime), DerbyPlayers);
+		    case 8: format(gstr2, sizeof(gstr2), "Timeleft: ~r~~h~~h~%s~n~~w~Players: ~b~~h~~h~%i/20~n~~w~Map: ~g~~h~~h~Confusing", GameTimeConvert(DerbyGameTime), DerbyPlayers);
 		}
 		TextDrawSetString(TXTDerbyInfo, gstr2);
 	}
@@ -25312,55 +25310,55 @@ function:SetPlayerDerbyStaticMeshes(playerid)
     SetPlayerHealth(playerid, 99999.0);
     switch(CurrentDerbyMap)
     {
-		case 1:
+		case 0:
 		{
 	 		SetPlayerPos(playerid, DERBY_WIHLE_CAM_M1);
 	       	SetPlayerCameraPos(playerid, DERBY_CAMPOS_M1);
 	       	SetPlayerCameraLookAt(playerid, DERBY_CAMLA_M1);
 		}
-		case 2:
+		case 1:
 		{
 	 		SetPlayerPos(playerid, DERBY_WIHLE_CAM_M2);
 	       	SetPlayerCameraPos(playerid, DERBY_CAMPOS_M2);
 	       	SetPlayerCameraLookAt(playerid, DERBY_CAMLA_M2);
 		}
-		case 3:
+		case 2:
 		{
 	 		SetPlayerPos(playerid, DERBY_WIHLE_CAM_M3);
 	       	SetPlayerCameraPos(playerid, DERBY_CAMPOS_M3);
 	       	SetPlayerCameraLookAt(playerid, DERBY_CAMLA_M3);
 		}
-		case 4:
+		case 3:
 		{
 	 		SetPlayerPos(playerid, DERBY_WIHLE_CAM_M4);
 	       	SetPlayerCameraPos(playerid, DERBY_CAMPOS_M4);
 	       	SetPlayerCameraLookAt(playerid, DERBY_CAMLA_M4);
 		}
-		case 5:
+		case 4:
 		{
 	 		SetPlayerPos(playerid, DERBY_WIHLE_CAM_M5);
 	       	SetPlayerCameraPos(playerid, DERBY_CAMPOS_M5);
 	       	SetPlayerCameraLookAt(playerid, DERBY_CAMLA_M5);
 		}
-		case 6:
+		case 5:
 		{
 	 		SetPlayerPos(playerid, DERBY_WIHLE_CAM_M6);
 	       	SetPlayerCameraPos(playerid, DERBY_CAMPOS_M6);
 	       	SetPlayerCameraLookAt(playerid, DERBY_CAMLA_M6);
 		}
-		case 7:
+		case 6:
 		{
 	 		SetPlayerPos(playerid, DERBY_WIHLE_CAM_M7);
 	       	SetPlayerCameraPos(playerid, DERBY_CAMPOS_M7);
 	       	SetPlayerCameraLookAt(playerid, DERBY_CAMLA_M7);
 		}
-		case 8:
+		case 7:
 		{
 	 		SetPlayerPos(playerid, DERBY_WIHLE_CAM_M8);
 	       	SetPlayerCameraPos(playerid, DERBY_CAMPOS_M8);
 	       	SetPlayerCameraLookAt(playerid, DERBY_CAMLA_M8);
 		}
-		case 9:
+		case 8:
 		{
 	 		SetPlayerPos(playerid, DERBY_WIHLE_CAM_M9);
 	       	SetPlayerCameraPos(playerid, DERBY_CAMPOS_M9);
