@@ -61,6 +61,7 @@ Build 1 (1st Feb 2015)
 - Removed dynamic ramps.
 - You can now sell/buy houses/enterprises/custom cars on the Havoc Forums.
 - Removed godmode textdraw
+- Houses now determine how many private cars you may held within your account.
 
 TODO
 ----
@@ -112,7 +113,6 @@ TODO
 - All teleports have been retaken for a better gameplay experience.
 - Airport maps have been improved to make it possible to lift off with a plane.
 - Gang score has been reduced if you attack a zone with many members.
-- Houses now determine how many private cars you may held within your account.
 - Got rid of mSelection, now using an improved UI for toys.
 - New /settings dialog values which are being saved in the database:
   * /tgo (Allow teleports to you)

@@ -8863,6 +8863,7 @@ YCMD:buy(playerid, params[], help)
         orm_update(HouseData[i][e_ormid]);
 
         GivePlayerMoneyEx(playerid, -HouseData[i][e_value]);
+		PlayerData[playerid][e_pvslots] += HouseData[i][e_pvslots];
         PlayerData[playerid][tickLastBuy] = tick;
 		SQL_SaveAccount(playerid, false, false);
 		PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
@@ -15426,8 +15427,9 @@ YCMD:stats(playerid, params[], help)
         	number_format(GetPlayerMoneyEx(player1)),
         	number_format(PlayerData[player1][e_bank]));
 
-		format(string2, sizeof(string2), "Race wins:\t\t%i\nDerby wins:\t\t%i\nReaction wins:\t\t%i\nMath wins:\t\t%i\nTDM wins:\t\t%i\nFallout wins:\t\t%i\nGungame wins:\t\t%i\nTime until PayDay:\t%i minutes\n",
-	   		PlayerData[player1][e_racewins],
+		format(string2, sizeof(string2), "Custom Car Slots:\t%i\nRace wins:\t\t%i\nDerby wins:\t\t%i\nReaction wins:\t\t%i\nMath wins:\t\t%i\nTDM wins:\t\t%i\nFallout wins:\t\t%i\nGungame wins:\t\t%i\nTime until PayDay:\t%i minutes\n",
+            PlayerData[player1][e_pvslots],
+			PlayerData[player1][e_racewins],
 	   		PlayerData[player1][e_derbywins],
 	   		PlayerData[player1][e_reaction],
 	   		PlayerData[player1][e_mathwins],
