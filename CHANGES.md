@@ -108,6 +108,7 @@ TODO
 - Top gangs are now being reset automatically all 7 days.
 - You can no longer vote for the same map in derby.
 - Added admin command to set the next derby map manually.
+- All players drive the same car in derbys.
 - Spawnpoints have been remapped.
 - All teleports have been retaken for a better gameplay experience.
 - Airport maps have been improved to make it possible to lift off with a plane.
