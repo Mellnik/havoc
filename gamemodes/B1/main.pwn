@@ -5066,6 +5066,9 @@ public OnPlayerDeath(playerid, killerid, reason)
 		            GetPlayerHealth(i, HP);
 		            global_broadcast(">> DUEL: %s won the duel against %s and has %.2f HP left!", __GetName(i), __GetName(playerid), HP);
 		            
+					PlayerData[i][e_duelwins]++;
+					PlayerData[playerid][e_duellost]++;
+		            
  		            gTeam[i] = gFREEROAM;
 		            gTeam[playerid] = gFREEROAM;
 		            
@@ -5093,6 +5096,9 @@ public OnPlayerDeath(playerid, killerid, reason)
 			            new Float:HP;
 			            GetPlayerHealth(i, HP);
 			            global_broadcast(">> DUEL: %s won the duel against %s and has %.2f HP left!", __GetName(i), __GetName(playerid), HP);
+
+						PlayerData[i][e_duelwins]++;
+						PlayerData[playerid][e_duellost]++;
 
 	 		            gTeam[i] = gFREEROAM;
 			            gTeam[playerid] = gFREEROAM;
@@ -29871,6 +29877,8 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][e_gungamewins] = 0;
 	PlayerData[playerid][e_tdmwins] = 0;
 	PlayerData[playerid][e_medkits] = 0;
+	PlayerData[playerid][e_duelwins] = 0;
+	PlayerData[playerid][e_duellost] = 0;
 	PlayerData[playerid][tMedkit] = -1;
 	PlayerData[playerid][iMedkitTime] = 0;
 	PlayerData[playerid][e_payday] = 60;
