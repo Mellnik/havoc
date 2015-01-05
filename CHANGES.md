@@ -62,6 +62,7 @@ Build 1 (1st Feb 2015)
 - You can now sell/buy houses/enterprises/custom cars on the Havoc Forums.
 - Removed godmode textdraw
 - Houses now determine how many private cars you may held within your account.
+- Player bounties are now being saved within your account.
 
 TODO
 ----
@@ -99,7 +100,6 @@ TODO
 - Now using salted whirlpool for password hashing.
 - Improved playing time counter for more accurate timings.
 - New, better UI.
-- Player bounties are now being saved in the database.
 - All races have been overhauled.
 - Races are now being saved in the datatbase.
 - Derby has been rewritten, new maps can now be added easily.

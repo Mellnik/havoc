@@ -776,7 +776,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	ConnectTime,
 	Warnings,
 	RankSelected,
-	HitmanHit,
 	DmgMsg[10],
 	PlayerText:DmgBox[2],
 	Text3D:AdminDutyLabel,
@@ -4988,12 +4987,12 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 	if(killerid != INVALID_PLAYER_ID)
 	{
-		if(reason <= 46 && gTeam[killerid] == gFREEROAM && IsPlayerConnected(killerid) && PlayerData[playerid][HitmanHit] > 0)
+		if(reason <= 46 && gTeam[killerid] == gFREEROAM && IsPlayerConnected(killerid) && PlayerData[playerid][e_bounty] > 0)
 		{
-			format(gstr, sizeof(gstr), "%s(%i) killed %s(%i) and received $%s for a completed hit!", __GetName(killerid), killerid, __GetName(playerid), playerid, number_format(PlayerData[playerid][HitmanHit]));
+			format(gstr, sizeof(gstr), "%s(%i) killed %s(%i) and received $%s for a completed hit!", __GetName(killerid), killerid, __GetName(playerid), playerid, number_format(PlayerData[playerid][e_bounty]));
 			SCMToAll(YELLOW, gstr);
-			GivePlayerMoneyEx(killerid, PlayerData[playerid][HitmanHit]);
-			PlayerData[playerid][HitmanHit] = 0;
+			GivePlayerMoneyEx(killerid, PlayerData[playerid][e_bounty]);
+			PlayerData[playerid][e_bounty] = 0;
 		}
 	}
 
@@ -9759,9 +9758,9 @@ YCMD:bounties(playerid, params[], help)
 	SCM(playerid, -1, "================Current bounties=================");
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(IsPlayerAvail(i) && PlayerData[i][HitmanHit] > 0)
+		if(IsPlayerAvail(i) && PlayerData[i][e_bounty] > 0)
 		{
-			format(gstr, sizeof(gstr), "- Hit on %s(%i) for $%s", __GetName(i), i, number_format(PlayerData[i][HitmanHit]));
+			format(gstr, sizeof(gstr), "- Hit on %s(%i) for $%s", __GetName(i), i, number_format(PlayerData[i][e_bounty]));
 			SCM(playerid, GREY, gstr);
 			count++;
 		}
@@ -9872,19 +9871,19 @@ YCMD:hitman(playerid, params[], help)
 	{
 		if(GetPlayerMoneyEx(playerid) >= amount)
 		{
-            PlayerData[player][HitmanHit] += amount;
+		    PlayerData[player][e_bounty] += amount;
 
 			new zone[MAX_ZONE_NAME],
 				zone_ret = GetPlayer2DZone(player, zone, sizeof(zone));
 		    
-		    if(PlayerData[player][HitmanHit] == 0)
+		    if(PlayerData[player][e_bounty] == 0)
 		    {
 				format(gstr, sizeof(gstr), ""nef" "YELLOW_E"%s(%i) has placed a bounty on %s(%i) for $%s get him!", __GetName(playerid), playerid, __GetName(player), player, number_format(amount));
 				SCMToAll(-1, gstr);
 		    }
-		    else if(PlayerData[player][HitmanHit] != 0)
+		    else if(PlayerData[player][e_bounty] != 0)
 		    {
-				format(gstr, sizeof(gstr), ""nef" "YELLOW_E"%s(%i) has placed another bounty on %s(%i) for $%s Total: "red"$%s", __GetName(playerid), playerid, __GetName(player), player, number_format(amount), number_format(PlayerData[player][HitmanHit]));
+				format(gstr, sizeof(gstr), ""nef" "YELLOW_E"%s(%i) has placed another bounty on %s(%i) for $%s Total: "red"$%s", __GetName(playerid), playerid, __GetName(player), player, number_format(amount), number_format(PlayerData[player][e_bounty]));
 				SCMToAll(-1, gstr);
 		    }
 
@@ -15428,7 +15427,7 @@ YCMD:stats(playerid, params[], help)
         	number_format(PlayerData[player1][e_bank]));
 
 		format(string2, sizeof(string2), "Custom Car Slots:\t%i\nRace wins:\t\t%i\nDerby wins:\t\t%i\nReaction wins:\t\t%i\nMath wins:\t\t%i\nTDM wins:\t\t%i\nFallout wins:\t\t%i\nGungame wins:\t\t%i\nTime until PayDay:\t%i minutes\n",
-            PlayerData[player1][e_pvslots],
+            PlayerData[player1][e_pvslots]
 			PlayerData[player1][e_racewins],
 	   		PlayerData[player1][e_derbywins],
 	   		PlayerData[player1][e_reaction],
@@ -29920,7 +29919,6 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][Warnings] = 0;
 	PlayerData[playerid][RankSelected] = 0;
 	PlayerData[playerid][e_wanteds] = 0;
-	PlayerData[playerid][HitmanHit] = 0;
 	PlayerData[playerid][pVehicle] = INVALID_VEHICLE_ID;
 	PlayerData[playerid][AdminDutyLabel] = Text3D:-1;
 	PlayerData[playerid][VIPLabel] = Text3D:-1;
