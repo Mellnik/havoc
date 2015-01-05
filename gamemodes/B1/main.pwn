@@ -1579,6 +1579,30 @@ static const stock GangCarLevels[7][2] =
 	{528, 25000}
 };
 
+static const DerbyMapNames[MAX_DERBY_MAPS][] = {
+	"Lighthouse",
+	"Truncat",
+	"Sky Skiing",
+	"Townhall",
+	"Glazz",
+	"Rambo",
+	"SilverGround",
+	"Anubis",
+	"Confusing"
+};
+
+static const DerbyMapVehicles[MAX_DERBY_MAPS] = {
+    494, // 1
+    495, // 2
+    504, // 3
+    504, // 4
+    402, // 5
+    573, // 6
+    402, // 7
+    415, // 8
+    415, // 9
+};
+
 new DerbyMaps[MAX_DERBY_MAPS][MAX_DERBY_PLAYERS][E_DERBY_MAP] =
 {
 	{
@@ -23494,7 +23518,7 @@ derby_start_map(mapid)
 	CurrentDerbyMap = mapid;
 	
 	ClearDerbyVotes();
-	format(gstr, sizeof(gstr), "Map '%s' won, let's start!");
+	format(gstr, sizeof(gstr), "Map '%s' won, let's start!", DerbyMapNames[mapid]);
 	derby_broadcast(gstr);
 	
 	new player_count = 0;
@@ -23544,26 +23568,16 @@ derby_start_map(mapid)
 		    
 		    for(new smap = 0; smap < MAX_DERBY_SPAWNS; smap++)
 		    {
-		        if(!Derby_MapSpawn[mapid][smap][e_used])
+		        if(!DerbyMaps[mapid][smap][e_used])
 		        {
-		 		    Streamer_UpdateEx(i, Derby_Map1Spawns[m1s][m1sX], Derby_Map1Spawns[m1s][m1sY], Derby_Map1Spawns[m1s][m1sZ]);
-	    			SetPlayerPos(i, Derby_Map1Spawns[m1s][m1sX], Derby_Map1Spawns[m1s][m1sY], Derby_Map1Spawns[m1s][m1sZ]);
+		 		    Streamer_UpdateEx(i, DerbyMaps[mapid][smap][e_pos][0], DerbyMaps[mapid][smap][e_pos][1], DerbyMaps[mapid][smap][e_pos][2]);
+	    			SetPlayerPos(i, DerbyMaps[mapid][smap][e_pos][0], DerbyMaps[mapid][smap][e_pos][1], DerbyMaps[mapid][smap][e_pos][2]);
 
 	    		    SetPlayerHealth(i, 100.0);
 	    		    ResetPlayerWeapons(i);
 	    		    ShowPlayerDialog(i, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
 
-					new vid;
-					switch(random(6))
-					{
-						case 0: vid = 494;
-						case 1: vid = 495;
-						case 2: vid = 504;
-						case 3: vid = 504;
-						case 4: vid = 573;
-						case 5: vid = 402;
-					}
-					PlayerData[i][pDerbyVehicle] = CreateVehicleEx(vid, Derby_Map1Spawns[m1s][m1sX], Derby_Map1Spawns[m1s][m1sY], floatadd(Derby_Map1Spawns[m1s][m1sZ], 6.0), Derby_Map1Spawns[m1s][m1sA], (random(128) + 127), (random(128) + 127), 60);
+					PlayerData[i][pDerbyVehicle] = CreateVehicleEx(DerbyMapVehicles[mapid], DerbyMaps[mapid][smap][e_pos][0], DerbyMaps[mapid][smap][e_pos][1], DerbyMaps[mapid][smap][e_pos][2] + 6.0, DerbyMaps[mapid][smap][e_pos][3], (random(128) + 127), (random(128) + 127), 60);
                     SetVehicleNumberPlate(PlayerData[i][pDerbyVehicle], "{3399ff}D{FFFFFF}erb{F81414}Y");
                     SetVehicleToRespawn(PlayerData[i][pDerbyVehicle]);
 					SetVehicleVirtualWorld(PlayerData[i][pDerbyVehicle], GetPlayerVirtualWorld(i));
@@ -23579,7 +23593,7 @@ derby_start_map(mapid)
 					SetVehicleVelocity(PlayerData[i][pDerbyVehicle], POS[0] * 1.2, POS[1] * 1.2, POS[2] * 1.2);
 
 					GameTextForPlayer(i, "~p~[DERBY]: ~w~Derby is starting!", 3000, 5);
-					Derby_Map1Spawns[m1s][m1sUsed] = true;
+					DerbyMaps[mapid][smap][e_used] = true;
 					break;
 		        }
 		    }
