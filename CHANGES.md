@@ -63,6 +63,7 @@ Build 1 (1st Feb 2015)
 - Removed godmode textdraw
 - Houses now determine how many private cars you may held within your account.
 - Player bounties are now being saved within your account.
+- Duel wins and defeats are now being saved within your account.
 
 TODO
 ----
@@ -77,7 +78,6 @@ TODO
 - Add custom teleports saved in database
 - Add commands: http://puu.sh/dJb5c/46aa9b26f6.jpg
 - Add toggle commands like /tgo http://puu.sh/dJbax/ab6bc3faf3.jpg
-- add altnamed /id -> find
 - http://puu.sh/dJb8H/9089f52700.jpg
 - Add mute message in GameTexts http://puu.sh/dJbc2/a0e5912058.jpg
 - GZones http://puu.sh/dJbe0/70d6368c92.jpg http://puu.sh/dMLo3/0a537ea4e3.jpg
@@ -95,7 +95,6 @@ TODO
 - Nach jedem house/auto/gang/entprise/register kauf sollte ein dialog kommen wit cmds die man nun nutzen kann.
 - Internal safetly handlers for score and money ranges.
 - Improved spawn points to be more safe for players.
-- Duel wins and defeats are now being saved within your account.
 - Time bans are now being deleted automatically upon expiration.
 - Now using salted whirlpool for password hashing.
 - Improved playing time counter for more accurate timings.

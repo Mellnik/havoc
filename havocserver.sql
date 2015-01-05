@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Dec 31, 2014 at 06:35 PM
+-- Generation Time: Jan 05, 2015 at 10:18 AM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `bans` (
   `reason` varchar(64) NOT NULL,
   `lift` int(10) unsigned NOT NULL COMMENT '0 = permanent',
   `date` int(10) unsigned NOT NULL,
-  `ping` mediumint(9) NOT NULL,
+  `ping` smallint(6) NOT NULL,
   `xpos` float(14,4) NOT NULL,
   `ypos` float(14,4) NOT NULL,
   `zpos` float(14,4) NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `bans` (
 --
 
 CREATE TABLE IF NOT EXISTS `blacklist` (
-  `id` mediumint(6) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
   `ip` varchar(16) NOT NULL,
   `date` int(10) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS `enterprises` (
 --
 
 CREATE TABLE IF NOT EXISTS `gangs` (
-  `id` mediumint(8) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
   `gname` varchar(20) NOT NULL,
   `gtag` varchar(4) NOT NULL,
   `gscore` int(10) unsigned NOT NULL,
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `gzones` (
   `xpos` float(14,4) NOT NULL,
   `ypos` float(14,4) NOT NULL,
   `zpos` float(14,4) NOT NULL,
-  `localgang` mediumint(6) unsigned NOT NULL,
+  `localgang` int(10) unsigned NOT NULL,
   `locked` int(10) unsigned NOT NULL,
   `creator` int(10) unsigned NOT NULL,
   `date` int(10) unsigned NOT NULL
@@ -241,11 +241,11 @@ CREATE TABLE IF NOT EXISTS `news` (
 --
 
 CREATE TABLE IF NOT EXISTS `queue` (
-  `id` mediumint(6) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
   `action` tinyint(4) NOT NULL,
   `execdate` int(11) NOT NULL,
   `extra` varchar(100) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MEMORY DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -270,10 +270,10 @@ CREATE TABLE IF NOT EXISTS `races` (
 
 CREATE TABLE IF NOT EXISTS `race_cps` (
   `id` int(10) unsigned NOT NULL,
+  `seq` tinyint(3) unsigned NOT NULL,
   `xpos` float(14,4) NOT NULL,
   `ypos` float(14,4) NOT NULL,
-  `zpos` float(14,4) NOT NULL,
-  `seq` tinyint(3) unsigned NOT NULL
+  `zpos` float(14,4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -297,11 +297,11 @@ CREATE TABLE IF NOT EXISTS `race_records` (
 
 CREATE TABLE IF NOT EXISTS `race_startpos` (
   `id` int(10) unsigned NOT NULL,
+  `seq` tinyint(3) unsigned NOT NULL,
   `xpos` float(14,4) NOT NULL,
   `ypos` float(14,4) NOT NULL,
   `zpos` float(14,4) NOT NULL,
-  `apos` float(14,4) NOT NULL,
-  `seq` tinyint(3) unsigned NOT NULL
+  `apos` float(14,4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -342,15 +342,15 @@ CREATE TABLE IF NOT EXISTS `session` (
 
 CREATE TABLE IF NOT EXISTS `settings` (
   `id` int(10) unsigned NOT NULL,
-  `allow_teleport` tinyint(3) unsigned NOT NULL,
-  `allow_pm` tinyint(3) unsigned NOT NULL,
-  `fightstyle` tinyint(4) NOT NULL,
+  `allow_teleport` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `allow_pm` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `fightstyle` tinyint(4) NOT NULL DEFAULT '4',
   `speedo` tinyint(3) unsigned NOT NULL,
   `namecolor` int(11) NOT NULL,
-  `skin` smallint(5) unsigned NOT NULL,
+  `skin` smallint(5) NOT NULL DEFAULT '-1',
   `auto_login` tinyint(3) unsigned NOT NULL,
-  `blevel` float(4,2) NOT NULL,
-  `jlevel` float(4,2) NOT NULL,
+  `blevel` float(4,2) NOT NULL DEFAULT '1.30',
+  `jlevel` float(4,2) NOT NULL DEFAULT '0.20',
   `house_spawn` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -383,7 +383,7 @@ CREATE TABLE IF NOT EXISTS `stores` (
 
 CREATE TABLE IF NOT EXISTS `toys` (
   `id` int(10) unsigned NOT NULL,
-  `rowid` tinyint(3) unsigned NOT NULL,
+  `seq` tinyint(3) unsigned NOT NULL,
   `model` smallint(5) unsigned NOT NULL,
   `bone` tinyint(3) unsigned NOT NULL,
   `xpos` float(14,4) NOT NULL,
@@ -405,7 +405,7 @@ CREATE TABLE IF NOT EXISTS `toys` (
 
 CREATE TABLE IF NOT EXISTS `vehicles` (
   `id` int(10) unsigned NOT NULL,
-  `rowid` tinyint(3) unsigned NOT NULL,
+  `seq` tinyint(3) unsigned NOT NULL,
   `model` smallint(5) unsigned NOT NULL,
   `plate` varchar(13) NOT NULL,
   `paintjob` tinyint(4) NOT NULL,
@@ -601,7 +601,7 @@ ALTER TABLE `accounts`
 -- AUTO_INCREMENT for table `blacklist`
 --
 ALTER TABLE `blacklist`
-  MODIFY `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `enterprises`
 --
@@ -611,7 +611,7 @@ ALTER TABLE `enterprises`
 -- AUTO_INCREMENT for table `gangs`
 --
 ALTER TABLE `gangs`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `gzones`
 --
@@ -631,7 +631,7 @@ ALTER TABLE `news`
 -- AUTO_INCREMENT for table `queue`
 --
 ALTER TABLE `queue`
-  MODIFY `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `races`
 --
