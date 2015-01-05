@@ -6704,7 +6704,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 					{
 						new Float:POS[3], vid = GetPlayerVehicleID(playerid);
 						GetVehicleVelocity(vid, POS[0], POS[1], POS[2]);
-						SetVehicleVelocity(vid, POS[0] * PlayerData[playerid][e_boost_level], POS[1] * PlayerData[playerid][e_boost_level], POS[2] * PlayerData[playerid][e_boost_level]);
+						SetVehicleVelocity(vid, POS[0] * PlayerSettings[playerid][e_boost_level], POS[1] * PlayerSettings[playerid][e_boost_level], POS[2] * PlayerSettings[playerid][e_boost_level]);
 						if(IsComponentIdCompatible(GetVehicleModel(vid), 1010)) AddVehicleComponent(vid, 1010);
 						return 1;
 			   		}
@@ -15377,7 +15377,7 @@ YCMD:stats(playerid, params[], help)
         	number_format(PlayerData[player1][e_bank]));
 
 		format(string2, sizeof(string2), "Custom Car Slots:\t%i\nRace wins:\t\t%i\nDerby wins:\t\t%i\nReaction wins:\t\t%i\nMath wins:\t\t%i\nTDM wins:\t\t%i\nFallout wins:\t\t%i\nGungame wins:\t\t%i\nTime until PayDay:\t%i minutes\n",
-            PlayerData[player1][e_pvslots]
+            PlayerData[player1][e_pvslots],
 			PlayerData[player1][e_racewins],
 	   		PlayerData[player1][e_derbywins],
 	   		PlayerData[player1][e_reaction],
@@ -23524,7 +23524,7 @@ derby_start_map(mapid)
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    PlayerData[i][bDerbyWinner] = false;
-	    if(gTeam[i] = gDERBY)
+	    if(gTeam[i] == gDERBY)
 	    {
 	        ClearAnimations(i);
 	        SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
@@ -23564,7 +23564,7 @@ derby_start_map(mapid)
 		    PlayerData[i][bDerbyWinner] = true;
 		    DerbyPlayers++;
 		    
-		    for(new smap = 0; smap < MAX_DERBY_SPAWNS; smap++)
+		    for(new smap = 0; smap < MAX_DERBY_PLAYERS; smap++)
 		    {
 		        if(!DerbyMaps[mapid][smap][e_used])
 		        {
@@ -24451,41 +24451,12 @@ function:Derby_FreezeVehicles()
 
 function:ClearDerbySpawns()
 {
-	for(new i = 0; i < sizeof(Derby_Map1Spawns); i++)
+	for(new m = 0; m < MAX_DERBY_MAPS; m++)
 	{
-	    Derby_Map1Spawns[i][m1sUsed] = false;
-	}
-	for(new i = 0; i < sizeof(Derby_Map2Spawns); i++)
-	{
-	    Derby_Map2Spawns[i][m2sUsed] = false;
-	}
-	for(new i = 0; i < sizeof(Derby_Map3Spawns); i++)
-	{
-	    Derby_Map3Spawns[i][m3sUsed] = false;
-	}
-	for(new i = 0; i < sizeof(Derby_Map4Spawns); i++)
-	{
-	    Derby_Map4Spawns[i][m4sUsed] = false;
-	}
-	for(new i = 0; i < sizeof(Derby_Map5Spawns); i++)
-	{
-	    Derby_Map5Spawns[i][m5sUsed] = false;
-	}
-	for(new i = 0; i < sizeof(Derby_Map6Spawns); i++)
-	{
-	    Derby_Map6Spawns[i][m6sUsed] = false;
-	}
-	for(new i = 0; i < sizeof(Derby_Map7Spawns); i++)
-	{
-	    Derby_Map7Spawns[i][m7sUsed] = false;
-	}
-	for(new i = 0; i < sizeof(Derby_Map8Spawns); i++)
-	{
-	    Derby_Map8Spawns[i][m8sUsed] = false;
-	}
-	for(new i = 0; i < sizeof(Derby_Map9Spawns); i++)
-	{
-	    Derby_Map9Spawns[i][m9sUsed] = false;
+	    for(new s = 0; s < MAX_DERBY_PLAYERS; s++)
+	    {
+	        DerbyMaps[m][s][e_used] = false;
+	    }
 	}
 	return 1;
 }
@@ -29174,16 +29145,16 @@ ResetPlayerVars(playerid)
 	PlayerData[playerid][DuelRequest] = INVALID_PLAYER_ID;
 	PlayerData[playerid][DuelRequestRecv] = INVALID_PLAYER_ID;
 
-	PlayerSettigns[playerid][e_allow_teleport] = 1;
-	PlayerSettigns[playerid][e_allow_pm] = 1;
-	PlayerSettigns[playerid][e_fightstyle] = 4;
-	PlayerSettigns[playerid][e_speedo] = 0;
-	PlayerSettigns[playerid][e_namecolor] = 0;
-	PlayerSettigns[playerid][e_skin] = -1;
-	PlayerSettigns[playerid][e_auto_login] = 1;
-	PlayerSettigns[playerid][e_boost_level] = 1.30;
-	PlayerSettigns[playerid][e_jump_level] = 0.20;
-	PlayerSettigns[playerid][e_house_spawn] = 0;
+	PlayerSettings[playerid][e_allow_teleport] = 1;
+	PlayerSettings[playerid][e_allow_pm] = 1;
+	PlayerSettings[playerid][e_fightstyle] = 4;
+	PlayerSettings[playerid][e_speedo] = 0;
+	PlayerSettings[playerid][e_namecolor] = 0;
+	PlayerSettings[playerid][e_skin] = -1;
+	PlayerSettings[playerid][e_auto_login] = 1;
+	PlayerSettings[playerid][e_boost_level] = 1.30;
+	PlayerSettings[playerid][e_jump_level] = 0.20;
+	PlayerSettings[playerid][e_house_spawn] = 0;
 
     PlayerSettings[playerid][e_namecolor] = 0;
 
@@ -29650,7 +29621,7 @@ no_vip(playerid, msg[])
 replace_col_codes(data[])
 {
 	gstr[0] = '\0';
-	strmid(gstr, data, 0, 143, 143, 144);
+	strmid(gstr, data, 0, 143, 143);
     NC_StringReplace(gstr, "<red>", "{00000}", gstr, sizeof(gstr));
     NC_StringReplace(gstr, "<green>", "{00000}", gstr, sizeof(gstr));
     NC_StringReplace(gstr, "<blue>", "{00000}", gstr, sizeof(gstr));
