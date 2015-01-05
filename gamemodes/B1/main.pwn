@@ -4839,6 +4839,10 @@ public OnPlayerText(playerid, text[])
 	    Command_ReProcess(playerid, string, false);
 		return 0;
 	}
+	if(text[0] == '$' && PlayerData[playerid][e_vip] == 1)
+	{
+	    replace_col_codes(text);
+	}
 	if(text[0] == '!' && PlayerData[playerid][e_gangrank] != 0)
 	{
 	    format(gstr, sizeof(gstr), ""gang_sign" {%06x}%s(%i)"r_besch": %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, text[1]);
@@ -30414,4 +30418,15 @@ no_vip(playerid, msg[])
 {
 	format(gstr2, sizeof(gstr2), ""nef_green"%s\n\n"white"Get your VIP status at www.havocserver.com/vip", msg);
 	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player", gstr2, "OK", "");
+}
+
+replace_col_codes(data[])
+{
+	gstr[0] = '\0';
+	strmid(gstr, data, 0, 143, 143, 144);
+    NC_StringReplace(gstr, "<red>", "{00000}", gstr, sizeof(gstr));
+    NC_StringReplace(gstr, "<green>", "{00000}", gstr, sizeof(gstr));
+    NC_StringReplace(gstr, "<blue>", "{00000}", gstr, sizeof(gstr));
+    NC_StringReplace(gstr, "<yellow>", "{00000}", gstr, sizeof(gstr));
+    return gstr;
 }
