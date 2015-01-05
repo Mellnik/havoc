@@ -24701,11 +24701,6 @@ function:ProcessTick()
 	static utime;
 	utime = gettime();
 
-	if(g_RaceStatus == RaceStatus_Active)
-	{
-	    race_calculate_position();
-	}
-
 	T_RacePlayers = 0;
 	T_DerbyPlayers = 0;
 	T_GunGamePlayers = 0;
@@ -24927,6 +24922,11 @@ function:ProcessTick()
 
 		format(gstr, sizeof(gstr), "Welcome to New Evolution Freeroam!\n\nServer time: %02i:%02i | %02i.%02i\nPlayers online: %i", gTime[3], gTime[4], gTime[2], gTime[1], T_ServerPlayers);
 		SetDynamicObjectMaterialText(bb_mcc, 0, gstr, OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_LEFT);
+		
+		if(g_RaceStatus == RaceStatus_Active)
+		{
+		    race_calculate_position();
+		}
 	}
 
 	if(g_FalloutStatus != e_Fallout_Inactive)

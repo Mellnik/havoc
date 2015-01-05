@@ -113,6 +113,7 @@ TODO
 - Airport maps have been improved to make it possible to lift off with a plane.
 - Gang score has been reduced if you attack a zone with many members.
 - Got rid of mSelection, now using an improved UI for toys.
+- Improve OnPlayerKeyStateChange and remove shitty doingStunt stuff
 - New /settings dialog values which are being saved in the database:
   * /tgo (Allow teleports to you)
   * /tpm (Allow private messages)
