@@ -81,6 +81,7 @@ native gpci(playerid, serial[], maxlen); // undefined in a_samp.inc
 Float:GetElevatorZCoordForFloor(floorid);
 Float:GetDoorsZCoordForFloor(floorid);
 Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
+Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Float:z2);
 
 // MySQL
 #define SQL_HOST   						"::1"
@@ -26746,6 +26747,11 @@ GetEnterpriseEarnings(r)
 		}
 	}
 	return 0;
+}
+
+Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Float:z2)
+{
+	return (((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)) + ((z1 - z2) * (z1 - z2)));
 }
 
 GetNearestHouse(playerid)
