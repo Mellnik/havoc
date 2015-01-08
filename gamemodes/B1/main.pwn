@@ -98,9 +98,9 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #endif
 
 // Server
-#define SVRNAME                      	"Havoc Freeroam"
-#define SVRSC	                    	"Havoc"
-#define SVRLOGO                         "{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»"
+#define SERVER_NAME                    	"Havoc Freeroam"
+#define SERVER_SHORT                   	"Havoc"
+#define SERVER_LOGO						"{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»"
 #define SVRURL                          "havocserver.com"
 #define SVRURLWWW                       "www.havocserver.com"
 #define SVRFORUM                        "forum.havocserver.com"
@@ -136,8 +136,8 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define fallout_sign                    "{FFFFFF}[{AAAAFF}FALLOUT{FFFFFF}]"
 #define server_sign                     "{FFFFFF}[{FF005F}SERVER{FFFFFF}]"
 #define gang_sign                       "{FFFFFF}[{FFA000}GANG{FFFFFF}]"
-#define nefa                            "{FFFFFF}[{FFE600}"SVRSC"{FFFFFF}]"
-#define nef                             "{FFE600}"SVRSC"{FFFFFF}"
+#define nefa                            "{FFFFFF}[{FFE600}"SERVER_SHORT"{FFFFFF}]"
+#define nef                             "{FFE600}"SERVER_SHORT"{FFFFFF}"
 #define NO_PERM                     	"{FF000F}[INFO] {FF000F}Insufficient permissions"
 #define NOT_AVAIL                       "{FF000F}[INFO] {FF000F}You can't use this command now! Use /exit to leave."
 #define er                              "{FF000F}[INFO] {FF000F}" // D2D2D2
@@ -2839,7 +2839,7 @@ main()
 // Callbacks
 public OnGameModeInit()
 {
-	Log(LOG_INIT, "NEF Server Copyright (c)2011 - 2014 "SVRNAME"");
+	Log(LOG_INIT, "NEF Server Copyright (c)2011 - 2014 "SERVER_NAME"");
     Log(LOG_INIT, "Version: "CURRENT_VERSION"");
 	#if IS_RELEASE_BUILD == true
 	Log(LOG_INIT, "Build config: Release");
@@ -11358,7 +11358,7 @@ YCMD:kick(playerid, params[], help)
 		
 		if(IsPlayerAvail(player) && player != playerid && PlayerData[player][e_level] != MAX_ADMIN_LEVEL)
 		{
-			format(gstr, sizeof(gstr), ""SVRSC""yellow"** "red"%s(%i) has been kicked by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
+			format(gstr, sizeof(gstr), ""SERVER_SHORT""yellow"** "red"%s(%i) has been kicked by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
 			SCMToAll(YELLOW, gstr);
 			print(gstr);
 			
@@ -11398,7 +11398,7 @@ YCMD:mute(playerid, params[], help)
 				return SCM(playerid, -1, ""er"This player is already muted");
 			}
 
-	    	format(gstr, sizeof(gstr), ""SVRSC""yellow"** "red"%s(%i) has been muted by Admin %s(%i) for %i seconds [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, time, reason);
+	    	format(gstr, sizeof(gstr), ""SERVER_SHORT""yellow"** "red"%s(%i) has been muted by Admin %s(%i) for %i seconds [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, time, reason);
             SCMToAll(YELLOW, gstr);
             print(gstr);
             
@@ -11440,7 +11440,7 @@ YCMD:unmute(playerid, params[], help)
 			KillTimer(PlayerData[player][tMute]);
 			SCM(player, NEF_YELLOW, "You have been unmuted!");
 
-			format(gstr, sizeof(gstr), ""SVRSC""yellow"** "red"%s(%i) has been unmuted by Admin %s(%i)", __GetName(player), player, __GetName(playerid), playerid);
+			format(gstr, sizeof(gstr), ""SERVER_SHORT""yellow"** "red"%s(%i) has been unmuted by Admin %s(%i)", __GetName(player), player, __GetName(playerid), playerid);
 			SCMToAll(YELLOW, gstr);
 		}
 		else
@@ -11465,7 +11465,7 @@ YCMD:register(playerid, params[], help)
 	new newtext1[1024], newtext2[128];
     format(newtext2, sizeof(newtext2), ""nef" :: Registration - %s", __GetName(playerid));
 
-	format(newtext1, sizeof(newtext1), ""white"Welcome to "SVRLOGO""white"\n\nDesired name: %s\n\nIt seems that you don't have an account, please enter a password below:", __GetName(playerid));
+	format(newtext1, sizeof(newtext1), ""white"Welcome to "SERVER_LOGO""white"\n\nDesired name: %s\n\nIt seems that you don't have an account, please enter a password below:", __GetName(playerid));
 	ShowPlayerDialog(playerid, DIALOG_REGISTER + 1, DIALOG_STYLE_PASSWORD, newtext2, newtext1, "Register", "Cancel");
 	return 1;
 }
@@ -12488,7 +12488,7 @@ YCMD:ban(playerid, params[], help)
 				} else {
 				    SQL_BanIP(__GetIP(player));
 				    
-				    format(gstr, sizeof(gstr), ""SVRSC""yellow"** "red"%s(%i) has been banned by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
+				    format(gstr, sizeof(gstr), ""SERVER_SHORT""yellow"** "red"%s(%i) has been banned by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
 				    format(amsg, sizeof(amsg), "[ADMIN CHAT] "LG_E"IP banned of %s [EXPIRES: NEVER, REASON: %s]", __GetName(player), reason);
 				}
 
@@ -15783,7 +15783,7 @@ YCMD:answer(playerid, params[], help)
 		return true;
 	}
 
-	format(gstr, sizeof(gstr), ""SVRSC" "RED_E"[MATHS] :: {%06x}%s(%i) "white"has correctly answered %s (answer: %i) winning 4 score and $%s!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, mathsCurrent, answer, number_format(mathsAward));
+	format(gstr, sizeof(gstr), ""SERVER_SHORT" "RED_E"[MATHS] :: {%06x}%s(%i) "white"has correctly answered %s (answer: %i) winning 4 score and $%s!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, mathsCurrent, answer, number_format(mathsAward));
 	SCMToAll(-1, gstr);
 
 	GivePlayerScoreEx(playerid, 4, true, true);
@@ -18012,7 +18012,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                }
 	                case 7: // what to do here
 	                {
-						strcat(gstr, ""white"On "SVRNAME" you will never be bored. If you like to play with and\nagainst others join a minigame (/minigames).\nExplore our map and teleports (/t)\nYou can design your character with our toy system (/toy).");
+						strcat(gstr, ""white"On "SERVER_NAME" you will never be bored. If you like to play with and\nagainst others join a minigame (/minigames).\nExplore our map and teleports (/t)\nYou can design your character with our toy system (/toy).");
 
 						ShowPlayerDialog(playerid, DIALOG_HELP + 6, DIALOG_STYLE_MSGBOX, ""nef" :: What to do here", gstr, "OK", "Back");
 	                }
@@ -20451,7 +20451,7 @@ RequestRegistration(playerid)
 	new string[1024];
 	
     format(gstr, sizeof(gstr), ""nef" :: Registration - %s", __GetName(playerid));
-	format(string, sizeof(string), ""white"Welcome to "SVRLOGO""white"\n\nYour name: %s\n\nLet's create an account, enter a password below:", __GetName(playerid));
+	format(string, sizeof(string), ""white"Welcome to "SERVER_LOGO""white"\n\nYour name: %s\n\nLet's create an account, enter a password below:", __GetName(playerid));
 	ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, gstr, string, "Register", "Skip");
 	return 1;
 }
@@ -20461,7 +20461,7 @@ RequestLogin(playerid)
 	new string[1024];
 	
     format(gstr, sizeof(gstr), ""nef_yellow"Login "white"- %s", __GetName(playerid));
-    format(string, sizeof(string), ""white"Welcome to "SVRLOGO""white"\nHow are you, %s?\n\nAccount: %s\n\nThe name that you are using is registered! Please enter the password:", __GetName(playerid), __GetName(playerid));
+    format(string, sizeof(string), ""white"Welcome to "SERVER_LOGO""white"\nHow are you, %s?\n\nAccount: %s\n\nThe name that you are using is registered! Please enter the password:", __GetName(playerid), __GetName(playerid));
 	ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, gstr, string, "Login", "Skip");
     return 1;
 }
@@ -20954,10 +20954,10 @@ function:OnPlayerRegister(playerid, namehash, register, password[], playername[]
 		    PlayerData[playerid][bLogged] = true;
             g_ServerStats[2]++;
 
-			format(gstr, sizeof gstr, "["SVRSC"] %s(%i) "GREEN_E"has registered, making the server have a total of "LB2_E"%i "GREEN_E"players registered.", __GetName(playerid), playerid, cache_insert_id());
+			format(gstr, sizeof gstr, "["SERVER_SHORT"] %s(%i) "GREEN_E"has registered, making the server have a total of "LB2_E"%i "GREEN_E"players registered.", __GetName(playerid), playerid, cache_insert_id());
 			SCMToAll(COLOR_PINK, gstr);
 
-			format(gstr, sizeof(gstr), "~b~~h~~h~Welcome to "SVRSC", ~r~~h~~h~%s~b~~h~~h~!~n~~b~~h~~h~You have successfully registered and logged in!", __GetName(playerid));
+			format(gstr, sizeof(gstr), "~b~~h~~h~Welcome to "SERVER_SHORT", ~r~~h~~h~%s~b~~h~~h~!~n~~b~~h~~h~You have successfully registered and logged in!", __GetName(playerid));
 			InfoTD_MSG(playerid, 5000, gstr);
 
 			format(gstr, sizeof(gstr), "~y~[] ~w~%i", PlayerData[playerid][e_wanteds]);
@@ -20978,10 +20978,10 @@ function:OnPlayerRegister(playerid, namehash, register, password[], playername[]
 		    PlayerData[playerid][bLogged] = true;
             g_ServerStats[2]++;
 
-			format(gstr, sizeof gstr, "["SVRSC"] %s(%i) "GREEN_E"has registered, making the server have a total of "LB2_E"%i "GREEN_E"players registered.", __GetName(playerid), playerid, cache_insert_id());
+			format(gstr, sizeof gstr, "["SERVER_SHORT"] %s(%i) "GREEN_E"has registered, making the server have a total of "LB2_E"%i "GREEN_E"players registered.", __GetName(playerid), playerid, cache_insert_id());
 			SCMToAll(COLOR_PINK, gstr);
 
-			format(gstr, sizeof(gstr), "~b~~h~~h~Welcome to "SVRSC", ~r~~h~~h~%s~b~~h~~h~!~n~~b~~h~~h~You have successfully registered and logged in!", __GetName(playerid));
+			format(gstr, sizeof(gstr), "~b~~h~~h~Welcome to "SERVER_SHORT", ~r~~h~~h~%s~b~~h~~h~!~n~~b~~h~~h~You have successfully registered and logged in!", __GetName(playerid));
 			InfoTD_MSG(playerid, 5000, gstr);
 
             SQL_SaveAccount(playerid, false, false);
@@ -21651,7 +21651,7 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTWelcome[1], 1);
 	TextDrawSetSelectable(TXTWelcome[1], 0);
 
-	TXTWelcome[2] = TextDrawCreate(438.000000, 172.000000, "Welcome to "SVRSC"! Check out these~n~commands:~n~~n~  ~g~~h~~h~/rules~n~  ~r~~h~~h~/commands~n~  ~p~/help~n~~n~~w~How do I earn money and score?");
+	TXTWelcome[2] = TextDrawCreate(438.000000, 172.000000, "Welcome to "SERVER_SHORT"! Check out these~n~commands:~n~~n~  ~g~~h~~h~/rules~n~  ~r~~h~~h~/commands~n~  ~p~/help~n~~n~~w~How do I earn money and score?");
 	TextDrawBackgroundColor(TXTWelcome[2], 168430202);
 	TextDrawFont(TXTWelcome[2], 1);
 	TextDrawLetterSize(TXTWelcome[2], 0.229999, 1.099997);
@@ -21669,7 +21669,7 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTWelcome[3], 1);
 	TextDrawSetSelectable(TXTWelcome[3], 0);
 
-	TXTWelcome[4] = TextDrawCreate(469.000000, 336.000000, "Enjoy playing on "SVRSC"!");
+	TXTWelcome[4] = TextDrawCreate(469.000000, 336.000000, "Enjoy playing on "SERVER_SHORT"!");
 	TextDrawBackgroundColor(TXTWelcome[4], 168430202);
 	TextDrawFont(TXTWelcome[4], 1);
 	TextDrawLetterSize(TXTWelcome[4], 0.259999, 1.199998);
@@ -21897,7 +21897,7 @@ server_initialize()
 	SendRconCommand(gstr);
 	SendRconCommand("weburl "SVRURLWWW"");
     SetGameModeText("TdmDerbyRaceCNRFunStuntFreeroam");
-	SendRconCommand("mapname "SVRSC" "CURRENT_VERSION"");
+	SendRconCommand("mapname "SERVER_SHORT" "CURRENT_VERSION"");
 	
 	EnableVehicleFriendlyFire();
 	ShowPlayerMarkers(1);
@@ -22265,7 +22265,7 @@ server_load_visuals()
 	mc_weps = CreateDynamicPickup(1254, 2, -2340.0862,-1644.3979,485.6543);
 	CreateDynamic3DTextLabel("Weapons "green"(/w)", RED, -2340.0862,-1644.3979,485.6543+0.5, 30.0);
 
-    CreateDynamic3DTextLabel(""SVRLOGO"\n"r_besch"Beach Zone "grey"(/beach)\n"orange"www.nefserver.net\n"white"Are you a "orange"new "white"player? Explore our maps "orange"/t\n"white"Use "orange"/god "white"for freeroam mode!", -1, 323.8153,-1853.5037,8.2406+0.5, 35.0);
+    CreateDynamic3DTextLabel(""SERVER_LOGO"\n"r_besch"Beach Zone "grey"(/beach)\n"orange"www.nefserver.net\n"white"Are you a "orange"new "white"player? Explore our maps "orange"/t\n"white"Use "orange"/god "white"for freeroam mode!", -1, 323.8153,-1853.5037,8.2406+0.5, 35.0);
 	beach_dive = CreateDynamicPickup(371, 23, 327.5385,-1864.1561,8.2406);
 	CreateDynamic3DTextLabel("Dive", GREEN, 327.5385,-1864.1561,8.2406+0.5, 30.0);
 	beach_tp = CreateDynamicPickup(19130, 2, 336.6495,-1836.6848,8.2481);
@@ -23345,7 +23345,7 @@ PortPlayerMapVeh(playerid, Float:X, Float:Y, Float:Z, Float:Angle, Float:XVeh, F
 SendWelcomeMSG(playerid)
 {
 	SCM(playerid, GREY, "===================="white""CURRENT_VERSION""grey"=======================");
-	SCM(playerid, RED, "» Welcome to "SVRLOGO"");
+	SCM(playerid, RED, "» Welcome to "SERVER_LOGO"");
 	SCM(playerid, NEF_GREEN, "» Type /help for further information");
 	SCM(playerid, BLUE, "» You can show/hide the textdraws with /textdraws");
 	SCM(playerid, YELLOW, "» Visit our forum at http://"SVRFORUM"");
@@ -24325,7 +24325,7 @@ function:ProcessTick()
 						gang_broadcast(GZoneData[r][e_attacker], gstr);
 						gang_broadcast(GZoneData[r][e_attacker], ""gang_sign" "r_besch" The gang gained 4 gang score and each member $10,000 who were tied.");
 
-						format(gstr, sizeof(gstr), ""SVRSC" "orange"Gang %s captured zone '%s' and gained their reward", GetGangNameByID(GZoneData[r][e_attacker]), GZoneData[r][e_zname]);
+						format(gstr, sizeof(gstr), ""SERVER_SHORT" "orange"Gang %s captured zone '%s' and gained their reward", GetGangNameByID(GZoneData[r][e_attacker]), GZoneData[r][e_zname]);
 						SCMToAll(-1, gstr);
 						SCMToAll(-1, ""orange"This zone is now locked for 2 hours and cannot be attacked during that time!");
 
@@ -24338,11 +24338,11 @@ function:ProcessTick()
 						gang_broadcast(GZoneData[r][e_attacker], gstr);
 						gang_broadcast(GZoneData[r][e_attacker], ""gang_sign" "r_besch" The gang gained 7 gang score and each member $20,000 who were tied.");
 
-						format(gstr, sizeof(gstr), ""SVRSC" "orange"Gang %s captured zone '%s' which was territory of %s", GetGangNameByID(GZoneData[r][e_attacker]), GZoneData[r][e_zname], GetGangNameByID(GZoneData[r][e_defender]));
+						format(gstr, sizeof(gstr), ""SERVER_SHORT" "orange"Gang %s captured zone '%s' which was territory of %s", GetGangNameByID(GZoneData[r][e_attacker]), GZoneData[r][e_zname], GetGangNameByID(GZoneData[r][e_defender]));
 						SCMToAll(-1, gstr);
 						SCMToAll(-1, ""orange"This zone is now locked for 2 hours and cannot be attacked during that time!");
 						
-                        format(gstr, sizeof(gstr), ""SVRSC" "gang_sign" "r_besch" '%s' was captured by the gang %s!", GZoneData[r][e_zname], GetGangNameByID(GZoneData[r][e_attacker]));
+                        format(gstr, sizeof(gstr), ""SERVER_SHORT" "gang_sign" "r_besch" '%s' was captured by the gang %s!", GZoneData[r][e_zname], GetGangNameByID(GZoneData[r][e_attacker]));
 						gang_broadcast(GZoneData[r][e_defender], gstr);
 						
 						SQL_UpdateGangScore(GZoneData[r][e_attacker], 7);
@@ -25448,7 +25448,7 @@ function:ShowDialog(playerid, dialogid)
 				
 			format(gstr2, sizeof(gstr2), "\n\nStreamed client objects: %i\nServer FPS: %i\nPlayer record: %i", Streamer_CountVisibleItems(playerid, STREAMER_TYPE_OBJECT), GetServerTickRate(), m_PlayerRecord);
 	        strcat(string, gstr2);
-	        strcat(string, "\n\nServer version: "SVRNAME" "CURRENT_VERSION" on SA-MP "SAMP_VERSION"");
+	        strcat(string, "\n\nServer version: "SERVER_NAME" "CURRENT_VERSION" on SA-MP "SAMP_VERSION"");
 	        
 	        ShowPlayerDialog(playerid, DIALOG_SERVER_STATS, DIALOG_STYLE_MSGBOX, ""nef" :: Server Stats", string, "OK", "");
 	    }
@@ -25694,7 +25694,7 @@ function:server_random_broadcast()
 		""yellow_e"- Server - "LB2_E"Join Minigames to earn money and score - /help",
 		""yellow_e"- Server - "LB2_E"Got suggestions? Post them on our forums! ("SVRFORUM")",
 		""yellow_e"- Server - "LB2_E"Use /report to report a player to the admins",
-		""yellow_e"- Server - "LB2_E"Add "SVRSC" to your favlist! samp."SVRURL":7777",
+		""yellow_e"- Server - "LB2_E"Add "SERVER_SHORT" to your favlist! samp."SVRURL":7777",
 		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip/",
 		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!",
 		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!"
@@ -26368,7 +26368,7 @@ function:Maths()
 		}
 	}
 	format(mathsCurrent, sizeof(mathsCurrent), "%i%s%i%s%i", NR1, FOP1, NR2, FOP2, NR3);
-	format(gstr2, sizeof(gstr2), ""SVRSC" "RED_E"[MATHS] "white"Calculate %s and write /answer <answer> "YELLOW_E"(Score: 4 | Money: $%s)", mathsCurrent, number_format(mathsAward));
+	format(gstr2, sizeof(gstr2), ""SERVER_SHORT" "RED_E"[MATHS] "white"Calculate %s and write /answer <answer> "YELLOW_E"(Score: 4 | Money: $%s)", mathsCurrent, number_format(mathsAward));
 	SCMToAll(-1, gstr2);
 	return 1;
 }
