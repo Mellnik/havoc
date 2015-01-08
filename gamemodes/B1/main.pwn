@@ -12621,7 +12621,7 @@ YCMD:shutdown(playerid, params[], help)
 	{
 	    bGlobalShutdown = true;
 
-		SCMToAll(-1, "Server restart! Restart your game. IP: samp.nefserver.net:7777");
+		SCMToAll(-1, "Server restart! Restart your game. IP: "SERVER_DNS"");
 	    
 	    SetTimer("server_init_shutdown", 3000, false);
  	}
@@ -15714,7 +15714,7 @@ YCMD:deletecolor(playerid, params[], help)
 
 YCMD:new(playerid, params[], help)
 {
-	HTTP(playerid, HTTP_GET, "www.nefserver.net/gateway/api.php?a=news", "", "OnNewsReceive");
+	HTTP(playerid, HTTP_GET, ""SERVER_WWW"/gateway/api.php?a=news", "", "OnNewsReceive");
 	return 1;
 }
 
@@ -18060,7 +18060,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						strcat(cstring, ""blue"/gdeny "white"- deny an invitation\n");
 						strcat(cstring, ""blue"/gleave "white"- leave your gang\n");
 						strcat(cstring, ""blue"/gmenu "white"- gang menu\n");
-						strcat(cstring, ""blue"/gcolor <Red 0-255> <Green 0-255> <Blue 0-255> "white"- set gang color\n");
+						strcat(cstring, ""blue"/gcolor <red 0-255> <green 0-255> <blue 0-255> "white"- set gang color\n");
 						strcat(cstring, ""blue"/grank "white"- set a players gang rank\n");
 						strcat(cstring, ""blue"/gcar <(optional) vehicle id>"white"- spawn gang vehicle or set it\n");
                         strcat(cstring, ""blue"/ginvite "white"- invite a player to your gang\n");
@@ -18096,7 +18096,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            }
 		            case 5: // Private Vehicles
 		            {
-		            
+                        strcat(cstring, ""yellow"/pv "white"- spawn and manage your private vehicles\n");
+                        strcat(cstring, ""yellow"/lock "white"- (un)lock your vehicle\n");
+                        strcat(cstring, ""yellow"/tune "white"- teleport to tuning garages (modifications will be saved)\n");
+                        strcat(cstring, ""yellow"/eject "white"- eject a player from your private vehicle\n");
+                        strcat(cstring, ""yellow"/speedo "white"- enable speedometer in vehicles\n");
 		            }
 		            case 6: // VIP
 		            {
@@ -22077,6 +22081,7 @@ server_initialize()
 	Command_AddAltNamed("vmenu", "pvmenu");
 	Command_AddAltNamed("vmenu", "pv");
 	Command_AddAltNamed("vmenu", "mypv");
+	Command_AddAltNamed("vmenu", "carmenu");
 	Command_AddAltNamed("vcontrol", "vctrl");
 	Command_AddAltNamed("vcontrol", "vcs");
 	Command_AddAltNamed("label", "labels");
@@ -22265,7 +22270,7 @@ server_load_visuals()
 	mc_weps = CreateDynamicPickup(1254, 2, -2340.0862,-1644.3979,485.6543);
 	CreateDynamic3DTextLabel("Weapons "green"(/w)", RED, -2340.0862,-1644.3979,485.6543+0.5, 30.0);
 
-    CreateDynamic3DTextLabel(""SERVER_LOGO"\n"r_besch"Beach Zone "grey"(/beach)\n"orange"www.nefserver.net\n"white"Are you a "orange"new "white"player? Explore our maps "orange"/t\n"white"Use "orange"/god "white"for freeroam mode!", -1, 323.8153,-1853.5037,8.2406+0.5, 35.0);
+    CreateDynamic3DTextLabel(""SERVER_LOGO"\n"r_besch"Beach Zone "grey"(/beach)\n"orange""SERVER_WWW"\n"white"Are you a "orange"new "white"player? Explore our maps "orange"/t\n"white"Use "orange"/god "white"for freeroam mode!", -1, 323.8153,-1853.5037,8.2406+0.5, 35.0);
 	beach_dive = CreateDynamicPickup(371, 23, 327.5385,-1864.1561,8.2406);
 	CreateDynamic3DTextLabel("Dive", GREEN, 327.5385,-1864.1561,8.2406+0.5, 30.0);
 	beach_tp = CreateDynamicPickup(19130, 2, 336.6495,-1836.6848,8.2481);
