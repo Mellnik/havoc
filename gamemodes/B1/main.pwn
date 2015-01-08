@@ -6669,19 +6669,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	if(gTeam[playerid] == STORE)
-	{
-        if(Key(KEY_SPRINT))
-        {
-            if(IsPlayerInRangeOfPoint(playerid, 2.2, 2311.63, -3.89, 26.74))
-            {
-			    if(!islogged(playerid)) return notlogged(playerid);
-			    ShowDialog(playerid, DIALOG_BANK);
-			    return 1;
-            }
-        }
-	}
-	
 	if(GetPVarInt(playerid, "doingStunt") != 0) return 1;
 
 	switch(gTeam[playerid])
@@ -8427,6 +8414,23 @@ YCMD:sj(playerid, params[], help)
 	}
 	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 	PlayerData[playerid][bSuperJump] = !PlayerData[playerid][bSuperJump];
+	return 1;
+}
+
+YCMD:menu(playerid, params[], help)
+{
+    if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
+    
+	if(gTeam[playerid] == STORE)
+	{
+        if(IsPlayerInRangeOfPoint(playerid, 2.2, 2311.63, -3.89, 26.74))
+        {
+		    if(!islogged(playerid)) return notlogged(playerid);
+		    ShowDialog(playerid, DIALOG_BANK);
+        }
+        else
+            SCM(playerid, -1, ""er"You must be near the bank sign");
+	}
 	return 1;
 }
 
@@ -13712,7 +13716,7 @@ YCMD:cd(playerid, params[], help)
     IsCountDownRunning = true;
     
     tVIPCountdown = SetTimer("server_vip_countdown", 1000, true);
-    
+
    	format(gstr, sizeof(gstr), ""nef" VIP {%06x}%s(%i) "white"has started a countdown!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid);
 	SCMToAll(-1, gstr);
 	
@@ -22560,7 +22564,7 @@ server_load_visuals()
     CreateDynamic3DTextLabel(""white"["nef_yellow"VIP"white"]\nLounge Entrance", -1, -2624.3010,1411.4360,7.2303+0.5, 35.0);
     CreateDynamic3DTextLabel(""white"["nef_green"Mellnik's Ramp"white"]\n"light_yellow"/rampdown to move it down", -1, -153.74190, -2210.68457, 27.16690+0.5, 20.0);
     CreateDynamic3DTextLabel(""white"["nef_green"Mellnik's Ramp"white"]\n"light_yellow"/rampup to move it up", -1, -153.74190, -2210.68457, 2.17288+0.5, 20.0);
-    CreateDynamic3DTextLabel(""white"["yellow"Bank"white"]\nPress 'SPACE'", -1, 2311.63, -3.89, 26.74+0.5, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, -1, -1, -1, 20.0);
+    CreateDynamic3DTextLabel(""white"["yellow"Bank"white"]\nType '/menu'", -1, 2311.63, -3.89, 26.74+0.5, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, -1, -1, -1, 20.0);
 
     // Create3DTextLabel("{ffffff}You must to enter in the balloon to start it!\nIf you are in it, write "vgreen"'/ballonup'", 0xF67E0FF, 836.0856, -2000.4789, 14.7462, 40.0, 0);
 

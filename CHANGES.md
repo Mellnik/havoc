@@ -91,7 +91,6 @@ TODO
 - http://puu.sh/dMLr2/92537b0237.jpg
 - http://puu.sh/dMLs5/657a188d38.jpg
 
-- VIP restrict /count to range
 - Nach jedem house/auto/gang/entprise/register kauf sollte ein dialog kommen wit cmds die man nun nutzen kann.
 - Internal safetly handlers for score and money ranges.
 - Improved spawn points to be more safe for players.
@@ -155,5 +154,8 @@ VIP Features
 - Expand your forums inbox to 10,000 PMs.
 - Chat color codes: <blue> <red> <green> <yellow>
 
-- exclusive pvs nicht mehr spawnbar für normale spieler?
-- Mehr Zinsen?
+Long Term
+---------
+- VIP: exclusive pvs nicht mehr spawnbar für normale spieler?
+- VIP: Mehr Zinsen?
+- VIP restrict /count to range
