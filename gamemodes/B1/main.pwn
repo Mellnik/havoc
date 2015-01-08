@@ -84,7 +84,7 @@ Float:GetDoorsZCoordForFloor(floorid);
 Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Float:z2);
 
-// Database Settings
+// Database
 #define SQL_HOST   						"::1"
 #define SQL_PORT                        (3306)
 #if IS_RELEASE_BUILD == true
@@ -108,12 +108,32 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_IP                       "X.X.X.X:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
-#define SERVER_VERSION                 "Build 1"
+#define SERVER_VERSION					"Build 1"
 #else
-#define SERVER_VERSION                 "Beta:Build 1"
+#define SERVER_VERSION					"Beta:Build 1"
 #endif
 #define SAMP_VERSION                    "0.3z-R4"
+
+// Script
+#define MAX_PLAYER_TOYS                 (6)
+#define REAC_TIME              			(900000)
+#define MAX_STORES                      (80)
+#define MAX_STORE_NAME                  (24)
+#define RACE_COUNTDOWN 					(21)
+#define MAX_RACE_TIME 					(300)
+#define RACE_MAX_CHECKPOINTS            (75)
+#define RACE_MAX_PLAYERS 				(12)
+#define MINIGUN_WORLD                   (1268565)
+#define MINIGUN2_WORLD                  (168566)
+#define SNIPER_WORLD                    (157412)
+#define ROCKETDM_WORLD                  (157411)
+#define SERVERMSGS_TIME                 (850000)
+#define MAX_PLAYER_PVS	                (8)
 #define MAX_REPORTS 					(7)
+#define MAX_ADMIN_LEVEL         		(5)
+#define MAX_WARNINGS 					(3)
+#define MAX_ZONE_NAME                   (28)
+#define MAX_CUSTOMCAR_SHOPS				(3)
 #define MAX_GANG_NAME					(20)
 #define MIN_GANG_NAME					(4)
 #define GANG_POS_NONE                   (0)
@@ -144,8 +164,6 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define Error(%1,%2) 					SendClientMessage(%1, -1, "{F42626}[INFO] "GREY2_E""%2)
 #define dl                              "{FFE600}• {F0F0F0}"
 #define notlogged(%1)                   ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef"", ""white"You need to be logged in to use this feature.\n\n"nef_yellow"Type /register to create an new account for you current name.", "OK", "")
-#define MAX_ADMIN_LEVEL         		(5)
-#define MAX_WARNINGS 					(3)
 #define ELEVATOR_SPEED      			(5.0)
 #define DOORS_SPEED         			(4.0)
 #define ELEVATOR_WAIT_TIME  			(5000)
@@ -161,10 +179,10 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define VEHICLE_RESPAWN_TIME			(60)
 #define SCM SendClientMessage
 #define SCMToAll SendClientMessageToAll
-#define MAX_ZONE_NAME                   (28)
-#define CUSTOM_CAR_SHOPS				(3)
 #define RGBA(%1,%2,%3,%4) (((((%1) & 0xff) << 24) | (((%2) & 0xff) << 16) | (((%3) & 0xff) << 8) | ((%4) & 0xff)))
 #define UpperToLower(%1) for(new ToLowerChar; ToLowerChar < strlen(%1); ToLowerChar++) if(%1[ToLowerChar] > 64 && %1[ToLowerChar] < 91) %1[ToLowerChar] += 32
+#define Key(%0) 						(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
+#define PreloadAnimLib(%1,%2)			ApplyAnimation(%1,%2,"NULL",0.0,0,0,0,0,0)
 
 // Derby
 #define DERBY_WIHLE_CAM_M1				-3948.2632, 951.8198, 78.4012
@@ -264,8 +282,8 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define COLOR_CNR_COP 					0x1F75FEFF
 #define COLOR_CNR_PRO_ROBBER            0xFF3200FF
 
-// GWARS
-#define MAX_GZONES						(63)
+// Gang Wars
+#define MAX_GZONES						(60)
 #define MAX_GZONES_PER_GANG             (15)
 #define GZONE_SIZE                      (70.0)
 #define COLOR_HOSTILE                   (0x95133499)
@@ -273,31 +291,13 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define COLOR_NONE                      (0xFFFFFFAA)
 
 // Houses
-#define MAX_HOUSES 						(600)
+#define MAX_HOUSES 						(500)
 #define MAX_PLAYER_HOUSES 				(5)
 
 // Enterprises
-#define MAX_ENTERPRISES                 (700)
+#define MAX_ENTERPRISES                 (500)
 #define MAX_ENTERPRISE_LEVEL            (20)
 #define MAX_PLAYER_ENTERPRISES          (5)
-
-// Misc
-#define MAX_PLAYER_TOYS                 (6)
-#define REAC_TIME              			(900000)
-#define MAX_STORES                      (80)
-#define MAX_STORE_NAME                  (24)
-#define RACE_COUNTDOWN 					(21)
-#define MAX_RACE_TIME 					(300)
-#define RACE_MAX_CHECKPOINTS            (75)
-#define RACE_MAX_PLAYERS 				(12)
-#define Key(%0) 						(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
-#define PreloadAnimLib(%1,%2)			ApplyAnimation(%1,%2,"NULL",0.0,0,0,0,0,0)
-#define MINIGUN_WORLD                   (1268565)
-#define MINIGUN2_WORLD                  (168566)
-#define SNIPER_WORLD                    (157412)
-#define ROCKETDM_WORLD                  (157411)
-#define SERVERMSGS_TIME                 (850000)
-#define MAX_PLAYER_PVS	                (8)
 
 #define function:%1(%2) \
 	forward public %1(%2); \
@@ -2252,13 +2252,13 @@ static const Float:g_ArmorPickups[16][3] =
 	{795.4474, 854.0259, 9.0281},
 	{-669.9799, 972.6474, 11.683}
 };
-static const Float:g_CarShopLocations[CUSTOM_CAR_SHOPS][4] =
+static const Float:g_CarShopLocations[MAX_CUSTOMCAR_SHOPS][4] =
 {
 	{2131.2915, -1144.3942, 24.7986, 291.9600},
 	{-1639.0990, 1202.4598, 7.2247, 68.4220},
 	{2106.9548, 1403.5167, 11.1395, 89.2744}
 };
-static const Float:g_CarShopTelePos[CUSTOM_CAR_SHOPS][4] =
+static const Float:g_CarShopTelePos[MAX_CUSTOMCAR_SHOPS][4] =
 {
 	{2107.1802, 1378.5853, 10.8618, 1.2502},
 	{2127.6726, -1129.2881, 25.5523, 175.3369},
@@ -2673,7 +2673,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	g_RacePosition[MAX_PLAYERS],
 	m_PlayerRecord,
 	g_sCustomCarCategory[512],
-	g_CustomCarShops[CUSTOM_CAR_SHOPS][E_CAR_SHOP],
+	g_CustomCarShops[MAX_CUSTOMCAR_SHOPS][E_CAR_SHOP],
     g_dialogTpString[2000],
 	g_cmdString[32],
 	g_tickProcessTickCalls = 0,
@@ -6289,7 +6289,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 		  		}
 			}
 
-			for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
+			for(new i = 0; i < MAX_CUSTOMCAR_SHOPS; i++)
 			{
 			    if(pickupid == g_CustomCarShops[i][e_pickup])
 			    {
@@ -6319,7 +6319,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 		{
 		    if(pickupid == g_CarShopInteriorPickup)
 		    {
-			    for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
+			    for(new i = 0; i < MAX_CUSTOMCAR_SHOPS; i++)
 			    {
 			        if(gLastMap[playerid] == g_CustomCarShops[i][e_pickup])
 			        {
@@ -7305,7 +7305,7 @@ YCMD:bayside(playerid, params[], help)
 }
 YCMD:vs(playerid, params[], help)
 {
-	new rand = random(CUSTOM_CAR_SHOPS);
+	new rand = random(MAX_CUSTOMCAR_SHOPS);
 
     PortPlayerMapVeh(playerid, g_CarShopTelePos[rand][0], g_CarShopTelePos[rand][1], g_CarShopTelePos[rand][2], g_CarShopTelePos[rand][3], g_CarShopTelePos[rand][0], g_CarShopTelePos[rand][1], g_CarShopTelePos[rand][2], g_CarShopTelePos[rand][3], "Car Shop", "vs");
     return 1;
@@ -22242,7 +22242,7 @@ server_load_visuals()
         pick_armor[i] = CreateDynamicPickup(1242, 23, g_ArmorPickups[i][0], g_ArmorPickups[i][1], g_ArmorPickups[i][2]);
     }
 
-	for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
+	for(new i = 0; i < MAX_CUSTOMCAR_SHOPS; i++)
 	{
 		g_CustomCarShops[i][e_pickup] = CreateDynamicPickup(1559, 23, g_CarShopLocations[i][0], g_CarShopLocations[i][1], g_CarShopLocations[i][2], 0, -1, -1, 200.0);
 		g_CustomCarShops[i][e_mapicon] = CreateDynamicMapIcon(g_CarShopLocations[i][0], g_CarShopLocations[i][1], g_CarShopLocations[i][2], 55, 1, 0, -1, -1, 200.0);
@@ -26932,7 +26932,7 @@ ExitPlayer(playerid)
 	    }
 	    case BUYCAR:
 	    {
-		    for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
+		    for(new i = 0; i < MAX_CUSTOMCAR_SHOPS; i++)
 		    {
 		        if(gLastMap[playerid] == g_CustomCarShops[i][e_pickup])
 		        {
