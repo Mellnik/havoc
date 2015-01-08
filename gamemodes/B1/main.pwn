@@ -572,10 +572,10 @@ enum
 	gWAR,
 	gCNR,
 	gHOUSE,
-	BUYCAR,
+	gBUYCAR,
 	gDUEL,
 	gGUNGAME,
-	FALLOUT,
+	gFALLOUT,
 	gBUILDRACE,
 	STORE,
 	SPEC,
@@ -3092,7 +3092,7 @@ public OnPlayerSpawn(playerid)
 			RandomSpawn(playerid);
    			RandomWeapons(playerid);
 	    }
-	    case BUYCAR:
+	    case gBUYCAR:
 	    {
 			gTeam[playerid] = gFREEROAM;
 			SetPlayerInterior(playerid, 0);
@@ -3646,7 +3646,7 @@ public OnPlayerDisconnect(playerid, reason)
 		        Streamer_ToggleItemUpdate(playerid, STREAMER_TYPE_PICKUP, 1);
 		        Streamer_Update(playerid);
 		    }
-			case FALLOUT:
+			case gFALLOUT:
 			{
                 PlayerData[playerid][bFalloutLost] = true;
 				gTeam[playerid] = gFREEROAM;
@@ -3658,7 +3658,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 					for(new i = 0; i < MAX_PLAYERS; i++)
 					{
-					    if(gTeam[i] == FALLOUT)
+					    if(gTeam[i] == gFALLOUT)
 					    {
 					    	TogglePlayerControllable(i, true);
 						    RandomSpawn(i, true);
@@ -5263,7 +5263,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 			    Command_ReProcess(playerid, "/exit", false);
 			}
 		}
-		case FALLOUT:
+		case gFALLOUT:
 		{
 			format(gstr, sizeof(gstr), "%s(%i) died!", __GetName(playerid), playerid);
 			fallout_broadcast(gstr);
@@ -5283,7 +5283,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 				for(new i = 0; i < MAX_PLAYERS; i++)
 				{
-				    if(gTeam[i] == FALLOUT)
+				    if(gTeam[i] == gFALLOUT)
 				    {
 				    	TogglePlayerControllable(i, true);
 					    RandomSpawn(i, true);
@@ -6297,7 +6297,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 			        SetPlayerInterior(playerid, 15);
 			        SetPlayerPosEx(playerid, -1405.5538, 989.1526, floatadd(1049.0078, 3.0));
 			        ResetPlayerWeapons(playerid);
-			        gTeam[playerid] = BUYCAR;
+			        gTeam[playerid] = gBUYCAR;
 			        gLastMap[playerid] = g_CustomCarShops[i][e_pickup];
 			        return 1;
 			    }
@@ -6315,7 +6315,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 			    return 1;
 			}
 		}
-		case BUYCAR:
+		case gBUYCAR:
 		{
 		    if(pickupid == g_CarShopInteriorPickup)
 		    {
@@ -7752,10 +7752,10 @@ YCMD:fallout(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
-    if(gTeam[playerid] == FALLOUT) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gFALLOUT) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 
 	if(g_FalloutStatus == e_Fallout_Inactive)
@@ -7770,7 +7770,7 @@ YCMD:fallout(playerid, params[], help)
 	    
 		g_FalloutStatus = e_Fallout_Startup;
 		CurrentFalloutPlayers++;
-		gTeam[playerid] = FALLOUT;
+		gTeam[playerid] = gFALLOUT;
 		
         SCMToAll(BLUE, ""fallout_sign" Type /fallout to participate");
         NewMinigameJoin(playerid, "Fallout", "fallout");
@@ -7782,7 +7782,7 @@ YCMD:fallout(playerid, params[], help)
 	    Command_ReProcess(playerid, "/stopanims", false);
 	    
 	    CurrentFalloutPlayers++;
-		gTeam[playerid] = FALLOUT;
+		gTeam[playerid] = gFALLOUT;
 		
 		format(gstr, sizeof(gstr), "%s(%i) joined Fallout!", __GetName(playerid), playerid);
 		fallout_broadcast(gstr);
@@ -7804,7 +7804,7 @@ YCMD:derby(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gDERBY) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7851,7 +7851,7 @@ YCMD:war(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gWAR) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7898,7 +7898,7 @@ YCMD:dm(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7932,7 +7932,7 @@ YCMD:dm2(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7967,7 +7967,7 @@ YCMD:dm3(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8001,7 +8001,7 @@ YCMD:dm4(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8036,7 +8036,7 @@ YCMD:sawn(playerid, params[], help)
 
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 
     if(gTeam[playerid] == gSAWN) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -9155,7 +9155,7 @@ YCMD:gungame(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gGUNGAME) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -9365,7 +9365,7 @@ YCMD:tdm(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -10503,7 +10503,7 @@ YCMD:burn(playerid, params[], help)
 			}
 		    switch(gTeam[otherid])
 		    {
-		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL: return SCM(playerid, -1, ""er"You can't use this command on that player now");
+		        case gDERBY, gRACE, gBUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL: return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    }
 			if(!PlayerData[otherid][bDerbyWinner] && gTeam[otherid] == gDERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    
@@ -12867,7 +12867,7 @@ YCMD:slap(playerid, params[], help)
 		{
 		    switch(gTeam[player])
 		    {
-		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL, gHOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
+		        case gDERBY, gRACE, gBUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL, gHOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    }
 			if(!PlayerData[player][bDerbyWinner] && gTeam[player] == gDERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
 
@@ -13894,7 +13894,7 @@ YCMD:race(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 
     if(gTeam[playerid] == gRACE) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -20658,7 +20658,7 @@ fallout_broadcast(const string[])
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == FALLOUT)
+		if(gTeam[i] == gFALLOUT)
 		{
 			SCM(i, GREY, gstr);
 		}
@@ -24044,7 +24044,7 @@ function:ProcessTick()
 
 				    T_GunGamePlayers++;
 			    }
-			    case FALLOUT:
+			    case gFALLOUT:
 			    {
 			        T_FalloutPlayers++;
 			        
@@ -24868,7 +24868,7 @@ fallout_startgame()
 	{
 		PlayerData[i][bFalloutLost] = false;
 		
-	    if(gTeam[i] == FALLOUT)
+	    if(gTeam[i] == gFALLOUT)
 		{
 			SetPlayerHealth(i, 100.0);
 	    }
@@ -24925,7 +24925,7 @@ function:fallout_losegame()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] != FALLOUT)
+		if(gTeam[i] != gFALLOUT)
 			continue;
 		if(PlayerData[i][bFalloutLost])
 			continue;
@@ -24974,7 +24974,7 @@ function:fallout_countdown()
 
 			for(new i = 0; i < MAX_PLAYERS; i++)
 			{
-			    if(gTeam[i] == FALLOUT)
+			    if(gTeam[i] == gFALLOUT)
 				{
 				    TogglePlayerControllable(i, true);
 			        HidePlayerFalloutTextdraws(i);
@@ -24993,7 +24993,7 @@ function:fallout_countdown()
 			format(gstr, sizeof(gstr), "~b~Start!");
 			for(new i = 0; i < MAX_PLAYERS; i++)
 			{
-			    if(gTeam[i] == FALLOUT)
+			    if(gTeam[i] == gFALLOUT)
 				{
 				    GameTextForPlayer(i, gstr, 1000, 3);
 					Streamer_Update(i);
@@ -25012,7 +25012,7 @@ function:fallout_countdown()
 	    format(gstr, sizeof(gstr), "~y~FALLOUT STARTING IN~n~~p~- %i -~n~~y~SECONDS", FalloutData[I_iCount]);
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == FALLOUT)
+		    if(gTeam[i] == gFALLOUT)
 			{
 				GameTextForPlayer(i, gstr, 1000, 3);
 		    }
@@ -25076,7 +25076,7 @@ function:fallout_decidewinners()
 	{
 	    if(IsPlayerAvail(i))
 		{
-		    if(gTeam[i] != FALLOUT)
+		    if(gTeam[i] != gFALLOUT)
 				continue;
 
 			HidePlayerFalloutTextdraws(i);
@@ -25176,7 +25176,7 @@ fallout_get_playercount()
 	    if(!IsPlayerAvail(i))
 			continue;
 
-		if(gTeam[i] == FALLOUT)
+		if(gTeam[i] == gFALLOUT)
 			count++;
 	}
 	return count;
@@ -26930,7 +26930,7 @@ ExitPlayer(playerid)
 	        SCM(playerid, -1, ""er"You can't use this command now!");
 	        return 0;
 	    }
-	    case BUYCAR:
+	    case gBUYCAR:
 	    {
 		    for(new i = 0; i < MAX_CUSTOMCAR_SHOPS; i++)
 		    {
@@ -27154,7 +27154,7 @@ ExitPlayer(playerid)
 			PlayerData[playerid][tickJoin_bmx] = 0;
 			return 0;
 		}
-		case FALLOUT:
+		case gFALLOUT:
 		{
 			gTeam[playerid] = gFREEROAM;
 		    CurrentFalloutPlayers--;
@@ -27172,7 +27172,7 @@ ExitPlayer(playerid)
 
 				for(new i = 0; i < MAX_PLAYERS; i++)
 				{
-				    if(gTeam[i] == FALLOUT)
+				    if(gTeam[i] == gFALLOUT)
 				    {
 				    	TogglePlayerControllable(i, true);
 						ResetPlayerWorld(i);
