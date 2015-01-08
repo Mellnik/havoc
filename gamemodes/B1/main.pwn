@@ -98,19 +98,19 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #endif
 
 // Server
+#define HOSTNAME                        "Havoc Freeroam - Stunt/Race/DM/Derby/TDM/Minigames"
 #define SERVER_NAME                    	"Havoc Freeroam"
 #define SERVER_SHORT                   	"Havoc"
 #define SERVER_LOGO						"{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»"
-#define SVRURL                          "havocserver.com"
-#define SVRURLWWW                       "www.havocserver.com"
-#define SVRFORUM                        "forum.havocserver.com"
+#define SERVER_URL                      "havocserver.com"
+#define SERVER_WWW                      "www.havocserver.com"
+#define SERVER_FORUM					"forum.havocserver.com"
 #define SERVER_IP                       "X.X.X.X:7777"
-//#define HOSTNAME                        " 	      ..:: NEF ::.. ×Stunt/DM/Race/Minigames×"
-#define HOSTNAME                        "Havoc Freeroam"
+#define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
-#define CURRENT_VERSION                 "Build 1"
+#define SERVER_VERSION                 "Build 1"
 #else
-#define CURRENT_VERSION                 "Beta:Build 1"
+#define SERVER_VERSION                 "Beta:Build 1"
 #endif
 #define SAMP_VERSION                    "0.3z-R4"
 #define MAX_REPORTS 					(7)
@@ -2840,7 +2840,7 @@ main()
 public OnGameModeInit()
 {
 	Log(LOG_INIT, "NEF Server Copyright (c)2011 - 2014 "SERVER_NAME"");
-    Log(LOG_INIT, "Version: "CURRENT_VERSION"");
+    Log(LOG_INIT, "Version: "SERVER_VERSION"");
 	#if IS_RELEASE_BUILD == true
 	Log(LOG_INIT, "Build config: Release");
 	#else
@@ -12404,7 +12404,7 @@ YCMD:tban(playerid, params[], help)
 				SCMToAll(-1, gstr);
                 admin_broadcast(COLOR_RED, amsg);
 
-	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SVRFORUM"",
+	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"",
 					__GetName(playerid),
 					reason,
 					UTConvert(gettime() + (time * 60)));
@@ -12495,7 +12495,7 @@ YCMD:ban(playerid, params[], help)
 				SCMToAll(-1, gstr);
                 admin_broadcast(COLOR_RED, amsg);
 
-	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SVRFORUM"",
+	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"",
 					__GetName(playerid),
 					reason,
 					"Permanent");
@@ -13399,7 +13399,7 @@ YCMD:vip(playerid, params[], help)
 	strcat(string, "\n Message to all players when joining the server\n Vehicle Control System (/vcs)\n VIP Lounge (/vipl)\n VIP Lounge Invite (/vipli)\n Direct spawn in /adminhq\n Access to VIP private vehicles");
 	strcat(string, "\n Attach trailers to your truck (/trailer)\n Create ramps (/ramp)\n Health and armor (/harefill)");
 	strcat(string, "\n\n"nef_yellow"Get VIP today! Go to:\n");
-	strcat(string, ""red"-> "yellow_e""SVRURLWWW"/vip");
+	strcat(string, ""red"-> "yellow_e""SERVER_WWW"/vip");
     ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player (VIP)", string, "OK", "");
 	return 1;
 }
@@ -21460,8 +21460,8 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTRandomInfo, 1);
 	TextDrawSetSelectable(TXTRandomInfo, 0);
 
-	// TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~"SVRURLWWW"");
-	TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~"SVRURLWWW"");
+	// TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~"SERVER_WWW"");
+	TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~"SERVER_WWW"");
 	TextDrawAlignment(TXTOnJoin[0], 2);
 	TextDrawBackgroundColor(TXTOnJoin[0], 168430202);
 	TextDrawFont(TXTOnJoin[0], 1);
@@ -21640,8 +21640,8 @@ server_load_textdraws()
 	TextDrawTextSize(TXTWelcome[0], 607.000000, 9.000000);
 	TextDrawSetSelectable(TXTWelcome[0], 0);
 
-	// TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~samp."SVRURL":7777");
-	TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~samp."SVRURL":7777");
+	// TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~samp."SERVER_URL":7777");
+	TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~samp."SERVER_URL":7777");
 	TextDrawAlignment(TXTWelcome[1], 2);
 	TextDrawBackgroundColor(TXTWelcome[1], 168430202);
 	TextDrawFont(TXTWelcome[1], 1);
@@ -21660,7 +21660,7 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTWelcome[2], 1);
 	TextDrawSetSelectable(TXTWelcome[2], 0);
 
-	TXTWelcome[3] = TextDrawCreate(438.000000, 243.000000, "~n~~n~  ~b~~h~~h~See /help for server guides.~n~~n~~w~Stay connected on our forums!~n~~n~  ~p~Visit "SVRFORUM"");
+	TXTWelcome[3] = TextDrawCreate(438.000000, 243.000000, "~n~~n~  ~b~~h~~h~See /help for server guides.~n~~n~~w~Stay connected on our forums!~n~~n~  ~p~Visit "SERVER_FORUM"");
 	TextDrawBackgroundColor(TXTWelcome[3], 168430202);
 	TextDrawFont(TXTWelcome[3], 1);
 	TextDrawLetterSize(TXTWelcome[3], 0.229999, 1.099997);
@@ -21895,9 +21895,9 @@ server_initialize()
 	// SA_MP Server config
 	format(gstr, sizeof(gstr), "hostname %s", HOSTNAME);
 	SendRconCommand(gstr);
-	SendRconCommand("weburl "SVRURLWWW"");
+	SendRconCommand("weburl "SERVER_WWW"");
     SetGameModeText("TdmDerbyRaceCNRFunStuntFreeroam");
-	SendRconCommand("mapname "SERVER_SHORT" "CURRENT_VERSION"");
+	SendRconCommand("mapname "SERVER_SHORT" "SERVER_VERSION"");
 	
 	EnableVehicleFriendlyFire();
 	ShowPlayerMarkers(1);
@@ -22216,10 +22216,10 @@ server_load_visuals()
 	MellnikRamp = CreateDynamicObject(3115, -153.74190, -2210.68457, 27.16690,   0.00000, 0.00000, -145.55995);
 
 	new mc_text = CreateDynamicObject(19479, -2331.787841, -1635.757690, 484.685546, 0.099999, -90.299964, 178.450790);
-	SetDynamicObjectMaterialText(mc_text, 0, ""nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™\n"CURRENT_VERSION"\n"SVRURLWWW"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 20, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+	SetDynamicObjectMaterialText(mc_text, 0, ""nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™\n"SERVER_VERSION"\n"SERVER_WWW"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 20, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
 	new beach_text = CreateDynamicObject(19479, 309.903930, -1934.953369, 12.736993, 0.000000, 0.000000, 39.940856);
-	SetDynamicObjectMaterialText(beach_text, 0, ""orange""SVRURLWWW"\n"red""CURRENT_VERSION"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 30, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+	SetDynamicObjectMaterialText(beach_text, 0, ""orange""SERVER_WWW"\n"red""SERVER_VERSION"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 30, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
     pick_chainsaw = CreateDynamicPickup(341, 23, 1219.1809,-924.6318,42.9045);
     pick_life[0] = CreateDynamicPickup(1240, 23, -1987.6259,274.7049,34.9564);
@@ -23344,13 +23344,13 @@ PortPlayerMapVeh(playerid, Float:X, Float:Y, Float:Z, Float:Angle, Float:XVeh, F
 
 SendWelcomeMSG(playerid)
 {
-	SCM(playerid, GREY, "===================="white""CURRENT_VERSION""grey"=======================");
+	SCM(playerid, GREY, "===================="white""SERVER_VERSION""grey"=======================");
 	SCM(playerid, RED, "» Welcome to "SERVER_LOGO"");
 	SCM(playerid, NEF_GREEN, "» Type /help for further information");
 	SCM(playerid, BLUE, "» You can show/hide the textdraws with /textdraws");
-	SCM(playerid, YELLOW, "» Visit our forum at http://"SVRFORUM"");
+	SCM(playerid, YELLOW, "» Visit our forum at http://"SERVER_FORUM"");
 	SCM(playerid, NEF_YELLOW, "» You can use /radio or /streams for music streams");
-	SCM(playerid, GREY, "===================="white""CURRENT_VERSION""grey"=======================");
+	SCM(playerid, GREY, "===================="white""SERVER_VERSION""grey"=======================");
 	return 1;
 }
 
@@ -23902,7 +23902,7 @@ function:LogoSwitch()
 	{
 	    case 0:
 	    {
-	        TextDrawSetString(NEFLOGO[2], "~w~NEF "CURRENT_VERSION"");
+	        TextDrawSetString(NEFLOGO[2], "~w~NEF "SERVER_VERSION"");
 	        phase = 1;
 	    }
 	    case 1:
@@ -25448,7 +25448,7 @@ function:ShowDialog(playerid, dialogid)
 				
 			format(gstr2, sizeof(gstr2), "\n\nStreamed client objects: %i\nServer FPS: %i\nPlayer record: %i", Streamer_CountVisibleItems(playerid, STREAMER_TYPE_OBJECT), GetServerTickRate(), m_PlayerRecord);
 	        strcat(string, gstr2);
-	        strcat(string, "\n\nServer version: "SERVER_NAME" "CURRENT_VERSION" on SA-MP "SAMP_VERSION"");
+	        strcat(string, "\n\nServer version: "SERVER_NAME" "SERVER_VERSION" on SA-MP "SAMP_VERSION"");
 	        
 	        ShowPlayerDialog(playerid, DIALOG_SERVER_STATS, DIALOG_STYLE_MSGBOX, ""nef" :: Server Stats", string, "OK", "");
 	    }
@@ -25686,16 +25686,16 @@ function:server_random_broadcast()
 {
 	static const szRandomServerMessages[12][] =
 	{
-		""yellow_e"- Server - "LB2_E"Visit our site: "SVRURLWWW"",
+		""yellow_e"- Server - "LB2_E"Visit our site: "SERVER_WWW"",
 		""yellow_e"- Server - "LB2_E"Join Minigames for money and score - /help",
 		""yellow_e"- Server - "LB2_E"Access your player preferences: /settings",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip",
+		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWW"/vip",
+		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWW"/vip",
 		""yellow_e"- Server - "LB2_E"Join Minigames to earn money and score - /help",
-		""yellow_e"- Server - "LB2_E"Got suggestions? Post them on our forums! ("SVRFORUM")",
+		""yellow_e"- Server - "LB2_E"Got suggestions? Post them on our forums! ("SERVER_FORUM")",
 		""yellow_e"- Server - "LB2_E"Use /report to report a player to the admins",
-		""yellow_e"- Server - "LB2_E"Add "SERVER_SHORT" to your favlist! samp."SVRURL":7777",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip/",
+		""yellow_e"- Server - "LB2_E"Add "SERVER_SHORT" to your favlist! samp."SERVER_URL":7777",
+		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWW"/vip/",
 		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!",
 		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!"
 	};
@@ -27444,7 +27444,7 @@ function:RandomTXTInfo()
 		"~w~Want access to ~y~bonus commands~w~? Check out ~r~~h~/premium~w~!",
 		"~w~Edit your server preferences and features using ~r~~h~/settings~w~!",
 		"~w~Flip your vehicle with the key ~g~~h~~h~'2'",
-		"~w~Join our ~r~~h~forums~w~! Register at ~b~~h~~h~"SVRURLWWW"~w~!",
+		"~w~Join our ~r~~h~forums~w~! Register at ~b~~h~~h~"SERVER_WWW"~w~!",
 		"~w~Try our ~y~Cops and Robbers ~w~Minigame! ~y~/cnr",
 		"~w~Type ~g~~h~~h~/c ~b~~h~~h~/t~w~ for ~y~commands ~w~and ~y~teleports!",
 		"~w~Go to ~g~~h~~h~/vs ~w~and get your own car which you can tune!",
@@ -28167,7 +28167,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 
 				if(iLift == 0) // Player has a permanent ban
 				{
-				    format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SVRFORUM"", szAdmin, __GetName(playerid), szReason, UTConvert(u_iBanDate));
+				    format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"", szAdmin, __GetName(playerid), szReason, UTConvert(u_iBanDate));
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Notice", gstr2, "OK", "");
 					KickEx(playerid);
 					return 1;
@@ -28181,7 +28181,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				}
 				else
 				{
-				    format(gstr2, sizeof(gstr2), ""red"You have been time banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SVRFORUM"", szAdmin, __GetName(playerid), szReason, UTConvert(iLift));
+				    format(gstr2, sizeof(gstr2), ""red"You have been time banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"", szAdmin, __GetName(playerid), szReason, UTConvert(iLift));
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Notice", gstr2, "OK", "");
 					KickEx(playerid);
 					return 1;
