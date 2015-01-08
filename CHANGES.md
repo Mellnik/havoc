@@ -64,6 +64,8 @@ Build 1 (1st Feb 2015)
 - Houses now determine how many private cars you may held within your account.
 - Player bounties are now being saved within your account.
 - Duel wins and defeats are now being saved within your account.
+- 'SPACE' key has been replaced with /menu in bank interiors.
+- Derby has been overhauled, new maps can now be added easily.
 
 TODO
 ----
@@ -91,6 +93,9 @@ TODO
 - http://puu.sh/dMLr2/92537b0237.jpg
 - http://puu.sh/dMLs5/657a188d38.jpg
 
+- Improve OnPlayerKeyStateChange and remove shitty doingStunt stuff
+- SPIELER IN BESONDEREN minigames wie skydive,bmx etc sollten vllt in eine eigene VW sein und so behandelt werden wie in einem Minigame
+- Besseres handling von Virtuellen Welten, mehr struktur!!!
 - Nach jedem house/auto/gang/entprise/register kauf sollte ein dialog kommen wit cmds die man nun nutzen kann.
 - Internal safetly handlers for score and money ranges.
 - Improved spawn points to be more safe for players.
@@ -100,7 +105,6 @@ TODO
 - New, better UI.
 - All races have been overhauled.
 - Races are now being saved in the datatbase.
-- Derby has been rewritten, new maps can now be added easily.
 - All file operations have been removed, everything is now in the Havoc database.
 - Added admin command to reset houses/enterprises which are being owned by banned players.
 - CnR has been rewritten:
@@ -113,7 +117,6 @@ TODO
 - Airport maps have been improved to make it possible to lift off with a plane.
 - Gang score has been reduced if you attack a zone with many members.
 - Got rid of mSelection, now using an improved UI for toys.
-- Improve OnPlayerKeyStateChange and remove shitty doingStunt stuff
 - New /settings dialog values which are being saved in the database:
   * /tgo (Allow teleports to you)
   * /tpm (Allow private messages)

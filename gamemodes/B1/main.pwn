@@ -74,8 +74,9 @@
 #include <server_map_patches>
 #include <server_map_vehicles>
 
-native IsValidVehicle(vehicleid); // undefined in a_samp.inc
-native gpci(playerid, serial[], maxlen); // undefined in a_samp.inc
+// undefined in a_samp.inc
+native IsValidVehicle(vehicleid);
+native gpci(playerid, serial[], maxlen);
 
 // Protoypes
 Float:GetElevatorZCoordForFloor(floorid);
@@ -83,7 +84,7 @@ Float:GetDoorsZCoordForFloor(floorid);
 Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Float:z2);
 
-// MySQL
+// Database Settings
 #define SQL_HOST   						"::1"
 #define SQL_PORT                        (3306)
 #if IS_RELEASE_BUILD == true
@@ -102,14 +103,14 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SVRLOGO                         "{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»"
 #define SVRURL                          "havocserver.com"
 #define SVRURLWWW                       "www.havocserver.com"
-#define SVRFORUM                        "forum.nefserver.net"
-#define SERVER_IP                       "31.204.153.110:7777"
+#define SVRFORUM                        "forum.havocserver.com"
+#define SERVER_IP                       "X.X.X.X:7777"
 //#define HOSTNAME                        " 	      ..:: NEF ::.. ×Stunt/DM/Race/Minigames×"
 #define HOSTNAME                        "Havoc Freeroam"
 #if IS_RELEASE_BUILD == true
 #define CURRENT_VERSION                 "Build 1"
 #else
-#define CURRENT_VERSION                 "PTS:Build 1"
+#define CURRENT_VERSION                 "Beta:Build 1"
 #endif
 #define SAMP_VERSION                    "0.3z-R4"
 #define MAX_REPORTS 					(7)
@@ -3529,7 +3530,7 @@ public OnPlayerConnect(playerid)
 		PreloadAnimLib(playerid, "PED");
         ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.0, 1, 0, 0, 0, -1);
         
-		PlayAudioStreamForPlayer(playerid, "http://static.nefserver.net/NEFLogin.mp3");
+		PlayAudioStreamForPlayer(playerid, "http://s.havocserver.net/login.mp3");
 
 		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `bans` WHERE `playername` = '%e' LIMIT 1;", __GetName(playerid));
 		mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_BANNED);
