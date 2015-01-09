@@ -28152,7 +28152,8 @@ enum E_ACCOUNT_REQUEST
 	E_ACCREQ_LOAD_SETTINGS,
 	E_ACCREQ_CHECK_BAN,
 	E_ACCREQ_CHECK_IP,
-	E_ACCREQ_CHECK_SERIAl
+	E_ACCREQ_CHECK_SERIAL,
+	E_ACCREQ_CHECK_AUTOLOGIN
 };
 
 SQL_RequestIPCheck(playerid)
@@ -28207,13 +28208,41 @@ function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
 				PlayerSettings[playerid][e_house_spawn] = cache_get_field_content_int(0, "house_spawn");
 			}
 			
-			mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `bans`.*, `accounts`.`name` FROM `bans` WHERE `bans`.`id` = %i LEFT JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id`;", PlayerData[playerid][e_accountid]);
+			mysql_format(pSQL, gstr, sizeof(gstr), "SELECT UNIX_TIMESTAMP, `bans`.`reason`, `bans`.`date`, `bans.lift`, `accounts`.`name` FROM `bans` WHERE `bans`.`id` = %i LEFT JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id`;", PlayerData[playerid][e_accountid]);
 			mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_BAN);
 			return 1;
 		}
 		case E_ACCREQ_CHECK_BAN:
 		{
-			
+			if(cache_get_row_count() != 0)
+			{
+				new lift = cache_get_field_content_int(0, "lift");
+				if(lift != 0 && lift < cache_get_row_int(0, 0)) // Was he time banned && did his ban expire?
+				{
+					mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `bans` WHERE `id` = %i;", PlayerData[playerid][e_accountid]);
+					mysql_pquery(pSQL, gstr);
+					
+					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Account", ""white"Your time ban expired, you have been unbanned! Make\nsure to read our servers /rules.\n\nEnjoy playing at Havoc!", "OK", "");
+					goto _continue;
+				}
+				
+				new szAdmin[MAX_PLAYER_NAME + 1],
+					szReason[128],
+					iTimeStamp = cache_get_row_int(0, 2),
+					string[512];
+					
+				cache_get_row(0, 1, szReason);
+				cache_get_row(0, 4, szAdmin);
+				
+				if(lift != 0) // Was he timebanned?
+				{
+					format(string, sizeof(string), ""red"You have been TIME banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate %s\nYou will be unbanned on %s!\n\nf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM".",
+						szAdmin, __GetName(playerid), szReason, UTConvert(lift));
+					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Notice", string, "OK", "");
+					KickEx(playerid);
+				}
+			}
+			_continue:
 			SQL_RequestIPCheck(playerid);
 			return 1;
 		}
@@ -28222,7 +28251,7 @@ function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
 			if(cache_get_row_count() == 0)
 			{
 				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `serialbans` WHERE `serial` = '%e' LIMIT 1;", __GetSerial(playerid));
-				mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_SERIAl);
+				mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_SERIAL);
 			}
 			else
 			{
@@ -28234,7 +28263,7 @@ function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
 			}
 			return 1;
 		}
-		case E_ACCREQ_CHECK_SERIAl:
+		case E_ACCREQ_CHECK_SERIAL:
 		{
 			if(cache_get_row_count() != 0)
 			{
@@ -28243,7 +28272,36 @@ function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
 			}
 			else
 			{
-				
+				if(PlayerData[playerid][e_accountid] == 0)
+				{
+					// Player does not have an account. Qualify player for registration.
+					
+				}
+				else
+				{
+					if(PlayerSettings[playerid][e_auto_login] == 1)
+					{
+						mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `loginlog` WHERE `id` = %i AND `ip` = '%e' ORDER BY `date` DESC LIMIT 1;",
+								PlayerData[playerid][e_accountid], __GetIP(playerid));
+						mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_AUTOLOGIN);
+					}
+					else
+					{
+						RequestLogin(playerid);
+					}
+				}
+			}
+			case E_ACCREQ_CHECK_AUTOLOGIN:
+			{
+				if(cache_get_row_count() > 0) 
+				{
+					// Player has logged in sometime earlier with this IP-Address.
+					AutoLogin(playerid);
+				}
+				else
+				{
+					RequestLogin(playerid);
+				}
 			}
 			return 1;
 		}
