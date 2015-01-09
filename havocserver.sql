@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 4.3.2
+-- version 4.3.5
 -- http://www.phpmyadmin.net
 --
 -- Host: ::1
--- Generation Time: Jan 05, 2015 at 10:18 AM
+-- Generation Time: Jan 09, 2015 at 04:20 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -109,18 +109,6 @@ CREATE TABLE IF NOT EXISTS `bans` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `blacklist`
---
-
-CREATE TABLE IF NOT EXISTS `blacklist` (
-  `id` int(10) unsigned NOT NULL,
-  `ip` varchar(16) NOT NULL,
-  `date` int(10) unsigned NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `enterprises`
 --
 
@@ -193,6 +181,20 @@ CREATE TABLE IF NOT EXISTS `houses` (
   `creator` int(10) unsigned NOT NULL,
   `date` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ipbans`
+--
+
+CREATE TABLE IF NOT EXISTS `ipbans` (
+  `ip` varchar(45) NOT NULL,
+  `account_id` int(10) unsigned NOT NULL,
+  `admin_id` int(10) unsigned NOT NULL,
+  `service` enum('SERVICE_SERVER','SERVICE_PANEL') NOT NULL,
+  `date` int(10) unsigned NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -302,6 +304,18 @@ CREATE TABLE IF NOT EXISTS `race_startpos` (
   `ypos` float(14,4) NOT NULL,
   `zpos` float(14,4) NOT NULL,
   `apos` float(14,4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `serialbans`
+--
+
+CREATE TABLE IF NOT EXISTS `serialbans` (
+  `serial` varchar(64) NOT NULL,
+  `admin_id` int(10) unsigned NOT NULL,
+  `date` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -469,12 +483,6 @@ ALTER TABLE `bans`
   ADD KEY `id` (`id`);
 
 --
--- Indexes for table `blacklist`
---
-ALTER TABLE `blacklist`
-  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `IP` (`ip`);
-
---
 -- Indexes for table `enterprises`
 --
 ALTER TABLE `enterprises`
@@ -547,6 +555,12 @@ ALTER TABLE `race_startpos`
   ADD KEY `id` (`id`);
 
 --
+-- Indexes for table `serialbans`
+--
+ALTER TABLE `serialbans`
+  ADD PRIMARY KEY (`serial`);
+
+--
 -- Indexes for table `server`
 --
 ALTER TABLE `server`
@@ -596,11 +610,6 @@ ALTER TABLE `viporder`
 -- AUTO_INCREMENT for table `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `blacklist`
---
-ALTER TABLE `blacklist`
   MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `enterprises`
