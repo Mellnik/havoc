@@ -2641,6 +2641,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	Float:g_RaceCPs[RACE_MAX_CHECKPOINTS][3],
 	g_DerbyFreezePool = DERBY_FREEZE_TIME / DERBY_FREEZE_INTERVAL,
 	g_SpawnAreas[5],
+	g_DerbyForceMap = 0,
 	g_RaceForceMap = 0,
 	g_BuildRace = INVALID_PLAYER_ID,
 	g_BuildDeployTime = 0,
@@ -9575,7 +9576,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[3][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/freeze /eject /go /getip /get /mkick /clearchat /iplookup /dawn\n/night /giveweapon /connectbots /raceforcemap /deleterecord /nstats\n/tplayer\n\n");
+		strcat(string, "/freeze /eject /go /getip /get /mkick /clearchat /iplookup /dawn\n/night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n/tplayer\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
@@ -12574,6 +12575,32 @@ YCMD:deleterecord(playerid, params[], help)
 	else
 	{
 		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
+YCMD:derbyforcemap(playerid, params[], help) // TODO !
+{
+	if(PlayerData[playerid][e_level] >= 3)
+	{
+	    new map;
+		if(sscanf(params, "i", map))
+		{
+		    return SCM(playerid, NEF_GREEN, "Usage: /derbyforcemap <map 1-9>");
+		}
+
+		if(map < 1 || map > MAX_DERBY_MAPS + 1)
+		    return SCM(playerid, -1, ""er"Invalid derby map");
+
+		g_DerbyForceMap = map;
+
+		format(gstr, sizeof(gstr), ""red"Adm: %s(%i) forced next derby map to mapid %i", __GetName(playerid), playerid, map);
+		admin_broadcast(-1, gstr);
+		print(gstr);
+  	}
+	else
+	{
+	    SCM(playerid, -1, NO_PERM);
 	}
 	return 1;
 }

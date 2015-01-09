@@ -64,6 +64,9 @@ Build 1 (1st Feb 2015)
 - Houses now determine how many private cars you may held within your account.
 - Player bounties are now being saved within your account.
 - Duel wins and defeats are now being saved within your account.
+- Derby changes:
+	* All players drive the same car on a map.
+	* Added admin command to set the next derby map manually. (/derbyforcemap) (TODO)
 
 TODO
 ----
@@ -106,9 +109,6 @@ TODO
 - Added admin command to reset houses/enterprises which are being owned by banned players.
 - CnR has been rewritten:
 - Top gangs are now being reset automatically all 7 days.
-- You can no longer vote for the same map in derby.
-- Added admin command to set the next derby map manually.
-- All players drive the same car in derbys.
 - Spawnpoints have been remapped.
 - All teleports have been retaken for a better gameplay experience.
 - Airport maps have been improved to make it possible to lift off with a plane.
