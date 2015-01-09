@@ -74,15 +74,17 @@
 #include <server_map_patches>
 #include <server_map_vehicles>
 
-native IsValidVehicle(vehicleid); // undefined in a_samp.inc
-native gpci(playerid, serial[], maxlen); // undefined in a_samp.inc
+// undefined in a_samp.inc
+native IsValidVehicle(vehicleid);
+native gpci(playerid, serial[], maxlen);
 
 // Protoypes
 Float:GetElevatorZCoordForFloor(floorid);
 Float:GetDoorsZCoordForFloor(floorid);
 Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
+Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Float:z2);
 
-// MySQL
+// Database
 #define SQL_HOST   						"::1"
 #define SQL_PORT                        (3306)
 #if IS_RELEASE_BUILD == true
@@ -96,22 +98,42 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #endif
 
 // Server
-#define SVRNAME                      	"Havoc Freeroam"
-#define SVRSC	                    	"Havoc"
-#define SVRLOGO                         "{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»"
-#define SVRURL                          "havocserver.com"
-#define SVRURLWWW                       "www.havocserver.com"
-#define SVRFORUM                        "forum.nefserver.net"
-#define SERVER_IP                       "31.204.153.110:7777"
-//#define HOSTNAME                        " 	      ..:: NEF ::.. ×Stunt/DM/Race/Minigames×"
-#define HOSTNAME                        "Havoc Freeroam"
+#define HOSTNAME                        "Havoc Freeroam - Stunt/Race/DM/Derby/TDM/Minigames"
+#define SERVER_NAME                    	"Havoc Freeroam"
+#define SERVER_SHORT                   	"Havoc"
+#define SERVER_LOGO						"{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»"
+#define SERVER_URL                      "havocserver.com"
+#define SERVER_WWW                      "www.havocserver.com"
+#define SERVER_FORUM					"forum.havocserver.com"
+#define SERVER_IP                       "X.X.X.X:7777"
+#define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
-#define CURRENT_VERSION                 "Build 1"
+#define SERVER_VERSION					"Build 1"
 #else
-#define CURRENT_VERSION                 "PTS:Build 1"
+#define SERVER_VERSION					"Beta:Build 1"
 #endif
 #define SAMP_VERSION                    "0.3z-R4"
+
+// Script
+#define MAX_PLAYER_TOYS                 (6)
+#define REAC_TIME              			(900000)
+#define MAX_STORES                      (80)
+#define MAX_STORE_NAME                  (24)
+#define RACE_COUNTDOWN 					(21)
+#define MAX_RACE_TIME 					(300)
+#define RACE_MAX_CHECKPOINTS            (75)
+#define RACE_MAX_PLAYERS 				(12)
+#define MINIGUN_WORLD                   (1268565)
+#define MINIGUN2_WORLD                  (168566)
+#define SNIPER_WORLD                    (157412)
+#define ROCKETDM_WORLD                  (157411)
+#define SERVERMSGS_TIME                 (850000)
+#define MAX_PLAYER_PVS	                (8)
 #define MAX_REPORTS 					(7)
+#define MAX_ADMIN_LEVEL         		(5)
+#define MAX_WARNINGS 					(3)
+#define MAX_ZONE_NAME                   (28)
+#define MAX_CUSTOMCAR_SHOPS				(3)
 #define MAX_GANG_NAME					(20)
 #define MIN_GANG_NAME					(4)
 #define GANG_POS_NONE                   (0)
@@ -134,16 +156,14 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define fallout_sign                    "{FFFFFF}[{AAAAFF}FALLOUT{FFFFFF}]"
 #define server_sign                     "{FFFFFF}[{FF005F}SERVER{FFFFFF}]"
 #define gang_sign                       "{FFFFFF}[{FFA000}GANG{FFFFFF}]"
-#define nefa                            "{FFFFFF}[{FFE600}"SVRSC"{FFFFFF}]"
-#define nef                             "{FFE600}"SVRSC"{FFFFFF}"
+#define nefa                            "{FFFFFF}[{FFE600}"SERVER_SHORT"{FFFFFF}]"
+#define nef                             "{FFE600}"SERVER_SHORT"{FFFFFF}"
 #define NO_PERM                     	"{FF000F}[INFO] {FF000F}Insufficient permissions"
 #define NOT_AVAIL                       "{FF000F}[INFO] {FF000F}You can't use this command now! Use /exit to leave."
 #define er                              "{FF000F}[INFO] {FF000F}" // D2D2D2
 #define Error(%1,%2) 					SendClientMessage(%1, -1, "{F42626}[INFO] "GREY2_E""%2)
 #define dl                              "{FFE600}• {F0F0F0}"
 #define notlogged(%1)                   ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef"", ""white"You need to be logged in to use this feature.\n\n"nef_yellow"Type /register to create an new account for you current name.", "OK", "")
-#define MAX_ADMIN_LEVEL         		(5)
-#define MAX_WARNINGS 					(3)
 #define ELEVATOR_SPEED      			(5.0)
 #define DOORS_SPEED         			(4.0)
 #define ELEVATOR_WAIT_TIME  			(5000)
@@ -159,10 +179,10 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define VEHICLE_RESPAWN_TIME			(60)
 #define SCM SendClientMessage
 #define SCMToAll SendClientMessageToAll
-#define MAX_ZONE_NAME                   (28)
-#define CUSTOM_CAR_SHOPS				(3)
 #define RGBA(%1,%2,%3,%4) (((((%1) & 0xff) << 24) | (((%2) & 0xff) << 16) | (((%3) & 0xff) << 8) | ((%4) & 0xff)))
 #define UpperToLower(%1) for(new ToLowerChar; ToLowerChar < strlen(%1); ToLowerChar++) if(%1[ToLowerChar] > 64 && %1[ToLowerChar] < 91) %1[ToLowerChar] += 32
+#define Key(%0) 						(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
+#define PreloadAnimLib(%1,%2)			ApplyAnimation(%1,%2,"NULL",0.0,0,0,0,0,0)
 
 // Derby
 #define DERBY_WIHLE_CAM_M1				-3948.2632, 951.8198, 78.4012
@@ -262,8 +282,8 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define COLOR_CNR_COP 					0x1F75FEFF
 #define COLOR_CNR_PRO_ROBBER            0xFF3200FF
 
-// GWARS
-#define MAX_GZONES						(63)
+// Gang Wars
+#define MAX_GZONES						(60)
 #define MAX_GZONES_PER_GANG             (15)
 #define GZONE_SIZE                      (70.0)
 #define COLOR_HOSTILE                   (0x95133499)
@@ -271,31 +291,13 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 #define COLOR_NONE                      (0xFFFFFFAA)
 
 // Houses
-#define MAX_HOUSES 						(600)
+#define MAX_HOUSES 						(500)
 #define MAX_PLAYER_HOUSES 				(5)
 
 // Enterprises
-#define MAX_ENTERPRISES                 (700)
+#define MAX_ENTERPRISES                 (500)
 #define MAX_ENTERPRISE_LEVEL            (20)
 #define MAX_PLAYER_ENTERPRISES          (5)
-
-// Misc
-#define MAX_PLAYER_TOYS                 (6)
-#define REAC_TIME              			(900000)
-#define MAX_STORES                      (80)
-#define MAX_STORE_NAME                  (24)
-#define RACE_COUNTDOWN 					(21)
-#define MAX_RACE_TIME 					(300)
-#define RACE_MAX_CHECKPOINTS            (75)
-#define RACE_MAX_PLAYERS 				(12)
-#define Key(%0) 						(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
-#define PreloadAnimLib(%1,%2)			ApplyAnimation(%1,%2,"NULL",0.0,0,0,0,0,0)
-#define MINIGUN_WORLD                   (1268565)
-#define MINIGUN2_WORLD                  (168566)
-#define SNIPER_WORLD                    (157412)
-#define ROCKETDM_WORLD                  (157411)
-#define SERVERMSGS_TIME                 (850000)
-#define MAX_PLAYER_PVS	                (8)
 
 #define function:%1(%2) \
 	forward public %1(%2); \
@@ -570,10 +572,10 @@ enum
 	gWAR,
 	gCNR,
 	gHOUSE,
-	BUYCAR,
+	gBUYCAR,
 	gDUEL,
 	gGUNGAME,
-	FALLOUT,
+	gFALLOUT,
 	gBUILDRACE,
 	STORE,
 	SPEC,
@@ -2250,13 +2252,13 @@ static const Float:g_ArmorPickups[16][3] =
 	{795.4474, 854.0259, 9.0281},
 	{-669.9799, 972.6474, 11.683}
 };
-static const Float:g_CarShopLocations[CUSTOM_CAR_SHOPS][4] =
+static const Float:g_CarShopLocations[MAX_CUSTOMCAR_SHOPS][4] =
 {
 	{2131.2915, -1144.3942, 24.7986, 291.9600},
 	{-1639.0990, 1202.4598, 7.2247, 68.4220},
 	{2106.9548, 1403.5167, 11.1395, 89.2744}
 };
-static const Float:g_CarShopTelePos[CUSTOM_CAR_SHOPS][4] =
+static const Float:g_CarShopTelePos[MAX_CUSTOMCAR_SHOPS][4] =
 {
 	{2107.1802, 1378.5853, 10.8618, 1.2502},
 	{2127.6726, -1129.2881, 25.5523, 175.3369},
@@ -2672,7 +2674,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	g_RacePosition[MAX_PLAYERS],
 	m_PlayerRecord,
 	g_sCustomCarCategory[512],
-	g_CustomCarShops[CUSTOM_CAR_SHOPS][E_CAR_SHOP],
+	g_CustomCarShops[MAX_CUSTOMCAR_SHOPS][E_CAR_SHOP],
     g_dialogTpString[2000],
 	g_cmdString[32],
 	g_tickProcessTickCalls = 0,
@@ -2838,8 +2840,8 @@ main()
 // Callbacks
 public OnGameModeInit()
 {
-	Log(LOG_INIT, "NEF Server Copyright (c)2011 - 2014 "SVRNAME"");
-    Log(LOG_INIT, "Version: "CURRENT_VERSION"");
+	Log(LOG_INIT, "NEF Server Copyright (c)2011 - 2014 "SERVER_NAME"");
+    Log(LOG_INIT, "Version: "SERVER_VERSION"");
 	#if IS_RELEASE_BUILD == true
 	Log(LOG_INIT, "Build config: Release");
 	#else
@@ -3091,7 +3093,7 @@ public OnPlayerSpawn(playerid)
 			RandomSpawn(playerid);
    			RandomWeapons(playerid);
 	    }
-	    case BUYCAR:
+	    case gBUYCAR:
 	    {
 			gTeam[playerid] = gFREEROAM;
 			SetPlayerInterior(playerid, 0);
@@ -3464,7 +3466,7 @@ public OnIncomingConnection(playerid, ip_address[], port)
 
 public OnPlayerConnect(playerid)
 {
-    ResetPlayerVars(playerid);
+    ResetPlayerData(playerid);
 	ResetPlayerPV(playerid);
     ResetPlayerToy(playerid);
 
@@ -3529,10 +3531,13 @@ public OnPlayerConnect(playerid)
 		PreloadAnimLib(playerid, "PED");
         ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.0, 1, 0, 0, 0, -1);
         
-		PlayAudioStreamForPlayer(playerid, "http://static.nefserver.net/NEFLogin.mp3");
+		PlayAudioStreamForPlayer(playerid, "http://s.havocserver.net/login.mp3");
 
-		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `bans` WHERE `playername` = '%e' LIMIT 1;", __GetName(playerid));
-		mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_BANNED);
+		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", __GetName(playerid));
+		mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_ID);
+		
+		//mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `bans` WHERE `playername` = '%e' LIMIT 1;", __GetName(playerid));
+		//mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_BANNED);
  	}
  	return 1;
 }
@@ -3645,7 +3650,7 @@ public OnPlayerDisconnect(playerid, reason)
 		        Streamer_ToggleItemUpdate(playerid, STREAMER_TYPE_PICKUP, 1);
 		        Streamer_Update(playerid);
 		    }
-			case FALLOUT:
+			case gFALLOUT:
 			{
                 PlayerData[playerid][bFalloutLost] = true;
 				gTeam[playerid] = gFREEROAM;
@@ -3657,7 +3662,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 					for(new i = 0; i < MAX_PLAYERS; i++)
 					{
-					    if(gTeam[i] == FALLOUT)
+					    if(gTeam[i] == gFALLOUT)
 					    {
 					    	TogglePlayerControllable(i, true);
 						    RandomSpawn(i, true);
@@ -3771,7 +3776,7 @@ public OnPlayerDisconnect(playerid, reason)
 		orm_destroy(PlayerData[playerid][e_ormid]);
 	}
 	
-    ResetPlayerVars(playerid);
+    ResetPlayerData(playerid);
 	ResetPlayerPV(playerid);
  	ResetPlayerToy(playerid);
  	
@@ -5262,7 +5267,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 			    Command_ReProcess(playerid, "/exit", false);
 			}
 		}
-		case FALLOUT:
+		case gFALLOUT:
 		{
 			format(gstr, sizeof(gstr), "%s(%i) died!", __GetName(playerid), playerid);
 			fallout_broadcast(gstr);
@@ -5282,7 +5287,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 				for(new i = 0; i < MAX_PLAYERS; i++)
 				{
-				    if(gTeam[i] == FALLOUT)
+				    if(gTeam[i] == gFALLOUT)
 				    {
 				    	TogglePlayerControllable(i, true);
 					    RandomSpawn(i, true);
@@ -6288,7 +6293,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 		  		}
 			}
 
-			for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
+			for(new i = 0; i < MAX_CUSTOMCAR_SHOPS; i++)
 			{
 			    if(pickupid == g_CustomCarShops[i][e_pickup])
 			    {
@@ -6296,7 +6301,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 			        SetPlayerInterior(playerid, 15);
 			        SetPlayerPosEx(playerid, -1405.5538, 989.1526, floatadd(1049.0078, 3.0));
 			        ResetPlayerWeapons(playerid);
-			        gTeam[playerid] = BUYCAR;
+			        gTeam[playerid] = gBUYCAR;
 			        gLastMap[playerid] = g_CustomCarShops[i][e_pickup];
 			        return 1;
 			    }
@@ -6314,11 +6319,11 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 			    return 1;
 			}
 		}
-		case BUYCAR:
+		case gBUYCAR:
 		{
 		    if(pickupid == g_CarShopInteriorPickup)
 		    {
-			    for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
+			    for(new i = 0; i < MAX_CUSTOMCAR_SHOPS; i++)
 			    {
 			        if(gLastMap[playerid] == g_CustomCarShops[i][e_pickup])
 			        {
@@ -6669,19 +6674,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	if(gTeam[playerid] == STORE)
-	{
-        if(Key(KEY_SPRINT))
-        {
-            if(IsPlayerInRangeOfPoint(playerid, 2.2, 2311.63, -3.89, 26.74))
-            {
-			    if(!islogged(playerid)) return notlogged(playerid);
-			    ShowDialog(playerid, DIALOG_BANK);
-			    return 1;
-            }
-        }
-	}
-	
 	if(GetPVarInt(playerid, "doingStunt") != 0) return 1;
 
 	switch(gTeam[playerid])
@@ -7317,7 +7309,7 @@ YCMD:bayside(playerid, params[], help)
 }
 YCMD:vs(playerid, params[], help)
 {
-	new rand = random(CUSTOM_CAR_SHOPS);
+	new rand = random(MAX_CUSTOMCAR_SHOPS);
 
     PortPlayerMapVeh(playerid, g_CarShopTelePos[rand][0], g_CarShopTelePos[rand][1], g_CarShopTelePos[rand][2], g_CarShopTelePos[rand][3], g_CarShopTelePos[rand][0], g_CarShopTelePos[rand][1], g_CarShopTelePos[rand][2], g_CarShopTelePos[rand][3], "Car Shop", "vs");
     return 1;
@@ -7764,10 +7756,10 @@ YCMD:fallout(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
-    if(gTeam[playerid] == FALLOUT) return SCM(playerid, -1, ""er"You are already in this minigame!");
+    if(gTeam[playerid] == gFALLOUT) return SCM(playerid, -1, ""er"You are already in this minigame!");
     if(gTeam[playerid] != gFREEROAM) return player_notice(playerid, "~w~Type ~y~/exit ~w~to leave", "");
 
 	if(g_FalloutStatus == e_Fallout_Inactive)
@@ -7782,7 +7774,7 @@ YCMD:fallout(playerid, params[], help)
 	    
 		g_FalloutStatus = e_Fallout_Startup;
 		CurrentFalloutPlayers++;
-		gTeam[playerid] = FALLOUT;
+		gTeam[playerid] = gFALLOUT;
 		
         SCMToAll(BLUE, ""fallout_sign" Type /fallout to participate");
         NewMinigameJoin(playerid, "Fallout", "fallout");
@@ -7794,7 +7786,7 @@ YCMD:fallout(playerid, params[], help)
 	    Command_ReProcess(playerid, "/stopanims", false);
 	    
 	    CurrentFalloutPlayers++;
-		gTeam[playerid] = FALLOUT;
+		gTeam[playerid] = gFALLOUT;
 		
 		format(gstr, sizeof(gstr), "%s(%i) joined Fallout!", __GetName(playerid), playerid);
 		fallout_broadcast(gstr);
@@ -7816,7 +7808,7 @@ YCMD:derby(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gDERBY) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7863,7 +7855,7 @@ YCMD:war(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gWAR) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7910,7 +7902,7 @@ YCMD:dm(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7944,7 +7936,7 @@ YCMD:dm2(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -7979,7 +7971,7 @@ YCMD:dm3(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8013,7 +8005,7 @@ YCMD:dm4(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == DM && gLastMap[playerid] == DM_1) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8048,7 +8040,7 @@ YCMD:sawn(playerid, params[], help)
 
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 
     if(gTeam[playerid] == gSAWN) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -8427,6 +8419,23 @@ YCMD:sj(playerid, params[], help)
 	}
 	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 	PlayerData[playerid][bSuperJump] = !PlayerData[playerid][bSuperJump];
+	return 1;
+}
+
+YCMD:menu(playerid, params[], help)
+{
+    if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
+    
+	if(gTeam[playerid] == STORE)
+	{
+        if(IsPlayerInRangeOfPoint(playerid, 2.2, 2311.63, -3.89, 26.74))
+        {
+		    if(!islogged(playerid)) return notlogged(playerid);
+		    ShowDialog(playerid, DIALOG_BANK);
+        }
+        else
+            SCM(playerid, -1, ""er"You must be near the bank sign");
+	}
 	return 1;
 }
 
@@ -9150,7 +9159,7 @@ YCMD:gungame(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gGUNGAME) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -9360,7 +9369,7 @@ YCMD:tdm(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 	
     if(gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -10498,7 +10507,7 @@ YCMD:burn(playerid, params[], help)
 			}
 		    switch(gTeam[otherid])
 		    {
-		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL: return SCM(playerid, -1, ""er"You can't use this command on that player now");
+		        case gDERBY, gRACE, gBUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL: return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    }
 			if(!PlayerData[otherid][bDerbyWinner] && gTeam[otherid] == gDERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    
@@ -11353,7 +11362,7 @@ YCMD:kick(playerid, params[], help)
 		
 		if(IsPlayerAvail(player) && player != playerid && PlayerData[player][e_level] != MAX_ADMIN_LEVEL)
 		{
-			format(gstr, sizeof(gstr), ""SVRSC""yellow"** "red"%s(%i) has been kicked by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
+			format(gstr, sizeof(gstr), ""SERVER_SHORT""yellow"** "red"%s(%i) has been kicked by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
 			SCMToAll(YELLOW, gstr);
 			print(gstr);
 			
@@ -11393,7 +11402,7 @@ YCMD:mute(playerid, params[], help)
 				return SCM(playerid, -1, ""er"This player is already muted");
 			}
 
-	    	format(gstr, sizeof(gstr), ""SVRSC""yellow"** "red"%s(%i) has been muted by Admin %s(%i) for %i seconds [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, time, reason);
+	    	format(gstr, sizeof(gstr), ""SERVER_SHORT""yellow"** "red"%s(%i) has been muted by Admin %s(%i) for %i seconds [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, time, reason);
             SCMToAll(YELLOW, gstr);
             print(gstr);
             
@@ -11435,7 +11444,7 @@ YCMD:unmute(playerid, params[], help)
 			KillTimer(PlayerData[player][tMute]);
 			SCM(player, NEF_YELLOW, "You have been unmuted!");
 
-			format(gstr, sizeof(gstr), ""SVRSC""yellow"** "red"%s(%i) has been unmuted by Admin %s(%i)", __GetName(player), player, __GetName(playerid), playerid);
+			format(gstr, sizeof(gstr), ""SERVER_SHORT""yellow"** "red"%s(%i) has been unmuted by Admin %s(%i)", __GetName(player), player, __GetName(playerid), playerid);
 			SCMToAll(YELLOW, gstr);
 		}
 		else
@@ -11460,7 +11469,7 @@ YCMD:register(playerid, params[], help)
 	new newtext1[1024], newtext2[128];
     format(newtext2, sizeof(newtext2), ""nef" :: Registration - %s", __GetName(playerid));
 
-	format(newtext1, sizeof(newtext1), ""white"Welcome to "SVRLOGO""white"\n\nDesired name: %s\n\nIt seems that you don't have an account, please enter a password below:", __GetName(playerid));
+	format(newtext1, sizeof(newtext1), ""white"Welcome to "SERVER_LOGO""white"\n\nDesired name: %s\n\nIt seems that you don't have an account, please enter a password below:", __GetName(playerid));
 	ShowPlayerDialog(playerid, DIALOG_REGISTER + 1, DIALOG_STYLE_PASSWORD, newtext2, newtext1, "Register", "Cancel");
 	return 1;
 }
@@ -12399,7 +12408,7 @@ YCMD:tban(playerid, params[], help)
 				SCMToAll(-1, gstr);
                 admin_broadcast(COLOR_RED, amsg);
 
-	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SVRFORUM"",
+	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"",
 					__GetName(playerid),
 					reason,
 					UTConvert(gettime() + (time * 60)));
@@ -12483,14 +12492,14 @@ YCMD:ban(playerid, params[], help)
 				} else {
 				    SQL_BanIP(__GetIP(player));
 				    
-				    format(gstr, sizeof(gstr), ""SVRSC""yellow"** "red"%s(%i) has been banned by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
+				    format(gstr, sizeof(gstr), ""SERVER_SHORT""yellow"** "red"%s(%i) has been banned by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
 				    format(amsg, sizeof(amsg), "[ADMIN CHAT] "LG_E"IP banned of %s [EXPIRES: NEVER, REASON: %s]", __GetName(player), reason);
 				}
 
 				SCMToAll(-1, gstr);
                 admin_broadcast(COLOR_RED, amsg);
 
-	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SVRFORUM"",
+	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"",
 					__GetName(playerid),
 					reason,
 					"Permanent");
@@ -12642,7 +12651,7 @@ YCMD:shutdown(playerid, params[], help)
 	{
 	    bGlobalShutdown = true;
 
-		SCMToAll(-1, "Server restart! Restart your game. IP: samp.nefserver.net:7777");
+		SCMToAll(-1, "Server restart! Restart your game. IP: "SERVER_DNS"");
 	    
 	    SetTimer("server_init_shutdown", 3000, false);
  	}
@@ -12888,7 +12897,7 @@ YCMD:slap(playerid, params[], help)
 		{
 		    switch(gTeam[player])
 		    {
-		        case gDERBY, gRACE, BUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL, gHOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
+		        case gDERBY, gRACE, gBUYCAR, gTDM_VOTING, gGUNGAME, SPEC, JAIL, gHOUSE: return SCM(playerid, -1, ""er"You can't use this command on that player now");
 		    }
 			if(!PlayerData[player][bDerbyWinner] && gTeam[player] == gDERBY) return SCM(playerid, -1, ""er"You can't use this command on that player now");
 
@@ -13420,7 +13429,7 @@ YCMD:vip(playerid, params[], help)
 	strcat(string, "\n Message to all players when joining the server\n Vehicle Control System (/vcs)\n VIP Lounge (/vipl)\n VIP Lounge Invite (/vipli)\n Direct spawn in /adminhq\n Access to VIP private vehicles");
 	strcat(string, "\n Attach trailers to your truck (/trailer)\n Create ramps (/ramp)\n Health and armor (/harefill)");
 	strcat(string, "\n\n"nef_yellow"Get VIP today! Go to:\n");
-	strcat(string, ""red"-> "yellow_e""SVRURLWWW"/vip");
+	strcat(string, ""red"-> "yellow_e""SERVER_WWW"/vip");
     ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player (VIP)", string, "OK", "");
 	return 1;
 }
@@ -13738,7 +13747,7 @@ YCMD:cd(playerid, params[], help)
     IsCountDownRunning = true;
     
     tVIPCountdown = SetTimer("server_vip_countdown", 1000, true);
-    
+
    	format(gstr, sizeof(gstr), ""nef" VIP {%06x}%s(%i) "white"has started a countdown!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid);
 	SCMToAll(-1, gstr);
 	
@@ -13915,7 +13924,7 @@ YCMD:race(playerid, params[], help)
     
 	switch(gTeam[playerid])
 	{
-	    case STORE, BUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
+	    case STORE, gBUYCAR, SPEC, VIPL, gBUILDRACE, gHOUSE, JAIL: return SCM(playerid, RED, NOT_AVAIL);
 	}
 
     if(gTeam[playerid] == gRACE) return SCM(playerid, -1, ""er"You are already in this minigame!");
@@ -15735,7 +15744,7 @@ YCMD:deletecolor(playerid, params[], help)
 
 YCMD:new(playerid, params[], help)
 {
-	HTTP(playerid, HTTP_GET, "www.nefserver.net/gateway/api.php?a=news", "", "OnNewsReceive");
+	HTTP(playerid, HTTP_GET, ""SERVER_WWW"/gateway/api.php?a=news", "", "OnNewsReceive");
 	return 1;
 }
 
@@ -15804,7 +15813,7 @@ YCMD:answer(playerid, params[], help)
 		return true;
 	}
 
-	format(gstr, sizeof(gstr), ""SVRSC" "RED_E"[MATHS] :: {%06x}%s(%i) "white"has correctly answered %s (answer: %i) winning 4 score and $%s!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, mathsCurrent, answer, number_format(mathsAward));
+	format(gstr, sizeof(gstr), ""SERVER_SHORT" "RED_E"[MATHS] :: {%06x}%s(%i) "white"has correctly answered %s (answer: %i) winning 4 score and $%s!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, mathsCurrent, answer, number_format(mathsAward));
 	SCMToAll(-1, gstr);
 
 	GivePlayerScoreEx(playerid, 4, true, true);
@@ -18033,7 +18042,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                }
 	                case 7: // what to do here
 	                {
-						strcat(gstr, ""white"On "SVRNAME" you will never be bored. If you like to play with and\nagainst others join a minigame (/minigames).\nExplore our map and teleports (/t)\nYou can design your character with our toy system (/toy).");
+						strcat(gstr, ""white"On "SERVER_NAME" you will never be bored. If you like to play with and\nagainst others join a minigame (/minigames).\nExplore our map and teleports (/t)\nYou can design your character with our toy system (/toy).");
 
 						ShowPlayerDialog(playerid, DIALOG_HELP + 6, DIALOG_STYLE_MSGBOX, ""nef" :: What to do here", gstr, "OK", "Back");
 	                }
@@ -18081,7 +18090,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						strcat(cstring, ""blue"/gdeny "white"- deny an invitation\n");
 						strcat(cstring, ""blue"/gleave "white"- leave your gang\n");
 						strcat(cstring, ""blue"/gmenu "white"- gang menu\n");
-						strcat(cstring, ""blue"/gcolor <Red 0-255> <Green 0-255> <Blue 0-255> "white"- set gang color\n");
+						strcat(cstring, ""blue"/gcolor <red 0-255> <green 0-255> <blue 0-255> "white"- set gang color\n");
 						strcat(cstring, ""blue"/grank "white"- set a players gang rank\n");
 						strcat(cstring, ""blue"/gcar <(optional) vehicle id>"white"- spawn gang vehicle or set it\n");
                         strcat(cstring, ""blue"/ginvite "white"- invite a player to your gang\n");
@@ -18117,7 +18126,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            }
 		            case 5: // Private Vehicles
 		            {
-		            
+                        strcat(cstring, ""yellow"/pv "white"- spawn and manage your private vehicles\n");
+                        strcat(cstring, ""yellow"/lock "white"- (un)lock your vehicle\n");
+                        strcat(cstring, ""yellow"/tune "white"- teleport to tuning garages (modifications will be saved)\n");
+                        strcat(cstring, ""yellow"/eject "white"- eject a player from your private vehicle\n");
+                        strcat(cstring, ""yellow"/speedo "white"- enable speedometer in vehicles\n");
 		            }
 		            case 6: // VIP
 		            {
@@ -20472,7 +20485,7 @@ RequestRegistration(playerid)
 	new string[1024];
 	
     format(gstr, sizeof(gstr), ""nef" :: Registration - %s", __GetName(playerid));
-	format(string, sizeof(string), ""white"Welcome to "SVRLOGO""white"\n\nYour name: %s\n\nLet's create an account, enter a password below:", __GetName(playerid));
+	format(string, sizeof(string), ""white"Welcome to "SERVER_LOGO""white"\n\nYour name: %s\n\nLet's create an account, enter a password below:", __GetName(playerid));
 	ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, gstr, string, "Register", "Skip");
 	return 1;
 }
@@ -20482,7 +20495,7 @@ RequestLogin(playerid)
 	new string[1024];
 	
     format(gstr, sizeof(gstr), ""nef_yellow"Login "white"- %s", __GetName(playerid));
-    format(string, sizeof(string), ""white"Welcome to "SVRLOGO""white"\nHow are you, %s?\n\nAccount: %s\n\nThe name that you are using is registered! Please enter the password:", __GetName(playerid), __GetName(playerid));
+    format(string, sizeof(string), ""white"Welcome to "SERVER_LOGO""white"\nHow are you, %s?\n\nAccount: %s\n\nThe name that you are using is registered! Please enter the password:", __GetName(playerid), __GetName(playerid));
 	ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, gstr, string, "Login", "Skip");
     return 1;
 }
@@ -20679,7 +20692,7 @@ fallout_broadcast(const string[])
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] == FALLOUT)
+		if(gTeam[i] == gFALLOUT)
 		{
 			SCM(i, GREY, gstr);
 		}
@@ -20975,10 +20988,10 @@ function:OnPlayerRegister(playerid, namehash, register, password[], playername[]
 		    PlayerData[playerid][bLogged] = true;
             g_ServerStats[2]++;
 
-			format(gstr, sizeof gstr, "["SVRSC"] %s(%i) "GREEN_E"has registered, making the server have a total of "LB2_E"%i "GREEN_E"players registered.", __GetName(playerid), playerid, cache_insert_id());
+			format(gstr, sizeof gstr, "["SERVER_SHORT"] %s(%i) "GREEN_E"has registered, making the server have a total of "LB2_E"%i "GREEN_E"players registered.", __GetName(playerid), playerid, cache_insert_id());
 			SCMToAll(COLOR_PINK, gstr);
 
-			format(gstr, sizeof(gstr), "~b~~h~~h~Welcome to "SVRSC", ~r~~h~~h~%s~b~~h~~h~!~n~~b~~h~~h~You have successfully registered and logged in!", __GetName(playerid));
+			format(gstr, sizeof(gstr), "~b~~h~~h~Welcome to "SERVER_SHORT", ~r~~h~~h~%s~b~~h~~h~!~n~~b~~h~~h~You have successfully registered and logged in!", __GetName(playerid));
 			InfoTD_MSG(playerid, 5000, gstr);
 
 			format(gstr, sizeof(gstr), "~y~[] ~w~%i", PlayerData[playerid][e_wanteds]);
@@ -20999,10 +21012,10 @@ function:OnPlayerRegister(playerid, namehash, register, password[], playername[]
 		    PlayerData[playerid][bLogged] = true;
             g_ServerStats[2]++;
 
-			format(gstr, sizeof gstr, "["SVRSC"] %s(%i) "GREEN_E"has registered, making the server have a total of "LB2_E"%i "GREEN_E"players registered.", __GetName(playerid), playerid, cache_insert_id());
+			format(gstr, sizeof gstr, "["SERVER_SHORT"] %s(%i) "GREEN_E"has registered, making the server have a total of "LB2_E"%i "GREEN_E"players registered.", __GetName(playerid), playerid, cache_insert_id());
 			SCMToAll(COLOR_PINK, gstr);
 
-			format(gstr, sizeof(gstr), "~b~~h~~h~Welcome to "SVRSC", ~r~~h~~h~%s~b~~h~~h~!~n~~b~~h~~h~You have successfully registered and logged in!", __GetName(playerid));
+			format(gstr, sizeof(gstr), "~b~~h~~h~Welcome to "SERVER_SHORT", ~r~~h~~h~%s~b~~h~~h~!~n~~b~~h~~h~You have successfully registered and logged in!", __GetName(playerid));
 			InfoTD_MSG(playerid, 5000, gstr);
 
             SQL_SaveAccount(playerid, false, false);
@@ -21481,8 +21494,8 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTRandomInfo, 1);
 	TextDrawSetSelectable(TXTRandomInfo, 0);
 
-	// TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~"SVRURLWWW"");
-	TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~"SVRURLWWW"");
+	// TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~"SERVER_WWW"");
+	TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~"SERVER_WWW"");
 	TextDrawAlignment(TXTOnJoin[0], 2);
 	TextDrawBackgroundColor(TXTOnJoin[0], 168430202);
 	TextDrawFont(TXTOnJoin[0], 1);
@@ -21661,8 +21674,8 @@ server_load_textdraws()
 	TextDrawTextSize(TXTWelcome[0], 607.000000, 9.000000);
 	TextDrawSetSelectable(TXTWelcome[0], 0);
 
-	// TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~samp."SVRURL":7777");
-	TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~samp."SVRURL":7777");
+	// TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~samp."SERVER_URL":7777");
+	TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~samp."SERVER_URL":7777");
 	TextDrawAlignment(TXTWelcome[1], 2);
 	TextDrawBackgroundColor(TXTWelcome[1], 168430202);
 	TextDrawFont(TXTWelcome[1], 1);
@@ -21672,7 +21685,7 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTWelcome[1], 1);
 	TextDrawSetSelectable(TXTWelcome[1], 0);
 
-	TXTWelcome[2] = TextDrawCreate(438.000000, 172.000000, "Welcome to "SVRSC"! Check out these~n~commands:~n~~n~  ~g~~h~~h~/rules~n~  ~r~~h~~h~/commands~n~  ~p~/help~n~~n~~w~How do I earn money and score?");
+	TXTWelcome[2] = TextDrawCreate(438.000000, 172.000000, "Welcome to "SERVER_SHORT"! Check out these~n~commands:~n~~n~  ~g~~h~~h~/rules~n~  ~r~~h~~h~/commands~n~  ~p~/help~n~~n~~w~How do I earn money and score?");
 	TextDrawBackgroundColor(TXTWelcome[2], 168430202);
 	TextDrawFont(TXTWelcome[2], 1);
 	TextDrawLetterSize(TXTWelcome[2], 0.229999, 1.099997);
@@ -21681,7 +21694,7 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTWelcome[2], 1);
 	TextDrawSetSelectable(TXTWelcome[2], 0);
 
-	TXTWelcome[3] = TextDrawCreate(438.000000, 243.000000, "~n~~n~  ~b~~h~~h~See /help for server guides.~n~~n~~w~Stay connected on our forums!~n~~n~  ~p~Visit "SVRFORUM"");
+	TXTWelcome[3] = TextDrawCreate(438.000000, 243.000000, "~n~~n~  ~b~~h~~h~See /help for server guides.~n~~n~~w~Stay connected on our forums!~n~~n~  ~p~Visit "SERVER_FORUM"");
 	TextDrawBackgroundColor(TXTWelcome[3], 168430202);
 	TextDrawFont(TXTWelcome[3], 1);
 	TextDrawLetterSize(TXTWelcome[3], 0.229999, 1.099997);
@@ -21690,7 +21703,7 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTWelcome[3], 1);
 	TextDrawSetSelectable(TXTWelcome[3], 0);
 
-	TXTWelcome[4] = TextDrawCreate(469.000000, 336.000000, "Enjoy playing on "SVRSC"!");
+	TXTWelcome[4] = TextDrawCreate(469.000000, 336.000000, "Enjoy playing on "SERVER_SHORT"!");
 	TextDrawBackgroundColor(TXTWelcome[4], 168430202);
 	TextDrawFont(TXTWelcome[4], 1);
 	TextDrawLetterSize(TXTWelcome[4], 0.259999, 1.199998);
@@ -21916,9 +21929,9 @@ server_initialize()
 	// SA_MP Server config
 	format(gstr, sizeof(gstr), "hostname %s", HOSTNAME);
 	SendRconCommand(gstr);
-	SendRconCommand("weburl "SVRURLWWW"");
+	SendRconCommand("weburl "SERVER_WWW"");
     SetGameModeText("TdmDerbyRaceCNRFunStuntFreeroam");
-	SendRconCommand("mapname "SVRSC" "CURRENT_VERSION"");
+	SendRconCommand("mapname "SERVER_SHORT" "SERVER_VERSION"");
 	
 	EnableVehicleFriendlyFire();
 	ShowPlayerMarkers(1);
@@ -22098,6 +22111,7 @@ server_initialize()
 	Command_AddAltNamed("vmenu", "pvmenu");
 	Command_AddAltNamed("vmenu", "pv");
 	Command_AddAltNamed("vmenu", "mypv");
+	Command_AddAltNamed("vmenu", "carmenu");
 	Command_AddAltNamed("vcontrol", "vctrl");
 	Command_AddAltNamed("vcontrol", "vcs");
 	Command_AddAltNamed("label", "labels");
@@ -22237,10 +22251,10 @@ server_load_visuals()
 	MellnikRamp = CreateDynamicObject(3115, -153.74190, -2210.68457, 27.16690,   0.00000, 0.00000, -145.55995);
 
 	new mc_text = CreateDynamicObject(19479, -2331.787841, -1635.757690, 484.685546, 0.099999, -90.299964, 178.450790);
-	SetDynamicObjectMaterialText(mc_text, 0, ""nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™\n"CURRENT_VERSION"\n"SVRURLWWW"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 20, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+	SetDynamicObjectMaterialText(mc_text, 0, ""nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™\n"SERVER_VERSION"\n"SERVER_WWW"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 20, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
 	new beach_text = CreateDynamicObject(19479, 309.903930, -1934.953369, 12.736993, 0.000000, 0.000000, 39.940856);
-	SetDynamicObjectMaterialText(beach_text, 0, ""orange""SVRURLWWW"\n"red""CURRENT_VERSION"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 30, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+	SetDynamicObjectMaterialText(beach_text, 0, ""orange""SERVER_WWW"\n"red""SERVER_VERSION"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 30, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
     pick_chainsaw = CreateDynamicPickup(341, 23, 1219.1809,-924.6318,42.9045);
     pick_life[0] = CreateDynamicPickup(1240, 23, -1987.6259,274.7049,34.9564);
@@ -22263,7 +22277,7 @@ server_load_visuals()
         pick_armor[i] = CreateDynamicPickup(1242, 23, g_ArmorPickups[i][0], g_ArmorPickups[i][1], g_ArmorPickups[i][2]);
     }
 
-	for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
+	for(new i = 0; i < MAX_CUSTOMCAR_SHOPS; i++)
 	{
 		g_CustomCarShops[i][e_pickup] = CreateDynamicPickup(1559, 23, g_CarShopLocations[i][0], g_CarShopLocations[i][1], g_CarShopLocations[i][2], 0, -1, -1, 200.0);
 		g_CustomCarShops[i][e_mapicon] = CreateDynamicMapIcon(g_CarShopLocations[i][0], g_CarShopLocations[i][1], g_CarShopLocations[i][2], 55, 1, 0, -1, -1, 200.0);
@@ -22286,7 +22300,7 @@ server_load_visuals()
 	mc_weps = CreateDynamicPickup(1254, 2, -2340.0862,-1644.3979,485.6543);
 	CreateDynamic3DTextLabel("Weapons "green"(/w)", RED, -2340.0862,-1644.3979,485.6543+0.5, 30.0);
 
-    CreateDynamic3DTextLabel(""SVRLOGO"\n"r_besch"Beach Zone "grey"(/beach)\n"orange"www.nefserver.net\n"white"Are you a "orange"new "white"player? Explore our maps "orange"/t\n"white"Use "orange"/god "white"for freeroam mode!", -1, 323.8153,-1853.5037,8.2406+0.5, 35.0);
+    CreateDynamic3DTextLabel(""SERVER_LOGO"\n"r_besch"Beach Zone "grey"(/beach)\n"orange""SERVER_WWW"\n"white"Are you a "orange"new "white"player? Explore our maps "orange"/t\n"white"Use "orange"/god "white"for freeroam mode!", -1, 323.8153,-1853.5037,8.2406+0.5, 35.0);
 	beach_dive = CreateDynamicPickup(371, 23, 327.5385,-1864.1561,8.2406);
 	CreateDynamic3DTextLabel("Dive", GREEN, 327.5385,-1864.1561,8.2406+0.5, 30.0);
 	beach_tp = CreateDynamicPickup(19130, 2, 336.6495,-1836.6848,8.2481);
@@ -22586,7 +22600,7 @@ server_load_visuals()
     CreateDynamic3DTextLabel(""white"["nef_yellow"VIP"white"]\nLounge Entrance", -1, -2624.3010,1411.4360,7.2303+0.5, 35.0);
     CreateDynamic3DTextLabel(""white"["nef_green"Mellnik's Ramp"white"]\n"light_yellow"/rampdown to move it down", -1, -153.74190, -2210.68457, 27.16690+0.5, 20.0);
     CreateDynamic3DTextLabel(""white"["nef_green"Mellnik's Ramp"white"]\n"light_yellow"/rampup to move it up", -1, -153.74190, -2210.68457, 2.17288+0.5, 20.0);
-    CreateDynamic3DTextLabel(""white"["yellow"Bank"white"]\nPress 'SPACE'", -1, 2311.63, -3.89, 26.74+0.5, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, -1, -1, -1, 20.0);
+    CreateDynamic3DTextLabel(""white"["yellow"Bank"white"]\nType '/menu'", -1, 2311.63, -3.89, 26.74+0.5, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 0, -1, -1, -1, 20.0);
 
     // Create3DTextLabel("{ffffff}You must to enter in the balloon to start it!\nIf you are in it, write "vgreen"'/ballonup'", 0xF67E0FF, 836.0856, -2000.4789, 14.7462, 40.0, 0);
 
@@ -23365,13 +23379,13 @@ PortPlayerMapVeh(playerid, Float:X, Float:Y, Float:Z, Float:Angle, Float:XVeh, F
 
 SendWelcomeMSG(playerid)
 {
-	SCM(playerid, GREY, "===================="white""CURRENT_VERSION""grey"=======================");
-	SCM(playerid, RED, "» Welcome to "SVRLOGO"");
+	SCM(playerid, GREY, "===================="white""SERVER_VERSION""grey"=======================");
+	SCM(playerid, RED, "» Welcome to "SERVER_LOGO"");
 	SCM(playerid, NEF_GREEN, "» Type /help for further information");
 	SCM(playerid, BLUE, "» You can show/hide the textdraws with /textdraws");
-	SCM(playerid, YELLOW, "» Visit our forum at http://"SVRFORUM"");
+	SCM(playerid, YELLOW, "» Visit our forum at http://"SERVER_FORUM"");
 	SCM(playerid, NEF_YELLOW, "» You can use /radio or /streams for music streams");
-	SCM(playerid, GREY, "===================="white""CURRENT_VERSION""grey"=======================");
+	SCM(playerid, GREY, "===================="white""SERVER_VERSION""grey"=======================");
 	return 1;
 }
 
@@ -23923,7 +23937,7 @@ function:LogoSwitch()
 	{
 	    case 0:
 	    {
-	        TextDrawSetString(NEFLOGO[2], "~w~NEF "CURRENT_VERSION"");
+	        TextDrawSetString(NEFLOGO[2], "~w~NEF "SERVER_VERSION"");
 	        phase = 1;
 	    }
 	    case 1:
@@ -24065,7 +24079,7 @@ function:ProcessTick()
 
 				    T_GunGamePlayers++;
 			    }
-			    case FALLOUT:
+			    case gFALLOUT:
 			    {
 			        T_FalloutPlayers++;
 			        
@@ -24346,7 +24360,7 @@ function:ProcessTick()
 						gang_broadcast(GZoneData[r][e_attacker], gstr);
 						gang_broadcast(GZoneData[r][e_attacker], ""gang_sign" "r_besch" The gang gained 4 gang score and each member $10,000 who were tied.");
 
-						format(gstr, sizeof(gstr), ""SVRSC" "orange"Gang %s captured zone '%s' and gained their reward", GetGangNameByID(GZoneData[r][e_attacker]), GZoneData[r][e_zname]);
+						format(gstr, sizeof(gstr), ""SERVER_SHORT" "orange"Gang %s captured zone '%s' and gained their reward", GetGangNameByID(GZoneData[r][e_attacker]), GZoneData[r][e_zname]);
 						SCMToAll(-1, gstr);
 						SCMToAll(-1, ""orange"This zone is now locked for 2 hours and cannot be attacked during that time!");
 
@@ -24359,11 +24373,11 @@ function:ProcessTick()
 						gang_broadcast(GZoneData[r][e_attacker], gstr);
 						gang_broadcast(GZoneData[r][e_attacker], ""gang_sign" "r_besch" The gang gained 7 gang score and each member $20,000 who were tied.");
 
-						format(gstr, sizeof(gstr), ""SVRSC" "orange"Gang %s captured zone '%s' which was territory of %s", GetGangNameByID(GZoneData[r][e_attacker]), GZoneData[r][e_zname], GetGangNameByID(GZoneData[r][e_defender]));
+						format(gstr, sizeof(gstr), ""SERVER_SHORT" "orange"Gang %s captured zone '%s' which was territory of %s", GetGangNameByID(GZoneData[r][e_attacker]), GZoneData[r][e_zname], GetGangNameByID(GZoneData[r][e_defender]));
 						SCMToAll(-1, gstr);
 						SCMToAll(-1, ""orange"This zone is now locked for 2 hours and cannot be attacked during that time!");
 						
-                        format(gstr, sizeof(gstr), ""SVRSC" "gang_sign" "r_besch" '%s' was captured by the gang %s!", GZoneData[r][e_zname], GetGangNameByID(GZoneData[r][e_attacker]));
+                        format(gstr, sizeof(gstr), ""SERVER_SHORT" "gang_sign" "r_besch" '%s' was captured by the gang %s!", GZoneData[r][e_zname], GetGangNameByID(GZoneData[r][e_attacker]));
 						gang_broadcast(GZoneData[r][e_defender], gstr);
 						
 						SQL_UpdateGangScore(GZoneData[r][e_attacker], 7);
@@ -24889,7 +24903,7 @@ fallout_startgame()
 	{
 		PlayerData[i][bFalloutLost] = false;
 		
-	    if(gTeam[i] == FALLOUT)
+	    if(gTeam[i] == gFALLOUT)
 		{
 			SetPlayerHealth(i, 100.0);
 	    }
@@ -24946,7 +24960,7 @@ function:fallout_losegame()
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(gTeam[i] != FALLOUT)
+		if(gTeam[i] != gFALLOUT)
 			continue;
 		if(PlayerData[i][bFalloutLost])
 			continue;
@@ -24995,7 +25009,7 @@ function:fallout_countdown()
 
 			for(new i = 0; i < MAX_PLAYERS; i++)
 			{
-			    if(gTeam[i] == FALLOUT)
+			    if(gTeam[i] == gFALLOUT)
 				{
 				    TogglePlayerControllable(i, true);
 			        HidePlayerFalloutTextdraws(i);
@@ -25014,7 +25028,7 @@ function:fallout_countdown()
 			format(gstr, sizeof(gstr), "~b~Start!");
 			for(new i = 0; i < MAX_PLAYERS; i++)
 			{
-			    if(gTeam[i] == FALLOUT)
+			    if(gTeam[i] == gFALLOUT)
 				{
 				    GameTextForPlayer(i, gstr, 1000, 3);
 					Streamer_Update(i);
@@ -25033,7 +25047,7 @@ function:fallout_countdown()
 	    format(gstr, sizeof(gstr), "~y~FALLOUT STARTING IN~n~~p~- %i -~n~~y~SECONDS", FalloutData[I_iCount]);
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
-		    if(gTeam[i] == FALLOUT)
+		    if(gTeam[i] == gFALLOUT)
 			{
 				GameTextForPlayer(i, gstr, 1000, 3);
 		    }
@@ -25097,7 +25111,7 @@ function:fallout_decidewinners()
 	{
 	    if(IsPlayerAvail(i))
 		{
-		    if(gTeam[i] != FALLOUT)
+		    if(gTeam[i] != gFALLOUT)
 				continue;
 
 			HidePlayerFalloutTextdraws(i);
@@ -25197,7 +25211,7 @@ fallout_get_playercount()
 	    if(!IsPlayerAvail(i))
 			continue;
 
-		if(gTeam[i] == FALLOUT)
+		if(gTeam[i] == gFALLOUT)
 			count++;
 	}
 	return count;
@@ -25469,7 +25483,7 @@ function:ShowDialog(playerid, dialogid)
 				
 			format(gstr2, sizeof(gstr2), "\n\nStreamed client objects: %i\nServer FPS: %i\nPlayer record: %i", Streamer_CountVisibleItems(playerid, STREAMER_TYPE_OBJECT), GetServerTickRate(), m_PlayerRecord);
 	        strcat(string, gstr2);
-	        strcat(string, "\n\nServer version: "SVRNAME" "CURRENT_VERSION" on SA-MP "SAMP_VERSION"");
+	        strcat(string, "\n\nServer version: "SERVER_NAME" "SERVER_VERSION" on SA-MP "SAMP_VERSION"");
 	        
 	        ShowPlayerDialog(playerid, DIALOG_SERVER_STATS, DIALOG_STYLE_MSGBOX, ""nef" :: Server Stats", string, "OK", "");
 	    }
@@ -25707,16 +25721,16 @@ function:server_random_broadcast()
 {
 	static const szRandomServerMessages[12][] =
 	{
-		""yellow_e"- Server - "LB2_E"Visit our site: "SVRURLWWW"",
+		""yellow_e"- Server - "LB2_E"Visit our site: "SERVER_WWW"",
 		""yellow_e"- Server - "LB2_E"Join Minigames for money and score - /help",
 		""yellow_e"- Server - "LB2_E"Access your player preferences: /settings",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip",
+		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWW"/vip",
+		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWW"/vip",
 		""yellow_e"- Server - "LB2_E"Join Minigames to earn money and score - /help",
-		""yellow_e"- Server - "LB2_E"Got suggestions? Post them on our forums! ("SVRFORUM")",
+		""yellow_e"- Server - "LB2_E"Got suggestions? Post them on our forums! ("SERVER_FORUM")",
 		""yellow_e"- Server - "LB2_E"Use /report to report a player to the admins",
-		""yellow_e"- Server - "LB2_E"Add "SVRSC" to your favlist! samp."SVRURL":7777",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SVRURLWWW"/vip/",
+		""yellow_e"- Server - "LB2_E"Add "SERVER_SHORT" to your favlist! samp."SERVER_URL":7777",
+		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWW"/vip/",
 		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!",
 		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!"
 	};
@@ -26389,7 +26403,7 @@ function:Maths()
 		}
 	}
 	format(mathsCurrent, sizeof(mathsCurrent), "%i%s%i%s%i", NR1, FOP1, NR2, FOP2, NR3);
-	format(gstr2, sizeof(gstr2), ""SVRSC" "RED_E"[MATHS] "white"Calculate %s and write /answer <answer> "YELLOW_E"(Score: 4 | Money: $%s)", mathsCurrent, number_format(mathsAward));
+	format(gstr2, sizeof(gstr2), ""SERVER_SHORT" "RED_E"[MATHS] "white"Calculate %s and write /answer <answer> "YELLOW_E"(Score: 4 | Money: $%s)", mathsCurrent, number_format(mathsAward));
 	SCMToAll(-1, gstr2);
 	return 1;
 }
@@ -26775,6 +26789,11 @@ GetEnterpriseEarnings(r)
 	return 0;
 }
 
+Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Float:z2)
+{
+	return (((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)) + ((z1 - z2) * (z1 - z2)));
+}
+
 GetNearestHouse(playerid)
 {
 	new Float:fPOS[3];
@@ -26946,9 +26965,9 @@ ExitPlayer(playerid)
 	        SCM(playerid, -1, ""er"You can't use this command now!");
 	        return 0;
 	    }
-	    case BUYCAR:
+	    case gBUYCAR:
 	    {
-		    for(new i = 0; i < CUSTOM_CAR_SHOPS; i++)
+		    for(new i = 0; i < MAX_CUSTOMCAR_SHOPS; i++)
 		    {
 		        if(gLastMap[playerid] == g_CustomCarShops[i][e_pickup])
 		        {
@@ -27170,7 +27189,7 @@ ExitPlayer(playerid)
 			PlayerData[playerid][tickJoin_bmx] = 0;
 			return 0;
 		}
-		case FALLOUT:
+		case gFALLOUT:
 		{
 			gTeam[playerid] = gFREEROAM;
 		    CurrentFalloutPlayers--;
@@ -27188,7 +27207,7 @@ ExitPlayer(playerid)
 
 				for(new i = 0; i < MAX_PLAYERS; i++)
 				{
-				    if(gTeam[i] == FALLOUT)
+				    if(gTeam[i] == gFALLOUT)
 				    {
 				    	TogglePlayerControllable(i, true);
 						ResetPlayerWorld(i);
@@ -27460,7 +27479,7 @@ function:RandomTXTInfo()
 		"~w~Want access to ~y~bonus commands~w~? Check out ~r~~h~/premium~w~!",
 		"~w~Edit your server preferences and features using ~r~~h~/settings~w~!",
 		"~w~Flip your vehicle with the key ~g~~h~~h~'2'",
-		"~w~Join our ~r~~h~forums~w~! Register at ~b~~h~~h~"SVRURLWWW"~w~!",
+		"~w~Join our ~r~~h~forums~w~! Register at ~b~~h~~h~"SERVER_WWW"~w~!",
 		"~w~Try our ~y~Cops and Robbers ~w~Minigame! ~y~/cnr",
 		"~w~Type ~g~~h~~h~/c ~b~~h~~h~/t~w~ for ~y~commands ~w~and ~y~teleports!",
 		"~w~Go to ~g~~h~~h~/vs ~w~and get your own car which you can tune!",
@@ -28154,7 +28173,23 @@ function:server_vip_countdown()
 	return 1;
 }
 
-function:OnPlayerAccountRequest(playerid, namehash, request)
+enum E_ACCOUNT_REQUEST
+{
+	E_ACCREQ_LOAD_ID,
+	E_ACCREQ_LOAD_SETTINGS,
+	E_ACCREQ_CHECK_BAN,
+	E_ACCREQ_CHECK_IP,
+	E_ACCREQ_CHECK_SERIAL,
+	E_ACCREQ_CHECK_AUTOLOGIN
+};
+
+SQL_RequestIPCheck(playerid)
+{
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT * FROM `ipbans` WHERE `ip` = '%e' LIMIT 1;", __GetIP(playerid));
+	mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_IP);
+}
+
+function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
 {
     if(!IsPlayerConnected(playerid))
 		return 0;
@@ -28163,6 +28198,140 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	    Log(LOG_NET, "OnPlayerAccountRequest data race detected, kicking (%s, %i, %i, %i)", __GetName(playerid), playerid, YHash(__GetName(playerid)), namehash);
 	    Kick(playerid);
 		return 0;
+	}
+	
+	switch(request)
+	{
+		case E_ACCREQ_LOAD_ID:
+		{
+			if(cache_get_row_count() == 0)
+			{
+				// Account does not exist and therefore also not banned. Continue to check their IP.
+				SQL_RequestIPCheck(playerid);
+			}
+			else
+			{
+				// Account does exist, check if player IP was banned.
+				PlayerData[playerid][e_accountid] = cache_get_row_int(0, 0);
+				
+				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `settings` WHERE `id` = %i LIMIT 1;", PlayerData[playerid][e_accountid]);
+				mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_SETTINGS);
+			}
+			return 1;
+		}
+		case E_ACCREQ_LOAD_SETTINGS:
+		{
+			if(cache_get_row_count() != 0)
+			{
+				PlayerSettings[playerid][e_allow_teleport] = cache_get_field_content_int(0, "allow_teleport");
+				PlayerSettings[playerid][e_allow_pm] = cache_get_field_content_int(0, "allow_pm");
+				PlayerSettings[playerid][e_fightstyle] = cache_get_field_content_int(0, "fightstyle");
+				PlayerSettings[playerid][e_speedo] = cache_get_field_content_int(0, "speedo");
+				PlayerSettings[playerid][e_namecolor] = cache_get_field_content_int(0, "namecolor");
+				PlayerSettings[playerid][e_skin] = cache_get_field_content_int(0, "skin");
+				PlayerSettings[playerid][e_auto_login] = cache_get_field_content_int(0, "auto_login");
+				PlayerSettings[playerid][e_boost_level] = cache_get_field_content_float(0, "blevel");
+				PlayerSettings[playerid][e_jump_level] = cache_get_field_content_float(0, "jlevel");
+				PlayerSettings[playerid][e_house_spawn] = cache_get_field_content_int(0, "house_spawn");
+			}
+			
+			mysql_format(pSQL, gstr, sizeof(gstr), "SELECT UNIX_TIMESTAMP, `bans`.`reason`, `bans`.`date`, `bans.lift`, `accounts`.`name` FROM `bans` WHERE `bans`.`id` = %i LEFT JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id`;", PlayerData[playerid][e_accountid]);
+			mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_BAN);
+			return 1;
+		}
+		case E_ACCREQ_CHECK_BAN:
+		{
+			if(cache_get_row_count() != 0)
+			{
+				new lift = cache_get_field_content_int(0, "lift");
+				if(lift != 0 && lift < cache_get_row_int(0, 0)) // Was he time banned && did his ban expire?
+				{
+					mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `bans` WHERE `id` = %i;", PlayerData[playerid][e_accountid]);
+					mysql_pquery(pSQL, gstr);
+					
+					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Account", ""white"Your time ban expired, you have been unbanned! Make\nsure to read our servers /rules.\n\nEnjoy playing at Havoc!", "OK", "");
+					goto _continue;
+				}
+				
+				new szAdmin[MAX_PLAYER_NAME + 1],
+					szReason[128],
+					iTimeStamp = cache_get_row_int(0, 2),
+					string[512];
+					
+				cache_get_row(0, 1, szReason);
+				cache_get_row(0, 4, szAdmin);
+				
+				if(lift != 0) // Was he timebanned?
+				{
+					format(string, sizeof(string), ""red"You have been TIME banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate %s\nYou will be unbanned on %s!\n\nf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM".",
+						szAdmin, __GetName(playerid), szReason, UTConvert(lift));
+					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Notice", string, "OK", "");
+					KickEx(playerid);
+				}
+			}
+			_continue:
+			SQL_RequestIPCheck(playerid);
+			return 1;
+		}
+		case E_ACCREQ_CHECK_IP:
+		{
+			if(cache_get_row_count() == 0)
+			{
+				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `serialbans` WHERE `serial` = '%e' LIMIT 1;", __GetSerial(playerid));
+				mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_SERIAL);
+			}
+			else
+			{
+				TextDrawHideForPlayer(playerid, TXTOnJoin[0]);
+				TextDrawHideForPlayer(playerid, TXTOnJoin[1]);
+
+				SCM(playerid, -1, ""server_sign" You have been banned.");
+				KickEx(playerid);
+			}
+			return 1;
+		}
+		case E_ACCREQ_CHECK_SERIAL:
+		{
+			if(cache_get_row_count() != 0)
+			{
+				// Players gpci has been banned.
+				Kick(playerid);
+			}
+			else
+			{
+				if(PlayerData[playerid][e_accountid] == 0)
+				{
+					// Player does not have an account. Qualify player for registration.
+					
+				}
+				else
+				{
+					if(PlayerSettings[playerid][e_auto_login] == 1)
+					{
+						mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `loginlog` WHERE `id` = %i AND `ip` = '%e' ORDER BY `date` DESC LIMIT 1;",
+								PlayerData[playerid][e_accountid], __GetIP(playerid));
+						mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_AUTOLOGIN);
+					}
+					else
+					{
+						RequestLogin(playerid);
+					}
+				}
+			}
+			case E_ACCREQ_CHECK_AUTOLOGIN:
+			{
+				if(cache_get_row_count() > 0) 
+				{
+					// Player has logged in sometime earlier with this IP-Address.
+					AutoLogin(playerid);
+				}
+				else
+				{
+					RequestLogin(playerid);
+				}
+			}
+			return 1;
+		}
 	}
 
 	switch(request)
@@ -28183,7 +28352,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 
 				if(iLift == 0) // Player has a permanent ban
 				{
-				    format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SVRFORUM"", szAdmin, __GetName(playerid), szReason, UTConvert(u_iBanDate));
+				    format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"", szAdmin, __GetName(playerid), szReason, UTConvert(u_iBanDate));
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Notice", gstr2, "OK", "");
 					KickEx(playerid);
 					return 1;
@@ -28197,7 +28366,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				}
 				else
 				{
-				    format(gstr2, sizeof(gstr2), ""red"You have been time banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SVRFORUM"", szAdmin, __GetName(playerid), szReason, UTConvert(iLift));
+				    format(gstr2, sizeof(gstr2), ""red"You have been time banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"", szAdmin, __GetName(playerid), szReason, UTConvert(iLift));
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Notice", gstr2, "OK", "");
 					KickEx(playerid);
 					return 1;
@@ -28997,7 +29166,7 @@ ToggleSpeedo(playerid, bool:toggle)
 	}
 }
 
-ResetPlayerVars(playerid)
+ResetPlayerData(playerid)
 {
 	gTeam[playerid] = gNONE;
     g_RaceVehicle[playerid] = -1;
