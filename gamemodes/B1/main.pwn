@@ -3465,7 +3465,7 @@ public OnIncomingConnection(playerid, ip_address[], port)
 
 public OnPlayerConnect(playerid)
 {
-    ResetPlayerVars(playerid);
+    ResetPlayerData(playerid);
 	ResetPlayerPV(playerid);
     ResetPlayerToy(playerid);
 
@@ -3532,8 +3532,11 @@ public OnPlayerConnect(playerid)
         
 		PlayAudioStreamForPlayer(playerid, "http://s.havocserver.net/login.mp3");
 
-		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `bans` WHERE `playername` = '%e' LIMIT 1;", __GetName(playerid));
-		mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_BANNED);
+		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", __GetName(playerid));
+		mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_ID);
+		
+		//mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `bans` WHERE `playername` = '%e' LIMIT 1;", __GetName(playerid));
+		//mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_BANNED);
  	}
  	return 1;
 }
@@ -3772,7 +3775,7 @@ public OnPlayerDisconnect(playerid, reason)
 		orm_destroy(PlayerData[playerid][e_ormid]);
 	}
 	
-    ResetPlayerVars(playerid);
+    ResetPlayerData(playerid);
 	ResetPlayerPV(playerid);
  	ResetPlayerToy(playerid);
  	
@@ -28143,7 +28146,22 @@ function:server_vip_countdown()
 	return 1;
 }
 
-function:OnPlayerAccountRequest(playerid, namehash, request)
+enum E_ACCOUNT_REQUEST
+{
+	E_ACCREQ_LOAD_ID,
+	E_ACCREQ_LOAD_SETTINGS,
+	E_ACCREQ_CHECK_BAN,
+	E_ACCREQ_CHECK_IP,
+	E_ACCREQ_CHECK_SERIAl
+};
+
+SQL_RequestIPCheck(playerid)
+{
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT * FROM `ipbans` WHERE `ip` = '%e' LIMIT 1;", __GetIP(playerid));
+	mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_IP);
+}
+
+function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
 {
     if(!IsPlayerConnected(playerid))
 		return 0;
@@ -28152,6 +28170,83 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	    Log(LOG_NET, "OnPlayerAccountRequest data race detected, kicking (%s, %i, %i, %i)", __GetName(playerid), playerid, YHash(__GetName(playerid)), namehash);
 	    Kick(playerid);
 		return 0;
+	}
+	
+	switch(request)
+	{
+		case E_ACCREQ_LOAD_ID:
+		{
+			if(cache_get_row_count() == 0)
+			{
+				// Account does not exist and therefore also not banned. Continue to check their IP.
+				SQL_RequestIPCheck(playerid);
+			}
+			else
+			{
+				// Account does exist, check if player IP was banned.
+				PlayerData[playerid][e_accountid] = cache_get_row_int(0, 0);
+				
+				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `settings` WHERE `id` = %i LIMIT 1;", PlayerData[playerid][e_accountid]);
+				mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_SETTINGS);
+			}
+			return 1;
+		}
+		case E_ACCREQ_LOAD_SETTINGS:
+		{
+			if(cache_get_row_count() != 0)
+			{
+				PlayerSettings[playerid][e_allow_teleport] = cache_get_field_content_int(0, "allow_teleport");
+				PlayerSettings[playerid][e_allow_pm] = cache_get_field_content_int(0, "allow_pm");
+				PlayerSettings[playerid][e_fightstyle] = cache_get_field_content_int(0, "fightstyle");
+				PlayerSettings[playerid][e_speedo] = cache_get_field_content_int(0, "speedo");
+				PlayerSettings[playerid][e_namecolor] = cache_get_field_content_int(0, "namecolor");
+				PlayerSettings[playerid][e_skin] = cache_get_field_content_int(0, "skin");
+				PlayerSettings[playerid][e_auto_login] = cache_get_field_content_int(0, "auto_login");
+				PlayerSettings[playerid][e_boost_level] = cache_get_field_content_float(0, "blevel");
+				PlayerSettings[playerid][e_jump_level] = cache_get_field_content_float(0, "jlevel");
+				PlayerSettings[playerid][e_house_spawn] = cache_get_field_content_int(0, "house_spawn");
+			}
+			
+			mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `bans`.*, `accounts`.`name` FROM `bans` WHERE `bans`.`id` = %i LEFT JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id`;", PlayerData[playerid][e_accountid]);
+			mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_BAN);
+			return 1;
+		}
+		case E_ACCREQ_CHECK_BAN:
+		{
+			
+			SQL_RequestIPCheck(playerid);
+			return 1;
+		}
+		case E_ACCREQ_CHECK_IP:
+		{
+			if(cache_get_row_count() == 0)
+			{
+				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `serialbans` WHERE `serial` = '%e' LIMIT 1;", __GetSerial(playerid));
+				mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_SERIAl);
+			}
+			else
+			{
+				TextDrawHideForPlayer(playerid, TXTOnJoin[0]);
+				TextDrawHideForPlayer(playerid, TXTOnJoin[1]);
+
+				SCM(playerid, -1, ""server_sign" You have been banned.");
+				KickEx(playerid);
+			}
+			return 1;
+		}
+		case E_ACCREQ_CHECK_SERIAl:
+		{
+			if(cache_get_row_count() != 0)
+			{
+				// Players gpci has been banned.
+				Kick(playerid);
+			}
+			else
+			{
+				
+			}
+			return 1;
+		}
 	}
 
 	switch(request)
@@ -28986,7 +29081,7 @@ ToggleSpeedo(playerid, bool:toggle)
 	}
 }
 
-ResetPlayerVars(playerid)
+ResetPlayerData(playerid)
 {
 	gTeam[playerid] = gNONE;
     g_RaceVehicle[playerid] = -1;

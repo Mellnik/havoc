@@ -66,6 +66,10 @@ Build 1 (1st Feb 2015)
 - Duel wins and defeats are now being saved within your account.
 - 'SPACE' key has been replaced with /menu in bank interiors.
 - Derby has been overhauled, new maps can now be added easily.
+- Improvements to the account system:
+	* IPs now get unbanned automatically after an account unban.
+	* Table optimizations.
+	* Faster data loading for accounts, settings, achivements, bans.
 - Private Vehicle Changes:
 	* Added /tune teleport command
 	* Added /eject for private vehicle owners to remove players from their car
