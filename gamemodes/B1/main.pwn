@@ -89,7 +89,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SQL_PORT                        (3306)
 #if IS_RELEASE_BUILD == true
 #define SQL_USER   						"havocserver"
-#define SQL_PASS   						"nlR:o%k15N5*5/u"
+#define SQL_PASS   						"nlR:o%k15N5*5/u8azwrgbtgrb"
 #define SQL_DATA   						"havocserver"
 #else
 #define SQL_USER   						"havocdev"
@@ -6625,13 +6625,16 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	{
 	    if((GetTickCountEx() - PlayerData[playerid][tickVehicleEnterTime]) < COOLDOWN_VEHICLE)
 	    {
-			if((++PlayerData[playerid][VehicleSpamViolation]) >= 3 && !PlayerData[playerid][bOpenSeason])
-			{
-		        format(gstr, sizeof(gstr), "[SUSPECT] %i vehicle spam hack detected, kicking (%s, %i)", PlayerData[playerid][VehicleSpamViolation], __GetName(playerid), playerid);
-		        admin_broadcast(RED, gstr);
-		        Log(LOG_NET, gstr);
-		        
-			    Kick(playerid);
+	        if(PlayerData[playerid][e_level] < 2 && PlayerData[playerid][e_vip] == 0)
+	        {
+				if((++PlayerData[playerid][VehicleSpamViolation]) >= 3 && !PlayerData[playerid][bOpenSeason])
+				{
+			        format(gstr, sizeof(gstr), "[SUSPECT] %i vehicle spam hack detected, kicking (%s, %i)", PlayerData[playerid][VehicleSpamViolation], __GetName(playerid), playerid);
+			        admin_broadcast(RED, gstr);
+			        Log(LOG_NET, gstr);
+
+				    Kick(playerid);
+				}
 			}
 	    }
 	}
