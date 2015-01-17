@@ -1,0 +1,1256 @@
+@charset "UTF-8";
+/* CSS Document */
+
+/**
+* Custom CSS by PurevB.com
+*/
+.popupbody li > a,
+.popupbody li > label {
+	padding:{vb:math {vb:stylevar padding}-2} {vb:stylevar padding};
+	line-height:18px;
+}
+.formsubmit label {
+	color:#3a3a3a;
+}
+.formsubmit label {
+	color:#3a3a3a;
+}
+.posts, .postlist, #postlist  {
+margin:0;
+padding:0;
+}
+
+/* Misc Resets
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+img {
+	border:0;
+}
+.verticalAlign {
+	vertical-align:middle;
+}
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+.clearfix {
+	display: inline-block;
+}
+html[xmlns] .clearfix {
+	display: block;
+}
+* html .clearfix {
+	height: 1%;
+}
+
+/************************************************************************/
+*{ -moz-box-shadow: none !important; -webkit-box-shadow: none !important; }
+
+#wgo .blocksubhead {
+border-top:0;
+}
+#sidebar_home .block {
+position:relative;
+padding:0;
+}
+#sidebar_home .blockrow, #sidebar_home .blockbody {
+	-moz-border-radius: 0 !important;
+	-webkit-border-radius: 0 !important;
+	-moz-border-radius-bottom{vb:stylevar left}: 8px !important;
+	-moz-border-radius-bottom{vb:stylevar right}: 8px !important;
+	-webkit-border-bottom-{vb:stylevar left}-radius: 8px !important;
+	-webkit-border-bottom-{vb:stylevar right}-radius: 8px !important;
+}
+#sidebar_home .underblock {
+background:none;
+}
+#sidebar_home #sidebar {
+background:none;
+padding:0;
+border:0;
+}
+#sidebar_home .blocksubhead {
+background:url({vb:stylevar imgdir_themedir}/sidebarHeadBG.png) no-repeat top left;
+height:18px;
+width:234px;
+padding:12px;
+margin:0;
+color:#fff;
+font-size:15px;
+text-transform:upercase;
+}
+#sidebar_home .blocksubhead img {
+display:none;
+}
+#sidebar_home .blocksubhead .collapse img {
+display:inline;
+}
+#sidebar_container > ul {
+	width: 99%;
+}
+.threadbit .sticky, .threadbit .nonthread, .threadbit .nonsticky, .threadbit .deleted, .threadbit .discussionrow, .threadbit .ignored, .wgo_block .wgo_subblock,
+.forumbit_nopost .forumbit_nopost .forumrow, .forumbit_post .forumrow {
+	border-bottom: 1px dashed #d1d1d1;
+}
+
+#forums *, #wgo *, #forumbits * {
+	-moz-border-radius: 0 !important;
+	-webkit-border-radius: 0 !important;
+}
+#fb_headerbox {
+	padding-right:5px;
+}
+.wgo_block {
+	margin:0;
+}
+.navbar {
+	-moz-border-radius-bottom{vb:stylevar left}: 0 !important;
+	-moz-border-radius-bottom{vb:stylevar right}: 0 !important;
+	-webkit-border-bottom-{vb:stylevar left}-radius: 0 !important;
+	-webkit-border-bottom-{vb:stylevar right}-radius: 0 !important;
+}
+
+.announcements {
+	margin-top:10px;
+}
+.highlight {
+	background-image:none;
+}
+.forumbit_nopost.row1 .forumrow, .forumbit_post.row1 .forumrow {
+	background: {vb:stylevar forumrow_background};
+	border:{vb:stylevar forumbits_border};
+	border-top:0;
+}
+.forumbit_nopost.row2 .forumbit_nopost .forumrow, .forumbit_post.row2 .forumrow {
+	background: #f6f6f6;
+	border-top:0;
+	border:{vb:stylevar forumbits_border};
+}
+.threadbit.row1 .nonsticky{
+	background: {vb:stylevar threadbit_background};
+}
+.threadbit.row2 .nonsticky{
+	background: #f6f6f6;
+}
+.threadbit .sticky .alt {
+
+}
+.threadbit.row1 .nonsticky .alt {
+	background:#f9f9f9;
+}
+.threadbit.row2 .nonsticky .alt {
+	background:#efefef;
+}
+.navlinksBox {
+	text-align: center;
+	color: {vb:stylevar navlinks_color};
+	font-size: 14px;
+        font-weight:700;
+        margin-top: 8px;
+        margin-bottom: 0;
+        width:100%;
+        clear:both;
+}
+.bodyWrap {
+	background:#fff;
+	margin:0 2px;	
+}
+.body_wrapper {
+	padding:10px 0;
+	margin:0;
+}
+.above_body {
+	padding:0;
+	margin:0;
+}
+.threadbit .sticky, .threadbit .nonthread, .threadbit .nonsticky, .threadbit .deleted, .threadbit .discussionrow, .threadbit .ignored {
+	border-top:0;
+}
+
+/* Page Wrapper
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+body {
+	width:auto;
+	min-width:{vb:stylevar doc_minWidth};
+	max-width:{vb:stylevar doc_maxWidth};
+	margin: 0;
+}
+.pageWrap {
+	margin:{vb:stylevar doc_margin};
+	width:{vb:stylevar doc_width};
+	position:relative;
+}
+.bodyWrapper {
+	margin:{vb:stylevar doc_margin};
+	width:{vb:stylevar doc_width};
+        background:#dddddd;
+}
+
+/* Top Bar
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#topBar {
+	background:url({vb:stylevar imgdir_themedir}/topBarBG.gif) repeat-x top left;
+	height:39px;
+	font-size:12px;	
+	color:#fff;
+	padding:3px 27px 0 27px;
+	position:relative;
+}
+.socialBox {
+	float:{vb:stylevar left};
+	line-height:39px;
+}
+.socialBox img {
+	vertical-align:middle;
+	border:0;
+}
+.socialBoxText {
+	float:{vb:stylevar left};
+	line-height:39px;
+	padding-{vb:stylevar right}:5px;
+}
+
+/* Header
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.above_body {
+	background:none;
+}
+.doc_header {
+	background:url({vb:stylevar imgdir_themedir}/headerBG.gif) repeat-x top left;
+	height:190px;
+	position:relative;
+}
+.headerWrap {
+	background:url({vb:stylevar imgdir_themedir}/headerWrapBG.gif) no-repeat top {vb:stylevar left};
+	height:190px;
+	position:relative;
+}
+.logo {
+	float:{vb:stylevar left};
+	height:110px;
+	padding-{vb:stylevar right}:19px;
+}
+.slogan {
+	background:url({vb:stylevar imgdir_themedir}/sloganSplit.gif) no-repeat top {vb:stylevar left};
+	float:{vb:stylevar left};
+	font-size:14px;
+	text-transform:uppercase;
+	height:110px;
+	line-height:110px;	
+	color:#b3b3b3;
+	padding-{vb:stylevar left}:21px;
+}
+.headerBanner {
+	position:absolute;
+	top:23px;
+	{vb:stylevar right}:28px;
+}
+
+/* Login Box - Header
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#loginBox {
+	width:316px;
+	height:90px;
+	position:absolute;
+	top:0;
+	{vb:stylevar right}:25px;
+	padding:20px 0 0 0;
+	color:#ffffff;
+	font-size:9px;
+}
+#loginBox ul {
+	list-style:none;
+	padding:0;
+	margin:0;
+}
+#loginBox li {
+	float:{vb:stylevar left};
+}
+.loginBox {
+	float:{vb:stylevar left};
+}
+.loginBox ul {
+	list-style:none;
+	padding:0;
+	margin:0;
+}
+.loginBar li {
+	float:{vb:stylevar left};
+}
+.loginBoxInput {
+	background: url({vb:stylevar imgdir_themedir}/loginBoxInput.gif) no-repeat top left;
+	width:125px;
+	height:29px;
+}
+.loginInput {
+	background:transparent;
+	border:0;
+	color: #ffffff;
+	width:115px; 
+	height:29px;
+	line-height:29px;
+	padding:0 5px;
+}
+.cb_cookieuser_navbar{
+	position: relative;
+	top: 2px;
+}
+.inputPad .loginBoxInput {
+
+}
+.inputPad {
+	padding-{vb:stylevar right}:6px;
+}
+.submitPad {
+	padding:0;
+}
+.submitPad input {
+}
+
+.loginText {
+	text-transform:uppercase;
+	padding-bottom:8px;
+}
+.memberLinks {
+	padding-top:6px;
+	float:{vb:stylevar left};
+	text-transform:uppercase;
+}
+.memberLinks a:link, .memberLinks a:visited {
+	color:#f0d3a0;
+}
+.memberLinks a:hover {
+	color:{vb:stylevar link_color};
+}
+#loginBox .rememberMe {
+	float:{vb:stylevar right};
+	font-size:12px;
+	color:#a4a4a4;
+	padding-top:3px;
+}
+#loginBox .rememberMe input {
+	vertical-align: baseline;
+}
+.cb_cookieuser_navbar{
+	position: relative;
+	top: 2px;
+}
+
+/* Login Box - Top Bar
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.loginLeft #fb_loginbtn {position:relative;top:4px;}
+.memberBox {
+	float:{vb:stylevar right};
+	height:29px;
+	line-height:29px;
+	color:#fff;
+	font-size:12px;
+	padding-top:4px;
+}
+.memberBox ul {
+	list-style:none;
+	padding:0;
+	margin:0;
+}
+.memberBox li {
+	float:{vb:stylevar left};
+	margin:0;	
+	padding:0 3px;	
+}
+.loginBoxInput2 {
+	background: url({vb:stylevar imgdir_themedir}/loginInput.png) no-repeat top left;
+	width:139px;
+	height:29px;
+	float:{vb:stylevar left};
+}
+.loginInput2 {
+	border:0;
+	background:transparent;
+	color: #0A0A0A;
+	padding:0 0px;
+	width:129px;
+	height:29px;
+	line-height:29px;
+	margin:0;
+}
+.memberBox .rememberMe {}
+.memberBox .rememberMe input {
+	vertical-align: baseline;
+}
+.inputPad2 .loginBoxInput {
+	margin-top:0;
+}
+.inputPad2 {
+	padding:0 4px;	
+}
+.submitPad2 input {
+	margin:0;
+	padding:0;
+}
+.loginTxt2 {
+	padding-{vb:stylevar left}:5px;
+	color:#fff;
+	font-weight:700;
+}
+.loginLeft {
+	float:{vb:stylevar left};
+}
+
+/* Content
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#contentMain
+ {
+	background:#eeeeee;
+	padding:10px 28px;
+        background-color:#dddddd;
+}
+.welcomeText {
+	background:url({vb:stylevar imgdir_themedir}/welcomeText.gif) no-repeat top left;
+	width:769px;
+	height:51px;
+	position:relative;
+	margin-bottom:15px;
+}
+.welcomeRegister {
+	position:absolute;
+	top:0;
+	right:97px;
+}
+.restore a:link, .restore a:visited {
+	color:#284c7e;
+	font-weight:700;
+}
+
+/* Footer Main
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#footerMain {
+	padding:25px 27px;
+	line-height:18px;
+	color:#898989;
+	clear:both;
+}
+#footerMain a:link, #footerMain a:visited {
+	color:#ffe9c1;
+	font-weight:700;
+}
+#footerMain a:hover {
+	color:#fff;
+}
+.copyright {
+	float:{vb:stylevar left};
+}
+.bannerBox {
+	/*background:url(http://forum.stunt-evolution.net/images/serverstats.png) no-repeat top left;*/
+	float:{vb:stylevar right};
+	width:468px;
+	height:60px;
+	padding:4px;
+}
+
+/* Footer Bar
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#footerBar {
+	background:#393939 url({vb:stylevar imgdir_themedir}/footerBarBG.gif) no-repeat top center;
+	height:58px;
+	padding:0 20px;
+}
+.footerLinks {
+	float:{vb:stylevar left};	
+}
+.footerLinks ul {
+	list-style:none;
+	padding:0;
+	margin:0;
+}
+.footerLinks li {
+	float:{vb:stylevar left};
+	padding:22px 8px 0 8px;
+}
+.footerLinks a:link, .footerLinks a:visited {
+	color:#fff;
+	font-size:15px;
+	font-weight:700;
+}
+.footerLinks a:hover {
+	color:{vb:stylevar link_color};
+}
+.skinSelect{
+float:{vb:stylevar right};
+padding-top:17px;
+margin:0;
+}
+.footer {
+margin:0;
+padding:0;
+}
+
+
+
+/*************************************************/
+/* TOP MEMBER BAR*/
+#toplinks, .toplinks {
+	text-align:{vb:stylevar left};
+	line-height:20px;
+	padding-top:8px;
+	{vb:stylevar right}:0;
+}
+#toplinks .isuser {
+	float:{vb:stylevar left};
+}
+#toplinks .welcomelink {
+	font-weight:700;
+}
+.toplinks ul.isuser .notifications .popupbody {
+
+	border: 1px solid #242424; /* makes it look consistent with the popup background */
+}
+.toplinks .notifications a.popupctrl {	
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-{vb:stylevar left}: 4px;
+	padding-{vb:stylevar right}: 12px;
+
+-webkit-border-radius: {vb:stylevar border_radius};
+-moz-border-radius: {vb:stylevar border_radius};
+border-radius: {vb:stylevar border_radius};
+}
+
+.toplinks .notifications a.popupctrl:hover, .toplinks .nonotifications a.popupctrl:hover, .toplinks .nonotifications a.popupctrl.active, .toplinks ul.isuser li a:hover {
+	-moz-border-radius: {vb:stylevar border_radius} !important;
+	-webkit-border-radius: {vb:stylevar border_radius} !important;
+}
+
+.memberBox .welcomeUser {
+	font-weight:700;
+	font-size:11px;
+	float:left;
+}
+.memberBox .toplinks {
+	padding:2px 0 0 3px;
+}
+.memberBox .toplinks {
+	padding:2px 0 0 3px;
+}
+
+/* Navbar
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.navbar {
+	background:url({vb:stylevar imgdir_themedir}/navBG.gif) repeat-x top left;
+	position:relative;
+	height:76px;
+	font:{vb:stylevar navbar_font};
+	color:{vb:stylevar navbar_link_color};
+	width:100%;
+	padding:0;
+	margin:0;
+}
+.navbarWrap {
+	padding:0 12px;
+}
+#navtabs li.selected ul.floatcontainer {
+	margin-top:7px;
+}
+#navtabs li.selected ul.floatcontainer a:link, #navtabs li.selected ul.floatcontainer a:visited {
+	line-height:27px;
+	height:27px;
+}
+.navbar a { color:{vb:stylevar navbar_link_color}; }
+.navbar a:hover { color:{vb:stylevar navbar_linkhover_color}; }
+
+.navtabs ul li:first-child {
+	text-indent: 2px;
+}
+.navtabs {
+	padding-{vb:stylevar left}:0;
+}
+.navtabs ul {
+	position:absolute;
+	top:{vb:stylevar navbar_tab_size.height}px;
+	{vb:stylevar left}:0px;
+	width:100%;
+/* This is to fix RTL menu issue under Opera */
+        direction:ltr;
+}
+.navtabs li {
+	float:{vb:stylevar left};
+}
+.navtabs li li {
+	background:none;
+}
+
+.navtabs ul li {
+	border-{vb:stylevar right}: 0;
+	position: relative;
+}
+.navtabs li a {
+	height:{vb:stylevar navbar_tab_size.height}px;
+	line-height:{vb:stylevar navbar_tab_size.height}px;
+}
+.navtabs li a.navtab {
+	display:block;
+	min-width:{vb:math {vb:stylevar navbar_tab_size.width} - 2 * {vb:stylevar padding}};
+	width:auto !important;
+	width:{vb:math {vb:stylevar navbar_tab_size.width} - 2 * {vb:stylevar padding}};
+	_min-width:{vb:math {vb:stylevar navbar_tab_size.width} - 0.5 * {vb:stylevar padding}};
+	_width:auto !important;
+	_width:{vb:math {vb:stylevar navbar_tab_size.width} - 0.5 * {vb:stylevar padding}};
+	text-align:center;
+	color:{vb:stylevar navbar_link_color};
+	font-size:15px;
+	text-decoration:none;
+	line-height:{vb:stylevar navbar_tab_size.height}px;
+	height:{vb:stylevar navbar_tab_size.height}px;
+	padding:0 10px;
+	text-transform:uppercase;
+	font-weight:400;
+border-{vb:stylevar right}:1px solid #575757;
+}
+.navtabs li a.navtab:hover {
+	background:{vb:stylevar navbar_tab_selected_background};
+	color:{vb:stylevar navbar_linkhover_color};
+
+}
+.navtabs li.selected {
+	color:{vb:stylevar navbar_linkhover_color};
+	height:{vb:stylevar navbar_tab_size.height}px;
+}
+.navtabs li.selected a.navtab {
+	color:{vb:stylevar navbar_linkhover_color};
+	position:relative;
+	top:-{vb:stylevar navbar_tab_selected_top_width}px;
+	padding-top:{vb:stylevar navbar_tab_selected_top_width}px;
+	z-index:10;
+border-{vb:stylevar right}:1px solid #575757;
+}
+.navtabs li.selected li a,
+.navbar_advanced_search li a {
+	text-decoration:none;
+	font:{vb:stylevar navbar_font};
+	line-height:27px;
+}
+.navtabs li.selected li {
+	padding:0 5px;
+}
+.navtabs li.selected li li {
+	padding:0 2px;
+}
+.navtabs li.selected li a {
+	color:{vb:stylevar nav_selected_link_color};
+	font-weight:400;
+	padding:{vb:math {vb:stylevar padding}/5} {vb:math {vb:stylevar padding}/2};
+}
+
+.navbar_advanced_search li {
+	height: 27px;
+	display:block;
+	clear:both;
+}
+
+.navbar_advanced_search li a {
+	color:{vb:stylevar navbar_link_color};
+}
+
+.navbar_advanced_search li a:hover {
+	color:{vb:stylevar navbar_linkhover_color};
+	text-decoration:{vb:stylevar linkhover_textDecoration};
+}
+
+.navtabs li.selected li a:hover {
+	color:{vb:stylevar nav_selected_link_hover_color};
+	text-decoration:{vb:stylevar linkhover_textDecoration};
+}
+
+.navtabs li.selected .popupbody li > a {
+	padding:{vb:stylevar popup_padding}px {vb:stylevar padding};
+	text-indent: 0;
+	color: {vb:stylevar navbar_selected_popup_body_a_Color};
+}
+
+.navtabs li.selected li a.popupctrl {
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;	
+	border:solid {vb:stylevar lightweightbox_border.borderWidth}px transparent;
+	_border: none;
+	background:transparent url({vb:stylevar imgdir_misc}/arrow.png) no-repeat {vb:stylevar right} center;
+	padding-{vb:stylevar right}:15px;
+        _background-image:url('{vb:stylevar imgdir_misc}/arrow.gif');
+	color:{vb:stylevar nav_selected_link_color};
+}
+
+.navtabs li.selected li:hover a.popupctrl.active,
+.navtabs li.selected li a.popupctrl.active,
+.navtabs li.selected li a:hover.popupctrl {
+	color:#fff;
+}
+
+/* Breadcrumb
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.breadcrumb {
+	background:{vb:stylevar breadcrumb_background};
+	height:{vb:stylevar breadcrumb_height};
+	padding:{vb:stylevar breadcrumb_padding};
+	color:{vb:stylevar breadcrumb_font_color};
+	border-top:{vb:stylevar breadcrumb_border};
+	margin-bottom:10px;
+}
+.breadcrumb .navbit > a, .breadcrumb .lastnavbit span {
+	border:1px solid transparent;
+}
+.breadcrumb .navbit a:link, .breadcrumb .navbit a:visited {
+	color:{vb:stylevar breadcrumb_link_color};
+}
+.breadcrumb .navbit a:hover {
+	background:{vb:stylevar breadcrumb_hover_background_color};
+	color:{vb:stylevar breadcrumb_link_hover_color};
+	border:1px solid transparent;
+}
+
+/*************************************************/
+/* TCAT BAR */
+.tcat {
+	background:url({vb:stylevar imgdir_themedir}/tcatBG.gif) repeat-x top left;
+	color: #fff;
+	height:43px;
+	clear:both;
+	margin-top: 8px;
+	float: {vb:stylevar left};
+	border:0;
+	padding:0;
+	text-transform:uppercase;
+	width: 100%;
+}
+.tcatLeft {
+	background:url({vb:stylevar imgdir_themedir}/tcatLeft.gif) no-repeat top left;
+	height:43px;
+}
+.tcatRight {
+	background:url({vb:stylevar imgdir_themedir}/tcatRight.gif) no-repeat top right;
+	height:43px;
+}
+.tcat2 {
+	background:url({vb:stylevar imgdir_themedir}/tcat2BG.gif) repeat-x top left;
+}
+.tcat2 .tcatLeft {
+	background:url({vb:stylevar imgdir_themedir}/tcat2Left.gif) no-repeat top left;
+}
+.tcat2 .tcatRight {
+	background:url({vb:stylevar imgdir_themedir}/tcat2Right.gif) no-repeat top right;
+}
+.tcat .forumtitle {
+	font-weight:700;
+
+}
+.tcat .tcatDesc {
+	font-size:11px;
+	font-weight:400;
+}
+.tcat h2 {
+	padding-{vb:stylevar left}:16px;
+	font: bold 15px arial, helvetica, sans-serif;
+	line-height:43px;
+	float:{vb:stylevar left};
+	font-weight:700;
+}
+.tcat a:link, .tcat a:visited {
+	color:#fff;
+}
+.tcat a:hover {
+
+}
+.tcat .tcatCollapse {
+	float:{vb:stylevar right};
+	position:absolute;
+	top:13px;
+	{vb:stylevar right}:14px;
+}
+
+.theadBottom {
+	background:#e3e3e3;
+	height:5px;
+	font-size:0;
+	width: 100%;
+	border-left:1px solid #cacaca;
+	border-right:1px solid #cacaca;
+	clear:both;
+}
+
+/* tcat Thread List Controls - Forumdisplay */
+.tcat_threadlist_controls {
+	float:{vb:stylevar right};
+	padding-{vb:stylevar right}:8px;
+}
+.forumdisplaypopups, #forumdisplaypopups {
+	clear:both;
+}
+.tcat_threadlist_controls h6 {
+
+	padding:0;
+	display:block;
+	font-size:11px;
+}
+.forumdisplaypopups a.popupctrl, .forumdisplaypopups.popupgroup .popupmenu a.popupctrl,
+.postlist_popups h6 a.popupctrl, .postlist_popups.popupgroup .popupmenu h6 a.popupctrl,
+.postlist_popups h6 a.firstunread, .postlist_popups.popupgroup .popupmenu h6 a.firstunread {
+	background:none;
+	display:block;
+	_display:43px;
+	height:43px;
+	line-height:43px;
+	font-family:arial, helvetica, sans-serif;
+	font-weight:700;
+	font-size:12px;
+	color:#fff;
+	padding:0 7px;
+	border: 0;
+	float: {vb:stylevar left};
+	clear: {vb:stylevar right};
+}
+.forumdisplaypopups a:hover.popupctrl, .forumdisplaypopups.popupgroup .popupmenu a:hover.popupctrl,
+.postlist_popups h6 a:hover.popupctrl, .postlist_popups.popupgroup .popupmenu h6 a:hover.popupctrl,
+.postlist_popups h6 a:hover.firstunread, .postlist_popups.popupgroup .popupmenu h6 a:hover.firstunread{
+	border: 0;
+	color:#fff;
+	text-decoration:underline;
+}
+#postlist_popups a, .postlist_popups a {
+	color: #fff;
+	_border: none;
+}
+
+#postlist_popups a:hover, .postlist_popups a:hover {
+	color: #fff;
+	text-decoration:underline;
+}
+#postlist_popups .popupmenu:hover a.popupctrl, #postlist_popups .popupmenu:hover .popupctrl a.popupctrl.active, .postlist_popups .popupmenu:hover a.popupctrl, .postlist_popups .popupmenu:hover .popupctrl a.popupctrl.active {
+	border: 0;
+}
+
+#postlist_popups ul li {
+	color: {vb:stylevar popupmenu_color};
+}
+#postlist_popups ul li a, .postlist_popups ul li a {
+	color: {vb:stylevar popupmenu_color};
+	_border: none;
+}
+
+#postlist_popups ul li a:hover, .postlist_popups ul li a:hover {
+	color: {vb:stylevar popupmenu_color};
+	text-decoration:underline;
+}
+
+#forumdisplaypopups ul a, .forumdisplaypopups ul a {
+	color: #3e3e3e;
+}
+.tcat .toolsmenu {
+	background:none;
+	border:none;
+	margin:0;
+}
+.toolsmenu div {
+	border:0;
+}
+.tcat .toolsmenu ul {
+	padding:0;
+}
+.tcat .toolsmenu .popupgroup a.popupctrl, .tcat .toolsmenu .popupgroup .popupmenu a.popupctrl, .tcat .toolsmenu .nopopupgroup li a {
+	padding:0 7px;
+	_display:43px;
+	height:43px;
+	line-height:43px;
+}
+
+/*************************************************/
+/* THEAD BAR*/
+
+.thead_bar .theadrow {
+	background:{vb:stylevar thead_background};
+	display:block;
+	width: 100%;
+	float: {vb:stylevar left};
+	position:relative;
+	font:{vb:stylevar thead_font};
+	border:{vb:stylevar thead_border};
+	border-bottom:{vb:stylevar thead_border_bottom};
+	color:{vb:stylevar thead_font_color};
+	line-height:{vb:stylevar thead_height};
+}
+
+.thead_bar .padding {
+	padding-left:12px;
+}
+.thead_bar .forumhead span.forumlastpost {
+	width: 23%;
+}
+.thead_bar .theadrow .forumdata  {
+	float: {vb:stylevar left};
+}
+.thead_bar {
+	float: {vb:stylevar left};
+	position:relative;
+	width: 100%;
+	display:block;
+}
+.thead_bar .forumhead .forumtitle {
+	width: 76%;
+}
+.thead_bar .foruminfo {
+	width: 53%;
+	min-width: 30%;
+	float: {vb:stylevar left};
+	clear: {vb:stylevar right};
+}
+.thead_bar .foruminfo .forumdata {
+	padding: 0;
+	width: 100%;
+	_width: 99%;
+}
+.thead_bar .forumstats, .thead_bar .forumstats_2 {
+	display: block;
+	float: {vb:stylevar left};
+	clear: {vb:stylevar right};
+	width: 16%;
+	margin-{vb:stylevar right}: 2%;
+}
+.thead_bar .foruminfo .forumdata .datacontainer {
+	float: {vb:stylevar left};
+	width: 86%;
+	padding:0;
+	padding-{vb:stylevar left}: {vb:math {vb:stylevar forumicon_size} + {vb:math {vb:stylevar padding}*2}};
+}
+.thead_bar .forumactionlinks {
+	width: 5%;
+	display:block;
+	float:{vb:stylevar left};
+	clear:{vb:stylevar right};
+}
+
+.thead_bar .forumactionlink {
+/* values based on icon size */
+	display:block;
+	width:18px;
+
+	overflow:hidden;
+	float: {vb:stylevar right};
+	clear: {vb:stylevar left};
+	background:transparent none no-repeat;
+	position: relative;
+
+}
+.thead_bar .forumstats li, .thead_bar .forumstats_2 li{
+	font-size: {vb:stylevar mid_fontSize}{vb:stylevar font.units};
+	text-align: {vb:stylevar right};
+	padding-{vb:stylevar right}: {vb:math {vb:stylevar padding}*2};
+	display:block;
+}
+.thead_bar .forumlastpost {
+	display:block;
+	float: {vb:stylevar left};
+	clear: {vb:stylevar right};
+}
+.thead_bar .theadrow .forumlastpost {
+	width: 22%;
+}
+.forumbitBody {
+	padding-{vb:stylevar right}:2px;
+	clear:both;
+}
+
+/*threadlisthead and posthead*/
+.threadlist {
+margin-top:0;
+}
+#threadlist .threadlisthead {
+	background:{vb:stylevar thead_background};
+	display:block;
+	width: 100%;
+	float: {vb:stylevar left};
+	position:relative;
+	border:0;
+	border:{vb:stylevar thead_border};
+	border-bottom:{vb:stylevar thead_border_bottom};
+	color:{vb:stylevar thead_font_color};
+	padding:{vb:stylevar thead_padding};
+	font:{vb:stylevar thead_font};
+	margin: 0;
+}
+
+#threadlist .threadlisthead a, #threadlist .threadlisthead a:hover {
+	color: {vb:stylevar threadlisthead_color};
+}
+.postbit .posthead, .postbitlegacy .posthead, .eventbit .eventhead {
+	background:{vb:stylevar thead_background};
+	clear:both;
+	display:block;
+	float: {vb:stylevar left};
+	width: 100%;
+	color:{vb:stylevar thead_font_color};
+	margin: -{vb:stylevar postbithead_border.borderWidth}{vb:stylevar postbithead_border.units} -{vb:stylevar postbithead_border.borderWidth}{vb:stylevar postbithead_border.units} 0;
+	font:{vb:stylevar thead_font};
+	padding:6px 0;
+	border:0;
+	border:{vb:stylevar thead_border};
+	border-bottom:{vb:stylevar thead_border_bottom};
+}
+#posts .posthead a:link, #posts .posthead a:visited {
+	color:{vb:stylevar thead_font_color};
+}
+#posts .posthead a:hover {
+	color:{vb:stylevar thead_font_color};
+}
+#posts .posthead .time, #posts .nodecontrols {
+	color:{vb:stylevar thead_font_color};
+}
+
+
+#postlist .userinfo {
+	padding-top:10px;
+}
+.username_container {
+	padding:2px 0;
+	text-align:center;
+}
+.username_container .username strong {
+	font-size: 16pt;
+	font-weight:400;
+}
+.usertitle, .rank {
+	text-align:center;
+}
+.usercenter {
+	padding-top:5px;
+	text-align:center;
+}
+.userinfo_extra dt {
+	padding:6px 3px 0 10px;
+	margin:0;
+	color: {vb:stylevar postbit_field_strong_color};
+	font-weight:700;
+}
+.userinfo_extra dd {
+	background: #fff;
+	color: #242424;
+	border: 1px solid #dedede;
+	padding:3px 0 3px 0;
+	margin:0;
+	margin-top: 2px;
+}
+/* center avatar, username, title, rank in postbit legacy 4.0.2 */
+.postbitlegacy .userinfo .username_container, .postbitlegacy .userinfo .rank, .postbitlegacy .userinfo .usertitle {text-align:center;}
+.postbitlegacy .userinfo .postuseravatar, .postbitlegacy .userinfo .postuseravatar img {float:none; text-align:center;}
+.postbitlegacy .userinfo .postbit_reputation,.postbitlegacy .userinfo .postbit_reputation img {float:none; text-align:center;}
+
+
+.postbit, .postbitlegacy, .eventbit {
+	margin-bottom: 0;
+}
+.bbcode_container .bbcode_quote_container {
+	background:none;
+}
+
+.forum_info_block, .forum_info_form {
+	background:none;
+}
+.postfoot {
+	border: {vb:stylevar postbit_border};
+	border-bottom:0;
+	border-right:0;
+}
+.postfootWrap {
+	border-right: {vb:stylevar postbit_border};
+}
+
+#thread_info a.collapse {
+	position: absolute;
+	top: 9px;
+}
+
+/* Postbit Align Username and Avatar Center
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.postbitlegacy .userinfo .username_container, .postbitlegacy .userinfo .rank, .postbitlegacy .userinfo .usertitle {text-align:center;}
+.postbitlegacy .userinfo .postuseravatar, .postbitlegacy .userinfo .postuseravatar img  {float:none; text-align:center;}
+.postbitlegacy .userinfo .usertitle {display: block; float:none; text-align:center; clear: both;}
+
+/* Bottom Bar
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.bottomBar{
+	background:url({vb:stylevar imgdir_themedir}/bottomBarBG.gif) repeat-x top left;
+	height:20px;
+	font-size:0;
+	clear:both;
+}
+.bottomBarLeft {
+	background:url({vb:stylevar imgdir_themedir}/bottomBarLeft.gif) no-repeat top left;
+	height:20px;
+	font-size:0;
+}
+.bottomBarRight {
+	background:url({vb:stylevar imgdir_themedir}/bottomBarRight.gif) no-repeat top right;
+	height:20px;
+	font-size:0;
+}
+
+/* Global Search
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.searchBox {
+	position:absolute;
+	top:6px;
+	{vb:stylevar right}:27px;
+	height:36px;
+	line-height:36px;
+}
+
+.searchBoxInput {
+	background: url({vb:stylevar imgdir_themedir}/searchInput.gif) no-repeat top left;
+	width:139px;
+	height:29px;
+	float:{vb:stylevar left};
+}
+.searchinput {
+	border:0;
+	background:transparent;
+	color: #828282;
+	padding:0 5px;
+	width:129px; 
+	height:29px;
+	line-height:29px;
+}
+.searchButton {
+	float:{vb:stylevar left};
+	padding-{vb:stylevar left}:9px;
+}
+.searchBox .searchBox_advanced_search {
+	position:absolute;
+	top:38px;
+	{vb:stylevar right}:0;
+}
+.searchBox .searchBox_advanced_search a:link, .searchBox .searchBox_advanced_search a:visited {
+	color:{vb:stylevar nav_selected_link_color};
+}
+
+/* CMS & Blog CSS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+h1.header, h2.header { 
+	text-transform:capitalize; 
+}
+
+/* Forum Home
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.forumrow .forumtitle a:link, .forumrow .forumtitle a:visited {
+	color:{vb:stylevar forumtitle_link_color};
+	font:{vb:stylevar forumtitle_font};
+}
+.forumrow .forumtitle a:hover{
+	color:{vb:stylevar forumtitle_linkhover_color};
+}
+.forumrow .lastposttitle a:link, .forumrow .lastposttitle a:visited {
+	color:{vb:stylevar lastposttitle_link_color};
+	font-weight:700;
+}
+.forumrow .lastposttitle a:hover{
+	color:{vb:stylevar lastposttitle_linkhover_color};
+}
+#forums .lastpostby a.username {
+	color:{vb:stylevar lastpostuser_link_color};
+}
+#forums .lastpostby a.username:hover {
+	color:{vb:stylevar lastpostuser_linkhover_color};
+}
+.forumdescription {
+	color:{vb:stylevar forumhome_description_color};
+	padding:4px 0;
+}
+.notices {
+	background:none;
+}
+#notices .restore {
+	background:{vb:stylevar welcomemsg_background};
+	border:{vb:stylevar welcomemsg_border};
+	color:{vb:stylevar welcomemsg_font_color};
+	line-height:16px;
+	padding:{vb:stylevar welcomemsg_padding};
+	-moz-border-radius: {vb:stylevar border_radius};
+	-webkit-border-radius: {vb:stylevar border_radius};
+	border-radius: {vb:stylevar border_radius};
+}
+
+.notices li {
+-moz-box-shadow: 0 0 5px 5px #888;
+-webkit-box-shadow: 0 0 5px 5px#888;
+box-shadow: 0 0 5px 5px #888;
+} 
+
+#notices .restore a {
+	font-weight:700;
+}
+
+/* Advanced Search
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#searchtypeswitcher {
+	border-bottom:4px solid {vb:stylevar advsearch_tab_color};
+}
+#searchtypeswitcher li a {
+	background-color:{vb:stylevar advsearch_active_tab_color};
+	color:#FFF;
+}
+
+#searchtypeswitcher li.selected a {
+	background-color:{vb:stylevar advsearch_tab_color};
+}
+
+#searchtypeswitcher li a:hover {
+	background-color:{vb:stylevar advsearch_tab_color};
+}
+
+/* vBulletin Groups
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+li.sgicon .maincol, #sidebar li.sgicon .maincol,#thumbnails li {
+	background: {vb:stylevar postbit_background};
+}
+#sidebar li.sgicon .maincol .textcontrol {
+	color: {vb:stylevar control_color};
+}
+#content .grouplist .blockrow > li, #content .grouplist .blockrow > ol, #content .grouplist .blockrow > div {
+	background: {vb:stylevar postbit_userinfo_background};
+	border: {vb:stylevar postbit_border};
+}
+#pictures .blockbody .blockrow, #group_discussion_inlinemod_form .blockbody .blockrow {
+	border: {vb:stylevar postbit_border};
+}
+.toolsmenu {
+	background: {vb:stylevar sidebar_background};
+	_background-image: none;
+	border: {vb:stylevar sidebar_border};
+}
+.toolsmenu div {
+	border-top:none;
+	color: {vb:stylevar sidebar_header_color};
+}
+.toolsmenu h1 a {
+	color: {vb:stylevar sidebar_header_color};
+}
+.toolsmenu .popupgroup a.popupctrl, .toolsmenu .popupgroup .popupmenu a.popupctrl, .toolsmenu .nopopupgroup li a {
+	color: {vb:stylevar sidebar_header_color};
+}
+
+.toolsmenu .popupgroup a.popupctrl, .toolsmenu .popupgroup .popupmenu a.popupctrl, .toolsmenu .popupgroup .popupmenu:hover a.popupctrl, .toolsmenu .popupgroup .popupmenu:hover .popupctrl a.popupctrl.active {
+	color: {vb:stylevar sidebar_header_color};
+}
+dl.blogbit, tr.blogbit,
+dl.blogcatbit, tr.blogcatbit {
+	background: {vb:stylevar postbit_background};
+}
+
+/* TW7S - Remove Legend and Permissions Boxes */
+#usercp_content #forum_icon_legend, #wgo_legend, .forum_info .options_block_container, .thread_info .options_block_container  {
+display:none;
+}
+/* TW7S - Remove Legend and Permissions Boxes */
+
+.recentposts_top_td{background-color:#E9E9E9;color:#3E3E3E;padding:3px 3px 3px 3px}
+.recentposts_tr{border-top:1px solid #C4C4C4}
+.recentposts_tr img{margin-bottom:-2px;padding-right:2px}
+.recentposts_tr .time{color:#666686}
+.recentposts_td1{background:#ffffff url(./images/gradients/grey-up_sm.png) repeat-x scroll left bottom;font-family:Tahoma,Calibri,Verdana,Geneva,sans-serif;font-size:11px;padding:3px 3px 3px 3px}.recentposts_td2{background:#F2F6F8 url(./images/gradients/grey-up_sm.png) repeat-x scroll left bottom;font-family:Tahoma,Calibri,Verdana,Geneva,sans-serif;font-size:11px;padding:3px 3px 3px 3px}.recentposts_unsubscribe{margin-right:-1px}.recentposts_reputation{float:right}
