@@ -14155,6 +14155,7 @@ YCMD:ecreate(playerid, params[], help)
     ResetEnterprise(r);
   	GetPlayerPos(playerid, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2]);
     
+    EnterpriseData[r][e_type] = E_ENT_TYPE:type;
     EnterpriseData[r][e_value] = value;
     EnterpriseData[r][e_date] = gettime();
     EnterpriseData[r][e_creator] = PlayerData[playerid][e_accountid];
@@ -26831,8 +26832,9 @@ GetAllowedHouseCount(playerid, &score)
 	    {10000, 4},
 	    {25000, 5}
 	};
-	for(new i = MAX_PLAYER_HOUSES; i >= 0; i--)
+	for(new i = MAX_PLAYER_HOUSES - 1; i >= 0; i--)
 	{
+	    printf("lol: %i", i);
 	    if(GetPlayerScoreEx(playerid) >= houses_per_score[i][0]) {
 			score = houses_per_score[i][0];
 		    return houses_per_score[i][1];
@@ -26865,7 +26867,7 @@ GetAllowedEnterpriseCount(playerid, &score)
 	    {10000, 4},
 	    {25000, 5}
 	};
-	for(new i = sizeof(ents_per_score); i >= 0; i--)
+	for(new i = MAX_PLAYER_ENTERPRISES - 1; i >= 0; i--)
 	{
 	    if(GetPlayerScoreEx(playerid) <= ents_per_score[i][0]) {
 			score = ents_per_score[i][0];
@@ -28196,8 +28198,8 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 			{
 				// Account does exist, check if account is banned.
 				PlayerData[playerid][e_accountid] = cache_get_row_int(0, 0);
-				
-				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT UNIX_TIMESTAMP(), `bans`.`reason`, `bans`.`date`, `bans.lift`, `accounts`.`name` FROM `bans` WHERE `bans`.`id` = %i LEFT JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id`;", PlayerData[playerid][e_accountid]);
+
+				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT UNIX_TIMESTAMP(), `bans`.`reason`, `bans`.`date`, `bans`.`lift`, `accounts`.`name` FROM `bans` INNER JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id` WHERE `bans`.`id` = %i;", PlayerData[playerid][e_accountid]);
 				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_BAN);
 			}
 			return 1;
