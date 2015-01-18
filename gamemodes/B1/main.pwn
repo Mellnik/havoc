@@ -28197,8 +28197,8 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				// Account does exist, check if account is banned.
 				PlayerData[playerid][e_accountid] = cache_get_row_int(0, 0);
 				
-				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT UNIX_TIMESTAMP(), `bans`.`reason`, `bans`.`date`, `bans.lift`, `accounts`.`name` FROM `bans` WHERE `bans`.`id` = %i LEFT JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id`;", PlayerData[playerid][e_accountid]);
-				mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_BAN);
+				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT UNIX_TIMESTAMP(), `bans`.`reason`, `bans`.`date`, `bans.lift`, `accounts`.`name` FROM `bans` WHERE `bans`.`id` = %i LEFT JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id`;", PlayerData[playerid][e_accountid]);
+				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_BAN);
 			}
 			return 1;
 		}
