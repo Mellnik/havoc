@@ -163,7 +163,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define NOT_AVAIL                       "{FF000F}[INFO] {FF000F}You can't use this command now! Use /exit to leave."
 #define er                              "{FF000F}[INFO] {FF000F}" // D2D2D2
 #define Error(%1,%2) 					SendClientMessage(%1, -1, "{F42626}[INFO] "GREY2_E""%2)
-#define DEBUG_P1(%1, %2)                SendClientMessage(%1, -1, %2);
+#define DEBUG_P1(%1,%2)                	SendClientMessage(%1, -1, %2);
 #define dl                              "{FFE600}• {F0F0F0}"
 #define notlogged(%1)                   ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef"", ""white"You need to be logged in to use this feature.\n\n"nef_yellow"Type /register to create an new account for you current name.", "OK", "")
 #define ELEVATOR_SPEED      			(5.0)
@@ -2864,8 +2864,8 @@ public OnGameModeInit()
 	    Log(LOG_INIT, "NEFMOD Core (0x%x) attached.", CORE_VERSION);
 	}
 	
-	Log(LOG_INIT, "MySQL: Logging: LOG_ERROR | LOG_WARNING");
-	mysql_log(LOG_ERROR | LOG_WARNING, LOG_TYPE_TEXT);
+	Log(LOG_INIT, "MySQL: Logging: LOG_ALL");
+	mysql_log(LOG_ALL, LOG_TYPE_TEXT);
 	
     SQL_Connect();
 
@@ -8489,7 +8489,7 @@ YCMD:e(playerid, params[], help)
 		    strcat(string, gstr);
 		}
 	}
-	if(count == 0) return SCM(playerid, -1, ""er"You don't own any houses");
+	if(count == 0) return SCM(playerid, -1, ""er"You don't own any enterprises");
     
     ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_MENU, DIALOG_STYLE_LIST, ""nef" :: Enterprise Menu", string, "Select", "Cancel");
 	return 1;
@@ -9589,7 +9589,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /ereset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /createstore /gzonecreate");
+		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /ereset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /screate /gzonecreate");
 
         ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
 	}
@@ -14220,7 +14220,7 @@ YCMD:hcreate(playerid, params[], help)
     return 1;
 }
 
-YCMD:createstore(playerid, params[], help)
+YCMD:screate(playerid, params[], help)
 {
     if(!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL)
 	{
@@ -14230,7 +14230,7 @@ YCMD:createstore(playerid, params[], help)
 	new type;
     if(sscanf(params, "is[143]", type, gstr))
     {
-        return SCM(playerid, NEF_GREEN, "Usage: /createstore <type> <name>");
+        return SCM(playerid, NEF_GREEN, "Usage: /screate <type> <name>");
     }
 
 	if(type < 0 || type > 6)
@@ -18655,7 +18655,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				format(gstr, sizeof(gstr), "%s%s", password, salt);
 				NC_Whirlpool(gstr, hash, sizeof(hash));
 
-			    SQL_RegisterAccount(playerid, REGISTER_ONLINE, hash, salt);
+			    SQL_RegisterAccount(playerid, REGISTER_CONNECT, hash, salt);
 			    return true;
 			}
 			case DIALOG_REGISTER + 1:
@@ -19939,6 +19939,7 @@ LoadGZones()
 
 LoadStores()
 {
+	ResetStore();
 	mysql_pquery(pSQL, "SELECT * FROM `stores`;", "OnStoreLoad");
 	return 1;
 }
@@ -20476,6 +20477,7 @@ RequestRegistration(playerid)
 
 RequestLogin(playerid)
 {
+    DEBUG_P1(playerid, "RequestLogin")
 	new string[1024];
 	
     format(gstr, sizeof(gstr), ""nef_yellow"Login "white"- %s", __GetName(playerid));
@@ -20486,6 +20488,7 @@ RequestLogin(playerid)
 
 SkipRegistration(playerid)
 {
+    DEBUG_P1(playerid, "SkipRegistration")
     PlayerData[playerid][bAllowSpawn] = true;
 	
     PlayerData[playerid][e_regdate] = gettime();
@@ -20509,6 +20512,7 @@ SkipRegistration(playerid)
 
 SkipLogin(playerid)
 {
+    DEBUG_P1(playerid, "SkipLogin")
 	if((strlen(__GetName(playerid)) + 4) > 20)
 	{
 	    Log(LOG_NET, "Name error, cannot set new name, kicking (%s, %i)", __GetName(playerid), playerid);
@@ -20940,6 +20944,7 @@ SQL_GangRename(playerid, newgangname[], newgangtag[])
 
 SQL_RegisterAccount(playerid, register, hash[], salt[])
 {
+    DEBUG_P1(playerid, "SQL_RegisterAccount")
 	PlayerData[playerid][e_lastlogin] = gettime();
 	PlayerData[playerid][e_lastnc] = 0;
     PlayerData[playerid][e_regdate] = gettime();
@@ -20956,13 +20961,17 @@ SQL_RegisterAccount(playerid, register, hash[], salt[])
 
 function:OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[])
 {
+	DEBUG_P1(playerid, "OnPlayerRegister")
 	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `password` = '%s', `salt` = '%s', `regip` = '%s' WHERE `name` = '%s' LIMIT 1;", hash, salt, ip_address, playername);
 	mysql_tquery(pSQL, gstr2);
+	print(gstr);
+	printf("OPR(%i, %i, %i, %s, %s, %s, %s, %s)", playerid, namehash, register, hash, salt, playername, ip_address);
 	
 	if(namehash == YHash(__GetName(playerid)))
 	{
 		if(register == REGISTER_CONNECT)
 		{
+		    DEBUG_P1(playerid, "OnPlayerRegister(REGISTER_CONNECT)")
 			PlayerData[playerid][ExitType] = EXIT_LOGGED;
 			PlayerData[playerid][ConnectTime] = gettime();
 		    PlayerData[playerid][bAllowSpawn] = true;
@@ -20990,6 +20999,7 @@ function:OnPlayerRegister(playerid, namehash, register, hash[], salt[], playerna
 		}
 		else if(register == REGISTER_ONLINE)
 		{
+		    DEBUG_P1(playerid, "OnPlayerRegister(REGISTER_ONLINE)")
 		    PlayerData[playerid][bLogged] = true;
             g_ServerStats[2]++;
 
@@ -21010,7 +21020,9 @@ SQL_UpdateAccount(playerid)
 {
     if(PlayerData[playerid][bLogged])
     {
-	    mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `serial` = '%e', `lastlogin` = %i WHERE `name` = '%e' LIMIT 1;", __GetSerial(playerid), gettime(), __GetName(playerid));
+        new version[33];
+        GetPlayerVersion(playerid, version, 32);
+	    mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `serial` = '%e', `version` = '%e', `lastlogin` = %i WHERE `name` = '%e' LIMIT 1;", __GetSerial(playerid), version, gettime(), __GetName(playerid));
 	    mysql_tquery(pSQL, gstr2);
 	}
 }
@@ -29508,7 +29520,7 @@ AssemblePlayerORM(ORM:_ormid, slot)
 	orm_addvar_int(_ormid, PlayerData[slot][e_gangrank], "gangrank");
 	orm_addvar_int(_ormid, PlayerData[slot][e_derbywins], "winderby");
 	orm_addvar_int(_ormid, PlayerData[slot][e_racewins], "winrace");
-	orm_addvar_int(_ormid, PlayerData[slot][e_tdmwins], "windtm");
+	orm_addvar_int(_ormid, PlayerData[slot][e_tdmwins], "wintdm");
 	orm_addvar_int(_ormid, PlayerData[slot][e_falloutwins], "winfallout");
 	orm_addvar_int(_ormid, PlayerData[slot][e_gungamewins], "wingungame");
 	orm_addvar_int(_ormid, PlayerData[slot][e_wanteds], "wanteds");
@@ -29662,6 +29674,44 @@ SetupEnterprise(slot, owner[])
 			EnterpriseData[r][e_iconid] = CreateDynamicMapIcon(EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 52, 1, .worldid = 0, .interiorid = 0, .streamdistance = 150.0);
 	}
 	return 1;
+}
+
+ResetStore(slot = -1)
+{
+	if(slot == -1)
+	{
+	    for(new r = 0; r < MAX_STORES; r++)
+	    {
+	        StoreData[r][e_ormid] = ORM:-1;
+			StoreData[r][e_id] = 0;
+			StoreData[r][e_type] = E_STORE_TYPE:0;
+			StoreData[r][e_name][0] = '\0';
+		    StoreData[r][e_creator] = 0;
+			StoreData[r][e_date] = 0;
+			StoreData[r][e_pickup_in] = -1;
+			StoreData[r][e_pickup_out] = -1;
+			StoreData[r][e_pickup_menu] = -1;
+			StoreData[r][e_mapicon] = -1;
+			StoreData[r][e_labelid] = Text3D:-1;
+		}
+	}
+	else
+	{
+	    if(slot < 0 || slot > MAX_STORES) return 0;
+	    new r = slot;
+	    
+        StoreData[r][e_ormid] = ORM:-1;
+		StoreData[r][e_id] = 0;
+		StoreData[r][e_type] = E_STORE_TYPE:0;
+		StoreData[r][e_name][0] = '\0';
+	    StoreData[r][e_creator] = 0;
+		StoreData[r][e_date] = 0;
+		StoreData[r][e_pickup_in] = -1;
+		StoreData[r][e_pickup_out] = -1;
+		StoreData[r][e_pickup_menu] = -1;
+		StoreData[r][e_mapicon] = -1;
+		StoreData[r][e_labelid] = Text3D:-1;
+	}
 }
 
 ResetEnterprise(slot = -1)
