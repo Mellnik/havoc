@@ -128,6 +128,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SNIPER_WORLD                    (157412)
 #define ROCKETDM_WORLD                  (157411)
 #define SERVERMSGS_TIME                 (850000)
+#define SALT_LENGTH                     (32)
 #define MAX_PLAYER_PVS	                (8)
 #define MAX_REPORTS 					(7)
 #define MAX_ADMIN_LEVEL         		(5)
@@ -18628,7 +18629,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				{
 					return SkipLogin(playerid);
 				}
-				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `accounts` WHERE `name` = '%e' AND (`hash` = MD5('%e') OR `hash` = SHA1('%e')) LIMIT 1;", __GetName(playerid), password, password);
+				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `accounts` WHERE `id` = %i AND (`password_old` = MD5('%e') OR `hash` = SHA1('%e')) LIMIT 1;", PlayerData[playerid][e_accountid], password, password);
 				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_LOGIN);
 			    return true;
 			}
@@ -18643,7 +18644,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				{
 					return SkipRegistration(playerid);
 				}
-			    SQL_RegisterAccount(playerid, REGISTER_CONNECT, password);
+				
+				new salt[SALT_LENGTH + 1], hash[WHIRLPOOL_LENGTH + 1];
+				NC_CSPRNG(SALT_LENGTH, salt, sizeof(salt));
+				format(gstr, sizeof(gstr), "%s%s", password, salt);
+				NC_Whirlpool(gstr, hash, sizeof(hash));
+
+			    SQL_RegisterAccount(playerid, REGISTER_ONLINE, hash, salt);
 			    return true;
 			}
 			case DIALOG_REGISTER + 1:
@@ -18657,7 +18664,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				{
 					return SCM(playerid, -1, ""er"Wrong input");
 				}
-			    SQL_RegisterAccount(playerid, REGISTER_ONLINE, password);
+
+				new salt[SALT_LENGTH + 1], hash[WHIRLPOOL_LENGTH + 1];
+				NC_CSPRNG(SALT_LENGTH, salt, sizeof(salt));
+				format(gstr, sizeof(gstr), "%s%s", password, salt);
+				NC_Whirlpool(gstr, hash, sizeof(hash));
+				
+			    SQL_RegisterAccount(playerid, REGISTER_ONLINE, hash, salt);
 			    return true;
 			}
 			case DIALOG_STREAM_RADIO:
@@ -20919,7 +20932,7 @@ SQL_GangRename(playerid, newgangname[], newgangtag[])
 	mysql_pquery(pSQL, gstr2, "OnGangRenameAttempt", "issi", playerid, newgangname, newgangtag, YHash(__GetName(playerid)));
 }
 
-SQL_RegisterAccount(playerid, register, password[])
+SQL_RegisterAccount(playerid, register, hash[], salt[])
 {
 	PlayerData[playerid][e_lastlogin] = gettime();
 	PlayerData[playerid][e_lastnc] = 0;
@@ -20932,12 +20945,12 @@ SQL_RegisterAccount(playerid, register, password[])
     AssemblePlayerORM(ormid, playerid);
 	
 	orm_setkey(ormid, "id");
-	orm_insert(ormid, "OnPlayerRegister", "iiisss", playerid, YHash(__GetName(playerid)), register, password, __GetName(playerid), __GetIP(playerid));
+	orm_insert(ormid, "OnPlayerRegister", "iiissss", playerid, YHash(__GetName(playerid)), register, hash, salt, __GetName(playerid), __GetIP(playerid));
 }
 
-function:OnPlayerRegister(playerid, namehash, register, password[], playername[], ip_address[])
+function:OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[])
 {
-	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `hash` = SHA1('%e'), `ip` = '%s' WHERE `name` = '%s';", password, ip_address, playername);
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `password` = '%s', `salt` = '%s', `regip` = '%s' WHERE `name` = '%s' LIMIT 1;", hash, salt, ip_address, playername);
 	mysql_tquery(pSQL, gstr2);
 	
 	if(namehash == YHash(__GetName(playerid)))

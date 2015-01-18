@@ -19,6 +19,7 @@
 #define MAX_TELE_CATEGORIES 9
 #define MAX_TELES_PER_CATEGORY 32
 #define MAX_TELE_COMMAND_NAME 16
+#define WHIRLPOOL_LENGTH 128
 
 native NC_Init(nc_version = CORE_VERSION);
 
