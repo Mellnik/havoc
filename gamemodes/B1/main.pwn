@@ -3852,8 +3852,8 @@ public OnPlayerCommandReceived(playerid, cmdtext[])
 
 public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 {
-	format(gstr, sizeof(gstr), "[%02d:%02d:%02d] [%i]%s req:%s success:%i\r\n", gTime[3], gTime[4], gTime[5], playerid, __GetName(playerid), cmdtext, success);
-	NC_ServerLog("cmdlog.txt", gstr);
+	format(gstr2, sizeof(gstr2), "[%02d:%02d:%02d %02d.%02d] [%i]%s req:%s success:%i\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), cmdtext, success);
+	NC_ServerLog("cmdlog.txt", gstr2);
 
 	if(!success) {
 	    player_notice(playerid, "Unknown command", "Type ~y~/c ~w~for all commands");
@@ -4702,7 +4702,7 @@ public OnPlayerText(playerid, text[])
 	}
 	strmid(LastPlayerText[playerid], text, 0, 144, 144);
 
-	format(gstr2, sizeof(gstr2), "[%02d:%02d:%02d] [%i]%s: %s\r\n", gTime[3], gTime[4], gTime[5], playerid, __GetName(playerid), text);
+	format(gstr2, sizeof(gstr2), "[%02d:%02d:%02d %02d.%02d] [%i]%s: %s\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), text);
 	NC_ServerLog("chatlog.txt", gstr2);
 
 	if(IsAd(text))
@@ -14123,10 +14123,13 @@ YCMD:ecreate(playerid, params[], help)
 		return SCM(playerid, -1, NO_PERM);
 	}
 	
-	extract params -> new value; else
+	extract params -> new type, value; else
 	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /ecreate <value>");
+	    return SCM(playerid, NEF_GREEN, "Usage: /ecreate <type> <value>");
 	}
+	
+	if(type < 0 || type > 6)
+	    return SCM(playerid, -1, ""er"Invalid enterprise type");
 	
 	new count = 0;
 	for(new i = 0; i < MAX_ENTERPRISES; i++) {
@@ -20962,10 +20965,11 @@ SQL_RegisterAccount(playerid, register, hash[], salt[])
 function:OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[])
 {
 	DEBUG_P1(playerid, "OnPlayerRegister")
-	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `password` = '%s', `salt` = '%s', `regip` = '%s' WHERE `name` = '%s' LIMIT 1;", hash, salt, ip_address, playername);
-	mysql_tquery(pSQL, gstr2);
+	new query[512];
+	mysql_format(pSQL, query, sizeof(query), "UPDATE `accounts` SET `password` = '%s', `salt` = '%s', `regip` = '%s' WHERE `name` = '%s' LIMIT 1;", hash, salt, ip_address, playername);
+	mysql_tquery(pSQL, query);
 	print(gstr);
-	printf("OPR(%i, %i, %i, %s, %s, %s, %s, %s)", playerid, namehash, register, hash, salt, playername, ip_address);
+	printf("OPR(%i, %i, %i, %s, %s, %s, %s)", playerid, namehash, register, hash, salt, playername, ip_address);
 	
 	if(namehash == YHash(__GetName(playerid)))
 	{
@@ -26827,9 +26831,9 @@ GetAllowedHouseCount(playerid, &score)
 	    {10000, 4},
 	    {25000, 5}
 	};
-	for(new i = sizeof(houses_per_score); i >= 0; i--)
+	for(new i = MAX_PLAYER_HOUSES; i >= 0; i--)
 	{
-	    if(GetPlayerScoreEx(playerid) <= houses_per_score[i][0]) {
+	    if(GetPlayerScoreEx(playerid) >= houses_per_score[i][0]) {
 			score = houses_per_score[i][0];
 		    return houses_per_score[i][1];
 		}
@@ -29545,6 +29549,7 @@ AssembleEnterpriseORM(ORM:_ormid, slot)
     orm_addvar_int(_ormid, EnterpriseData[slot][e_value], "value");
     orm_addvar_int(_ormid, _:EnterpriseData[slot][e_type], "type");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_level], "level");
+    orm_addvar_int(_ormid, EnterpriseData[slot][e_creator], "creator");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_date], "date");
 }
 
@@ -29555,6 +29560,7 @@ AssembleHouseORM(ORM:_ormid, slot)
 	orm_addvar_float(_ormid, HouseData[slot][e_pos][0], "xpos");
 	orm_addvar_float(_ormid, HouseData[slot][e_pos][1], "ypos");
 	orm_addvar_float(_ormid, HouseData[slot][e_pos][2], "zpos");
+	orm_addvar_int(_ormid, HouseData[slot][e_pvslots], "pvslots");
 	orm_addvar_int(_ormid, HouseData[slot][e_interior], "interior");
 	orm_addvar_int(_ormid, HouseData[slot][e_originterior], "originterior");
 	orm_addvar_int(_ormid, HouseData[slot][e_value], "value");
@@ -29712,6 +29718,7 @@ ResetStore(slot = -1)
 		StoreData[r][e_mapicon] = -1;
 		StoreData[r][e_labelid] = Text3D:-1;
 	}
+	return 1;
 }
 
 ResetEnterprise(slot = -1)
