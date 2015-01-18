@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 4.3.5
+-- version 4.3.6
 -- http://www.phpmyadmin.net
 --
--- Host: ::1
--- Generation Time: Jan 09, 2015 at 04:20 PM
+-- Host: localhost
+-- Generation Time: Jan 18, 2015 at 01:05 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -339,18 +339,6 @@ INSERT INTO `server` (`name`, `value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `session`
---
-
-CREATE TABLE IF NOT EXISTS `session` (
-  `id` int(10) unsigned NOT NULL,
-  `ip` varchar(16) NOT NULL,
-  `logon` int(10) unsigned NOT NULL
-) ENGINE=MEMORY DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `settings`
 --
 
@@ -565,12 +553,6 @@ ALTER TABLE `serialbans`
 --
 ALTER TABLE `server`
   ADD PRIMARY KEY (`name`);
-
---
--- Indexes for table `session`
---
-ALTER TABLE `session`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `settings`

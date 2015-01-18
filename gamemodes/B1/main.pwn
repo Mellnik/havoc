@@ -85,7 +85,7 @@ Float:GetDistance3D(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2);
 Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Float:z2);
 
 // Database
-#define SQL_HOST   						"::1"
+#define SQL_HOST   						"localhost"
 #define SQL_PORT                        (3306)
 #if IS_RELEASE_BUILD == true
 #define SQL_USER   						"havocserver"
@@ -105,7 +105,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_URL                      "havocserver.com"
 #define SERVER_WWW                      "www.havocserver.com"
 #define SERVER_FORUM					"forum.havocserver.com"
-#define SERVER_IP                       "X.X.X.X:7777"
+#define SERVER_IP                       "46.105.40.127:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
 #define SERVER_VERSION					"Build 1"
@@ -545,6 +545,16 @@ enum (+= 10)
 	ACCOUNT_REQUEST_TOYS_LOAD,
 	ACCOUNT_REQUEST_PVS_LOAD,
     ACCOUNT_REQUEST_LOGIN
+};
+
+enum (+= 10)
+{
+	E_ACCREQ_LOAD_ID,
+	E_ACCREQ_LOAD_SETTINGS,
+	E_ACCREQ_CHECK_BAN,
+	E_ACCREQ_CHECK_IP,
+	E_ACCREQ_CHECK_SERIAL,
+	E_ACCREQ_CHECK_AUTOLOGIN
 };
 
 enum
@@ -2863,7 +2873,6 @@ public OnGameModeInit()
 	mysql_log(LOG_ERROR | LOG_WARNING, LOG_TYPE_TEXT);
 	
     SQL_Connect();
-	SQL_CleanUp();
 
 	//Streamer_SetTickRate(40);
 	
@@ -2922,9 +2931,6 @@ public OnGameModeInit()
 
 public OnGameModeExit()
 {
-	Log(LOG_EXIT, "MySQL: Garbage cleanup");
-    SQL_CleanUp();
-    
 	mysql_stat(gstr2, pSQL, sizeof(gstr2));
 	Log(LOG_EXIT, "MySQL: %s", gstr2);
 
@@ -3473,9 +3479,6 @@ public OnPlayerConnect(playerid)
     GetPlayerName(playerid, PlayerData[playerid][e_name], MAX_PLAYER_NAME + 1);
     GetPlayerIp(playerid, PlayerData[playerid][e_ip], MAX_PLAYER_IP + 1);
 
-	mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `online` WHERE `name` = '%e';", __GetName(playerid));
-	mysql_tquery(pSQL, gstr);
-
 	SetPlayerScoreEx(playerid, 0);
 	SetPlayerTeam(playerid, NO_TEAM);
 	SetPlayerColor(playerid, szPlayerColors[random(sizeof(szPlayerColors))]);
@@ -3544,9 +3547,6 @@ public OnPlayerConnect(playerid)
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `online` WHERE `name` = '%e';", __GetName(playerid));
-	mysql_tquery(pSQL, gstr);
-
 	PlayerData[playerid][bLoadMap] = false;
 
    	if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED && PlayerData[playerid][bLogged])
@@ -10109,30 +10109,6 @@ YCMD:suspect(playerid, params[], help)
 		} else {
 		    player_notice(playerid, "SUSPECT:", "NO DATA");
 		}
-	}
-	else
-	{
-		SCM(playerid, -1, NO_PERM);
-	}
-	return 1;
-}
-
-YCMD:onlinefix(playerid, params[], help)
-{
-	if(PlayerData[playerid][e_level] >= MAX_ADMIN_LEVEL)
-	{
-	    mysql_query(pSQL, "TRUNCATE TABLE `online`;", false);
-	    
-	    for(new i = 0; i < MAX_PLAYERS; i++)
-	    {
-	        if(IsPlayerConnected(i))
-	        {
-				format(gstr, sizeof(gstr), "INSERT INTO `online` VALUES (NULL, '%s', '%s', UNIX_TIMESTAMP());", __GetName(i), __GetIP(i));
-				mysql_pquery(pSQL, gstr);
-	        }
-	    }
-	    
-	    SCM(playerid, -1, ""er"Table has been reloaded.");
 	}
 	else
 	{
@@ -16936,9 +16912,6 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
             format(query, sizeof(query), "UPDATE `queue` SET `Extra` = '%s' WHERE `Extra` = '%s';", newname, oldname);
             mysql_tquery(pSQL, query, "", "");
 
-            format(query, sizeof(query), "UPDATE `online` SET `name` = '%s' WHERE `name` = '%s';", newname, oldname);
-            mysql_tquery(pSQL, query, "", "");
-
             format(query, sizeof(query), "UPDATE `viporder` SET `receiver` = '%s' WHERE `receiver` = '%s';", newname, oldname);
             mysql_tquery(pSQL, query, "", "");
 
@@ -20562,9 +20535,6 @@ SkipLogin(playerid)
 
 		g_ServerStats[2]++;
 
-        mysql_format(pSQL, gstr, sizeof(gstr), "UPDATE `online` SET `name` = '%e' WHERE `name` = '%e';", newname, oldname);
-        mysql_tquery(pSQL, gstr);
-
 	    GameTextForPlayer(playerid, "Welcome", 3000, 4);
   		GivePlayerMoneyEx(playerid, 20000, false);
     	GameTextForPlayer(playerid, "~n~+$20,000~n~Startcash", 3000, 1);
@@ -21081,9 +21051,10 @@ SQL_FinalRankAssign(playerid)
 	mysql_tquery(pSQL, gstr2, "OnQueryFinish", "siii", gstr2, THREAD_ASSIGN_RANK_2, playerid, pSQL);
 }
 
-SQL_CleanUp()
+SQL_RequestIPCheck(playerid)
 {
-	mysql_tquery(pSQL, "TRUNCATE TABLE `online`;");
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT * FROM `ipbans` WHERE `ip` = '%e' LIMIT 1;", __GetIP(playerid));
+	mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_IP);
 }
 
 SQL_Connect()
@@ -28176,23 +28147,7 @@ function:server_vip_countdown()
 	return 1;
 }
 
-enum E_ACCOUNT_REQUEST
-{
-	E_ACCREQ_LOAD_ID,
-	E_ACCREQ_LOAD_SETTINGS,
-	E_ACCREQ_CHECK_BAN,
-	E_ACCREQ_CHECK_IP,
-	E_ACCREQ_CHECK_SERIAL,
-	E_ACCREQ_CHECK_AUTOLOGIN
-};
-
-SQL_RequestIPCheck(playerid)
-{
-	mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT * FROM `ipbans` WHERE `ip` = '%e' LIMIT 1;", __GetIP(playerid));
-	mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_IP);
-}
-
-function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
+function:OnPlayerAccountRequest(playerid, namehash, request)
 {
     if(!IsPlayerConnected(playerid))
 		return 0;
@@ -28267,7 +28222,7 @@ function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
 				if(lift != 0) // Was he timebanned?
 				{
 					format(string, sizeof(string), ""red"You have been TIME banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate %s\nYou will be unbanned on %s!\n\nf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM".",
-						szAdmin, __GetName(playerid), szReason, UTConvert(lift));
+						szAdmin, __GetName(playerid), szReason, UTConvert(iTimeStamp));
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Notice", string, "OK", "");
 					KickEx(playerid);
 				}
@@ -28321,17 +28276,17 @@ function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
 					}
 				}
 			}
-			case E_ACCREQ_CHECK_AUTOLOGIN:
+		}
+		case E_ACCREQ_CHECK_AUTOLOGIN:
+		{
+			if(cache_get_row_count() > 0) 
 			{
-				if(cache_get_row_count() > 0) 
-				{
-					// Player has logged in sometime earlier with this IP-Address.
-					AutoLogin(playerid);
-				}
-				else
-				{
-					RequestLogin(playerid);
-				}
+				// Player has logged in sometime earlier with this IP-Address.
+				AutoLogin(playerid);
+			}
+			else
+			{
+				RequestLogin(playerid);
 			}
 			return 1;
 		}
@@ -28409,9 +28364,6 @@ function:OnPlayerAccountRequest(playerid, namehash, E_ACCOUNT_REQUEST:request)
 			SetPlayerFacingAngle(playerid, 359.9696);
 			SetPlayerCameraPos(playerid, 1797.3688, -1299.8156, 121.4657);
 			SetPlayerCameraLookAt(playerid, 1797.3661, -1300.8164, 121.4556);
-
-			mysql_format(pSQL, gstr2, sizeof(gstr2), "INSERT INTO `online` VALUES (NULL, '%e', '%s', UNIX_TIMESTAMP());", __GetName(playerid), __GetIP(playerid));
-			mysql_tquery(pSQL, gstr2);
 
 		    if(cache_get_row_count() != 0) // acc exists
 		    {
