@@ -8463,7 +8463,7 @@ YCMD:h(playerid, params[], help)
 	        continue;
 
 		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
-		    format(gstr, sizeof(gstr), ""white"[Slot %i] House ID: %i [%s"white"] [%i PV Slots] Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), HouseData[i][e_pvslots], number_format(HouseData[i][e_value]));
+		    format(gstr, sizeof(gstr), ""white"[Slot %i] House ID: %i (%s"white") (%i PV Slots) Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), HouseData[i][e_pvslots], number_format(HouseData[i][e_value]));
 		    strcat(string, gstr);
 		}
 	}
@@ -8485,7 +8485,7 @@ YCMD:e(playerid, params[], help)
 	        continue;
 
 		if(EnterpriseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
-		    format(gstr, sizeof(gstr), ""white"[Slot %i] Enterprise ID: %i [%s"white"] Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), number_format(HouseData[i][e_value]));
+		    format(gstr, sizeof(gstr), ""white"[Slot %i] Enterprise ID: %i (%s"white") Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), number_format(HouseData[i][e_value]));
 		    strcat(string, gstr);
 		}
 	}
@@ -8836,7 +8836,7 @@ YCMD:buy(playerid, params[], help)
 		if(EnterpriseData[r][e_owner] != 0)
 		    return player_notice(playerid, "Enterprise not for sale", "");
 
-		if(GetPlayerMoneyEx(playerid) < EnterpriseData[i][e_value])
+		if(GetPlayerMoneyEx(playerid) < EnterpriseData[r][e_value])
 		    return SCM(playerid, -1, ""er"You can't afford this enterprise");
 
 		new player_houses = GetPlayerEnterpriseCount(playerid);
@@ -26834,7 +26834,6 @@ GetAllowedHouseCount(playerid, &score)
 	};
 	for(new i = MAX_PLAYER_HOUSES - 1; i >= 0; i--)
 	{
-	    printf("lol: %i", i);
 	    if(GetPlayerScoreEx(playerid) >= houses_per_score[i][0]) {
 			score = houses_per_score[i][0];
 		    return houses_per_score[i][1];
@@ -28238,7 +28237,12 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 						szAdmin, __GetName(playerid), szReason, UTConvert(iTimeStamp));
 				}
 				ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Notice", string, "OK", "");
+
+				TextDrawHideForPlayer(playerid, TXTOnJoin[0]);
+				TextDrawHideForPlayer(playerid, TXTOnJoin[1]);
+				
 				KickEx(playerid);
+				return 1;
 			}
 			_continue:
 			SQL_RequestIPCheck(playerid);
@@ -28526,13 +28530,13 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	        DEBUG_P1(playerid, "E_ACCREQ_CHECK_LOGIN")
 	  		if(cache_get_row_count() != 0) // Correct password. Player still has old password, convert to WHIRLPOOL.
 		    {
-		        new salt[SALT_LENGTH + 1], hash[WHIRLPOOL_LENGTH + 1];
+		        new salt[SALT_LENGTH + 1], hash[WHIRLPOOL_LENGTH + 1], query[512];
 		        NC_CSPRNG(SALT_LENGTH, salt, sizeof(salt));
 		        format(gstr, sizeof(gstr), "%s%s", PlayerOld[playerid], salt);
 				NC_Whirlpool(gstr, hash, sizeof(hash));
-		    
-		        mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `password` = '%s', `salt` = '%s', `password_old` = 'NoData' WHERE `id` = %i LIMIT 1;", hash, salt, PlayerData[playerid][e_accountid]);
-		        mysql_tquery(pSQL, gstr2);
+				
+		        mysql_format(pSQL, query, sizeof(query), "UPDATE `accounts` SET `password` = '%s', `salt` = '%s', `password_old` = 'NoData' WHERE `id` = %i LIMIT 1;", hash, salt, PlayerData[playerid][e_accountid]);
+		        mysql_tquery(pSQL, query);
 		        printf("UPGRADE: Converted account %i to whirlpool", PlayerData[playerid][e_accountid]);
 		    
 		        PlayerData[playerid][bAllowSpawn] = true;
@@ -28557,7 +28561,6 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	            new password[WHIRLPOOL_LENGTH + 1], salt[SALT_LENGTH + 1];
 	            cache_get_row(0, 0, password, pSQL, sizeof(password));
 	            cache_get_row(0, 1, salt, pSQL, sizeof(salt));
-	            
 	            format(gstr, sizeof(gstr), "%s%s", PlayerOld[playerid], salt);
 	            new hash[WHIRLPOOL_LENGTH + 1];
 	            NC_Whirlpool(gstr, hash, sizeof(hash));
@@ -29434,7 +29437,7 @@ EnterHouse(playerid, i)
     SetPlayerInterior(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][interior]);
 	SetPlayerVirtualWorld(playerid, HouseData[i][e_id] + 1000);
 	SetPlayerPos(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][house_x], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_y], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_z]);
-	player_notice(playerid, "House entered", "type ~y~/exit ~w~to leave", 4000);
+	player_notice(playerid, "type ~y~/exit ~w~to leave", "", 4000);
 	SCM(playerid, -1, ""er"Type /exit to leave the house");
 	return 1;
 }
@@ -29630,7 +29633,7 @@ SetupHouse(slot, owner[])
 			g_aHouseInteriorTypes[HouseData[r][e_interior]][intname],
 			HouseData[r][e_pvslots]);
 	} else {
-	    format(gstr2, sizeof(gstr2), ""house_mark"ID: %i\nOwner: %s\nValue: $%s\nInterior: %s\nPrivate Vehicle Slots: %i",
+	    format(gstr2, sizeof(gstr2), ""house_mark"\nID: %i\nOwner: %s\nValue: $%s\nInterior: %s\nPrivate Vehicle Slots: %i",
 	        HouseData[r][e_id],
 	        owner,
 			number_format(HouseData[r][e_value]),
