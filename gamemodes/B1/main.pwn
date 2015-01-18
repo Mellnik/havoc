@@ -534,27 +534,19 @@ enum
 
 enum (+= 10)
 {
-	ACCOUNT_REQUEST_BANNED,
-	ACCOUNT_REQUEST_IP_BANNED,
-	ACCOUNT_REQUEST_EXIST,
-	ACCOUNT_REQUEST_AUTO_LOGIN,
-	ACCOUNT_REQUST_VERIFY_REGISTER,
-	ACCOUNT_REQUEST_LOAD,
-	ACCOUNT_REQUEST_GANG_LOAD,
-	ACCOUNT_REQUEST_ACHS_LOAD,
-	ACCOUNT_REQUEST_TOYS_LOAD,
-	ACCOUNT_REQUEST_PVS_LOAD,
-    ACCOUNT_REQUEST_LOGIN
-};
-
-enum (+= 10)
-{
 	E_ACCREQ_LOAD_ID,
 	E_ACCREQ_LOAD_SETTINGS,
+	E_ACCREQ_LOAD_ACCOUNT,
+	E_ACCREQ_LOAD_GANG,
+	E_ACCREQ_LOAD_ACHIEVEMENTS,
+	E_ACCREQ_LOAD_TOYS,
+	E_ACCREQ_LOAD_PVS,
 	E_ACCREQ_CHECK_BAN,
 	E_ACCREQ_CHECK_IP,
 	E_ACCREQ_CHECK_SERIAL,
-	E_ACCREQ_CHECK_AUTOLOGIN
+	E_ACCREQ_CHECK_AUTOLOGIN,
+	E_ACCREQ_CHECK_LOGIN,
+	E_ACCREQ_QUALIFY_REGISTER
 };
 
 enum
@@ -18637,7 +18629,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					return SkipLogin(playerid);
 				}
 				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `accounts` WHERE `name` = '%e' AND (`hash` = MD5('%e') OR `hash` = SHA1('%e')) LIMIT 1;", __GetName(playerid), password, password);
-				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_LOGIN);
+				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_LOGIN);
 			    return true;
 			}
 			case DIALOG_REGISTER:
@@ -20761,32 +20753,32 @@ SQL_UpdateGangScore(gangid, value)
 
 SQL_LoadAccount(playerid)
 {
-	mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT * FROM `accounts` WHERE `name` = '%e' LIMIT 1;", __GetName(playerid));
-	mysql_tquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_LOAD);
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT * FROM `accounts` WHERE `id` = %i LIMIT 1;", PlayerData[playerid][e_accountid]);
+	mysql_tquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_ACCOUNT);
 }
 
 SQL_LoadPlayerAchs(playerid)
 {
 	mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `type`, `unlockdate` FROM `achievements` WHERE `id` = %i;", PlayerData[playerid][e_accountid]);
-	mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_ACHS_LOAD);
+	mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_ACHIEVEMENTS);
 }
 
 SQL_LoadPlayerToys(playerid)
 {
 	mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `toys` WHERE `id` = %i LIMIT %i;", PlayerData[playerid][e_accountid], MAX_PLAYER_TOYS);
-	mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_TOYS_LOAD);
+	mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_TOYS);
 }
 
 SQL_LoadPlayerPVs(playerid)
 {
 	mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `vehicles` WHERE `id` = %i;", PlayerData[playerid][e_accountid]);
-	mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_PVS_LOAD);
+	mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_PVS);
 }
 
 SQL_LoadPlayerGang(playerid)
 {
 	format(gstr2, sizeof(gstr2), "SELECT `gname`, `gtag` FROM `gangs` WHERE `id` = %i LIMIT 1;", PlayerData[playerid][e_gangid]);
-	mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_GANG_LOAD);
+	mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_GANG);
 }
 
 SQL_AssignRankIfExist(playerid)
@@ -20999,7 +20991,7 @@ SQL_UpdateAccount(playerid)
 {
     if(PlayerData[playerid][bLogged])
     {
-	    mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `ip` = '%e', `serial` = '%e', `lastlogin` = %i WHERE `name` = '%e' LIMIT 1;", __GetIP(playerid), __GetSerial(playerid), gettime(), __GetName(playerid));
+	    mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `serial` = '%e', `lastlogin` = %i WHERE `name` = '%e' LIMIT 1;", __GetSerial(playerid), gettime(), __GetName(playerid));
 	    mysql_tquery(pSQL, gstr2);
 	}
 }
@@ -28239,11 +28231,22 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 			}
 			else
 			{
+				TextDrawHideForPlayer(playerid, TXTOnJoin[0]);
+				TextDrawHideForPlayer(playerid, TXTOnJoin[1]);
+
+				Streamer_UpdateEx(playerid, 1797.5835, -1305.0114, 121.2348, -1, -1);
+				SetPlayerPos(playerid, 1797.5835, -1305.0114, 121.2348);
+				SetPlayerFacingAngle(playerid, 359.9696);
+				SetPlayerCameraPos(playerid, 1797.3688, -1299.8156, 121.4657);
+				SetPlayerCameraLookAt(playerid, 1797.3661, -1300.8164, 121.4556);
+			
 				// Player IP and serial not banned at this state.
 				if(PlayerData[playerid][e_accountid] == 0)
 				{
 					// Does not have an account. Qualify player for registration.
-					
+
+			        mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT COUNT(`id`) FROM `accounts` WHERE `regip` = '%s' AND `regdate` > (UNIX_TIMESTAMP() - 86400);", __GetIP(playerid));
+			        mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_QUALIFY_REGISTER);
 				}
 				else
 				{
@@ -28252,6 +28255,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 					mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_SETTINGS);
 				}
 			}
+			return 1;
 		}
 		case E_ACCREQ_LOAD_SETTINGS:
 		{
@@ -28294,35 +28298,8 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 			}
 			return 1;
 		}
-	}
-
-	switch(request)
-	{
-	    case ACCOUNT_REQUEST_EXIST:
-	    {
-			TextDrawHideForPlayer(playerid, TXTOnJoin[0]);
-			TextDrawHideForPlayer(playerid, TXTOnJoin[1]);
-
-			Streamer_UpdateEx(playerid, 1797.5835, -1305.0114, 121.2348, -1, -1);
-			SetPlayerPos(playerid, 1797.5835, -1305.0114, 121.2348);
-			SetPlayerFacingAngle(playerid, 359.9696);
-			SetPlayerCameraPos(playerid, 1797.3688, -1299.8156, 121.4657);
-			SetPlayerCameraLookAt(playerid, 1797.3661, -1300.8164, 121.4556);
-
-		    if(cache_get_row_count() != 0) // acc exists
-		    {
-				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `accounts` WHERE `name` = '%e' AND `ip` = '%s' LIMIT 1;", __GetName(playerid), __GetIP(playerid));
-				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUEST_AUTO_LOGIN); // Check auto login
-		    }
-		    else
-		    {
-		        mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT COUNT(`id`) FROM `accounts` WHERE `ip` = '%s' AND `regdate` > (UNIX_TIMESTAMP() - 86400);", __GetIP(playerid));
-		        mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUST_VERIFY_REGISTER);
-		    }
-	        return 1;
-	    }
-	    case ACCOUNT_REQUST_VERIFY_REGISTER:
-	    {
+		case E_ACCREQ_QUALIFY_REGISTER:
+		{
 	        if(cache_get_row_int(0, 0) > 4)
 	        {
 	            Log(LOG_PLAYER, "%i, %s IP accounts found, kicking (%s, %i)", cache_get_row_int(0, 0), __GetIP(playerid), __GetName(playerid), playerid);
@@ -28331,11 +28308,11 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 			else
 			{
 		        mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT COUNT(`id`) FROM `accounts` WHERE `serial` = '%e' AND `regdate` > (UNIX_TIMESTAMP() - 2000);", __GetSerial(playerid));
-		        mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), ACCOUNT_REQUST_VERIFY_REGISTER + 1);
+		        mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_QUALIFY_REGISTER + 1);
 			}
-			return 1;
-	    }
-	    case ACCOUNT_REQUST_VERIFY_REGISTER + 1:
+		    return 1;
+		}
+		case E_ACCREQ_QUALIFY_REGISTER + 1:
 	    {
 	        if(cache_get_row_int(0, 0) > 4)
 	        {
@@ -28347,42 +28324,28 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	            RequestRegistration(playerid);
 	        }
 	        return 1;
-	    }
-	    case ACCOUNT_REQUEST_AUTO_LOGIN:
-	    {
-	        if(cache_get_row_count() > 0) // Account with IP found
-	        {
-	            // Auto Login
-				AutoLogin(playerid);
-	        }
-	        else // ip on account is not the same as current connection
-	        {
-	            // Login Dialog
-	            RequestLogin(playerid);
-	        }
-	        return 1;
-	    }
-	    case ACCOUNT_REQUEST_LOAD:
+		}
+	    case E_ACCREQ_LOAD_ACCOUNT:
 	    {
 			if(cache_get_row_count() > 0)
 			{
 				new ORM:ormid = PlayerData[playerid][e_ormid] = orm_create("accounts");
 
 				AssemblePlayerORM(ormid, playerid);
-				
+
 				orm_setkey(ormid, "id");
 				orm_apply_cache(ormid, 0);
 
 				if(!IsValidSkin(PlayerSettings[playerid][e_skin])) {
 				    PlayerSettings[playerid][e_skin] = -1;
 				}
-				
+
 				PlayerData[playerid][ConnectTime] = gettime();
-				
+
 				if(PlayerData[playerid][e_gangid] != 0) {
 					SQL_LoadPlayerGang(playerid);
 				}
-				
+
 				SQL_LoadPlayerAchs(playerid);
 				SQL_LoadPlayerToys(playerid);
 				SQL_LoadPlayerPVs(playerid);
@@ -28409,7 +28372,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				SCM(playerid, -1, gstr);
 				format(gstr, sizeof(gstr), ""server_sign" "r_besch"You've been online for %s", GetPlayingTimeFormat(playerid));
 				SCM(playerid, -1, gstr);
-				
+
 				if(PlayerSettings[playerid][e_namecolor] != 0)
 				{
 				    SetPlayerColor(playerid, PlayerSettings[playerid][e_namecolor]);
@@ -28427,7 +28390,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 			}
 	        return 1;
 	    }
-	    case ACCOUNT_REQUEST_GANG_LOAD:
+	    case E_ACCREQ_LOAD_GANG:
 	    {
 		    if(cache_get_row_count() > 0)
 			{
@@ -28448,7 +28411,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 			}
 	        return 1;
 	    }
-	    case ACCOUNT_REQUEST_ACHS_LOAD:
+	    case E_ACCREQ_LOAD_ACHIEVEMENTS:
 	    {
 	        if(cache_get_row_count() > 0)
 	        {
@@ -28461,14 +28424,14 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	        PlayerData[playerid][bAchsLoad] = true;
 	        return 1;
 	    }
-	    case ACCOUNT_REQUEST_TOYS_LOAD:
+	    case E_ACCREQ_LOAD_TOYS:
 	    {
 	        if(cache_get_row_count() > 0)
 	        {
 	            for(new i = 0; i < cache_get_row_count() && i < MAX_PLAYER_TOYS; i++)
 	            {
 					new r = cache_get_row_int(i, 1);
-					
+
 					PlayerToyData[playerid][r][toy_model] = cache_get_row_int(i, 2);
 					PlayerToyData[playerid][r][toy_bone] = cache_get_row_int(i, 3);
 					PlayerToyData[playerid][r][toy_x] = cache_get_row_float(i, 4);
@@ -28484,20 +28447,20 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	        }
 	        return 1;
 	    }
-	    case ACCOUNT_REQUEST_PVS_LOAD:
+	    case E_ACCREQ_LOAD_PVS:
 	    {
 	        if(cache_get_row_count() > 0)
 	        {
 				for(new i = 0; i < cache_get_row_count() && i < MAX_PLAYER_PVS; i++)
 				{
 				    new r = cache_get_row_int(i, 1);
-				    
+
 				    PlayerPVData[playerid][r][e_model] = cache_get_row_int(i, 2);
 				    cache_get_row(i, 3, PlayerPVData[playerid][r][e_plate], pSQL, 13);
 				    PlayerPVData[playerid][r][e_paintjob] = cache_get_row_int(i, 4);
 				    PlayerPVData[playerid][r][e_color1] = cache_get_row_int(i, 5);
 				    PlayerPVData[playerid][r][e_color2] = cache_get_row_int(i, 6);
-				    
+
 				    for(new m = 0; m < 17; m++)
 				    {
 				        PlayerPVData[playerid][r][e_mods][m] = cache_get_row_int(i, m + 7);
@@ -28506,7 +28469,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	        }
 	        return 1;
 	    }
-	    case ACCOUNT_REQUEST_LOGIN:
+	    case E_ACCREQ_CHECK_LOGIN:
 	    {
 	  		if(cache_get_row_count() != 0) // Correct password
 		    {
