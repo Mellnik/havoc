@@ -163,6 +163,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define NOT_AVAIL                       "{FF000F}[INFO] {FF000F}You can't use this command now! Use /exit to leave."
 #define er                              "{FF000F}[INFO] {FF000F}" // D2D2D2
 #define Error(%1,%2) 					SendClientMessage(%1, -1, "{F42626}[INFO] "GREY2_E""%2)
+#define DEBUG_P1(%1, %2)                SendClientMessage(%1, -1, %2);
 #define dl                              "{FFE600}• {F0F0F0}"
 #define notlogged(%1)                   ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef"", ""white"You need to be logged in to use this feature.\n\n"nef_yellow"Type /register to create an new account for you current name.", "OK", "")
 #define ELEVATOR_SPEED      			(5.0)
@@ -2784,6 +2785,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	g_AdminLCBack,
   	gLastMap[MAX_PLAYERS],
   	PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
+  	PlayerOld[MAX_PLAYERS][40],
   	PlayerSettings[MAX_PLAYERS][E_PLAYER_SETTINGS],
   	PlayerAchData[MAX_PLAYERS][E_PLAYER_ACH_DATA][2],
   	PlayerToyData[MAX_PLAYERS][MAX_PLAYER_TOYS][E_TOY_DATA],
@@ -3529,6 +3531,7 @@ public OnPlayerConnect(playerid)
         
 		PlayAudioStreamForPlayer(playerid, "http://s.havocserver.net/login.mp3");
 
+        DEBUG_P1(playerid, "OnPlayerConnect")
 		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", __GetName(playerid));
 		mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_ID);
  	}
@@ -18629,7 +18632,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				{
 					return SkipLogin(playerid);
 				}
-				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `accounts` WHERE `id` = %i AND (`password_old` = MD5('%e') OR `hash` = SHA1('%e')) LIMIT 1;", PlayerData[playerid][e_accountid], password, password);
+				PlayerOld[playerid][0] = '\0';
+				strmid(PlayerOld[playerid], password, 0, 40, 40);
+				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `accounts` WHERE `id` = %i AND (`password_old` = MD5('%e') OR `password_old` = SHA1('%e')) LIMIT 1;", PlayerData[playerid][e_accountid], password, password);
 				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_LOGIN);
 			    return true;
 			}
@@ -20460,6 +20465,7 @@ AutoLogin(playerid)
 
 RequestRegistration(playerid)
 {
+    DEBUG_P1(playerid, "RequestRegistration")
 	new string[1024];
 	
     format(gstr, sizeof(gstr), ""nef" :: Registration - %s", __GetName(playerid));
@@ -28164,6 +28170,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	{
 		case E_ACCREQ_LOAD_ID:
 		{
+		    DEBUG_P1(playerid, "E_ACCREQ_LOAD_ID")
 			if(cache_get_row_count() == 0)
 			{
 				// Account does not exist and therefore also not banned. Continue to check their IP and afterwards their gpci.
@@ -28181,6 +28188,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_CHECK_BAN:
 		{
+		    DEBUG_P1(playerid, "E_ACCREQ_CHECK_BAN")
 			if(cache_get_row_count() != 0)
 			{
 				new lift = cache_get_field_content_int(0, "lift");
@@ -28220,6 +28228,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_CHECK_IP:
 		{
+		    DEBUG_P1(playerid, "E_ACCREQ_CHECK_IP")
 			if(cache_get_row_count() == 0)
 			{
 				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `serialbans` WHERE `serial` = '%e' LIMIT 1;", __GetSerial(playerid));
@@ -28237,6 +28246,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_CHECK_SERIAL:
 		{
+		    DEBUG_P1(playerid, "E_ACCREQ_CHECK_SERIAL")
 			if(cache_get_row_count() != 0)
 			{
 				// Players gpci has been banned.
@@ -28252,6 +28262,8 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				SetPlayerFacingAngle(playerid, 359.9696);
 				SetPlayerCameraPos(playerid, 1797.3688, -1299.8156, 121.4657);
 				SetPlayerCameraLookAt(playerid, 1797.3661, -1300.8164, 121.4556);
+			
+			    SendWelcomeMSG(playerid);
 			
 				// Player IP and serial not banned at this state.
 				if(PlayerData[playerid][e_accountid] == 0)
@@ -28272,6 +28284,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_LOAD_SETTINGS:
 		{
+		    DEBUG_P1(playerid, "E_ACCREQ_LOAD_SETTINGS")
 			if(cache_get_row_count() != 0)
 			{
 				PlayerSettings[playerid][e_allow_teleport] = cache_get_field_content_int(0, "allow_teleport");
@@ -28300,6 +28313,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_CHECK_AUTOLOGIN:
 		{
+		    DEBUG_P1(playerid, "E_ACCREQ_CHECK_AUTOLOGIN")
 			if(cache_get_row_count() > 0) 
 			{
 				// Player has logged in sometime earlier with this IP-Address.
@@ -28313,6 +28327,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_QUALIFY_REGISTER:
 		{
+		    DEBUG_P1(playerid, "E_ACCREQ_QUALIFY_REGISTER")
 	        if(cache_get_row_int(0, 0) > 4)
 	        {
 	            Log(LOG_PLAYER, "%i, %s IP accounts found, kicking (%s, %i)", cache_get_row_int(0, 0), __GetIP(playerid), __GetName(playerid), playerid);
@@ -28327,6 +28342,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_QUALIFY_REGISTER + 1:
 	    {
+	        DEBUG_P1(playerid, "E_ACCREQ_QUALIFY_REGISTER + 1")
 	        if(cache_get_row_int(0, 0) > 4)
 	        {
 	            Log(LOG_PLAYER, "%i, %s serial accounts found, kicking (%s, %i)", cache_get_row_int(0, 0), __GetSerial(playerid), __GetName(playerid), playerid);
@@ -28340,6 +28356,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 		}
 	    case E_ACCREQ_LOAD_ACCOUNT:
 	    {
+	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_ACCOUNT")
 			if(cache_get_row_count() > 0)
 			{
 				new ORM:ormid = PlayerData[playerid][e_ormid] = orm_create("accounts");
@@ -28405,6 +28422,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_LOAD_GANG:
 	    {
+	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_GANG")
 		    if(cache_get_row_count() > 0)
 			{
 		        cache_get_row(0, 0, PlayerData[playerid][GangName], pSQL, 25);
@@ -28426,6 +28444,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_LOAD_ACHIEVEMENTS:
 	    {
+	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_ACHIEVEMENTS")
 	        if(cache_get_row_count() > 0)
 	        {
 				for(new i = 0; i < cache_get_row_count(); i++)
@@ -28439,6 +28458,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_LOAD_TOYS:
 	    {
+	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_TOYS")
 	        if(cache_get_row_count() > 0)
 	        {
 	            for(new i = 0; i < cache_get_row_count() && i < MAX_PLAYER_TOYS; i++)
@@ -28462,6 +28482,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_LOAD_PVS:
 	    {
+	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_PVS")
 	        if(cache_get_row_count() > 0)
 	        {
 				for(new i = 0; i < cache_get_row_count() && i < MAX_PLAYER_PVS; i++)
@@ -28484,8 +28505,18 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_CHECK_LOGIN:
 	    {
-	  		if(cache_get_row_count() != 0) // Correct password
+	        DEBUG_P1(playerid, "E_ACCREQ_CHECK_LOGIN")
+	  		if(cache_get_row_count() != 0) // Correct password. Player still has old password, convert to WHIRLPOOL.
 		    {
+		        new salt[SALT_LENGTH + 1], hash[WHIRLPOOL_LENGTH + 1];
+		        NC_CSPRNG(SALT_LENGTH, salt, sizeof(salt));
+		        format(gstr, sizeof(gstr), "%s%s", PlayerOld[playerid], salt);
+				NC_Whirlpool(gstr, hash, sizeof(hash));
+		    
+		        mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `password` = '%s', `salt` = '%s', `password_old` = 'NoData' WHERE `id` = %i LIMIT 1;", hash, salt, PlayerData[playerid][e_accountid]);
+		        mysql_tquery(pSQL, gstr2);
+		        printf("UPGRADE: Converted account %i to whirlpool", PlayerData[playerid][e_accountid]);
+		    
 		        PlayerData[playerid][bAllowSpawn] = true;
 				PlayerData[playerid][bLogged] = true;
                 PlayerData[playerid][ExitType] = EXIT_LOGGED;
@@ -28493,10 +28524,44 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				SQL_UpdateAccount(playerid);
 				SQL_LoadAccount(playerid);
 			}
-			else
+			else // Check again login if player has already upgraded
 			{
-			    SkipLogin(playerid);
+				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `password`, `salt` FROM `accounts` WHERE `id` = %i;", PlayerData[playerid][e_accountid]);
+				mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_LOGIN + 1);
 			}
+	        return 1;
+	    }
+	    case E_ACCREQ_CHECK_LOGIN + 1:
+	    {
+	        DEBUG_P1(playerid, "E_ACCREQ_CHECK_LOGIN + 1")
+	        if(cache_get_row_count() != 0)
+	        {
+	            new password[WHIRLPOOL_LENGTH + 1], salt[SALT_LENGTH + 1];
+	            cache_get_row(0, 0, password, pSQL, sizeof(password));
+	            cache_get_row(0, 1, salt, pSQL, sizeof(salt));
+	            
+	            format(gstr, sizeof(gstr), "%s%s", PlayerOld[playerid], salt);
+	            new hash[WHIRLPOOL_LENGTH + 1];
+	            NC_Whirlpool(gstr, hash, sizeof(hash));
+	            
+	            if(!strcmp(hash, password, true))
+	            {
+			        PlayerData[playerid][bAllowSpawn] = true;
+					PlayerData[playerid][bLogged] = true;
+	                PlayerData[playerid][ExitType] = EXIT_LOGGED;
+
+					SQL_UpdateAccount(playerid);
+					SQL_LoadAccount(playerid);
+	            }
+	            else
+	            {
+	                SkipLogin(playerid);
+				}
+			}
+	        else
+	        {
+	            SkipLogin(playerid);
+	        }
 	        return 1;
 	    }
 	}
