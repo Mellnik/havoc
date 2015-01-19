@@ -8697,9 +8697,9 @@ YCMD:accept(playerid, params[], help)
         SQL_SaveAccount(otherid, false, false);
         SQL_SaveAccount(playerid, false, false);
 	    
-	    format(gstr, sizeof(gstr), ""blue"You have accepted %s's offer and bough the house $%s", __GetName(otherid), number_format(PlayerData[playerid][iTransactHousePrice]));
+	    format(gstr, sizeof(gstr), ""blue"You have accepted %s's offer and bough the house for $%s", __GetName(otherid), number_format(PlayerData[playerid][iTransactHousePrice]));
 	    SCM(playerid, -1, gstr);
-	    format(gstr, sizeof(gstr), ""blue"%s(%i) has accepted your offer. You sold house %i for $%s", __GetName(playerid), playerid, r, number_format(PlayerData[playerid][iTransactHousePrice]));
+	    format(gstr, sizeof(gstr), ""blue"%s(%i) has accepted your offer, you sold the house ID:%i for $%s", __GetName(playerid), playerid, r, number_format(PlayerData[playerid][iTransactHousePrice]));
 	    SCM(otherid, -1, gstr);
 	    format(gstr, sizeof(gstr), ""orange"[NEF] %s(%i) has sold their house (ID %i) to %s(%i) for $%s", __GetName(otherid), otherid, r, __GetName(playerid), playerid, number_format(PlayerData[playerid][iTransactHousePrice]));
 	    SCMToAll(-1, gstr);
@@ -8900,6 +8900,7 @@ YCMD:sellto(playerid, params[], help)
 	if(ask_price < 1 || ask_price > 500000000) return SCM(playerid, -1, ""er"Price range: $1 - $500,000,000");
     if(otherid == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
 	if(!IsPlayerConnected(otherid)) return SCM(playerid, -1, ""er"Player not connected!");
+	if(playerid == otherid) return SCM(playerid, -1, ""er"You can't sell it to yourself");
 	if(!islogged(otherid)) return SCM(playerid, -1, ""er"This player is not registered!");
 	if(gTeam[otherid] != gFREEROAM) return SCM(playerid, -1, ""er"Player must be in freeroam mode");
 	new Float:fPOS[3];
@@ -9026,7 +9027,7 @@ YCMD:sell(playerid, params[], help)
 	    SQL_SaveAccount(playerid, false, false);
 	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
 	    player_notice(playerid, "House sold", "");
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the house %i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(floatround(HouseData[i][e_value] / 4)));
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the house ID:%i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(floatround(HouseData[i][e_value] / 4)));
 	    SCMToAll(-1, gstr);
 	    return 1;
  	}
@@ -9054,7 +9055,7 @@ YCMD:sell(playerid, params[], help)
 	    PlayerData[playerid][tickLastSell] = tick;
 	    player_notice(playerid, "Enterprise sold", "");
 	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) sold the enterprise ID:%i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
 	    SCMToAll(-1, gstr);
 	    return 1;
 	}
