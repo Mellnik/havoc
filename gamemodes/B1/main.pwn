@@ -13759,6 +13759,52 @@ YCMD:rainbow(playerid, params[], help)
 	return true;
 }
 
+YCMD:setmapper(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL)
+	{
+	    new player;
+	 	if(sscanf(params, "ri", player))
+		{
+			return SCM(playerid, NEF_GREEN, "Usage: /setmapper <playerid>");
+	  	}
+
+	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
+
+		if(IsPlayerAvail(player))
+		{
+		    if(PlayerData[player][e_mapper] == 0)
+		    {
+				format(gstr, sizeof(gstr), "You have give %s Mapper status", __GetName(player));
+				SCM(playerid, BLUE, gstr);
+				format(gstr, sizeof(gstr), "Admin %s has given you Mapper status", __GetName(playerid));
+	            SCM(player, BLUE, gstr);
+                PlayerData[player][e_mapper] = 1;
+			}
+		    else
+		    {
+				format(gstr, sizeof(gstr), "You have removed %s's Mapper status", __GetName(player));
+				SCM(playerid, BLUE, gstr);
+				format(gstr, sizeof(gstr), "Admin %s has removed your Mapper status", __GetName(playerid));
+	            SCM(player, BLUE, gstr);
+		        PlayerData[player][e_mapper] = 0;
+			}
+			
+			SQL_SaveAccount(playerid, false, false);
+		}
+		else
+		{
+			SCM(playerid, -1, ""er"Cannot assign permissions");
+		}
+	}
+	else
+	{
+	    SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
 YCMD:setadminlevel(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL || IsPlayerAdmin(playerid))
@@ -13800,13 +13846,14 @@ YCMD:setadminlevel(playerid, params[], help)
 			else
 				GameTextForPlayer(player, "Demoted", 5000, 3);
 			
-			SQL_SaveAccount(playerid, false, false);
 			format(gstr, sizeof(gstr), "You have made %s Level %i at %i:%i:%i", __GetName(player), alevel, time[0], time[1], time[2]);
 			SCM(playerid, BLUE, gstr);
 			format(gstr, sizeof(gstr), "Admin %s has made %s Level %i at %i:%i:%i", __GetName(playerid), __GetName(player), alevel, time[0], time[1], time[2]);
             SCM(player, BLUE, gstr);
             print(gstr);
 			PlayerData[player][e_level] = alevel;
+			
+			SQL_SaveAccount(playerid, false, false);
 		}
 		else
 		{
@@ -29584,7 +29631,7 @@ SetupStore(slot)
 	new r = slot;
 
     format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", StoreData[r][e_name]);
-   	StoreData[r][e_labelid] = CreateDynamic3DTextLabel(gstr, WHITE, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] + 0.6, 25.0, .worldid = 0, , .interiorid = 0, .streamdistance = 25.0);
+   	StoreData[r][e_labelid] = CreateDynamic3DTextLabel(gstr, WHITE, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] + 0.6, 25.0, .worldid = 0, .interiorid = 0, .streamdistance = 25.0);
     StoreData[r][e_pickup_out] = CreateDynamicPickup(1559, 1, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
 
 	switch(StoreData[r][e_type])
