@@ -651,7 +651,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_pvslots,
 	e_kills,
 	e_deaths,
-	e_time,
+	e_time, // TODO: Bessere Zeitabrechung d.h. OPC(e_startime = GetTime), OPD(e_time = GetTime() - e_starttime).
 	e_skin,
 	e_bounty,
 	e_payday,
@@ -817,7 +817,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
     DuelRequestRecv
 };
 
-enum E_PLAYER_SETTINGS
+enum E_PLAYER_SETTINGS // TODO: Laden bei login!
 {
 	e_allow_teleport,
 	e_allow_pm,
@@ -4783,7 +4783,7 @@ public OnPlayerText(playerid, text[])
 	}
 	if(text[0] == '$' && PlayerData[playerid][e_vip] == 1)
 	{
-	    replace_col_codes(text);
+	    replace_col_codes(text); // TODO: Don't pring the dollar sign.
 	}
 	if(text[0] == '!' && PlayerData[playerid][e_gangrank] != 0)
 	{
@@ -12563,7 +12563,7 @@ YCMD:deleterecord(playerid, params[], help)
 	return 1;
 }
 
-YCMD:derbyforcemap(playerid, params[], help) // TODO !
+YCMD:derbyforcemap(playerid, params[], help) // TODO: Befehl raushauen, weil geht eh noch nicht.
 {
 	if(PlayerData[playerid][e_level] >= 3)
 	{
@@ -21013,14 +21013,12 @@ SQL_RegisterAccount(playerid, register, hash[], salt[])
 	orm_insert(ormid, "OnPlayerRegister", "iiissss", playerid, YHash(__GetName(playerid)), register, hash, salt, __GetName(playerid), __GetIP(playerid));
 }
 
-function:OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[])
+function:OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[]) // TODO: Soll schon ein login log erstellt werden beim ersten reggen?
 {
 	DEBUG_P1(playerid, "OnPlayerRegister")
 	new query[512];
 	mysql_format(pSQL, query, sizeof(query), "UPDATE `accounts` SET `password` = '%s', `salt` = '%s', `regip` = '%s' WHERE `name` = '%s' LIMIT 1;", hash, salt, ip_address, playername);
 	mysql_tquery(pSQL, query);
-	print(gstr);
-	printf("OPR(%i, %i, %i, %s, %s, %s, %s)", playerid, namehash, register, hash, salt, playername, ip_address);
 	
 	if(namehash == YHash(__GetName(playerid)))
 	{
@@ -21110,7 +21108,7 @@ SQL_BanAccount(playerid, adminid, reason[], lift = 0)
 	    ha[1],
 	    PlayerData[playerid][bGod],
 	    GetPlayerWeapon(playerid),
-	    _:PlayerData[playerid][bwSuspect]);
+	    _:PlayerData[playerid][bwSuspect]); // TODO: Suspect flag richtig speichern.
 	mysql_tquery(pSQL, query);
 }
 
@@ -26873,7 +26871,7 @@ GetNearestEnterprise(playerid)
 	return -1;
 }
 
-GetAllowedHouseCount(playerid, &score)
+GetAllowedHouseCount(playerid, &score) // TODO: Zeigt eig immer 500 an??
 {
 	static const houses_per_score[MAX_PLAYER_HOUSES][2] = {
 	    {500, 1},
@@ -29869,10 +29867,10 @@ no_vip(playerid, msg[])
 replace_col_codes(data[])
 {
 	gstr[0] = '\0';
-	strmid(gstr, data, 0, 143, 143);
-    NC_StringReplace(gstr, "<red>", "{00000}", gstr, sizeof(gstr));
-    NC_StringReplace(gstr, "<green>", "{00000}", gstr, sizeof(gstr));
-    NC_StringReplace(gstr, "<blue>", "{00000}", gstr, sizeof(gstr));
-    NC_StringReplace(gstr, "<yellow>", "{00000}", gstr, sizeof(gstr));
+	strmid(gstr, data, 0, 144, 144);
+    NC_StringReplace(gstr, "<red>", "{FF0000}", gstr, sizeof(gstr));
+    NC_StringReplace(gstr, "<green>", "{0BDDC4}", gstr, sizeof(gstr));
+    NC_StringReplace(gstr, "<blue>", "{0087FF}", gstr, sizeof(gstr));
+    NC_StringReplace(gstr, "<yellow>", "{DBED15}", gstr, sizeof(gstr));
     return gstr;
 }
