@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 18, 2015 at 01:05 PM
+-- Generation Time: Jan 20, 2015 at 09:06 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -29,9 +29,9 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `accounts` (
   `id` int(10) unsigned NOT NULL,
   `name` varchar(24) NOT NULL,
-  `password` varchar(128) NOT NULL,
-  `salt` varchar(32) NOT NULL,
-  `password_old` varchar(40) NOT NULL,
+  `password` varchar(128) NOT NULL DEFAULT 'NoData',
+  `salt` varchar(32) NOT NULL DEFAULT 'NoData',
+  `password_old` varchar(40) NOT NULL DEFAULT 'NoData',
   `version` varchar(20) NOT NULL,
   `serial` varchar(64) NOT NULL,
   `email` varchar(25) NOT NULL DEFAULT 'NoData',

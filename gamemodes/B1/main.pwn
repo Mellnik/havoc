@@ -8859,7 +8859,7 @@ YCMD:buy(playerid, params[], help)
 		EnterpriseData[r][e_pickupid] = -1;
 		DestroyDynamicMapIcon(EnterpriseData[r][e_iconid]);
 		EnterpriseData[r][e_iconid] = -1;
-		SetupEnterprise(r, EnterpriseData[i][e_namecache]);
+		SetupEnterprise(r, EnterpriseData[r][e_namecache]);
 		
         PlayerData[playerid][tickLastBuy] = tick;
 		player_notice(playerid, "Enterprise bought", "");
