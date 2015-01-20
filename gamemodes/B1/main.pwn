@@ -8802,7 +8802,7 @@ YCMD:buy(playerid, params[], help)
 			return SCM(playerid, -1, gstr);
 		}
 		
-		HouseData[i][e_owner] = PlayerData[i][e_accountid];
+		HouseData[i][e_owner] = PlayerData[playerid][e_accountid];
 		HouseData[i][e_date] = gettime();
 		HouseData[i][e_password][0] = '\0';
 		strmid(HouseData[i][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
@@ -8823,7 +8823,7 @@ YCMD:buy(playerid, params[], help)
 		SQL_SaveAccount(playerid, false, false);
 		PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
 		player_notice(playerid, "House bought", "");
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the house %i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(HouseData[i][e_value]));
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the house ID:%i for $%s!", __GetName(playerid), playerid, HouseData[i][e_id], number_format(HouseData[i][e_value]));
 	    SCMToAll(-1, gstr);
 	    return 1;
 	}
@@ -8867,7 +8867,7 @@ YCMD:buy(playerid, params[], help)
         GivePlayerMoneyEx(playerid, -1500000);
         SQL_SaveAccount(playerid, false, false);
 
-	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the enterprise %i!", __GetName(playerid), playerid, EnterpriseData[r][e_id]);
+	    format(gstr, sizeof(gstr), ""nef" "yellow_e"%s(%i) bought the enterprise ID:%i for $%s!", __GetName(playerid), playerid, EnterpriseData[r][e_id], number_format(EnterpriseData[r][e_value]));
 	    SCMToAll(-1, gstr);
 
 		orm_update(EnterpriseData[r][e_ormid]);
@@ -9009,7 +9009,7 @@ YCMD:sell(playerid, params[], help)
         HouseData[i][e_locked] = 0;
         HouseData[i][e_password][0] = '\0';
         HouseData[i][e_interior] = HouseData[i][e_originterior];
-        
+
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
 		HouseData[i][e_labelid] = Text3D:-1;
 		DestroyDynamicPickup(HouseData[i][e_pickupid]);
@@ -9020,10 +9020,12 @@ YCMD:sell(playerid, params[], help)
 		SetupHouse(i, "<null>");
 		orm_update(HouseData[i][e_ormid]);
         
-        GivePlayerMoneyEx(playerid, floatround(HouseData[i][e_value] / 4));
 		if(PlayerSettings[playerid][e_house_spawn] == HouseData[i][e_id])
 		    PlayerSettings[playerid][e_house_spawn] = 0;
-	    PlayerData[playerid][tickLastSell] = tick;
+
+        PlayerData[playerid][e_pvslots] -= HouseData[i][e_pvslots];
+		PlayerData[playerid][tickLastSell] = tick;
+        GivePlayerMoneyEx(playerid, floatround(HouseData[i][e_value] / 4));
 	    SQL_SaveAccount(playerid, false, false);
 	    PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
 	    player_notice(playerid, "House sold", "");
@@ -26869,7 +26871,7 @@ GetAllowedEnterpriseCount(playerid, &score)
 	};
 	for(new i = MAX_PLAYER_ENTERPRISES - 1; i >= 0; i--)
 	{
-	    if(GetPlayerScoreEx(playerid) <= ents_per_score[i][0]) {
+	    if(GetPlayerScoreEx(playerid) >= ents_per_score[i][0]) {
 			score = ents_per_score[i][0];
 		    return ents_per_score[i][1];
 		}
@@ -29438,7 +29440,7 @@ EnterHouse(playerid, i)
     SetPlayerInterior(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][interior]);
 	SetPlayerVirtualWorld(playerid, HouseData[i][e_id] + 1000);
 	SetPlayerPos(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][house_x], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_y], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_z]);
-	player_notice(playerid, "type ~y~/exit ~w~to leave", "", 4000);
+	player_notice(playerid, "~w~type ~y~/exit ~w~to leave", "", 4000);
 	SCM(playerid, -1, ""er"Type /exit to leave the house");
 	return 1;
 }
@@ -29582,7 +29584,7 @@ SetupStore(slot)
 	new r = slot;
 
     format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", StoreData[r][e_name]);
-   	StoreData[r][e_labelid] = CreateDynamic3DTextLabel(gstr, WHITE, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] + 0.6, 25.0, .worldid = 0, .streamdistance = 25.0);
+   	StoreData[r][e_labelid] = CreateDynamic3DTextLabel(gstr, WHITE, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] + 0.6, 25.0, .worldid = 0, , .interiorid = 0, .streamdistance = 25.0);
     StoreData[r][e_pickup_out] = CreateDynamicPickup(1559, 1, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
 
 	switch(StoreData[r][e_type])
@@ -29643,7 +29645,7 @@ SetupHouse(slot, owner[])
 	}
 
 	if(HouseData[r][e_labelid] == Text3D:-1)
-		HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 40.0, .worldid = 0, .interiorid = 0);
+		HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 25.0, .worldid = 0, .interiorid = 0, .streamdistance = 25.0);
 		
     if(HouseData[r][e_pickupid] == -1)
 		HouseData[r][e_pickupid] = CreateDynamicPickup(HouseData[r][e_owner] == 0 ? 1273 : 1272, 1, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
@@ -29676,7 +29678,7 @@ SetupEnterprise(slot, owner[])
 	}
 
 	if(EnterpriseData[r][e_labelid] == Text3D:-1)
-		EnterpriseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 40.0, .worldid = 0, .interiorid = 0);
+		EnterpriseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], 25.0, .worldid = 0, .interiorid = 0, .streamdistance = 25.0);
 		
 	if(EnterpriseData[r][e_pickupid] == -1)
 		EnterpriseData[r][e_pickupid] = CreateDynamicPickup(1274, 1, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
