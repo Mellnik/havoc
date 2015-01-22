@@ -26871,20 +26871,21 @@ GetNearestEnterprise(playerid)
 	return -1;
 }
 
-GetAllowedHouseCount(playerid, &score) // TODO: Zeigt eig immer 500 an??
+GetAllowedHouseCount(playerid, &score)
 {
 	static const houses_per_score[MAX_PLAYER_HOUSES][2] = {
-	    {500, 1},
-	    {2000, 2},
-	    {5000, 3},
-	    {10000, 4},
-	    {25000, 5}
+	    {500,	1},
+	    {2000,	2},
+	    {5000,	3},
+	    {10000,	4},
+	    {25000,	5}
 	};
 	for(new i = MAX_PLAYER_HOUSES - 1; i >= 0; i--)
 	{
-	    if(GetPlayerScoreEx(playerid) >= houses_per_score[i][0]) {
-			score = houses_per_score[i][0];
-		    return houses_per_score[i][1];
+		if(GetPlayerScoreEx(playerid) >= houses_per_score[i][0])
+		{
+			score = houses_per_score[i == MAX_PLAYER_HOUSES - 1 ? i : i + 1][0];
+			return houses_per_score[i][1];
 		}
 	}
 	score = houses_per_score[0][0];
@@ -26908,17 +26909,17 @@ GetPlayerHouseCount(playerid)
 GetAllowedEnterpriseCount(playerid, &score)
 {
 	static const ents_per_score[MAX_PLAYER_ENTERPRISES][2] = {
-	    {500, 1},
-	    {2000, 2},
-	    {5000, 3},
+	    {500, 	1},
+	    {2000, 	2},
+	    {5000, 	3},
 	    {10000, 4},
 	    {25000, 5}
 	};
 	for(new i = MAX_PLAYER_ENTERPRISES - 1; i >= 0; i--)
 	{
 	    if(GetPlayerScoreEx(playerid) >= ents_per_score[i][0]) {
-			score = ents_per_score[i][0];
-		    return ents_per_score[i][1];
+			score = ents_per_score[i == MAX_PLAYER_ENTERPRISES - 1 ? i : i + 1][0];
+			return ents_per_score[i][1];
 		}
 	}
 	score = ents_per_score[0][0];
