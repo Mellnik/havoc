@@ -9057,7 +9057,9 @@ YCMD:sell(playerid, params[], help)
         EnterpriseData[r][e_date] = 0;
         
 		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+		EnterpriseData[r][e_labelid] = Text3D:-1;
 		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
+		EnterpriseData[r][e_pickupid] = -1;
         SetupEnterprise(r, "<null>");
 
 		orm_update(EnterpriseData[r][e_ormid]);
@@ -14079,14 +14081,11 @@ YCMD:setentlevel(playerid, params[], help)
 		bFound = true;
 		
 		EnterpriseData[r][e_level] = blevel;
+
+		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+		EnterpriseData[r][e_labelid] = Text3D:-1;
+		SetupEnterprise(r, EnterpriseData[r][e_namecache]);
 		
-		if(EnterpriseData[r][e_owner] != 0) {
-	        format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-		} else {
-		    format(gstr, sizeof(gstr), ""enterprise_mark"\n"nef_green"FOR SALE! Type /buy"white"\nID: %i\nType: %s\nLevel: %i", EnterpriseData[r][e_id], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-		}
-		
-		UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
 		orm_update(EnterpriseData[r][e_ormid]);
 		
 		player_notice(playerid, "Enterprise level set", "");
@@ -14126,8 +14125,9 @@ YCMD:ereset(playerid, params[], help)
         EnterpriseData[r][e_date] = 0;
 
 		DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+		EnterpriseData[r][e_labelid] = Text3D:-1;
 		DestroyDynamicPickup(EnterpriseData[r][e_pickupid]);
-
+		EnterpriseData[r][e_pickupid] = -1;
         SetupEnterprise(r, "<null>");
 
 	    player_notice(playerid, "SUCCESS!", "");
