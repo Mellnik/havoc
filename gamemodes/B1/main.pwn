@@ -16933,7 +16933,7 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
 			    if(HouseData[i][e_ormid] == ORM:-1)
 			        continue;
 			        
-			    if(HouseData[i][e_owner] != PlayerData[i][e_accountid])
+			    if(HouseData[i][e_owner] != PlayerData[playerid][e_accountid])
 					continue;
 					
 				DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
@@ -16950,26 +16950,26 @@ function:OnPlayerNameChangeRequest(playerid, newname[])
 				if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_accountid])
 					continue;
 
+                DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+                EnterpriseData[r][e_labelid] = Text3D:-1;
                 strmid(EnterpriseData[r][e_namecache], newname, 0, 25, 25);
-                format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-			    UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
-			    orm_update(EnterpriseData[r][e_ormid]);
+			    SetupEnterprise(r, EnterpriseData[r][e_namecache]);
 			}
             
             format(query, sizeof(query), "UPDATE `accounts` SET `name` = '%s' WHERE `name` = '%s' LIMIT 1;", newname, oldname);
-            mysql_tquery(pSQL, query, "", "");
+            mysql_tquery(pSQL, query);
             
             format(query, sizeof(query), "UPDATE `race_records` SET `name` = '%s' WHERE `name` = '%s';", newname, oldname);
-            mysql_tquery(pSQL, query, "", "");
+            mysql_tquery(pSQL, query);
             
             format(query, sizeof(query), "INSERT INTO `ncrecords` VALUES (%i, '%s', '%s', UNIX_TIMESTAMP());", PlayerData[playerid][e_accountid], oldname, newname);
             mysql_pquery(pSQL, query);
             
             format(query, sizeof(query), "UPDATE `queue` SET `Extra` = '%s' WHERE `Extra` = '%s';", newname, oldname);
-            mysql_tquery(pSQL, query, "", "");
+            mysql_tquery(pSQL, query);
 
             format(query, sizeof(query), "UPDATE `viporder` SET `receiver` = '%s' WHERE `receiver` = '%s';", newname, oldname);
-            mysql_tquery(pSQL, query, "", "");
+            mysql_tquery(pSQL, query);
 
 			PlayerData[playerid][e_lastnc] = gettime();
 			
@@ -17733,7 +17733,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        {
 	            if(strlen(inputtext) > 20 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Name length: 3-20");
                 if(!strcmp(inputtext, __GetName(playerid), false)) return SCM(playerid, -1, ""er"You are already using that name");
-	            if(!strcmp(inputtext, __GetName(playerid), true)) return SCM(playerid, -1, ""er"The name only differs in case. Just relog with that.");
+	            if(!strcmp(inputtext, __GetName(playerid), true)) return SCM(playerid, -1, ""er"The name only differs in case, just with the new name.");
 
 				new newname[MAX_PLAYER_NAME + 1];
 				mysql_escape_string(inputtext, newname, pSQL, MAX_PLAYER_NAME + 1);
@@ -23856,7 +23856,7 @@ function:DerbyFallOver()
 
 function:QueueProcess()
 {
-	mysql_pquery(pSQL, "SELECT * FROM `queue` WHERE `ExecutionDate` < UNIX_TIMESTAMP();", "OnQueueReceived", "");
+	mysql_pquery(pSQL, "SELECT * FROM `queue` WHERE `execdate` < UNIX_TIMESTAMP();", "OnQueueReceived");
 
 	getdate(gTime[0], gTime[1], gTime[2]);
 	gettime(gTime[3], gTime[4], gTime[5]);
