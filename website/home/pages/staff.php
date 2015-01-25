@@ -1,5 +1,5 @@
 	<!--<div id="box">-->
-		<table class="neftable" style='min-width: 100%;'>
+		<table class="havoctable" style='min-width: 100%;'>
 			<caption>NEF Staff</caption>
 
 			<tr>

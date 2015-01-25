@@ -8,7 +8,7 @@
 			<input type="submit" value=" Go -> ">
 		</form>
 		<br>
-		<table class="neftable" style='min-width: 100%;'>
+		<table class="havoctable" style='min-width: 100%;'>
 			<caption>Last rulebreakers</caption>
 
 			<tr>

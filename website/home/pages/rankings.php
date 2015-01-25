@@ -1,5 +1,5 @@
 	<!--<div id="box">-->
-		<table class="neftable" style='min-width: 50%;'>
+		<table class="havoctable" style='min-width: 50%;'>
 			<caption>Most playing time</caption>
 
 			<tr>
@@ -29,7 +29,7 @@
 		<br>
 		<div style="display: table;">
 			<div style="vertical-align: middle; display: table-cell;">
-			<table class="neftable">
+			<table class="havoctable">
 				<caption>Most kills</caption>
 
 				<tr>
@@ -57,7 +57,7 @@
 			</table>	
 			</div>
 			<div style="vertical-align: middle; display: table-cell;">
-			<table class="neftable">
+			<table class="havoctable">
 				<caption>Most deaths</caption>
 
 				<tr>
@@ -85,7 +85,7 @@
 			</table>	
 			</div>
 			<div style="vertical-align: middle; display: table-cell;">
-			<table class="neftable">
+			<table class="havoctable">
 				<caption>Most Score</caption>
 
 				<tr>
@@ -113,7 +113,7 @@
 			</table>	
 			</div>
 			<div style="vertical-align: middle; display: table-cell;">
-			<table class="neftable">
+			<table class="havoctable">
 				<caption>Most Bank Credit</caption>
 
 				<tr>
@@ -142,7 +142,7 @@
 			</div>
 		</div>
 		<br>
-		<table class="neftable" style='min-width: 75%;'>
+		<table class="havoctable" style='min-width: 75%;'>
 			<caption>Last 10 rulebreakers</caption>
 
 			<tr>
