@@ -67,7 +67,19 @@ Build 1 (1st Feb 2015)
 - Derby changes:
 	* All players drive the same car on a map.
 	* Added admin command to set the next derby map manually. (/derbyforcemap) (TODO)
-
+- New /settings dialog values which are being saved in the database:
+  * /tgo (Allow teleports to you)
+  * /tpm (Allow private messages)
+  * /fs (Fight style, now in a dialog)
+  * /speedo (Vehicle speedometer)
+  * Prefered name color
+  * Prefered skin
+  * Auto Login
+  * /blevel (severity of vehicle boost)
+  * /jlevel (severity of vehicle jumps)
+  * Join message (VIP only)
+  * Spawn location (House/Hotspot) 
+	
 Script changes made possible by SA-MP 0.3.7
 - Sold house icon color has been changed to red.
 	
@@ -118,18 +130,6 @@ TODO
 - Gang score has been reduced if you attack a zone with many members.
 - Got rid of mSelection, now using an improved UI for toys.
 - Improve OnPlayerKeyStateChange and remove shitty doingStunt stuff
-- New /settings dialog values which are being saved in the database:
-  * /tgo (Allow teleports to you)
-  * /tpm (Allow private messages)
-  * /fs (Fight style, now in a dialog)
-  * /speedo (Vehicle speedometer)
-  * Prefered name color
-  * Spawn location (House/Hotspot) 
-  * Prefered skin
-  * Auto Login
-  * /blevel (severity of vehicle boost)
-  * /jlevel (severity of vehicle jumps)
-  * Join message (VIP only)
   
 VIP Features
 ------------

@@ -112,7 +112,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #else
 #define SERVER_VERSION					"Beta:Build 1"
 #endif
-#define SAMP_VERSION                    "0.3.7 RC1"
+#define SAMP_VERSION                    "0.3.7-RC1"
 
 // Script
 #define MAX_PLAYER_TOYS                 (6)
@@ -828,7 +828,8 @@ enum E_PLAYER_SETTINGS // TODO: Laden bei login!
 	e_auto_login,
 	Float:e_boost_level,
 	Float:e_jump_level,
-	e_house_spawn
+	e_house_spawn,
+	e_vip_join_msg
 };
 
 enum E_PLAYER_ACH_DATA
@@ -3553,6 +3554,7 @@ public OnPlayerDisconnect(playerid, reason)
    	if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED && PlayerData[playerid][bLogged])
 	{
 	    SQL_SaveAccount(playerid);
+	    SQL_SaveAccountSettings(playerid);
 	    
 		switch(gTeam[playerid])
 		{
@@ -14183,6 +14185,7 @@ YCMD:ecreate(playerid, params[], help)
 	
 	extract params -> new type, value; else
 	{
+	    SCM(playerid, NEF_GREEN, "ENT_TYPE_LOANSHARK, ENT_TYPE_ROBBERY, ENT_TYPE_SMUGGLING, ENT_TYPE_NUDE, ENT_TYPE_METHLAB, ENT_TYPE_BTCFARM");
 	    return SCM(playerid, NEF_GREEN, "Usage: /ecreate <type> <value>");
 	}
 	
@@ -14292,6 +14295,7 @@ YCMD:screate(playerid, params[], help)
 	new type;
     if(sscanf(params, "is[143]", type, gstr))
     {
+		SCM(playerid, NEF_GREEN, "STORE_TYPE_AMMUNATION, STORE_TYPE_BANK, STORE_TYPE_BURGERSHOT, STORE_TYPE_CLUCKINBELLS, STORE_TYPE_247, STORE_TYPE_STACKEDPIZZAS");
         return SCM(playerid, NEF_GREEN, "Usage: /screate <type> <name>");
     }
 
@@ -28377,6 +28381,7 @@ function:OnPlayerAccountRequest(playerid, namehash, request)
 				PlayerSettings[playerid][e_boost_level] = cache_get_field_content_float(0, "blevel");
 				PlayerSettings[playerid][e_jump_level] = cache_get_field_content_float(0, "jlevel");
 				PlayerSettings[playerid][e_house_spawn] = cache_get_field_content_int(0, "house_spawn");
+				PlayerSettings[playerid][e_vip_join_msg] = cache_get_field_content_int(0, "vip_join_msg");
 			}
 			
 			if(PlayerSettings[playerid][e_auto_login] == 1)
@@ -29370,6 +29375,7 @@ ResetPlayerData(playerid)
 	PlayerSettings[playerid][e_boost_level] = 1.30;
 	PlayerSettings[playerid][e_jump_level] = 0.20;
 	PlayerSettings[playerid][e_house_spawn] = 0;
+	PlayerSettings[playerid][e_vip_join_msg] = 1;
 
     PlayerSettings[playerid][e_namecolor] = 0;
 
@@ -29378,6 +29384,25 @@ ResetPlayerData(playerid)
 		DestroyVehicleEx(PlayerData[playerid][pPreviewVehicle]);
 		PlayerData[playerid][pPreviewVehicle] = INVALID_VEHICLE_ID;
 	}
+}
+
+SQL_SaveAccountSettings(playerid)
+{
+	mysql_tquery(pSQL, "DELETE FROM `settings` WHERE `id` = %i LIMIT 1;", PlayerData[playerid][e_accountid]);
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "INSERT INTO `settings` VALUES (%i, %i, %i, %i, %i, %i, %i, %i, %f, %f, %i, %i);",
+	    PlayerData[playerid][e_accountid],
+	    PlayerSettings[playerid][e_allow_teleport],
+	    PlayerSettings[playerid][e_allow_pm],
+	    PlayerSettings[playerid][e_fightstyle],
+	    PlayerSettings[playerid][e_speedo],
+	    PlayerSettings[playerid][e_namecolor],
+	    PlayerSettings[playerid][e_skin],
+	    PlayerSettings[playerid][e_auto_login],
+	    PlayerSettings[playerid][e_boost_level],
+	    PlayerSettings[playerid][e_jump_level],
+	    PlayerSettings[playerid][e_house_spawn],
+		PlayerSettings[playerid][e_vip_join_msg]);
+	mysql_tquery(pSQL, gstr2);
 }
 
 CancelGangCreation(playerid)

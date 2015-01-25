@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 20, 2015 at 09:06 PM
+-- Generation Time: Jan 25, 2015 at 08:19 PM
 -- Server version: 5.5.40-MariaDB
 -- PHP Version: 5.4.16
 
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `bans` (
   `armor` float(14,2) NOT NULL,
   `god` tinyint(3) unsigned NOT NULL,
   `weapon` mediumint(8) unsigned NOT NULL,
-  `ac_flags` binary(14) NOT NULL
+  `ac_flags` bit(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -245,7 +245,7 @@ CREATE TABLE IF NOT EXISTS `news` (
 CREATE TABLE IF NOT EXISTS `queue` (
   `id` int(10) unsigned NOT NULL,
   `action` tinyint(4) NOT NULL,
-  `execdate` int(11) NOT NULL,
+  `execdate` int(10) unsigned NOT NULL,
   `extra` varchar(100) NOT NULL
 ) ENGINE=MEMORY DEFAULT CHARSET=latin1;
 
@@ -334,7 +334,8 @@ CREATE TABLE IF NOT EXISTS `server` (
 --
 
 INSERT INTO `server` (`name`, `value`) VALUES
-('player_record', '250');
+('player_record', '250'),
+('online', '0');
 
 -- --------------------------------------------------------
 
