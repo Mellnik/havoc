@@ -3862,7 +3862,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[])
 
 public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 {
-	format(gstr2, sizeof(gstr2), "[%02d:%02d:%02d %02d.%02d] [%i]%s req:%s success:%i\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), cmdtext, success);
+	format(gstr2, sizeof(gstr2), "[%02d/%02d %02d:%02d:%02d] [%i]%s req:%s success:%i\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), cmdtext, success);
 	NC_ServerLog("scriptfiles/cmdlog.txt", gstr2);
 
 	if(!success) {
@@ -4712,7 +4712,7 @@ public OnPlayerText(playerid, text[])
 	}
 	strmid(LastPlayerText[playerid], text, 0, 144, 144);
 
-	format(gstr2, sizeof(gstr2), "[%02d:%02d:%02d %02d.%02d] [%i]%s: %s\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), text);
+	format(gstr2, sizeof(gstr2), "[%02d/%02d %02d:%02d:%02d] [%i]%s: %s\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), text);
 	NC_ServerLog("scriptfiles/chatlog.txt", gstr2);
 
 	if(IsAd(text))
