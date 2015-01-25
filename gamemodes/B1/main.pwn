@@ -42,7 +42,7 @@
 #pragma dynamic 8192        // for md-sort
 
 #define IS_RELEASE_BUILD (true)
-#define INC_ENVIRONMENT (true)
+#define INC_ENVIRONMENT (false)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
 #define YSI_IS_SERVER
@@ -14338,6 +14338,7 @@ YCMD:screate(playerid, params[], help)
     StoreData[r][e_spawn][2] = fPOS[2];
     StoreData[r][e_spawn][3] = floatround(floatadd(180.0, fPOS[3]), floatround_ceil);
 
+	StoreData[r][e_type] = E_STORE_TYPE:type;
     StoreData[r][e_date] = gettime();
     StoreData[r][e_creator] = PlayerData[playerid][e_accountid];
     strcpy(StoreData[r][e_name], gstr, MAX_STORE_NAME);
