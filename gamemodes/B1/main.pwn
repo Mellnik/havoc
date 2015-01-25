@@ -13,7 +13,7 @@
 
 /*
 || Build Dependencies:
-|| SA-MP Server 0.3z-R4
+|| SA-MP Server 0.3.7 RC1
 || Havoc Core
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1
@@ -42,7 +42,7 @@
 #pragma dynamic 8192        // for md-sort
 
 #define IS_RELEASE_BUILD (true)
-#define INC_ENVIRONMENT (false)
+#define INC_ENVIRONMENT (true)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
 #define YSI_IS_SERVER
@@ -112,7 +112,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #else
 #define SERVER_VERSION					"Beta:Build 1"
 #endif
-#define SAMP_VERSION                    "0.3z-R4"
+#define SAMP_VERSION                    "0.3.7 RC1"
 
 // Script
 #define MAX_PLAYER_TOYS                 (6)
@@ -2920,12 +2920,16 @@ public OnGameModeInit()
 	
 	NC_OutputTeleportInfo();
 	
+	mysql_tquery(pSQL, "UPDATE `server` SET `value` = 0 WHERE `name` = 'online';");
+	
     Log(LOG_INIT, "Server successfully loaded");
 	return 1;
 }
 
 public OnGameModeExit()
 {
+    mysql_tquery(pSQL, "UPDATE `server` SET `value` = 0 WHERE `name` = 'online';");
+
 	mysql_stat(gstr2, pSQL, sizeof(gstr2));
 	Log(LOG_EXIT, "MySQL: %s", gstr2);
 
@@ -3467,6 +3471,8 @@ public OnIncomingConnection(playerid, ip_address[], port)
 
 public OnPlayerConnect(playerid)
 {
+    mysql_tquery(pSQL, "UPDATE `server` SET `value` = `value` + 1 WHERE `name` = 'online';");
+
     ResetPlayerData(playerid);
 	ResetPlayerPV(playerid);
     ResetPlayerToy(playerid);
@@ -3540,6 +3546,8 @@ public OnPlayerConnect(playerid)
 
 public OnPlayerDisconnect(playerid, reason)
 {
+	mysql_tquery(pSQL, "UPDATE `server` SET `value` = `value` - 1 WHERE `name` = 'online';");
+
 	PlayerData[playerid][bLoadMap] = false;
 
    	if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED && PlayerData[playerid][bLogged])
@@ -3853,7 +3861,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[])
 public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 {
 	format(gstr2, sizeof(gstr2), "[%02d:%02d:%02d %02d.%02d] [%i]%s req:%s success:%i\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), cmdtext, success);
-	NC_ServerLog("cmdlog.txt", gstr2);
+	NC_ServerLog("scriptfiles/cmdlog.txt", gstr2);
 
 	if(!success) {
 	    player_notice(playerid, "Unknown command", "Type ~y~/c ~w~for all commands");
@@ -4703,7 +4711,7 @@ public OnPlayerText(playerid, text[])
 	strmid(LastPlayerText[playerid], text, 0, 144, 144);
 
 	format(gstr2, sizeof(gstr2), "[%02d:%02d:%02d %02d.%02d] [%i]%s: %s\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), text);
-	NC_ServerLog("chatlog.txt", gstr2);
+	NC_ServerLog("scriptfiles/chatlog.txt", gstr2);
 
 	if(IsAd(text))
 	{
@@ -29694,7 +29702,7 @@ SetupHouse(slot, owner[])
 		HouseData[r][e_labelid] = CreateDynamic3DTextLabel(gstr2, WHITE, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2] + 0.3, 25.0, .worldid = 0, .interiorid = 0, .streamdistance = 25.0);
 		
     if(HouseData[r][e_pickupid] == -1)
-		HouseData[r][e_pickupid] = CreateDynamicPickup(HouseData[r][e_owner] == 0 ? 1273 : 1272, 1, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
+		HouseData[r][e_pickupid] = CreateDynamicPickup(HouseData[r][e_owner] == 0 ? 1273 : 19522, 1, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
 
 	if(HouseData[r][e_owner] == 0) {
 	    if(HouseData[r][e_iconid] == -1)

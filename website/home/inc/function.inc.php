@@ -70,7 +70,7 @@ function GetRankByLevel($level)
 			$string = "Head Administrator";
 			break;
 		case 5:
-			$string = "Executive Administrator";
+			$string = "Foundation";
 			break;
 	}
 	return $string;

@@ -1,7 +1,7 @@
 <?php
-define("SQL_HOST", "::1");
+define("SQL_HOST", "localhost");
 define("SQL_USER", "havocserver");
-define("SQL_PASS", "");
+define("SQL_PASS", "nlR:o%k15N5*5/u8azwrgbtgrb");
 define("SQL_DATA", "havocserver");
 
 $mysqli = new mysqli(SQL_HOST, SQL_USER, SQL_PASS, SQL_DATA);

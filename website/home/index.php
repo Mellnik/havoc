@@ -4,8 +4,8 @@
 error_reporting(-1);
 ini_set("display_errors", 1);
 
-define("_SITE_", "https://havocserver.com");
-define("_FORUM_", "https://forum.havocserver.com");
+define("_SITE_", "http://havocserver.com");
+define("_FORUM_", "http://forum.havocserver.com");
 
 include("inc/mysql.inc.php");
 include("inc/function.inc.php");
@@ -44,62 +44,7 @@ include("inc/function.inc.php");
 				<?php
 					$num_players = 0;
 					
-					/*$servers = array(
-						array(
-						'id' => 'kf1',
-						'type' => 'killingfloor',
-						'host' => '92.222.11.186:7708',
-						),
-						array(
-						'id' => 'kf2',
-						'type' => 'killingfloor',
-						'host' => '92.222.11.187:7708',
-						),
-						array(
-						'id' => 'kf3',
-						'type' => 'killingfloor',
-						'host' => '31.204.152.218:7708',
-						),
-						array(
-						'id' => 'kf4',
-						'type' => 'killingfloor',
-						'host' => '31.204.152.219:7708',
-						),
-						array(
-						'id' => 'kf5',
-						'type' => 'killingfloor',
-						'host' => '213.163.74.22:7708',
-						),
-						array(
-						'id' => 'kf6',
-						'type' => 'killingfloor',
-						'host' => '213.163.74.23:7708',
-						),
-						array(
-						'id' => 'kf7',
-						'type' => 'killingfloor',
-						'host' => '213.163.74.41:7708',
-						)
-					);
-					
-					$gq = new GameQ();
-					$gq->addServers($servers);
-					$gq->setOption('timeout', 1);
-					
-					try {
-						$data = $gq->requestData();
-						//$num_players += $data['kf1']['playercount'];
-						//$num_players += $data['kf2']['playercount'];
-						//$num_players += $data['kf3']['playercount'];
-						//$num_players += $data['kf4']['playercount'];
-						//$num_players += $data['kf5']['playercount'];
-					}
-
-					catch (GameQ_Exception $e) {
-						echo 'An error occurred.';
-					}*/
-					
-					$query = $mysqli->query("SELECT COUNT(`id`) FROM `online`;");
+					$query = $mysqli->query("SELECT `value` FROM `server` WHERE `name` = 'online';");
 					$row = $query->fetch_row();
 					$num_players += $row[0];
 					?>
@@ -108,7 +53,6 @@ include("inc/function.inc.php");
 			</div>
 		</div>
 		<br>
-		<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2FNewEvolutionFreeroam&amp;width&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;share=false&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:21px;" allowTransparency="true"></iframe>
 		<div id="content">
 			<?php
 			if(!isset($_GET['page'])) 
@@ -134,7 +78,7 @@ include("inc/function.inc.php");
 			?>
 			
 			<div class="copyright">
-				&copy 2014 New Evolution Freeroam
+				&copy 2015 Havoc Server
 			</div>
 		</div>
 	</body>

@@ -68,6 +68,9 @@ Build 1 (1st Feb 2015)
 	* All players drive the same car on a map.
 	* Added admin command to set the next derby map manually. (/derbyforcemap) (TODO)
 
+Script changes made possible by SA-MP 0.3.7
+- Sold house icon color has been changed to red.
+	
 TODO
 ----
 - http://gamerxserver.com/downloads/GamerX-Commands.txt
