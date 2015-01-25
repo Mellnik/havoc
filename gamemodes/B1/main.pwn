@@ -29640,39 +29640,39 @@ SetupStore(slot)
 
     format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", StoreData[r][e_name]);
    	StoreData[r][e_labelid] = CreateDynamic3DTextLabel(gstr, WHITE, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] + 0.6, 25.0, .worldid = 0, .interiorid = 0, .streamdistance = 25.0);
-    StoreData[r][e_pickup_out] = CreateDynamicPickup(1559, 1, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
+    StoreData[r][e_pickup_out] = CreateDynamicPickup(19606, 1, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
 
 	switch(StoreData[r][e_type])
 	{
 	    case STORE_TYPE_BANK:
 	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 2304.69, -16.19, 26.74, (slot + 1000), .streamdistance = 50.0);
-	        StoreData[r][e_pickup_menu] = CreateDynamicPickup(19607, 1, 2311.63, -3.89, 26.74, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 2304.69, -16.19, 25.74, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_pickup_menu] = CreateDynamicPickup(19607, 1, 2311.63, -3.89, 25.74, (slot + 1000), .streamdistance = 50.0);
 	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 25, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 	    case STORE_TYPE_AMMUNATION:
 	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 315.81, -143.65, 999.60, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 315.81, -143.65, 998.60, (slot + 1000), .streamdistance = 50.0);
 	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 6, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 	    case STORE_TYPE_BURGERSHOT:
 	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 362.87, -75.17, 1001.50, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 362.87, -75.17, 1000.50, (slot + 1000), .streamdistance = 50.0);
 	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 10, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 	    case STORE_TYPE_CLUCKINBELLS:
 	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 364.87, -11.74, 1001.85, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 364.87, -11.74, 1000.85, (slot + 1000), .streamdistance = 50.0);
 	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 14, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 	    case STORE_TYPE_247:
 	    {
-	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, -25.884, -185.868, 1003.546, (slot + 1000), .streamdistance = 50.0);
+	        StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, -25.884, -185.868, 1002.546, (slot + 1000), .streamdistance = 50.0);
 	        StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 17, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 	    }
 		case STORE_TYPE_STACKEDPIZZAS:
 		{
-		    StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 372.36, -133.50, 1001.49, (slot + 1000), .streamdistance = 50.0);
+		    StoreData[r][e_pickup_in] = CreateDynamicPickup(19606, 1, 372.36, -133.50, 1000.49, (slot + 1000), .streamdistance = 50.0);
 		    StoreData[r][e_mapicon] = CreateDynamicMapIcon(StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], 29, -1, .worldid = 0, .interiorid = 0, .streamdistance = 300.0);
 		}
 	}
