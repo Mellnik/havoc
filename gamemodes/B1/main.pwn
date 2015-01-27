@@ -4793,7 +4793,7 @@ public OnPlayerText(playerid, text[])
 	}
 	if(text[0] == '$' && PlayerData[playerid][e_vip] == 1)
 	{
-	    replace_col_codes(text); // TODO: Don't pring the dollar sign.
+	    strmid(text, replace_col_codes(text), 0, 144, 144); // TODO: Don't print the dollar sign.
 	}
 	if(text[0] == '!' && PlayerData[playerid][e_gangrank] != 0)
 	{
