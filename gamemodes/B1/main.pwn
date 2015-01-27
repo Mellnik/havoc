@@ -17207,9 +17207,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                  	strcat(gstr2, gstr);
 	                format(gstr, sizeof(gstr), ""nef" :: Enterprise Level Upgrade > Slot: %i", PlayerData[playerid][EnterpriseIdSelected] + 1);
 					ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr, gstr2, "OK", "");
-                 	
-					format(gstr, sizeof(gstr), ""enterprise_mark"\nID: %i\nOwner: %s\nType: %s\nLevel: %i", EnterpriseData[r][e_id], EnterpriseData[r][e_namecache], g_szEnterpriseTypes[_:EnterpriseData[r][e_type]], EnterpriseData[r][e_level]);
-					UpdateDynamic3DTextLabelText(EnterpriseData[r][e_labelid], -1, gstr);
+					
+					DestroyDynamic3DTextLabel(EnterpriseData[r][e_labelid]);
+					EnterpriseData[r][e_labelid] = Text3D:-1;
+					SetupEnterprise(r, EnterpriseData[r][e_namecache]);
 				    
 					orm_update(EnterpriseData[r][e_ormid]);
 				} else {
@@ -29665,7 +29666,7 @@ SetupStore(slot)
 
     format(gstr, sizeof(gstr), ""white"["yellow"Store"white"]\n%s", StoreData[r][e_name]);
    	StoreData[r][e_labelid] = CreateDynamic3DTextLabel(gstr, WHITE, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] + 0.6, 25.0, .worldid = 0, .interiorid = 0, .streamdistance = 25.0);
-    StoreData[r][e_pickup_out] = CreateDynamicPickup(19606, 1, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2], .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
+    StoreData[r][e_pickup_out] = CreateDynamicPickup(19606, 1, StoreData[r][e_pick][0], StoreData[r][e_pick][1], StoreData[r][e_pick][2] - 0.5, .worldid = 0, .interiorid = 0, .streamdistance = 50.0);
 
 	switch(StoreData[r][e_type])
 	{
