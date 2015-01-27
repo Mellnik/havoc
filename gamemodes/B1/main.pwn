@@ -18326,6 +18326,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        }
 	        case DIALOG_HOUSE_UPGRADE + 1:
 	        {
+	            if(listitem < 0 || listitem > sizeof(g_aHouseInteriorTypes))
+	                return true;
+	                
+                PlayerData[playerid][HouseIntSelected] = listitem;
+	        
 		        if(gTeam[playerid] != gFREEROAM)
 				{
 					player_notice(playerid, "You must be in freeroam mode to upgrade", "");
