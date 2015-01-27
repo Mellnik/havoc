@@ -30,13 +30,14 @@ Build 1 (1st Feb 2015)
    * Removed house item system.
    * /hlock has been merged into /lock.
    * /hmenu has been removed.
+   * Using /sell resets the interior to it's default.
 - Enterprise (Business) changes:
    * Businesses have been renamed to Enterprises.
    * Added type: Bitcoin Mining Farm.
    * /e for a list of your enterprises.
    * Enterpries now have a value like houses.
    * /sellto <playerid> <price> to sell your enterprise to another player. (Does not alter level)
-   * /sell resets the level.
+   * Using /sell resets the enterprise level to 0.
    * Added '/accept enterprise' to to accept an enterprise offer.
 - Merged old /accept command into '/accept vip'
 - Dialog cleanups to avoid unnecessary overhead.
