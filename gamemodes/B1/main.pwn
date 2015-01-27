@@ -18342,6 +18342,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
          			return SCM(playerid, -1, ""er"This house already got the interior");
 				    
 				HouseData[PlayerData[playerid][iHouseLastSel]][e_locked] = 1;
+				HouseData[PlayerData[playerid][iHouseLastSel]][e_interior] = PlayerData[playerid][HouseIntSelected];
 
 				/* Remove all players from house */
 	            for(new pid = 0; pid < MAX_PLAYERS; pid++)
@@ -18359,7 +18360,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            SetupHouse(PlayerData[playerid][iHouseLastSel], HouseData[PlayerData[playerid][iHouseLastSel]][e_namecache]);
 	            
 	            GivePlayerMoneyEx(playerid, -g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][price]);
-	            HouseData[PlayerData[playerid][iHouseLastSel]][e_interior] = PlayerData[playerid][HouseIntSelected];
        			SetPlayerPos(playerid, HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][0], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][1], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][2]);
 				ResetPlayerWorld(playerid);
 				gTeam[playerid] = gFREEROAM;
