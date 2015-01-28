@@ -376,6 +376,7 @@ cell AMX_NATIVE_CALL Native::FormatColorCodes(AMX *amx, cell *params)
 	ReplaceAll(transform, "<blue>", "{0087FF}");
 	ReplaceAll(transform, "<yellow>", "{DBED15}");
 	ReplaceAll(transform, "<white>", "{F0F0F0}");
+	transform.erase(0, 3); // Remove '***' from the  beginning
 	
 	cell *amx_Addr = NULL;
 	amx_GetAddr(amx, params[1], &amx_Addr);
