@@ -54,9 +54,8 @@ Build 1 (1st Feb 2015)
   #text = Admin chat
   *text = VIP chat
   !text = Gang chat
-  $text = Enable color codes
-  @text = Reply to a private message
-- Added color codes for VIPs: <blue> <red> <green> <yellow>
+  ***text = Enable color codes (VIP)
+- Added color codes for VIPs: <blue> <red> <green> <yellow> <white>
 - Removed /scorefall, /cashfall and announce commands.
 - Command /ncrecords is now accessible by everyone.
 - Removed dynamic ramps.
@@ -65,6 +64,7 @@ Build 1 (1st Feb 2015)
 - Houses now determine how many private cars you may held within your account.
 - Player bounties are now being saved within your account.
 - Duel wins and defeats are now being saved within your account.
+- /caps command has been removed.
 - Derby changes:
 	* All players drive the same car on a map.
 	* Added admin command to set the next derby map manually. (/derbyforcemap) (TODO)

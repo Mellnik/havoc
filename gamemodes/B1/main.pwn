@@ -181,10 +181,9 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define VEHICLE_RESPAWN_TIME			(60)
 #define SCM SendClientMessage
 #define SCMToAll SendClientMessageToAll
-#define RGBA(%1,%2,%3,%4) (((((%1) & 0xff) << 24) | (((%2) & 0xff) << 16) | (((%3) & 0xff) << 8) | ((%4) & 0xff)))
-#define UpperToLower(%1) for(new ToLowerChar; ToLowerChar < strlen(%1); ToLowerChar++) if(%1[ToLowerChar] > 64 && %1[ToLowerChar] < 91) %1[ToLowerChar] += 32
 #define Key(%0) 						(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
 #define PreloadAnimLib(%1,%2)			ApplyAnimation(%1,%2,"NULL",0.0,0,0,0,0,0)
+#define RGBA(%1,%2,%3,%4) (((((%1) & 0xff) << 24) | (((%2) & 0xff) << 16) | (((%3) & 0xff) << 8) | ((%4) & 0xff)))
 
 // Derby
 #define DERBY_WIHLE_CAM_M1				-3948.2632, 951.8198, 78.4012
@@ -725,7 +724,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	bool:bTextdraws,
 	bool:bRainbow,
 	bool:bVehicleInfo,
-	bool:bCaps,
 	bool:bGod,
 	bool:bGWarMode,
 	bool:bLoadMap,
@@ -2699,7 +2697,6 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	bool:IsMellnikRampMoving = false,
 	MellnikGate,
 	MellnikRamp,
-	LastPlayerText[MAX_PLAYERS][144],
 	StartTime,
 	hVIPVehObj[MAX_PLAYERS][13],
   	FalloutData[E_FALLOUT_DATA],
@@ -4681,12 +4678,15 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 
 public OnPlayerText(playerid, text[])
 {
+	new szMessage[144] = {'\0', ...};
+	strcat(szMessage, text, sizeof(szMessage));
+	
 	if(bGlobalShutdown)
-	    return 0;
-
+		return 0;
+	
     if(PlayerData[playerid][bOpenSeason])
 		return 0;
-
+	
 	if(PlayerData[playerid][ExitType] != EXIT_FIRST_SPAWNED)
 	{
 	    SCM(playerid, -1, ""er"You need to spawn to use the chat!");
@@ -4694,7 +4694,7 @@ public OnPlayerText(playerid, text[])
 	}
 	if(PlayerData[playerid][bMuted])
 	{
-	    SCM(playerid, RED, "You are muted! Please wait until the time is over!");
+	    SCM(playerid, RED, "You have been muted!");
 	    return 0;
 	}
 	if((PlayerData[playerid][iCoolDownChat] + COOLDOWN_CHAT) >= GetTickCountEx())
@@ -4702,33 +4702,26 @@ public OnPlayerText(playerid, text[])
 		player_notice(playerid, "1 message every second", "");
 	    return 0;
 	}
-	if(strfind(text, "/q", true) != -1 || strfind(text, "/ q", true) != -1 || strfind(text, "/quit", true) != -1 || strfind(text, "/ quit", true) != -1)
+	if(strfind(szMessage, "/q", true) != -1 || strfind(szMessage, "/ q", true) != -1 || strfind(szMessage, "/quit", true) != -1 || strfind(szMessage, "/ quit", true) != -1)
   		return 0;
-
-	if(!strcmp(text, LastPlayerText[playerid], true))
-	{
-	    player_notice(playerid, "Do not repeat yourself", "");
-	    return 0;
-	}
-	strmid(LastPlayerText[playerid], text, 0, 144, 144);
-
-	format(gstr2, sizeof(gstr2), "[%02d/%02d %02d:%02d:%02d] [%i]%s: %s\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), text);
+	
+	format(gstr2, sizeof(gstr2), "[%02d/%02d %02d:%02d:%02d] [%i]%s: %s\r\n", gTime[3], gTime[4], gTime[5], gTime[2], gTime[1], playerid, __GetName(playerid), szMessage);
 	NC_ServerLog("scriptfiles/chatlog.txt", gstr2);
-
-	if(IsAd(text))
+	
+	if(IsAd(szMessage))
 	{
-	  	format(gstr2, sizeof(gstr2), ""yellow"** "red"Suspicion advertising | Player: %s(%i) Advertised IP: %s - PlayerIP: %s", __GetName(playerid), playerid, text, __GetIP(playerid));
+	  	format(gstr2, sizeof(gstr2), ""yellow"** "red"Suspicion advertising | Player: %s(%i) Advertised IP: %s - PlayerIP: %s", __GetName(playerid), playerid, szMessage, __GetIP(playerid));
 		admin_broadcast(RED, gstr2);
 
         SCM(playerid, RED, "Advertising is not allowed!");
         return 0;
 	}
-
+	
 	if(xTestBusy)
 	{
 	    if(ReactionOn)
 	    {
-			if(!strcmp(xChars, text, false))
+			if(!strcmp(xChars, szMessage, false))
 			{
 	            ReactionOn = false;
 	            xTestBusy = false;
@@ -4762,143 +4755,36 @@ public OnPlayerText(playerid, text[])
 			}
 		}
 	}
-
-    g_ServerStats[1]++;
-
-	if(PlayerData[playerid][e_level] >= 1 && PlayerData[playerid][bDuty] && text[0] == '#')
+	
+	// Increase the chat counter.
+	g_ServerStats[1]++;
+	
+	if(szMessage[0] == '#' && PlayerData[playerid][e_level] >= 1)
 	{
-	    format(gstr, sizeof(gstr), "[ADMIN CHAT] "LG_E"%s(%i): "LB_E"%s", __GetName(playerid), playerid, text[1]);
-		admin_broadcast(COLOR_RED, gstr);
-	    return 0;
-	}
-	if(text[0] == '#' && PlayerData[playerid][e_level] >= 1)
-	{
-		format(gstr, sizeof(gstr), "[ADMIN CHAT] "LG_E"%s(%i): "LB_E"%s", __GetName(playerid), playerid, text[1]);
+		format(gstr, sizeof(gstr), "[ADMIN CHAT] "LG_E"%s(%i): "LB_E"%s", __GetName(playerid), playerid, szMessage[1]);
 		admin_broadcast(COLOR_RED, gstr);
 		return 0;
 	}
-	if(text[0] == '@')
+	if(szMessage[0] == '*' && PlayerData[playerid][e_vip] == 1)
 	{
-	    new string[144 + 3];
-	    format(string, sizeof(string), "/r %s", text[1]);
-	    Command_ReProcess(playerid, string, false);
+	    format(gstr, sizeof(gstr), "/p %s", szMessage[1]);
+	    Command_ReProcess(playerid, gstr, false);
 		return 0;
 	}
-	if(text[0] == '*' && PlayerData[playerid][e_vip] == 1)
+	if(szMessage[0] == '!' && PlayerData[playerid][e_gangrank] != 0)
 	{
-	    new string[144 + 3];
-	    format(string, sizeof(string), "/p %s", text[1]);
-	    Command_ReProcess(playerid, string, false);
-		return 0;
-	}
-	if(text[0] == '$' && PlayerData[playerid][e_vip] == 1)
-	{
-	    strmid(text, replace_col_codes(text), 0, 144, 144); // TODO: Don't print the dollar sign.
-	}
-	if(text[0] == '!' && PlayerData[playerid][e_gangrank] != 0)
-	{
-	    format(gstr, sizeof(gstr), ""gang_sign" {%06x}%s(%i)"r_besch": %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, text[1]);
+	    format(gstr, sizeof(gstr), ""gang_sign" {%06x}%s(%i)"r_besch": %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage[1]);
 		gang_broadcast(PlayerData[playerid][e_gangid], gstr);
 		
-		format(gstr, sizeof(gstr), "[GC] %s(%i): %s", __GetName(playerid), playerid, text[1]);
+		format(gstr, sizeof(gstr), "[GC] %s(%i): %s", __GetName(playerid), playerid, szMessage[1]);
 		admin_broadcast(GREY, gstr, false, true);
 		return 0;
 	}
-
-	if(!PlayerData[playerid][bCaps])
-	    UpperToLower(text);
-
-    PlayerData[playerid][iCoolDownChat] = GetTickCountEx();
-
-	format(gstr, sizeof(gstr), "%s", text);
-	SetPlayerChatBubble(playerid, gstr, WHITE, 50.0, 7000);
-
-	if(PlayerData[playerid][e_gangrank] != 0)
+	if(szMessage[0] == '*' && szMessage[1] == '*' && szMessage[2] == '*' && PlayerData[playerid][e_vip] == 1)
 	{
-	 	if(strlen(text) > 80)
-		{
-			new pos = strfind(text, " ", true, 60);
-			if(pos == -1 || pos > 80)
-			{
-				pos = 70;
-			}
-
-	        new tmp[144];
-			tmp[0] = EOS;
-			if(PlayerData[playerid][e_level] != 0) strcat(tmp, "{A8DBFF}");
-			strcat(tmp, text[pos]);
-			text[pos] = EOS;
-
-			if(PlayerData[playerid][e_level] == 0)
-			{
-				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) %s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, text);
-				SCMToAll(-1, gstr);
-				SCMToAll(-1, tmp);
-	   		}
-			else
-			{
-				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) {A8DBFF}%s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, text);
-				SCMToAll(-1, gstr);
-				SCMToAll(-1, tmp);
-			}
-		}
-		else
-		{
-			if(PlayerData[playerid][e_level] == 0)
-			{
-				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) %s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, text);
-				SCMToAll(-1, gstr);
-	   		}
-			else
-			{
-				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) %s%s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, PlayerData[playerid][bOnlineAdmin] ? ("{A8DBFF}") : (""), text);
-				SCMToAll(-1, gstr);
-			}
-		}
-		return 0;
+		NC_FormatColorMessage(szMessage);
+	    strmid(text, replace_col_codes(text), 0, 144, 144); // TODO: Don't print the dollar sign.
 	}
-
-	if(strlen(text) > 80)
-	{
-		new pos = strfind(text, " ", true, 60);
-		if(pos == -1 || pos > 80)
-		{
-			pos = 70;
-		}
-
-        new tmp[144];
-		tmp[0] = EOS;
-		if(PlayerData[playerid][e_level] != 0) strcat(tmp, "{A8DBFF}");
-		strcat(tmp, text[pos]);
-		text[pos] = EOS;
-		
-		if(PlayerData[playerid][e_level] == 0)
-		{
-			format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, text);
-			SCMToAll(-1, gstr);
-			SCMToAll(-1, tmp);
-		}
-		else
-		{
-			format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) {A8DBFF}%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, text);
-			SCMToAll(-1, gstr);
-			SCMToAll(-1, tmp);
-		}
-	}
-	else
-	{
-		if(PlayerData[playerid][e_level] == 0)
-		{
-	 		format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, text);
-			SCMToAll(-1, gstr);
-  		}
-		else
-		{
-            format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, PlayerData[playerid][bOnlineAdmin] ? ("{A8DBFF}") : (""), text);
-			SCMToAll(-1, gstr);
-		}
-	}
-	return 0;
 }
 
 public OnPlayerDeath(playerid, killerid, reason)
@@ -9588,7 +9474,7 @@ YCMD:adminhelp(playerid, params[], help)
 
 		format(gstr, sizeof(gstr), ""white"%s\n", g_szStaffLevelNames[1][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/suspect /asay /warn /slap /reports /spec /unspec /disarm\n/rplayers /dplayers /pweaps /getin /gotoxyza /spectators /caps\n/kick /mute /unmute /adminhq /ncrecords\n\n");
+		strcat(string, "/suspect /asay /warn /slap /reports /spec /unspec /disarm\n/rplayers /dplayers /pweaps /getin /gotoxyza /spectators\n/kick /mute /unmute /adminhq /ncrecords\n\n");
 
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[2][e_rank]);
 		strcat(string, gstr);
@@ -11221,46 +11107,6 @@ YCMD:rtime(playerid, params[], help)
 	SetPlayerWeather(playerid, 1);
 	
     SCM(playerid, NEF_GREEN, "-> "PINK_E"Time reset to day!");
-	return 1;
-}
-
-YCMD:caps(playerid, params[], help)
-{
-	if(PlayerData[playerid][e_level] >= 1)
-	{
- 		new player;
-		if(sscanf(params, "r", player))
-		{
-			return SCM(playerid, NEF_GREEN, "Usage: /caps <playerid>");
-		}
-		
-	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
-		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
-		
- 	 	if(IsPlayerAvail(player))
-	 	{
-			if(PlayerData[player][bCaps])
-			{
-				format(gstr, sizeof(gstr), ""yellow"** "red"Admin %s(%i) has disabled %s's caps", __GetName(playerid), playerid, __GetName(player));
-				SCMToAll(YELLOW, gstr);
-				PlayerData[player][bCaps] = false;
-			}
-			else
-			{
-				format(gstr, sizeof(gstr), ""yellow"** "red"Admin %s(%i) has re-enabled %s's caps", __GetName(playerid), playerid, __GetName(player));
-				SCMToAll(YELLOW, gstr);
-				PlayerData[player][bCaps] = true;
-			}
- 		}
-		else
-		{
-			SCM(playerid, -1, ""er"Player is not connected or yourself");
-		}
-	}
-	else
-	{
-		SCM(playerid, -1, NO_PERM);
-	}
 	return 1;
 }
 
@@ -13336,11 +13182,6 @@ YCMD:p(playerid, params[], help)
 
         SCM(playerid, RED, "Advertising is not allowed!");
         return 1;
-	}
-
-	if(!PlayerData[playerid][bCaps])
-	{
-	    UpperToLower(gstr);
 	}
 
 	format(gstr, sizeof(gstr), ""white"["lb_e"VIP CHAT"white"] {%06x}%s"lb_e"(%i): %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, gstr);
@@ -16104,11 +15945,6 @@ YCMD:pm(playerid, params[], help)
 	SetTimerEx("hideMsgTD", 3000, false, "i", player);
 	SetTimerEx("hideCheck", 3000, false, "i", playerid);
 	
-	if(!PlayerData[playerid][bCaps])
-	{
-	    UpperToLower(msg);
-	}
-	
 	format(gstr, sizeof(gstr), "{26FF00}***[PM] from %s(%i): %s", __GetName(playerid), playerid, msg);
     SCM(player, YELLOW, gstr);
 	format(gstr, sizeof(gstr), "{26FF00}>>>[PM] to %s(%i): %s", __GetName(player), player, msg);
@@ -16161,11 +15997,6 @@ YCMD:r(playerid, params[], help)
 	if(Iter_Contains(iterPlayerIgnore[lID], playerid))
 	{
 	    return SCM(playerid, -1, ""er"This player has blocked you from PMing him");
-	}
-	
-	if(!PlayerData[playerid][bCaps])
-	{
-	    UpperToLower(msg);
 	}
 	
 	format(gstr, sizeof(gstr), "{26FF00}***[PM] from %s(%i): %s", __GetName(playerid), playerid, msg);
@@ -29203,7 +29034,6 @@ ResetPlayerData(playerid)
  	GunGame_Player[playerid][level] = 0;
 	GunGame_Player[playerid][dead] = true;
 	GunGame_Player[playerid][pw] = true;
-	strmid(LastPlayerText[playerid], " ", 0, 144, 144);
     DestoryDamageBox(playerid);
 
 	for(new i = 0; E_PLAYER_ACH_DATA:i < E_PLAYER_ACH_DATA; i++)
@@ -29254,7 +29084,6 @@ ResetPlayerData(playerid)
 	PlayerData[playerid][bTextdraws] = true;
 	PlayerData[playerid][bRainbow] = false;
 	PlayerData[playerid][bVehicleInfo] = false;
-	PlayerData[playerid][bCaps] = true;
 	PlayerData[playerid][bGod] = false;
 	PlayerData[playerid][bGWarMode] = false;
 	PlayerData[playerid][bLoadMap] = false;
