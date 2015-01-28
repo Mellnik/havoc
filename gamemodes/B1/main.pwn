@@ -4782,7 +4782,7 @@ public OnPlayerText(playerid, text[])
 	}
 	if(szMessage[0] == '*' && szMessage[1] == '*' && szMessage[2] == '*' && PlayerData[playerid][e_vip] == 1)
 	{
-		NC_FormatColorMessage(szMessage);
+		NC_FormatColorCodes(szMessage);
 	    strmid(text, replace_col_codes(text), 0, 144, 144); // TODO: Don't print the dollar sign.
 	}
 }

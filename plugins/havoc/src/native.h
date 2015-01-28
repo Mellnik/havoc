@@ -29,6 +29,7 @@ namespace Native
 	cell AMX_NATIVE_CALL Whirlpool(AMX *amx, cell *params);
 	cell AMX_NATIVE_CALL SHA1(AMX *amx, cell *params);
 	cell AMX_NATIVE_CALL CSPRNG(AMX *amx, cell *params);
+	cell AMX_NATIVE_CALL FormatColorCodes(AMX *amx, cell *params);
 }
 
 #endif /* _NATIVE_H_ */

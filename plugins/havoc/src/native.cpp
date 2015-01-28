@@ -24,6 +24,8 @@
 #include "native.h"
 #include "teleport.h"
 
+void ReplaceAll(std::string &str, const std::string &from, const std::string &to);
+
 /* NC_Init(nc_version) */
 cell AMX_NATIVE_CALL Native::Init(AMX *amx, cell *params)
 {
@@ -351,4 +353,48 @@ cell AMX_NATIVE_CALL Native::CSPRNG(AMX *amx, cell *params)
 	
 	amx_SetString(amx_Addr, random_output.c_str(), 0, 0, params[3] > 0 ? params[3] : random_output.length() + 1);
 	return 1;
+}
+
+/* NC_FormatColorCodes(string[]) */
+cell AMX_NATIVE_CALL Native::FormatColorCodes(AMX *amx, cell *params)
+{
+	static const uint32_t ParamCount = 1;
+	PARAM_CHECK(ParamCount, "NC_FormatColorCodes");
+	
+	char *message = NULL;
+	amx_StrParam(amx, params[1], message);
+	
+	if (message == NULL)
+	{
+		logprintf("[HAVOC] Could not retrieve strings in FormatColorCodes (NULL).");
+		return 0;
+	}
+	
+	std::string transform(message);
+	ReplaceAll(transform, "<red>", "{FF0000}");
+	ReplaceAll(transform, "<green>", "{0BDDC4}");
+	ReplaceAll(transform, "<blue>", "{0087FF}");
+	ReplaceAll(transform, "<yellow>", "{DBED15}");
+	ReplaceAll(transform, "<white>", "{F0F0F0}");
+	
+	cell *amx_Addr = NULL;
+	amx_GetAddr(amx, params[1], &amx_Addr);
+	if (amx_Addr == NULL)
+	{
+		logprintf("[HAVOC] [debug] CRASH DETECTED! amx_Addr = NULL from amx_GetAddr in FormatColorCodes");
+		return -1;
+	}
+	
+	amx_SetString(amx_Addr, transform.c_str(), 0, 0, 144);
+	return 1;
+}
+
+void ReplaceAll(std::string &str, const std::string &from, const std::string &to)
+{
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+	{
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
 }

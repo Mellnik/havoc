@@ -56,6 +56,7 @@ const AMX_NATIVE_INFO PluginNatives[] =
 	{"NC_Whirlpool", Native::Whirlpool},
 	{"NC_SHA1", Native::SHA1},
 	{"NC_CSPRNG", Native::CSPRNG},
+	{"NC_FormatColorCodes", Native::FormatColorCodes},
 	{NULL, NULL}
 };
 
