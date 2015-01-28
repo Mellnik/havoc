@@ -4780,11 +4780,101 @@ public OnPlayerText(playerid, text[])
 		admin_broadcast(GREY, gstr, false, true);
 		return 0;
 	}
+	
+    PlayerData[playerid][iCoolDownChat] = GetTickCountEx();
+	SetPlayerChatBubble(playerid, szMessage, WHITE, 40.0, 5000);
+	
 	if(szMessage[0] == '*' && szMessage[1] == '*' && szMessage[2] == '*' && PlayerData[playerid][e_vip] == 1)
 	{
 		NC_FormatColorCodes(szMessage);
-	    strmid(text, replace_col_codes(text), 0, 144, 144); // TODO: Don't print the dollar sign.
 	}
+	
+	if(PlayerData[playerid][e_gangrank] != 0)
+	{
+	 	if(strlen(szMessage) > 80)
+		{
+			new pos = strfind(szMessage, " ", true, 60);
+			if(pos == -1 || pos > 80)
+			{
+				pos = 70;
+			}
+
+	        new tmp[144];
+			tmp[0] = EOS;
+			if(PlayerData[playerid][e_level] != 0) strcat(tmp, "{A8DBFF}");
+			strcat(tmp, szMessage[pos]);
+			szMessage[pos] = EOS;
+
+			if(PlayerData[playerid][e_level] == 0)
+			{
+				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) %s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, szMessage);
+				SCMToAll(-1, gstr);
+				SCMToAll(-1, tmp);
+	   		}
+			else
+			{
+				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) {A8DBFF}%s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, szMessage);
+				SCMToAll(-1, gstr);
+				SCMToAll(-1, tmp);
+			}
+		}
+		else
+		{
+			if(PlayerData[playerid][e_level] == 0)
+			{
+				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) %s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, szMessage);
+				SCMToAll(-1, gstr);
+	   		}
+			else
+			{
+				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) %s%s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, PlayerData[playerid][bOnlineAdmin] ? ("{A8DBFF}") : (""), text);
+				SCMToAll(-1, gstr);
+			}
+		}
+		return 0;
+	}
+
+	if(strlen(szMessage) > 80)
+	{
+		new pos = strfind(szMessage, " ", true, 60);
+		if(pos == -1 || pos > 80)
+		{
+			pos = 70;
+		}
+
+        new tmp[144];
+		tmp[0] = EOS;
+		if(PlayerData[playerid][e_level] != 0) strcat(tmp, "{A8DBFF}");
+		strcat(tmp, szMessage[pos]);
+		szMessage[pos] = EOS;
+		
+		if(PlayerData[playerid][e_level] == 0)
+		{
+			format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage);
+			SCMToAll(-1, gstr);
+			SCMToAll(-1, tmp);
+		}
+		else
+		{
+			format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) {A8DBFF}%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage);
+			SCMToAll(-1, gstr);
+			SCMToAll(-1, tmp);
+		}
+	}
+	else
+	{
+		if(PlayerData[playerid][e_level] == 0)
+		{
+	 		format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage);
+			SCMToAll(-1, gstr);
+  		}
+		else
+		{
+            format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, PlayerData[playerid][bOnlineAdmin] ? ("{A8DBFF}") : (""), szMessage);
+			SCMToAll(-1, gstr);
+		}
+	}
+	return 0;
 }
 
 public OnPlayerDeath(playerid, killerid, reason)

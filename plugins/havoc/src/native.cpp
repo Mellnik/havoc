@@ -376,7 +376,7 @@ cell AMX_NATIVE_CALL Native::FormatColorCodes(AMX *amx, cell *params)
 	ReplaceAll(transform, "<blue>", "{0087FF}");
 	ReplaceAll(transform, "<yellow>", "{DBED15}");
 	ReplaceAll(transform, "<white>", "{F0F0F0}");
-	transform.erase(0, 3); // Remove '***' from the  beginning
+	transform.erase(0, 3); // Remove '***' from the beginning.
 	
 	cell *amx_Addr = NULL;
 	amx_GetAddr(amx, params[1], &amx_Addr);
@@ -389,7 +389,7 @@ cell AMX_NATIVE_CALL Native::FormatColorCodes(AMX *amx, cell *params)
 	amx_SetString(amx_Addr, transform.c_str(), 0, 0, 144);
 	return 1;
 }
-
+/* Speedvergleich mit http://www.emoticode.net/c-plus-plus/replace-all-substring-occurrences-in-std-string.html */
 void ReplaceAll(std::string &str, const std::string &from, const std::string &to)
 {
     size_t start_pos = 0;
