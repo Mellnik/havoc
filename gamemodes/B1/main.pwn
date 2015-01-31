@@ -13,7 +13,7 @@
 
 /*
 || Build Dependencies:
-|| SA-MP Server 0.3.7 RC1
+|| SA-MP Server 0.3.7-RC1
 || Havoc Core
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1
@@ -98,7 +98,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #endif
 
 // Server
-#define HOSTNAME                        "Havoc Freeroam - Stunt/Race/DM/Derby/TDM/Minigames"
+#define HOSTNAME                        "*** Havoc Freeroam ~ The Madness (0.3.7)"
 #define SERVER_NAME                    	"Havoc Freeroam"
 #define SERVER_SHORT                   	"Havoc"
 #define SERVER_LOGO						"{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»"
@@ -2865,6 +2865,11 @@ public OnGameModeInit()
 	Log(LOG_INIT, "MySQL: Logging: LOG_ALL");
 	mysql_log(LOG_ALL, LOG_TYPE_TEXT);
 	
+	for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+	    ResetPlayerData(i);
+	}
+	
     SQL_Connect();
 
 	//Streamer_SetTickRate(40);
@@ -4784,7 +4789,7 @@ public OnPlayerText(playerid, text[])
     PlayerData[playerid][iCoolDownChat] = GetTickCountEx();
 	SetPlayerChatBubble(playerid, szMessage, WHITE, 40.0, 5000);
 	
-	if(szMessage[0] == '*' && szMessage[1] == '*' && szMessage[2] == '*' && PlayerData[playerid][e_vip] == 1)
+	if(szMessage[0] == '$' && szMessage[1] == '$' && szMessage[2] == '$' && PlayerData[playerid][e_vip] == 1)
 	{
 		NC_FormatColorCodes(szMessage);
 	}
@@ -14609,7 +14614,7 @@ YCMD:richlist(playerid, params[], help)
 
 	for(new i = 0; i < 30; i++)
 	{
-	    if(richlist[i][E_money] != -1)
+	    if(richlist[i][E_playerid] != -1)
 		    format(tmpstring, sizeof(tmpstring), "{%06x}%i - %s(%i) - Money: $%s\n", GetColorEx(richlist[i][E_playerid]) >>> 8, i + 1, __GetName(richlist[i][E_playerid]), richlist[i][E_playerid], number_format(richlist[i][E_money]));
 		else
 		    format(tmpstring, sizeof(tmpstring), ""white"%i - ---\n", i + 1);
@@ -14645,7 +14650,7 @@ YCMD:wanteds(playerid, params[], help)
 
 	for(new i = 0; i < 30; i++)
 	{
-	    if(wanteds[i][E_wanteds] != -1)
+	    if(wanteds[i][E_playerid] != -1)
 		    format(tmpstring, sizeof(tmpstring), "{%06x}%i - %s(%i) - Wanteds: %i\n", GetColorEx(wanteds[i][E_playerid]) >>> 8, i + 1, __GetName(wanteds[i][E_playerid]), wanteds[i][E_playerid], wanteds[i][E_wanteds]);
 		else
 		    format(tmpstring, sizeof(tmpstring), ""white"%i - ---\n", i + 1);
@@ -16167,10 +16172,10 @@ YCMD:toys(playerid, params[], help)
 	new string[255];
 	for(new i = 0; i < MAX_PLAYER_TOYS; i++)
 	{
-	    if(i <= 4)
-     		format(gstr, sizeof(gstr), "Slot %i %s", i + 1, PlayerToyData[playerid][i][toy_model] == 0 ? (" ") : ("(Used)"));
+	    if(i <= 3)
+     		format(gstr, sizeof(gstr), "Slot %i %s\n", i + 1, PlayerToyData[playerid][i][toy_model] == 0 ? (" ") : ("(Used)"));
 	    else
-    		format(gstr, sizeof(gstr), ""yellow"[VIP] "white"Slot %i %s", i + 1, PlayerToyData[playerid][i][toy_model] == 0 ? (" ") : ("(Used)"));
+    		format(gstr, sizeof(gstr), ""yellow"[VIP] "white"Slot %i %s\n", i + 1, PlayerToyData[playerid][i][toy_model] == 0 ? (" ") : ("(Used)"));
 		strcat(string, gstr);
 	}
 	ShowPlayerDialog(playerid, DIALOG_TOY, DIALOG_STYLE_LIST, ""nef" :: Player Toys", string, "Select", "Cancel");
@@ -18771,7 +18776,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			case DIALOG_TOY:
 			{
-			    if(PlayerData[playerid][e_vip] == 0 && listitem > 4)
+			    if(PlayerData[playerid][e_vip] == 0 && listitem > 3)
 			    {
 			        no_vip(playerid, "This toy slot is reserved for VIP members.");
 			    }
@@ -29822,15 +29827,4 @@ no_vip(playerid, msg[])
 {
 	format(gstr2, sizeof(gstr2), ""nef_green"%s\n\n"white"Get your VIP status at www.havocserver.com/vip", msg);
 	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player", gstr2, "OK", "");
-}
-
-replace_col_codes(data[])
-{
-	gstr[0] = '\0';
-	strmid(gstr, data, 0, 144, 144);
-    NC_StringReplace(gstr, "<red>", "{FF0000}", gstr, sizeof(gstr));
-    NC_StringReplace(gstr, "<green>", "{0BDDC4}", gstr, sizeof(gstr));
-    NC_StringReplace(gstr, "<blue>", "{0087FF}", gstr, sizeof(gstr));
-    NC_StringReplace(gstr, "<yellow>", "{DBED15}", gstr, sizeof(gstr));
-    return gstr;
 }

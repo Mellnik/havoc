@@ -54,7 +54,7 @@ Build 1 (1st Feb 2015)
   #text = Admin chat
   *text = VIP chat
   !text = Gang chat
-  ***text = Enable color codes (VIP)
+  $$$text = Enable color codes (VIP)
 - Added color codes for VIPs: <blue> <red> <green> <yellow> <white>
 - Removed /scorefall, /cashfall and announce commands.
 - Command /ncrecords is now accessible by everyone.
