@@ -2867,6 +2867,7 @@ public OnGameModeInit()
 	
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
+	    PlayerData[i][pPreviewVehicle] = INVALID_VEHICLE_ID;
 	    ResetPlayerData(i);
 	}
 	
@@ -8590,7 +8591,7 @@ YCMD:password(playerid, params[], help)
 		    return SCM(playerid, -1, ""er"This house does not belong to you");
 
 		PlayerData[playerid][iHouseLastSel] = i;
-		ShowPlayerDialog(playerid, DIALOG_HOUSE_PASSWORD, DIALOG_STYLE_INPUT, ""nef" :: House Password", ""white"Set a password for this house. Everyone who would like\nto enter it must type the correct password.", "Set Password", "Cancel");
+		ShowPlayerDialog(playerid, DIALOG_HOUSE_PASSWORD, DIALOG_STYLE_INPUT, ""nef" :: House Password", ""white"Set a password for this house. Everyone who would like\nto enter it must type the correct password. If you would\nlike to remove it just hit 'Set'.", "Set", "Cancel");
 	}
 	else
 	{
@@ -18238,7 +18239,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    return SCM(playerid, -1, ""er"House password length: 3 - 32");
 				}
 				new hash[41];
-				NC_SHA1(gstr, hash, sizeof(hash));
+				NC_RMD160(gstr, hash, sizeof(hash));
 				strmid(HouseData[PlayerData[playerid][iHouseLastSel]][e_password], hash, 0, 41, 41);
 				SCM(playerid, -1, ""er"House password has been set");
 				orm_update(HouseData[PlayerData[playerid][iHouseLastSel]][e_ormid]);

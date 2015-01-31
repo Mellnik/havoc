@@ -14,7 +14,7 @@
 #endif
 #define _havoc_included
 
-#define CORE_VERSION 0xD
+#define CORE_VERSION 0xE
 
 #define MAX_TELE_CATEGORIES 9
 #define MAX_TELES_PER_CATEGORY 32

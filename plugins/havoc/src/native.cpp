@@ -18,7 +18,7 @@
 #include <cryptopp/filters.h>
 #include <cryptopp/integer.h>
 #include <cryptopp/osrng.h>
-#include <cryptopp/sha.h>
+#include <cryptopp/ripemd.h>
 #include <cryptopp/whrlpool.h>
 
 #include "native.h"
@@ -275,11 +275,11 @@ cell AMX_NATIVE_CALL Native::Whirlpool(AMX *amx, cell *params)
 	return 1;
 }
 
-/* NC_SHA1(const data[], dest[], len = sizeof(dest)) */
-cell AMX_NATIVE_CALL Native::SHA1(AMX *amx, cell *params)
+/* NC_RMD160(const data[], dest[], len = sizeof(dest)) */
+cell AMX_NATIVE_CALL Native::RMD160(AMX *amx, cell *params)
 {
 	static const uint32_t ParamCount = 3;
-	PARAM_CHECK(ParamCount, "NC_SHA1");
+	PARAM_CHECK(ParamCount, "NC_RMD160");
 
 	char *_getstr = NULL;
 	amx_StrParam(amx, params[1], _getstr);
@@ -289,14 +289,14 @@ cell AMX_NATIVE_CALL Native::SHA1(AMX *amx, cell *params)
 	
 	std::string data(_getstr);
 	std::string hash;
-	CryptoPP::SHA1 h_SHA1;
-	CryptoPP::StringSource(data, true, new CryptoPP::HashFilter(h_SHA1, new CryptoPP::HexEncoder(new CryptoPP::StringSink(hash))));
+	CryptoPP::RIPEMD160 h_RMD;
+	CryptoPP::StringSource(data, true, new CryptoPP::HashFilter(h_RMD, new CryptoPP::HexEncoder(new CryptoPP::StringSink(hash))));
 	
 	cell *amx_Addr = NULL;
 	amx_GetAddr(amx, params[2], &amx_Addr);
 	if (amx_Addr == NULL)
 	{
-		logprintf("[HAVOC] [debug] CRASH DETECTED! amx_Addr = NULL from amx_GetAddr in SHA1");
+		logprintf("[HAVOC] [debug] CRASH DETECTED! amx_Addr = NULL from amx_GetAddr in RMD160");
 		return 0;
 	}
 	
@@ -372,11 +372,11 @@ cell AMX_NATIVE_CALL Native::FormatColorCodes(AMX *amx, cell *params)
 	
 	std::string transform(message);
 	ReplaceAll(transform, "<red>", "{FF0000}");
-	ReplaceAll(transform, "<green>", "{0BDDC4}");
+	ReplaceAll(transform, "<green>", "{2DFF00}");
 	ReplaceAll(transform, "<blue>", "{0087FF}");
 	ReplaceAll(transform, "<yellow>", "{DBED15}");
 	ReplaceAll(transform, "<white>", "{F0F0F0}");
-	transform.erase(0, 3); // Remove '***' from the beginning.
+	transform.erase(0, 3); // Remove '$$$' from the beginning.
 	
 	cell *amx_Addr = NULL;
 	amx_GetAddr(amx, params[1], &amx_Addr);

@@ -16,7 +16,7 @@
 
 #include <SDK/plugin.h>
 
-#define CORE_VERSION 0xD
+#define CORE_VERSION 0xE
 #define PARAM_CHECK(c, n) \
 	if (params[0] != (c * 4)) \
 	{ \
