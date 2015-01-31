@@ -300,9 +300,11 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define MAX_ENTERPRISE_LEVEL            (20)
 #define MAX_PLAYER_ENTERPRISES          (5)
 
-#define function:%1(%2) \
+#define __cb_func:%1(%2) \
 	forward public %1(%2); \
 	public %1(%2)
+
+#define procedure __cb_func:
 
 #define ConvertTime(%0,%1,%2,%3,%4) \
 	new \
@@ -15271,12 +15273,12 @@ YCMD:changepass(playerid, params[], help)
 
 	if(sscanf(params, "s[143]", gstr))
 	{
-		SCM(playerid, NEF_GREEN, "Usage: /changepass <new pass>");
+		SCM(playerid, NEF_GREEN, "Usage: /changepass <new password>");
 	    return 1;
 	}
 	if(strlen(gstr) < 4 || strlen(gstr) > 32)
 	{
-		SCM(playerid, -1, ""er"Incorrect password length. (4 - 32)");
+		SCM(playerid, -1, ""er"Incorrect password length (4 - 32)");
 		return 1;
 	}
 
@@ -20897,8 +20899,10 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
     return 1;
 }
 
-SQL_UpdatePlayerPass(playerid, const hash[])
+SQL_UpdatePlayerPass(playerid, const pw[])
 {
+
+
 	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `hash` = SHA1('%e') WHERE `name` = '%e' LIMIT 1;", hash, __GetName(playerid));
  	mysql_pquery(pSQL, gstr2);
 }

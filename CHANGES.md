@@ -8,7 +8,8 @@ Build 1 (1st Feb 2015)
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/mappers).
 - Namechanges are now attached to an account id rather than a name to prevent confusion.
-- More accurate unixtime conversion for dates.
+- More accurate unixtime conversion for timings.
+- Fixed top commands showing non-online players.
 - New toy slot arrangement:
 	Slot 1-4 Usable by everyone, Slot 5-6 VIP only.
 - Enterprise/House slots now rise within score:
