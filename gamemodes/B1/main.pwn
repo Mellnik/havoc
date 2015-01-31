@@ -12220,24 +12220,21 @@ YCMD:unban(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] >= 4)
 	{
-	    if(sscanf(params, "s[143]", gstr))
+	    new account_id;
+	    if(sscanf(params, "i", account_id))
 	    {
-	        return SCM(playerid, NEF_GREEN, "Usage: /unban <name>");
+	        return SCM(playerid, NEF_GREEN, "Usage: /unban <account_id>");
 	    }
 
-	    if(strlen(gstr) > 24 || strlen(gstr) < 3) return SCM(playerid, -1, ""er"Name length 3 - 24");
-	    if(__GetPlayerID(gstr) != INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Player seems to be online!");
-
-	    new escape[25];
-	    mysql_escape_string(gstr, escape, pSQL, sizeof(escape));
-
-		if(badsql(escape) != 0)
-		{
-		    return SCM(playerid, -1, ""er"You have specified invalid characters");
-		}
-
-	    format(gstr, sizeof(gstr), "SELECT `id` FROM `bans` WHERE `playername` = '%s' LIMIT 1;", escape);
-	    mysql_pquery(pSQL, gstr, "OnUnbanAttempt", "is", playerid, escape);
+	    if(account_id < 1) return SCM(playerid, -1, ""er"Invalid account id");
+	    for(new i = 0; i < MAX_PLAYERS; i++)
+	    {
+	        if(PlayerData[i][e_accountid] == account_id)
+	            return SCM(playerid, -1, ""er"Player seems to be online!");
+	    }
+	    
+	    format(gstr, sizeof(gstr), "SELECT `id` FROM `ipbans` WHERE `id` = %i LIMIT 1;", account_id);
+	    mysql_pquery(pSQL, gstr, "OnUnbanAttempt", "ii", playerid, account_id);
 	}
 	else
 	{
@@ -20914,7 +20911,7 @@ SQL_FetchGangMemberNames(playerid, gangid)
 
 SQL_BanIP(const ip[])
 {
- 	mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `blacklist` VALUES (NULL, '%e');", ip);
+ 	mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `ipbans` VALUES (NULL, '%e');", ip);
  	mysql_pquery(pSQL, gstr);
 }
 
@@ -27487,38 +27484,24 @@ function:RandomTXTInfo()
 	return 1;
 }
 
-function:OnUnbanAttempt(playerid, unban[])
+function:OnUnbanAttempt(playerid, account_id)
 {
 	new rows, fields;
 	cache_get_data(rows, fields, pSQL);
 
 	if(rows > 0)
 	{
-	    format(gstr, sizeof(gstr), "DELETE FROM `bans` WHERE `playername` = '%s' LIMIT 1;", unban);
+	    format(gstr, sizeof(gstr), "DELETE FROM `bans` WHERE `id` = %i LIMIT 1;", account_id);
 	    mysql_pquery(pSQL, gstr);
-	    
-	    format(gstr, sizeof(gstr), "SELECT `ip` FROM `accounts` WHERE `name` = '%s';", unban);
-	    mysql_pquery(pSQL, gstr, "OnUnbanAttempt2");
+	    format(gstr, sizeof(gstr), "DELETE FROM `ipbans` WHERE `account_id` = %i LIMIT 1;", account_id);
+	    mysql_pquery(pSQL, gstr);
 
 	    SCM(playerid, -1, ""er"Player has been unbanned!");
 	}
 	else
 	{
-	    SCM(playerid, -1, ""er"Player is not banned or does not exist");
+	    SCM(playerid, -1, ""er"Account ID not banned");
 	}
-	return 1;
-}
-
-function:OnUnbanAttempt2()
-{
-	if(cache_get_row_count() == 0)
-		return 0;
-
-    new ip[MAX_PLAYER_IP + 1];
-    cache_get_row(0, 0, ip, pSQL, sizeof(ip));
-    
-    format(gstr, sizeof(gstr), "DELETE FROM `blacklist` WHERE `ip` = '%s';", ip);
-    mysql_pquery(pSQL, gstr);
 	return 1;
 }
 
