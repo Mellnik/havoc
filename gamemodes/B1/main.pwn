@@ -300,11 +300,12 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define MAX_ENTERPRISE_LEVEL            (20)
 #define MAX_PLAYER_ENTERPRISES          (5)
 
-#define __cb_func:%1(%2) \
+#define __func:%1(%2) \
 	forward public %1(%2); \
 	public %1(%2)
 
-#define procedure __cb_func:
+#define procedure __func:
+#define naked
 
 #define ConvertTime(%0,%1,%2,%3,%4) \
 	new \
@@ -4149,7 +4150,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 	return 1;
 }
 
-function:OnQueryFinish(query[], resultid, extraid, connectionHandle)
+procedure OnQueryFinish(query[], resultid, extraid, connectionHandle)
 {
     switch(resultid)
 	{
@@ -14748,7 +14749,7 @@ YCMD:gtop(playerid, params[], help)
 	return 1;
 }
 
-function:OnGTopReceived(playerid)
+procedure OnGTopReceived(playerid)
 {
 	new rows, fields;
 	cache_get_data(rows, fields, pSQL);
@@ -16840,7 +16841,7 @@ public OnVehicleSpawn(vehicleid)
 	return 1;
 }
 
-function:OnPlayerNameChangeRequest(playerid, newname[])
+procedure OnPlayerNameChangeRequest(playerid, newname[])
 {
 	new rows, fields;
 	cache_get_data(rows, fields, pSQL);
@@ -19709,7 +19710,7 @@ public OnDynamicObjectMoved(objectid)
 	return 1;
 }
 
-function:OnHouseLoad()
+procedure OnHouseLoad()
 {
 	new rows = cache_get_row_count();
 
@@ -19733,13 +19734,13 @@ function:OnHouseLoad()
 	return 1;
 }
 
-function:OnHouseLoadEx(slot)
+procedure OnHouseLoadEx(slot)
 {
 	SetupHouse(slot, "<null>");
 	return 1;
 }
 
-function:OnStoreLoad()
+procedure OnStoreLoad()
 {
 	new rows = cache_get_row_count();
 
@@ -19759,13 +19760,13 @@ function:OnStoreLoad()
 	return 1;
 }
 
-function:OnStoreLoadEx(slot)
+procedure OnStoreLoadEx(slot)
 {
 	SetupStore(slot);
 	return 1;
 }
 
-function:OnEnterpriseLoad()
+procedure OnEnterpriseLoad()
 {
 	new rows = cache_get_row_count();
 
@@ -19789,13 +19790,13 @@ function:OnEnterpriseLoad()
 	return 1;
 }
 
-function:OnEnterpriseLoadEx(slot)
+procedure OnEnterpriseLoadEx(slot)
 {
 	SetupEnterprise(slot, "<null>");
 	return 1;
 }
 
-function:OnGangZoneLoad()
+procedure OnGangZoneLoad()
 {
 	new rows = cache_get_row_count(),
 	    r,
@@ -19840,7 +19841,7 @@ function:OnGangZoneLoad()
 	return 1;
 }
 
-function:OnGangZoneLoadEx(slot)
+procedure OnGangZoneLoadEx(slot)
 {
     format(gstr2, sizeof(gstr2), ""gwars_mark"\nID: %i\nZone: %s\nControlled by: ---\n"orange"Type /gwar to start an attack!", GZoneData[slot][e_id], GZoneData[slot][e_zname]);
 
@@ -19963,7 +19964,7 @@ IsPlayerOnDesktop(playerid, afktimems = 5000)
 	return 0;
 }
 
-function:BGVoting()
+procedure BGVoting()
 {
 	new iTotalVotes = 0;
 	for(new i = 0; i < sizeof(BGMapVotes); i++)
@@ -20342,7 +20343,7 @@ function:BGVoting()
 	return 1;
 }
 
-function:BattleGround()
+procedure BattleGround()
 {
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -20903,7 +20904,7 @@ SQL_UpdatePlayerPass(playerid, const pw[])
 {
 
 
-	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `hash` = SHA1('%e') WHERE `name` = '%e' LIMIT 1;", hash, __GetName(playerid));
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `hash` = SHA1('%e') WHERE `name` = '%e' LIMIT 1;", pw, __GetName(playerid));
  	mysql_pquery(pSQL, gstr2);
 }
 
@@ -20960,7 +20961,7 @@ SQL_RegisterAccount(playerid, register, hash[], salt[])
 	orm_insert(ormid, "OnPlayerRegister", "iiissss", playerid, YHash(__GetName(playerid)), register, hash, salt, __GetName(playerid), __GetIP(playerid));
 }
 
-function:OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[]) // TODO: Soll schon ein login log erstellt werden beim ersten reggen?
+procedure OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[]) // TODO: Soll schon ein login log erstellt werden beim ersten reggen?
 {
 	DEBUG_P1(playerid, "OnPlayerRegister")
 	new query[512];
@@ -21838,7 +21839,7 @@ server_load_textdraws()
 	return 1;
 }
 
-function:xReactionProgress()
+procedure xReactionProgress()
 {
     if(xTestBusy)
 	{
@@ -21848,7 +21849,7 @@ function:xReactionProgress()
 	return 1;
 }
 
-function:xReactionTest()
+procedure xReactionTest()
 {
 	static const xCharacters[][] =
 	{
@@ -21883,7 +21884,7 @@ function:xReactionTest()
 	return 1;
 }
 
-function:Elevator_Boost(floorid)
+procedure Elevator_Boost(floorid)
 {
 	MoveObject(Obj_Elevator, 1786.678100, -1303.459472, GetElevatorZCoordForFloor(floorid), ELEVATOR_SPEED);
     MoveObject(Obj_ElevatorDoors[0], X_DOOR_CLOSED, -1303.459472, GetDoorsZCoordForFloor(floorid), ELEVATOR_SPEED);
@@ -21891,14 +21892,14 @@ function:Elevator_Boost(floorid)
 	return 1;
 }
 
-function:Elevator_TurnToIdle()
+procedure Elevator_TurnToIdle()
 {
 	ElevatorState = ELEVATOR_STATE_IDLE;
 	ReadNextFloorInQueue();
 	return 1;
 }
 
-function:server_init_shutdown()
+procedure server_init_shutdown()
 {
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -21909,7 +21910,7 @@ function:server_init_shutdown()
 	return 1;
 }
 
-function:_server_shutdown()
+procedure _server_shutdown()
 {
 	Log(LOG_EXIT, "server_shutdown() called");
 	SendRconCommand("exit");
@@ -23437,7 +23438,7 @@ SetPlayerBGStaticMeshes(playerid)
 	return 1;
 }
 
-function:DerbyVoting()
+procedure DerbyVoting()
 {
 	if(CurrentDerbyPlayers < 2)
 	{
@@ -23638,7 +23639,7 @@ derby_start_map(mapid)
 	return 1;
 }
 
-function:Derby()
+procedure Derby()
 {
     IsDerbyRunning = false;
     KillTimer(tDerbyTimer);
@@ -23722,7 +23723,7 @@ function:Derby()
 	return 1;
 }
 
-function:DerbyFallOver()
+procedure DerbyFallOver()
 {
 	static CURRENT_FALLOVER;
 	switch(CurrentDerbyMap)
@@ -23792,7 +23793,7 @@ function:DerbyFallOver()
 	}
 }
 
-function:QueueProcess()
+procedure QueueProcess()
 {
 	mysql_pquery(pSQL, "SELECT * FROM `queue` WHERE `execdate` < UNIX_TIMESTAMP();", "OnQueueReceived");
 
@@ -23918,12 +23919,12 @@ function:QueueProcess()
 	return 1;
 }
 
-function:OnQueueReceived()
+procedure OnQueueReceived()
 {
 	return 1;
 }
 
-function:LogoSwitch()
+procedure LogoSwitch()
 {
 	static phase;
 	
@@ -23948,7 +23949,7 @@ function:LogoSwitch()
 	return 1;
 }
 
-function:ProcessTick()
+procedure ProcessTick()
 {
     g_tickProcessTickCalls++;
 
@@ -24433,7 +24434,7 @@ ResetDerbyGameTime()
 	return 1;
 }
 
-function:ClearDerbyVotes()
+procedure ClearDerbyVotes()
 {
 	for(new i = 0; i < 9; i++)
 	{
@@ -24444,14 +24445,14 @@ function:ClearDerbyVotes()
 	return 1;
 }
 
-function:ExecDerbyVotingTimer()
+procedure ExecDerbyVotingTimer()
 {
 	KillTimer(tDerbyVoting);
 	tDerbyVoting = SetTimer("DerbyVoting", DERBY_VOTING_TIME, false);
 	return 1;
 }
 
-function:ExecDerbyTimer()
+procedure ExecDerbyTimer()
 {
 	KillTimer(tDerbyTimer);
     tDerbyTimer = SetTimer("Derby", DERBY_TIME, false);
@@ -24464,7 +24465,7 @@ Derby_EnableFreezePool()
 	SetTimer("Derby_FreezeVehicles", DERBY_FREEZE_INTERVAL, 0);
 }
 
-function:Derby_FreezeVehicles()
+procedure Derby_FreezeVehicles()
 {
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -24484,7 +24485,7 @@ function:Derby_FreezeVehicles()
 	return 1;
 }
 
-function:ClearDerbySpawns()
+procedure ClearDerbySpawns()
 {
 	for(new m = 0; m < MAX_DERBY_MAPS; m++)
 	{
@@ -24496,7 +24497,7 @@ function:ClearDerbySpawns()
 	return 1;
 }
 
-function:SetPlayerDerbyStaticMeshes(playerid)
+procedure SetPlayerDerbyStaticMeshes(playerid)
 {
     SetPlayerHealth(playerid, 99999.0);
     switch(CurrentDerbyMap)
@@ -24584,7 +24585,7 @@ derby_healthbar_format(hp)
 	return str;
 }
 
-function:derby_healthbar_reset(playerid, namehash)
+procedure derby_healthbar_reset(playerid, namehash)
 {
 	if(namehash != YHash(__GetName(playerid)))
 	    return 0;
@@ -24947,7 +24948,7 @@ fallout_reset()
     KillTimer(FalloutData[I_tLoseGame]);
 }
 
-function:fallout_losegame()
+procedure fallout_losegame()
 {
 	new players,
 		Float:POS[3];
@@ -24991,7 +24992,7 @@ function:fallout_losegame()
 	return 1;
 }
 
-function:fallout_countdown()
+procedure fallout_countdown()
 {
 	if(--FalloutData[I_iCount] <= 0)
 	{
@@ -25050,7 +25051,7 @@ function:fallout_countdown()
 	return 1;
 }
 
-function:fallout_solarfall()
+procedure fallout_solarfall()
 {
 	new objectid,
 		go;
@@ -25087,14 +25088,14 @@ function:fallout_solarfall()
 	return 1;
 }
 
-function:fallout_start_falling()
+procedure fallout_start_falling()
 {
 	FalloutData[I_tSolarfall] = SetTimer("fallout_solarfall", 500, true);
 	FalloutData[I_tLoseGame] = SetTimer("fallout_losegame", 750, true);
 	return 1;
 }
 
-function:fallout_decidewinners()
+procedure fallout_decidewinners()
 {
 	g_FalloutStatus = e_Fallout_Inactive;
 
@@ -25146,7 +25147,7 @@ function:fallout_decidewinners()
 	return 1;
 }
 
-function:fallout_squareshake(objectid)
+procedure fallout_squareshake(objectid)
 {
 	if(objectid == 0)
 	{
@@ -25211,7 +25212,7 @@ fallout_get_playercount()
 	return count;
 }
 
-function:ModVehicleColor(playerid)
+procedure ModVehicleColor(playerid)
 {
 	new color1,
 	    color2;
@@ -25223,7 +25224,7 @@ function:ModVehicleColor(playerid)
 	return 1;
 }
 
-function:ModVehiclePaintJob(playerid)
+procedure ModVehiclePaintJob(playerid)
 {
 	if(PlayerPVData[playerid][PVSelect[playerid]][e_paintjob] != -1)
 	{
@@ -25232,7 +25233,7 @@ function:ModVehiclePaintJob(playerid)
 	return 1;
 }
 
-function:ModVehicleComponents(playerid)
+procedure ModVehicleComponents(playerid)
 {
     for(new i = 0; i < 17; i++)
     {
@@ -25244,7 +25245,7 @@ function:ModVehicleComponents(playerid)
 	return 1;
 }
 
-function:SaveVehComponets(playerid, componentid)
+procedure SaveVehComponets(playerid, componentid)
 {
 	for(new s = 0; s < 20; s++)
 	{
@@ -25384,7 +25385,7 @@ function:SaveVehComponets(playerid, componentid)
 	return 1;
 }
 
-function:player_unmute(playerid, namehash)
+procedure player_unmute(playerid, namehash)
 {
 	if(namehash == YHash(__GetName(playerid)))
 	{
@@ -25394,7 +25395,7 @@ function:player_unmute(playerid, namehash)
     return 1;
 }
 
-function:ShowDialog(playerid, dialogid)
+procedure ShowDialog(playerid, dialogid)
 {
 	switch(dialogid)
 	{
@@ -25711,7 +25712,7 @@ function:ShowDialog(playerid, dialogid)
 	return 1;
 }
 
-function:server_random_broadcast()
+procedure server_random_broadcast()
 {
 	static const szRandomServerMessages[12][] =
 	{
@@ -25733,7 +25734,7 @@ function:server_random_broadcast()
 	return 1;
 }
 
-function:InitSession(playerid)
+procedure InitSession(playerid)
 {
 	TXTMoney[playerid] = CreatePlayerTextDraw(playerid, 323.000000, 247.000000, "~g~~h~~h~+$100");
 	PlayerTextDrawAlignment(playerid, TXTMoney[playerid], 2);
@@ -25859,7 +25860,7 @@ KickEx(playerid, delay = 3200)
 	return 1;
 }
 
-function:Kick_Delay(playerid, namehash)
+procedure Kick_Delay(playerid, namehash)
 {
 	if(IsPlayerConnected(playerid) && YHash(__GetName(playerid)) == namehash)
 	{
@@ -25991,7 +25992,7 @@ GetPlayerKMH(playerid)
   	return floatround(rtn * 100 * 1.61);
 }
 
-function:ChangeColors(playerid)
+procedure ChangeColors(playerid)
 {
 	new vehid = GetPlayerVehicleID(playerid);
 
@@ -26072,7 +26073,7 @@ PushTeleportInput(playerid, teleport_category, input)
 	return 1;
 }
 
-function:player_hide_vehicle_td(playerid)
+procedure player_hide_vehicle_td(playerid)
 {
 	PlayerTextDrawHide(playerid, vTD[playerid]);
 	PlayerData[playerid][bVehicleInfo] = false;
@@ -26086,7 +26087,7 @@ SetPlayerPosition(playerid, Float:X, Float:Y, Float:Z, Float:a, inter = 0)
 	SetPlayerInterior(playerid, inter);
 }
 
-function:cnr_reset_robbery(playerid, namehash)
+procedure cnr_reset_robbery(playerid, namehash)
 {
 	if(IsPlayerConnected(playerid) && YHash(__GetName(playerid)) == namehash)
 	{
@@ -26094,7 +26095,7 @@ function:cnr_reset_robbery(playerid, namehash)
 	}
 }
 
-function:JailPlayer(playerid, namehash)
+procedure JailPlayer(playerid, namehash)
 {
 	if(IsPlayerConnected(playerid) && YHash(__GetName(playerid)) == namehash)
 	{
@@ -26113,7 +26114,7 @@ function:JailPlayer(playerid, namehash)
 	return true;
 }
 
-function:StartRobbery(playerid, namehash)
+procedure StartRobbery(playerid, namehash)
 {
 	if(IsPlayerConnected(playerid) && YHash(__GetName(playerid)) == namehash)
 	{
@@ -26274,7 +26275,7 @@ GetStoreName(playerid)
 	return store_name;
 }
 
-function:CNR_RobberGateMoveBack(playerid)
+procedure CNR_RobberGateMoveBack(playerid)
 {
 	// Return gate back to Original pos.
 	MoveObject(g_CNR_RobberGate[0], 1397.24, 2694.51, 9.91, 3);
@@ -26282,7 +26283,7 @@ function:CNR_RobberGateMoveBack(playerid)
 	return 1;
 }
 
-function:HideJailTextdraw(playerid, namehash)
+procedure HideJailTextdraw(playerid, namehash)
 {
 	if(namehash == YHash(__GetName(playerid)))
 	{
@@ -26291,7 +26292,7 @@ function:HideJailTextdraw(playerid, namehash)
 	return 1;
 }
 
-function:Maths()
+procedure Maths()
 {
 	if(mathsAnswered == 0)
 	{
@@ -26408,13 +26409,13 @@ CheckPlayerGod(playerid)
 	PlayerData[playerid][bGod] = false;
 }
 
-function:hideCheck(playerid)
+procedure hideCheck(playerid)
 {
     TextDrawHideForPlayer(playerid, CheckTD);
 	return 1;
 }
 
-function:hideMsgTD(playerid)
+procedure hideMsgTD(playerid)
 {
     TextDrawHideForPlayer(playerid, NewMsgTD);
 	return 1;
@@ -26463,7 +26464,7 @@ ShowPlayerAchievement(playerid, title[], infos[])
 	return 1;
 }
 
-function:HideAch(playerid)
+procedure HideAch(playerid)
 {
 	DeletePVar(playerid, "AchShowing");
     PlayerPlaySound(playerid, 1184, 0, 0, 0);
@@ -26478,7 +26479,7 @@ function:HideAch(playerid)
 	return 1;
 }
 
-function:InfoTD_MSG(playerid, ms_time, text[])
+naked InfoTD_MSG(playerid, ms_time, text[])
 {
 	if(GetPVarInt(playerid, "InfoTDshown") != -1)
 	{
@@ -26491,13 +26492,13 @@ function:InfoTD_MSG(playerid, ms_time, text[])
 	SetPVarInt(playerid, "InfoTDshown", SetTimerEx("InfoTD_Hide", ms_time, false, "i", playerid));
 }
 
-function:InfoTD_Hide(playerid)
+procedure InfoTD_Hide(playerid)
 {
 	SetPVarInt(playerid, "InfoTDshown", -1);
 	PlayerTextDrawHide(playerid, TXTInfoTD[playerid]);
 }
 
-function:DoLotto()
+procedure DoLotto()
 {
 	Iter_Clear(iterLottoNumberPool);
 	g_LottoNumber = random(75) + 1;
@@ -26516,7 +26517,7 @@ function:DoLotto()
 	return 1;
 }
 
-function:LottoDraw()
+procedure LottoDraw()
 {
     bLottoActive = false;
 
@@ -26710,7 +26711,7 @@ IsAd(const text[])
 	return false;
 }
 
-function:OnNCReceive(playerid)
+procedure OnNCReceive(playerid)
 {
 	new rows, fields;
 	cache_get_data(rows, fields, pSQL);
@@ -26732,7 +26733,7 @@ function:OnNCReceive(playerid)
 	return 1;
 }
 
-function:OnNCReceive2(playerid, name[])
+procedure OnNCReceive2(playerid, name[])
 {
 	new rows, fields;
 	cache_get_data(rows, fields, pSQL);
@@ -27267,7 +27268,7 @@ LoadMap(playerid)
 	}
 }
 
-function:player_free(playerid)
+procedure player_free(playerid)
 {
 	if(PlayerData[playerid][bLoadMap])
 	{
@@ -27288,7 +27289,7 @@ IsNeonBikeModel(modelid)
 	return 0;
 }
 
-function:OnGangRenameAttempt(playerid, newgangname[], newgangtag[], namehash)
+procedure OnGangRenameAttempt(playerid, newgangname[], newgangtag[], namehash)
 {
 	if(namehash != YHash(__GetName(playerid)))
 	    return 0;
@@ -27341,7 +27342,7 @@ function:OnGangRenameAttempt(playerid, newgangname[], newgangtag[], namehash)
 	return 1;
 }
 
-function:OnBoostReceive(playerid, namehash)
+procedure OnBoostReceive(playerid, namehash)
 {
     if(!IsPlayerConnected(playerid))
 		return 0;
@@ -27380,7 +27381,7 @@ function:OnBoostReceive(playerid, namehash)
 	return 1;
 }
 
-function:player_medkit_charge(playerid)
+procedure player_medkit_charge(playerid)
 {
 	if(PlayerData[playerid][iMedkitTime] > 0)
 	{
@@ -27465,7 +27466,7 @@ islogged(playerid)
 	return 0;
 }
 
-function:RandomTXTInfo()
+procedure RandomTXTInfo()
 {
 	static const szRandomTdMessages[13][] =
 	{
@@ -27488,7 +27489,7 @@ function:RandomTXTInfo()
 	return 1;
 }
 
-function:OnUnbanAttempt(playerid, account_id)
+procedure OnUnbanAttempt(playerid, account_id)
 {
 	new rows, fields;
 	cache_get_data(rows, fields, pSQL);
@@ -27509,7 +27510,7 @@ function:OnUnbanAttempt(playerid, account_id)
 	return 1;
 }
 
-function:OnOfflineBanFetch(namehash, adminid, reason[], lift)
+procedure OnOfflineBanFetch(namehash, adminid, reason[], lift)
 {
 	if(YHash(__GetName(adminid)) != namehash)
 		return 0;
@@ -27528,7 +27529,7 @@ function:OnOfflineBanFetch(namehash, adminid, reason[], lift)
 	return 1;
 }
 
-function:OnOfflineBanAttempt(playerid, ban[], reason[])
+procedure OnOfflineBanAttempt(playerid, ban[], reason[])
 {
 	if(cache_get_row_count() > 0)
 	{
@@ -27546,7 +27547,7 @@ function:OnOfflineBanAttempt(playerid, ban[], reason[])
 	return 1;
 }
 
-function:OnOfflineBanAttempt2(playerid, ban[], reason[])
+procedure OnOfflineBanAttempt2(playerid, ban[], reason[])
 {
     if(cache_get_row_count() > 0)
 	{
@@ -27581,7 +27582,7 @@ function:OnOfflineBanAttempt2(playerid, ban[], reason[])
 	return 1;
 }
 
-function:HideMoneyTD(playerid, namehash)
+procedure HideMoneyTD(playerid, namehash)
 {
 	if(IsPlayerConnected(playerid) && YHash(__GetName(playerid)) == namehash)
 	{
@@ -27589,7 +27590,7 @@ function:HideMoneyTD(playerid, namehash)
 	}
 }
 
-function:player_hide_scoretd(playerid, namehash)
+procedure player_hide_scoretd(playerid, namehash)
 {
 	if(IsPlayerConnected(playerid) && YHash(__GetName(playerid)) == namehash)
 	{
@@ -27597,7 +27598,7 @@ function:player_hide_scoretd(playerid, namehash)
 	}
 }
 
-function:OnIpLookUp(playerid, ip[])
+procedure OnIpLookUp(playerid, ip[])
 {
 	new rows, fields;
 	cache_get_data(rows, fields, pSQL);
@@ -27625,7 +27626,7 @@ race_fetch_data()
 	g_RaceCount = dini_Int("/Race/Index/Index.ini", "TotalRaces");
 }
 
-function:race_open()
+procedure race_open()
 {
 	if(g_RaceCount == 0) return 1;
 	
@@ -27694,7 +27695,7 @@ race_prepare()
 	return 1;
 }
 
-function:OnRaceDataLoaded()
+procedure OnRaceDataLoaded()
 {
 	new rows, fields;
 	cache_get_data(rows, fields, pSQL);
@@ -27769,7 +27770,7 @@ race_player_setup(playerid)
 	++g_RaceSpawnCount;
 }
 
-function:race_countdown()
+procedure race_countdown()
 {
 	switch(g_RaceCountDown)
 	{
@@ -27819,7 +27820,7 @@ race_start()
     SCMToAll(-1, ""race_sign" The current race has been started!");
 }
 
-function:race_counter()
+procedure race_counter()
 {
 	if(g_RaceStatus == RaceStatus_Active)
 	{
@@ -27838,7 +27839,7 @@ function:race_counter()
 	return 1;
 }
 
-function:race_stop()
+procedure race_stop()
 {
 	KillTimer(g_tRaceCounter);
 	KillTimer(g_tRaceOpenSelection);
@@ -27883,7 +27884,7 @@ function:race_stop()
 	return 1;
 }
 
-function:race_end()
+procedure race_end()
 {
 	if(--g_iRaceEnd <= 0 || g_RacePlayerCount <= 0)
 	{
@@ -28079,7 +28080,7 @@ DestroyPlayerVehicles(playerid, bool:minigames = false)
 	return 1;
 }
 
-function:OnNewsReceive(playerid, response_code, data[])
+procedure OnNewsReceive(playerid, response_code, data[])
 {
 	if(response_code == 200) {
 	    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: News", data, "OK", "");
@@ -28089,7 +28090,7 @@ function:OnNewsReceive(playerid, response_code, data[])
 	return 1;
 }
 
-function:OnRaceRecordPurged(playerid, map)
+procedure OnRaceRecordPurged(playerid, map)
 {
 	if(cache_get_row_count(pSQL) == 1)
 	{
@@ -28107,13 +28108,13 @@ function:OnRaceRecordPurged(playerid, map)
 	return 1;
 }
 
-function:server_force_spawn(playerid)
+procedure server_force_spawn(playerid)
 {
 	SpawnPlayer(playerid);
 	return 1;
 }
 
-function:server_vip_countdown()
+procedure server_vip_countdown()
 {
 	switch(iCountdownVIP)
 	{
@@ -28154,7 +28155,7 @@ function:server_vip_countdown()
 	return 1;
 }
 
-function:OnPlayerAccountRequest(playerid, namehash, request)
+procedure OnPlayerAccountRequest(playerid, namehash, request)
 {
     if(!IsPlayerConnected(playerid))
 		return 0;

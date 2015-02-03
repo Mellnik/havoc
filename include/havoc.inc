@@ -37,5 +37,5 @@ native NC_FormatColorCodes(string[]);
 
 // Security
 native NC_Whirlpool(const data[], dest[], len = sizeof(dest));
-native NC_SHA1(const data[], dest[], len = sizeof(dest));
+native NC_RMD160(const data[], dest[], len = sizeof(dest));
 native NC_CSPRNG(string_len, dest[], len = sizeof(dest));
