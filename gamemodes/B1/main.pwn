@@ -20900,11 +20900,11 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
     return 1;
 }
 
-SQL_UpdatePlayerPass(playerid, const pw[])
+SQL_UpdatePlayerPass(playerid, new_pass[])
 {
 
 
-	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `hash` = SHA1('%e') WHERE `name` = '%e' LIMIT 1;", pw, __GetName(playerid));
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `hash` = SHA1('%e') WHERE `name` = '%e' LIMIT 1;", new_pass, __GetName(playerid));
  	mysql_pquery(pSQL, gstr2);
 }
 
