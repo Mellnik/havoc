@@ -2649,7 +2649,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	Float:g_RaceCPs[RACE_MAX_CHECKPOINTS][3],
 	g_DerbyFreezePool = DERBY_FREEZE_TIME / DERBY_FREEZE_INTERVAL,
 	g_SpawnAreas[5],
-	g_DerbyForceMap = 0,
+	//g_DerbyForceMap = 0,
 	g_RaceForceMap = 0,
 	g_BuildRace = INVALID_PLAYER_ID,
 	g_BuildDeployTime = 0,
@@ -12516,7 +12516,7 @@ YCMD:deleterecord(playerid, params[], help)
 	}
 	return 1;
 }
-
+/*
 YCMD:derbyforcemap(playerid, params[], help) // TODO: Befehl raushauen, weil geht eh noch nicht.
 {
 	if(PlayerData[playerid][e_level] >= 3)
@@ -12541,7 +12541,7 @@ YCMD:derbyforcemap(playerid, params[], help) // TODO: Befehl raushauen, weil geh
 	    SCM(playerid, -1, NO_PERM);
 	}
 	return 1;
-}
+}*/
 
 YCMD:raceforcemap(playerid, params[], help)
 {
@@ -20902,10 +20902,13 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
 
 SQL_UpdatePlayerPass(playerid, new_pass[])
 {
+	new salt[SALT_LENGTH + 1], hash[WHIRLPOOL_LENGTH + 1];
+	NC_CSPRNG(SALT_LENGTH, salt, sizeof(salt));
+	format(gstr, sizeof(gstr), "%s%s", new_pass, salt);
+	NC_Whirlpool(gstr, hash, sizeof(hash));
 
-
-	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `hash` = SHA1('%e') WHERE `name` = '%e' LIMIT 1;", new_pass, __GetName(playerid));
- 	mysql_pquery(pSQL, gstr2);
+	mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `password` = '%e', `salt` = '%e' WHERE `id` = %i LIMIT 1;", hash, salt, PlayerData[playerid][e_accountid]);
+ 	mysql_tquery(pSQL, gstr2);
 }
 
 SQL_FetchGangMemberNames(playerid, gangid)
@@ -26796,10 +26799,10 @@ GetNearestHouse(playerid)
 
 	for(new r = 0; r < MAX_HOUSES; r++)
 	{
-		if(4.0 > ((fPOS[0] - HouseData[r][e_pos][0]) * (fPOS[0] - HouseData[r][e_pos][0])) + ((fPOS[1] - HouseData[r][e_pos][1]) * (fPOS[1] - HouseData[r][e_pos][1])) + ((fPOS[2] - HouseData[r][e_pos][2]) * (fPOS[2] - HouseData[r][e_pos][2])))
-		{
-		    return r;
-		}
+	    if(4.0 > GetDistanceFast(fPOS[0], fPOS[1], fPOS[2], HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2]))
+	    {
+	        return r;
+	    }
 	}
 	return -1;
 }
@@ -26811,10 +26814,10 @@ GetNearestEnterprise(playerid)
 
 	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
-		if(4.0 > ((fPOS[0] - EnterpriseData[r][e_pos][0]) * (fPOS[0] - EnterpriseData[r][e_pos][0])) + ((fPOS[1] - EnterpriseData[r][e_pos][1]) * (fPOS[1] - EnterpriseData[r][e_pos][1])) + ((fPOS[2] - EnterpriseData[r][e_pos][2]) * (fPOS[2] - EnterpriseData[r][e_pos][2])))
-		{
-		    return r;
-		}
+	    if(4.0 > GetDistanceFast(fPOS[0], fPOS[1], fPOS[2], EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2]))
+	    {
+	        return r;
+	    }
 	}
 	return -1;
 }
