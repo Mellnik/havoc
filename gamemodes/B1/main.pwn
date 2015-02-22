@@ -14309,7 +14309,7 @@ YCMD:gungames(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-        if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+        if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        gungames[i][E_playerid] = i;
 	        gungames[i][E_gungame] = PlayerData[i][e_gungamewins];
@@ -14345,7 +14345,7 @@ YCMD:fallouts(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+	    if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        fallouts[i][E_playerid] = i;
 	        fallouts[i][E_fallout] = PlayerData[i][e_falloutwins];
@@ -14381,7 +14381,7 @@ YCMD:derbys(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+	    if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        derbys[i][E_playerid] = i;
 	        derbys[i][E_derby] = PlayerData[i][e_derbywins];
@@ -14417,7 +14417,7 @@ YCMD:races(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+	    if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        races[i][E_playerid] = i;
 	        races[i][E_race] = PlayerData[i][e_racewins];
@@ -14453,7 +14453,7 @@ YCMD:reacts(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-		if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+		if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        tests[i][E_playerid] = i;
 	        tests[i][E_test] = PlayerData[i][e_reaction];
@@ -14489,7 +14489,7 @@ YCMD:kills(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+	    if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        kills[i][E_playerid] = i;
 	        kills[i][E_kills] = PlayerData[i][e_kills];
@@ -14525,7 +14525,7 @@ YCMD:deaths(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+	    if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        deaths[i][E_playerid] = i;
 	        deaths[i][E_deaths] = PlayerData[i][e_deaths];
@@ -14561,7 +14561,7 @@ YCMD:toptime(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+	    if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        playingtime[i][E_playerid] = i;
 		    PlayerData[i][e_time] = PlayerData[i][e_time] + (gettime() - PlayerData[i][ConnectTime]);
@@ -14599,7 +14599,7 @@ YCMD:richlist(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-        if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+        if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 		{
 	        richlist[i][E_playerid] = i;
 	        richlist[i][E_money] = PlayerData[i][e_money] + PlayerData[i][e_bank];
@@ -14635,7 +14635,7 @@ YCMD:wanteds(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+	    if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        wanteds[i][E_playerid] = i;
 	        wanteds[i][E_wanteds] = PlayerData[i][e_wanteds];
@@ -14670,7 +14670,7 @@ YCMD:score(playerid, params[], help)
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
+	    if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        score[i][E_playerid] = i;
 	        score[i][E_pscore] = GetPlayerScoreEx(i);
