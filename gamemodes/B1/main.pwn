@@ -18,7 +18,7 @@
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1
 || Streamer Plugin v2.7.4
-|| MySQL Plugin R38
+|| MySQL Plugin R39-3
 || CrashDetect 4.15
 || amx_assembly Library .318
 ||
@@ -61,7 +61,7 @@
 #include <YSI\y_va>
 #include <sscanf2>
 #include <streamer>
-#include <a_mysql_R38>
+#include <a_mysql_R39-3>
 #include <mSelection>       // 1.1 R3
 #include <Dini>         	// 1.6
 #include <md-sort>      	// 13/02/2014
@@ -98,7 +98,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #endif
 
 // Server
-#define HOSTNAME                        "*** Havoc Freeroam ~ The Madness (0.3.7)"
+#define HOSTNAME                        "[Havoc Freeroam ~ The Madness (0.3.7)"
 #define SERVER_NAME                    	"Havoc Freeroam"
 #define SERVER_SHORT                   	"Havoc"
 #define SERVER_LOGO						"{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»"
@@ -15283,10 +15283,10 @@ YCMD:changepass(playerid, params[], help)
 		return 1;
 	}
 
-    SQL_UpdatePlayerPass(playerid, gstr);
-	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
     format(gstr2, sizeof(gstr2), ""server_sign" "r_besch"You have successfully changed your password to %s", gstr);
 	SCM(playerid, -1, gstr2);
+    SQL_UpdatePlayerPass(playerid, gstr);
+	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 	PlayerData[playerid][tickLastPW] = tick;
 	return 1;
 }
@@ -29310,7 +29310,9 @@ ResetPlayerData(playerid)
 
 SQL_SaveAccountSettings(playerid)
 {
-	mysql_tquery(pSQL, "DELETE FROM `settings` WHERE `id` = %i LIMIT 1;", PlayerData[playerid][e_accountid]);
+	mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `settings` WHERE `id` = %i LIMIT 1;", PlayerData[playerid][e_accountid]);
+	mysql_tquery(pSQL, gstr);
+	
 	mysql_format(pSQL, gstr2, sizeof(gstr2), "INSERT INTO `settings` VALUES (%i, %i, %i, %i, %i, %i, %i, %i, %f, %f, %i, %i);",
 	    PlayerData[playerid][e_accountid],
 	    PlayerSettings[playerid][e_allow_teleport],
