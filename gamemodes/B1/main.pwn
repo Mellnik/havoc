@@ -5,7 +5,7 @@
 || # Copyright (c)2011-2015 Havoc Server			  				  # ||
 || # Created by Mellnik                                               # ||
 || # ---------------------------------------------------------------- # ||
-|| # https://havocserver.com		                      			  # ||
+|| # http://havocserver.com											  # ||
 || #################################################################### ||
 \*======================================================================*/
 
@@ -13,7 +13,7 @@
 
 /*
 || Build Dependencies:
-|| SA-MP Server 0.3.7-RC1
+|| SA-MP Server 0.3.7-RC2
 || Havoc Core
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1

@@ -5,13 +5,13 @@
 || # Copyright (c)2011-2015 Havoc Server			  				  # ||
 || # Created by Mellnik                                               # ||
 || # ---------------------------------------------------------------- # ||
-|| # https://havocserver.com		                      			  # ||
+|| # http://havocserver.com		                      			  	  # ||
 || #################################################################### ||
 \*======================================================================*/
 
 #define FILTERSCRIPT
 
-#include <a_samp>       // 0.3z-R4
+#include <a_samp>       // 0.3.7-RC2
 #include <streamer>     // v2.7.4
 
 public OnFilterScriptInit()
