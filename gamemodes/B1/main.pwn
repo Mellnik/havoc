@@ -19,11 +19,11 @@
 || sscanf Plugin 2.8.1
 || Streamer Plugin v2.7.4
 || MySQL Plugin R39-3
-|| CrashDetect 4.15
-|| amx_assembly Library .318
+|| amx_assembly Library (commit 321)
 ||
 || Build notes:
-|| compile -d3 with crashdetect
+|| crashdetect: -d3
+|| production: -d0 -O1
 ||
 || Database changes:
 ||
@@ -98,10 +98,10 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #endif
 
 // Server
-#define HOSTNAME                        "[Havoc Freeroam ~ The Madness (0.3.7)"
-#define SERVER_NAME                    	"Havoc Freeroam"
+#define HOSTNAME                        "Havoc Server » Stunt/DM/Race/Derby/Minigames"
+#define SERVER_NAME                    	"Havoc Server"
 #define SERVER_SHORT                   	"Havoc"
-#define SERVER_LOGO						"{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»"
+#define SERVER_LOGO						"{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»" // TODO: Replace this and all NEF stuff names
 #define SERVER_URL                      "havocserver.com"
 #define SERVER_WWW                      "www.havocserver.com"
 #define SERVER_FORUM					"forum.havocserver.com"
@@ -112,7 +112,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #else
 #define SERVER_VERSION					"Beta:Build 1"
 #endif
-#define SAMP_VERSION                    "0.3.7-RC1"
+#define SAMP_VERSION                    "0.3.7-RC2"
 
 // Script
 #define MAX_PLAYER_TOYS                 (6)
