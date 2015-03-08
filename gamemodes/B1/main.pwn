@@ -16943,7 +16943,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	
 	if(response)
 	{
-		PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0); //1054
+		//PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0); //1054
 
 	    switch(dialogid)
 	    {
@@ -19503,7 +19503,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	}
 	else if(!response)
 	{
-		PlayerPlaySound(playerid, 1084, 0.0, 0.0, 0.0); //1055
+		//PlayerPlaySound(playerid, 1084, 0.0, 0.0, 0.0); //1055
 
  		switch(dialogid)
  		{
