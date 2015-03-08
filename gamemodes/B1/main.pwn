@@ -2849,11 +2849,11 @@ public OnGameModeInit()
 	Log(LOG_INIT, "NEF Server Copyright (c)2011 - 2015 "SERVER_NAME"");
     Log(LOG_INIT, "Version: "SERVER_VERSION"");
 	#if IS_RELEASE_BUILD == true
-	Log(LOG_INIT, "Build config: Release");
+	Log(LOG_INIT, "Build configuration: Release");
 	#else
-	Log(LOG_INIT, "Build config: Development");
+	Log(LOG_INIT, "Build configuration: Development");
 	#endif
-	Log(LOG_INIT, "Operating on %s", GetOS() == OS_LINUX ? ("Linux") : ("Windows"));
+	Log(LOG_INIT, "Detected Operating System: %s", GetOS() == OS_LINUX ? ("Linux") : ("Windows"));
 	
 	if(NC_Init(CORE_VERSION) == 0)
 	{
@@ -2862,7 +2862,7 @@ public OnGameModeInit()
 	}
 	else
 	{
-	    Log(LOG_INIT, "NEFMOD Core (0x%x) attached.", CORE_VERSION);
+	    Log(LOG_INIT, "NEFMOD Core (Version 0x%x) attached", CORE_VERSION);
 	}
 	
 	Log(LOG_INIT, "MySQL: Logging: LOG_ALL");
@@ -2916,7 +2916,7 @@ public OnGameModeInit()
 
 	for(new i = 0; i < MAX_VEHICLES; i++)
 	{
-		SetVehicleNumberPlate(i, "{F81414}NEF");
+		SetVehicleNumberPlate(i, "{F81414}Havoc");
 		SetVehicleToRespawn(i);
 		
 		if(IsComponentIdCompatible(GetVehicleModel(i), 1010))
@@ -2929,7 +2929,7 @@ public OnGameModeInit()
 	
 	mysql_tquery(pSQL, "UPDATE `server` SET `value` = 0 WHERE `name` = 'online';");
 	
-    Log(LOG_INIT, "Server successfully loaded");
+    Log(LOG_INIT, "Server successfully loaded, waiting for database threads..");
 	return 1;
 }
 
@@ -23847,7 +23847,7 @@ procedure QueueProcess()
 			    EnterpriseInterest,
 			    EnterpriseInterestVIP;
 		    
-		    if(PlayerData[i][e_bank] > 0 && PlayerData[i][e_bank] < 1000000 && GetPlayingTime(playerid) < 126000)
+		    if(PlayerData[i][e_bank] > 0 && PlayerData[i][e_bank] < 1000000 && GetPlayingTime(i) < 126000)
 		        bmul = 1.5;
 		    else if(PlayerData[i][e_bank] > 0 && PlayerData[i][e_bank] < 1000000)
 		        bmul = 1.0;

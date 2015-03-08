@@ -3,16 +3,16 @@ Havoc Freeroam SA-MP Server
 
 Build 1 (1st Feb 2015)
 ----------------------
-- Stores system has been rewritten. Stores now load and save from database.
+- Stores (24/7, Banks, Ammunation etc.) are now being saved and loaded from database.
 - Bans now include serverside information; Can be viewed at http://havocserver.com/bans
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/mappers).
-- Namechanges are now attached to an account id rather than a name to prevent confusion.
-- More accurate unixtime conversion for timings.
-- Fixed top commands showing non-online players.
+- Namechanges are now attached to the account id rather than the name to avoid confusion between different accounts.
+- Playing time is now being calculated more accurate; avoiding time bugs.
+- Fixed /top commands showing non-online players.
 - New toy slot arrangement:
-	Slot 1-4 Usable by everyone, Slot 5-6 VIP only.
-- Enterprise/House slots now rise within score:
+	Slot 1-4 usable by everyone, slot 5-6 VIP only.
+- Enterprise/House slots now rise proportional to score:
 	Needed score:      House slots:    Enterprises slots:
 			 500           1                 1
 			1000           2                 2
@@ -20,35 +20,34 @@ Build 1 (1st Feb 2015)
 		   10000           4                 4
 		   25000           5                 5
 - House system has been fully rewritten.
-   * Every house has fix amount of pv slots which can be used to buy custom cars.
-   * /h now shows all of your houses, select to teleports.
+   * Every house now has a fix amount of PV slots which can be used to buy custom cars (private vehicles). 
+   * /h now shows all of your houses (click to teleport).
    * /upgrade to upgrade your house interior.
    * /password to lock a house and set a password dialog.
-   * /sellto <playerid> <price> to sell your house to another player. (Does not alter interior)
-   * /sell will reset the interior.
-   * /spawn to set the spawn location in your house.
-   * Added '/accept house' to accept house offers.
+   * /sellto <playerid> <price> to sell your house to another player (does not change interior).
+   * Added '/accept house' to accept house offers from other players.
+   * /sell to sell your house and make it buyable by every player (resets interior to it's default).
+   * /spawn to set your spawn location inside your house.
    * Removed house item system.
    * /hlock has been merged into /lock.
    * /hmenu has been removed.
-   * Using /sell resets the interior to it's default.
 - Enterprise (Business) changes:
    * Businesses have been renamed to Enterprises.
-   * Added type: Bitcoin Mining Farm.
-   * /e for a list of your enterprises.
+   * Added new type: Bitcoin Mining Farm.
+   * /e for a list of your enterprises (click to teleport).
    * Enterpries now have a value like houses.
-   * /sellto <playerid> <price> to sell your enterprise to another player. (Does not alter level)
-   * Using /sell resets the enterprise level to 0.
-   * Added '/accept enterprise' to to accept an enterprise offer.
+   * /sellto <playerid> <price> to sell your enterprise to another player (does not change level).
+   * Using /sell resets the enterprise level to 1.
+   * Added '/accept enterprise' to to accept an enterprise offer from another player.
 - Merged old /accept command into '/accept vip'
-- Dialog cleanups to avoid unnecessary overhead.
 - Removed bullet hit sound from deathmatches.
 - Renamed /toggletp to /tgo.
 - Renamed /specoff to /unspec.
 - Renamed /gsetrank to /grank.
 - Removed /locate. Now redirects to /id.
 - /sell /buy can now be used for houses and enterprises.
-- Flip key has been set to key 'Y'.
+- You can now sell/buy houses/enterprises/custom cars on the Havoc Forums.
+- Vehicle flip key has been set to key 'Y'.
 - Removed Gold Credits system.
 - New chat shortcuts:
   #text = Admin chat
@@ -56,11 +55,10 @@ Build 1 (1st Feb 2015)
   !text = Gang chat
   $$$text = Enable color codes (VIP)
 - Added color codes for VIPs: <blue> <red> <green> <yellow> <white>
+  Example: http://puu.sh/grYnS/0d0c51b768.jpg
+  Results in: http://puu.sh/grYsF/f2503fc124.jpg  
 - Command /ncrecords is now accessible by everyone.
-- Removed dynamic ramps.
-- You can now sell/buy houses/enterprises/custom cars on the Havoc Forums.
-- Removed godmode textdraw
-- Houses now determine how many private cars you may held within your account.
+- Houses now determine how many private vehicles you may held within your account.
 - Player bounties are now being saved within your account.
 - Duel wins and defeats are now being saved within your account.
 - Derby: Each map has it's own vehicle for all players.
@@ -77,8 +75,11 @@ Build 1 (1st Feb 2015)
   * Join message (VIP only)
   * Spawn location (House/Hotspot) 
 - Removed dialog/teleport sounds.
+- Removed dynamic ramps.
+- Removed godmode textdraw.
+- Code improvements.
 
-Script changes made possible by SA-MP 0.3.7
+Gameplay changes made possible by SA-MP 0.3.7
 - Sold house icon color has been changed to red.
 - Vehicle collisions are now disabled in the /race minigame.
 
@@ -86,7 +87,8 @@ Admin changelog:
 - Renamed /togglegc to /tgc.
 - /caps command has been removed.
 - Removed /scorefall, /cashfall and announce commands.
-	
+- Added /setmapper command.
+
 TODO
 ----
 - http://gamerxserver.com/downloads/GamerX-Commands.txt
