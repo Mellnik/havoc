@@ -22,7 +22,7 @@
 || amx_assembly Library (commit 321)
 ||
 || Build notes:
-|| crashdetect: -d3
+|| debug: -d3
 || production: -d0 -O1
 ||
 || Database changes:
@@ -736,6 +736,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	bool:bDerbyWinner,
 	bool:bDerbyAFK,
 	bool:bDerbyHealthBarShowing,
+	iLoginTime,
 	iHouseLastSel,
 	iEnterpriseLastSel,
 	Float:fDerbyVehicleHealth,
@@ -781,7 +782,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	VIPNameHash,
 	VIPOffer,
 	VehicleSpamViolation,
-	ConnectTime,
 	Warnings,
 	RankSelected,
 	DmgMsg[10],
@@ -3041,6 +3041,7 @@ public OnPlayerSpawn(playerid)
 		PlayerData[playerid][bAllowSpawn] = false;
 		AttachPlayerToys(playerid);
 		ResetPlayerWorld(playerid);
+		PlayerData[playerid][iLoginTime] = gettime();
 		PlayerData[playerid][ExitType] = EXIT_FIRST_SPAWNED;
 		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 		SetCameraBehindPlayer(playerid);
@@ -11604,10 +11605,7 @@ YCMD:gregister(playerid, params[], help)
 	if(GetPlayerMoneyEx(playerid) < 500000) return SCM(playerid, -1, ""er"You need at least "nef_green"$500,000 "nef_red"for creating a gang!");
  	if(GetPlayerScoreEx(playerid) < 500) return SCM(playerid, -1, ""er"You need at least "nef_green"500 Score "nef_red"for creating a gang!");
  	
-    PlayerData[playerid][e_time] = PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][ConnectTime]);
-    PlayerData[playerid][ConnectTime] = gettime();
-
-	if(PlayerData[playerid][e_time] < 36000) return SCM(playerid, -1, ""er"You need at least "nef_green"10 hours playing time {D2D2D2}for creating a gang!");
+	if(GetPlayingTime(playerid) < 36000) return SCM(playerid, -1, ""er"You need at least "nef_green"10 hours playing time {D2D2D2}for creating a gang!");
 
 	new ntmp[144],
 	    ttmp[144];
@@ -14565,9 +14563,7 @@ YCMD:toptime(playerid, params[], help)
 	    if(PlayerData[i][ExitType] == EXIT_FIRST_SPAWNED)
 	    {
 	        playingtime[i][E_playerid] = i;
-		    PlayerData[i][e_time] = PlayerData[i][e_time] + (gettime() - PlayerData[i][ConnectTime]);
-		    PlayerData[i][ConnectTime] = gettime();
-	        playingtime[i][E_time] = PlayerData[i][e_time];
+	        playingtime[i][E_time] = GetPlayingTime(i);
 	    }
 	    else
 	    {
@@ -20494,7 +20490,6 @@ SkipRegistration(playerid)
 	
     PlayerData[playerid][e_regdate] = gettime();
 	PlayerData[playerid][e_payday] = 60;
-	PlayerData[playerid][ConnectTime] = gettime();
     PlayerData[playerid][e_wanteds] = 0;
 	PlayerData[playerid][e_lastlogin] = gettime();
 	PlayerData[playerid][e_lastnc] = 0;
@@ -20538,7 +20533,6 @@ SkipLogin(playerid)
 		
 	    PlayerData[playerid][e_regdate] = gettime();
 		PlayerData[playerid][e_payday] = 60;
-		PlayerData[playerid][ConnectTime] = gettime();
 	    PlayerData[playerid][e_wanteds] = 0;
 		PlayerData[playerid][e_lastlogin] = gettime();
 		PlayerData[playerid][e_lastnc] = 0;
@@ -20561,17 +20555,20 @@ SkipLogin(playerid)
 	return 1;
 }
 
+GetPlayingTime(playerid)
+{
+	return PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLoginTime]);
+}
+
 GetPlayingTimeFormat(playerid)
 {
-    PlayerData[playerid][e_time] = PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][ConnectTime]);
-    PlayerData[playerid][ConnectTime] = gettime();
-
     new ptime[32],
-        time[3];
+        time[4];
 
-    time[0] = floatround(PlayerData[playerid][e_time] / 3600, floatround_floor);
-    time[1] = floatround(PlayerData[playerid][e_time] / 60, floatround_floor) % 60;
-    time[2] = floatround(PlayerData[playerid][e_time] % 60, floatround_floor);
+	time[3] = GetPlayingTime(playerid);
+    time[0] = floatround(time[3] / 3600, floatround_floor);
+    time[1] = floatround(time[3] / 60, floatround_floor) % 60;
+    time[2] = floatround(time[3] % 60, floatround_floor);
 
 	format(ptime, sizeof(ptime), "%ih %02im %02is", time[0], time[1], time[2]);
 	return ptime;
@@ -20821,8 +20818,7 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
 {
     if(!islogged(playerid)) return 1;
     
-    PlayerData[playerid][e_time] = PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][ConnectTime]);
-    PlayerData[playerid][ConnectTime] = gettime();
+    PlayerData[playerid][e_time] = PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLoginTime]);
     
     if(PlayerData[playerid][e_ormid] == ORM:-1) {
     	Log(LOG_PLAYER, "Crit: ORM -1 in SaveAccount %s, %i", __GetName(playerid), playerid);
@@ -20978,7 +20974,6 @@ procedure OnPlayerRegister(playerid, namehash, register, hash[], salt[], playern
 		{
 		    DEBUG_P1(playerid, "OnPlayerRegister(REGISTER_CONNECT)")
 			PlayerData[playerid][ExitType] = EXIT_LOGGED;
-			PlayerData[playerid][ConnectTime] = gettime();
 		    PlayerData[playerid][bAllowSpawn] = true;
 		    PlayerData[playerid][bLogged] = true;
             g_ServerStats[2]++;
@@ -23575,8 +23570,10 @@ derby_start_map(mapid)
 				PlayerData[i][bDerbyAFK] = true;
 	        }
 			else
+			{
 				player_count++;
-	    }
+			}
+		}
 	}
 	
 	if(player_count < 2)
@@ -23850,7 +23847,7 @@ procedure QueueProcess()
 			    EnterpriseInterest,
 			    EnterpriseInterestVIP;
 		    
-		    if(PlayerData[i][e_bank] > 0 && PlayerData[i][e_bank] < 1000000 && PlayerData[i][e_time] < 126000)
+		    if(PlayerData[i][e_bank] > 0 && PlayerData[i][e_bank] < 1000000 && GetPlayingTime(playerid) < 126000)
 		        bmul = 1.5;
 		    else if(PlayerData[i][e_bank] > 0 && PlayerData[i][e_bank] < 1000000)
 		        bmul = 1.0;
@@ -28379,8 +28376,6 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				    PlayerSettings[playerid][e_skin] = -1;
 				}
 
-				PlayerData[playerid][ConnectTime] = gettime();
-
 				if(PlayerData[playerid][e_gangid] != 0) {
 					SQL_LoadPlayerGang(playerid);
 				}
@@ -29253,7 +29248,7 @@ ResetPlayerData(playerid)
 	PlayerData[playerid][e_bank] = 0;
 	PlayerData[playerid][e_time] = 0;
 	PlayerData[playerid][e_skin] = 0;
-	PlayerData[playerid][ConnectTime] = 0;
+	PlayerData[playerid][iLoginTime] = 0;
 	PlayerData[playerid][e_vip] = 0;
 	PlayerData[playerid][e_lastnc] = 0;
 	PlayerData[playerid][Warnings] = 0;

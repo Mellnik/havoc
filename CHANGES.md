@@ -50,14 +50,12 @@ Build 1 (1st Feb 2015)
 - /sell /buy can now be used for houses and enterprises.
 - Flip key has been set to key 'Y'.
 - Removed Gold Credits system.
-- Chat layout: "[Gang Tag] PlayerName (id) chat message text".
 - New chat shortcuts:
   #text = Admin chat
   *text = VIP chat
   !text = Gang chat
   $$$text = Enable color codes (VIP)
 - Added color codes for VIPs: <blue> <red> <green> <yellow> <white>
-- Removed /scorefall, /cashfall and announce commands.
 - Command /ncrecords is now accessible by everyone.
 - Removed dynamic ramps.
 - You can now sell/buy houses/enterprises/custom cars on the Havoc Forums.
@@ -65,10 +63,7 @@ Build 1 (1st Feb 2015)
 - Houses now determine how many private cars you may held within your account.
 - Player bounties are now being saved within your account.
 - Duel wins and defeats are now being saved within your account.
-- /caps command has been removed.
-- Derby changes:
-	* All players drive the same car on a map.
-	* Added admin command to set the next derby map manually. (/derbyforcemap) (TODO)
+- Derby: Each map has it's own vehicle for all players.
 - New /settings dialog values which are being saved in the database:
   * /tgo (Allow teleports to you)
   * /tpm (Allow private messages)
@@ -89,6 +84,8 @@ Script changes made possible by SA-MP 0.3.7
 
 Admin changelog:
 - Renamed /togglegc to /tgc.
+- /caps command has been removed.
+- Removed /scorefall, /cashfall and announce commands.
 	
 TODO
 ----
