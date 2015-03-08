@@ -9577,7 +9577,7 @@ YCMD:adminhelp(playerid, params[], help)
 
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[2][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/online /offline /onduty /offduty /akill /rv /day /togglegc\n/burn /move /tban /ban /cuff /uncuff /jail /unjail /unfreeze /readrules\n\n");
+		strcat(string, "/online /offline /onduty /offduty /akill /rv /day /tgc\n/burn /move /tban /ban /cuff /uncuff /jail /unjail /unfreeze /readrules\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[3][e_rank]);
 		strcat(string, gstr);
@@ -9600,7 +9600,7 @@ YCMD:adminhelp(playerid, params[], help)
 	return 1;
 }
 
-YCMD:togglegc(playerid, params[], help)
+YCMD:tgc(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] >= 2)
 	{
@@ -16943,7 +16943,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	
 	if(response)
 	{
-		PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0); //1054
+		//PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0); //1054
 
 	    switch(dialogid)
 	    {
@@ -19503,7 +19503,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	}
 	else if(!response)
 	{
-		PlayerPlaySound(playerid, 1084, 0.0, 0.0, 0.0); //1055
+		//PlayerPlaySound(playerid, 1084, 0.0, 0.0, 0.0); //1055
 
  		switch(dialogid)
  		{
@@ -21987,7 +21987,6 @@ server_initialize()
 	Command_AddAltNamed("tgo", "togtp");
 	Command_AddAltNamed("tgo", "gos");
 	Command_AddAltNamed("spectate", "spec");
-	Command_AddAltNamed("togglegc", "toggc");
 	Command_AddAltNamed("lock", "carlock");
 	Command_AddAltNamed("lock", "carunlock");
 	Command_AddAltNamed("lock", "unlock");
