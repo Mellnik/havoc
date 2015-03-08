@@ -81,6 +81,7 @@ Build 1 (1st Feb 2015)
   * /jlevel (severity of vehicle jumps)
   * Join message (VIP only)
   * Spawn location (House/Hotspot) 
+- Removed dialog/teleport sounds.
 	
 Script changes made possible by SA-MP 0.3.7
 - Sold house icon color has been changed to red.
