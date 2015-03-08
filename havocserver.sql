@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 4.3.6
+-- version 4.3.9
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 25, 2015 at 08:19 PM
--- Server version: 5.5.40-MariaDB
+-- Generation Time: Mar 08, 2015 at 03:19 PM
+-- Server version: 5.5.41-MariaDB
 -- PHP Version: 5.4.16
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `houses` (
   `originterior` tinyint(3) unsigned NOT NULL,
   `value` int(10) unsigned NOT NULL,
   `locked` tinyint(4) NOT NULL,
-  `password` varchar(40) NOT NULL,
+  `password` varchar(40) NOT NULL DEFAULT 'NoData',
   `creator` int(10) unsigned NOT NULL,
   `date` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -190,9 +190,9 @@ CREATE TABLE IF NOT EXISTS `houses` (
 
 CREATE TABLE IF NOT EXISTS `ipbans` (
   `ip` varchar(45) NOT NULL,
-  `account_id` int(10) unsigned NOT NULL,
-  `admin_id` int(10) unsigned NOT NULL,
-  `service` enum('SERVICE_SERVER','SERVICE_PANEL') NOT NULL,
+  `account_id` int(10) unsigned NOT NULL COMMENT 'Association to account',
+  `admin_id` int(10) unsigned NOT NULL COMMENT 'banned by? (if)',
+  `service` enum('SERVICE_SERVER','SERVICE_PANEL') NOT NULL COMMENT 'banned from?',
   `date` int(10) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -354,7 +354,8 @@ CREATE TABLE IF NOT EXISTS `settings` (
   `auto_login` tinyint(3) unsigned NOT NULL,
   `blevel` float(4,2) NOT NULL DEFAULT '1.30',
   `jlevel` float(4,2) NOT NULL DEFAULT '0.20',
-  `house_spawn` int(10) unsigned NOT NULL
+  `house_spawn` int(10) unsigned NOT NULL,
+  `vip_join_msg` tinyint(3) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
