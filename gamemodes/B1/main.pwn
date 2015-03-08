@@ -9581,7 +9581,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[3][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/freeze /eject /go /getip /get /mkick /clearchat /iplookup /dawn\n/night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n/tplayer\n\n");
+		strcat(string, "/freeze /eject /go /getip /get /mkick /clearchat /iplookup /tplayer\n/dawn /night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
@@ -12660,6 +12660,7 @@ YCMD:dplayers(playerid, params[], help)
 				strcat(string, tmp);
 		    }
 		}
+		gstr = ""white"No players in derby.";
 		ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Derby Players", string, "OK", "");
 	}
 	else
@@ -13122,7 +13123,7 @@ YCMD:pweaps(playerid, params[], help)
 
 YCMD:admins(playerid, params[], help)
 {
-	if(!IsPlayerAdmin(playerid) && GetPlayerScoreEx(playerid) < 100)
+	if((!IsPlayerAdmin(playerid) || PlayerData[playerid][e_level] < 1) && GetPlayerScoreEx(playerid) < 100)
 	    return SCM(playerid, -1, ""er"This commands requires 100 score!");
 
 	new finstring[2048], count = 0;
