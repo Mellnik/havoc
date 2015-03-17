@@ -1,6 +1,6 @@
 <?php
 
-if(!in_array($_SERVER['REMOTE_ADDR'], array('31.204.153.110', '127.0.0.1', '31.204.153.172', '2a02:810d:840:664:4595:b3cc:aa3:20b6'))) 
+if(!in_array($_SERVER['REMOTE_ADDR'], array('37.59.35.60', '127.0.0.1', '46.105.40.127', '2001:41d0:8:4a3c::1'))) 
 {
 	header("HTTP/1.1 403 Forbidden");
 	die("Error: Unknown IP");
