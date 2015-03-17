@@ -36,7 +36,6 @@ include("inc/function.inc.php");
 					<a href="<?php echo(_FORUM_); ?>">forum</a>
 					<a href="/rankings">rankings</a>
 					<a href="/vip">VIP</a>
-					<a href="/gc">gold credits</a>
 					<a href="/about">about</a>
 				</div>
 				
@@ -78,7 +77,7 @@ include("inc/function.inc.php");
 			?>
 			
 			<div class="copyright">
-				&copy 2015 Havoc Server
+				&copy <?php echo date("Y"); ?> Havoc Server
 			</div>
 		</div>
 	</body>

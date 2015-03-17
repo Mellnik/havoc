@@ -7,13 +7,13 @@
 		<div align="center">
 
 			<font size="5">
-			<b>SA-MP Server: <a class="neflink" href="samp://samp.nefserver.net:7777">samp.nefserver.net:7777</a> (31.204.153.110:7777)</b>
+			<b>SA-MP Server: <a class="neflink" href="samp://samp.nefserver.net:7777">samp.havocserver.com:7777</a> (46.105.40.127:7777)</b>
 			</font>
 			<br>
-			Server Location: Amsterdam, NL (Europe)
+			Server Location: Roubaix, FR (Europe)
 			<br><br>
 			<font size="6">
-			<b>SA-MP 0.3z released! <a class="neflink" href="http://files.sa-mp.com/sa-mp-0.3z-R1-install.exe">Download 0.3z Client to play</a></b>
+			<b>SA-MP 0.3.7 released! <a class="neflink" href="http://files.sa-mp.com/sa-mp-0.3z-R1-install.exe">Download 0.3.7 Client to play</a></b>
 			<br><br><br>
 			</font>
 			<div id="smallbox">
