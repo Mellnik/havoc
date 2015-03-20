@@ -6,6 +6,7 @@ ini_set("display_errors", 1);
 
 define("_SITE_", "http://havocserver.com");
 define("_FORUM_", "http://forum.havocserver.com");
+define("_DONATION_REWARD", 200000);
 
 include("inc/mysql.inc.php");
 include("inc/function.inc.php");
@@ -35,7 +36,7 @@ include("inc/function.inc.php");
 					<a href="<?php echo(_SITE_); ?>">home</a>
 					<a href="<?php echo(_FORUM_); ?>">forum</a>
 					<a href="/rankings">rankings</a>
-					<a href="/vip">VIP</a>
+					<a href="/donate">donate</a>
 					<a href="/about">about</a>
 				</div>
 				

@@ -32,21 +32,21 @@
 			<b><font size="2">PayPal / Credit Card</font></b>
 			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 			<input type="hidden" name="cmd" value="_xclick">
-			<input type="hidden" name="business" value="ZY67WE2LE7T78">
+			<input type="hidden" name="business" value="havocsamp@gmail.com">
 			<input type="hidden" name="lc" value="US">
+			<input type="hidden" name="item_name" value="Havoc VIP (SA-MP)">
+			<input type="hidden" name="item_number" value="HAVOC-VIP-FREEROAM">
+			<input type="hidden" name="amount" value="15.00">
 			<input type="hidden" name="currency_code" value="USD">
 			<input type="hidden" name="button_subtype" value="services">
-			<input type="hidden" name="item_name" value="New Evolution Freeroam VIP">
-			<input type="hidden" name="item_number" value="NEF-VIP">
-			<input type="hidden" name="amount" value="15"/>
 			<input type="hidden" name="no_note" value="1">
 			<input type="hidden" name="no_shipping" value="1">
 			<input type="hidden" name="rm" value="1">
-			<input type="hidden" name="return" value="http://nefserver.net/vip-complete">
-			<input type="hidden" name="cancel_return" value="http://nefserver.net/vip">
-			<input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynow_LG.gif:NonHosted">
-			<input type="hidden" name="notify_url" value="http://nefserver.net/gateway/notify_paypal.php">
-			<input type="hidden" name="custom" value="<?php echo($player); ?>">
+			<input type="hidden" name="return" value="http://havocserver.com/vip-complete">
+			<input type="hidden" name="cancel_return" value="http://havocserver.com/donate">
+			<input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted">
+			<input type="hidden" name="notify_url" value="http://havocserver.com/gateway/ipn_paypal.php">
+			<input type="hidden" name="custom" value="<?php echo($id); ?>">
 			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 			<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 			</form>
@@ -59,7 +59,7 @@
 			   <input type="hidden" name="pg_serviceid" value="55506">
 			   <input type="hidden" name="pg_currency" value="USD">
 			   <input type="hidden" name="pg_name" value="New Evolution Freeroam VIP">
-			   <input type="hidden" name="pg_custom" value="<?php echo($player); ?>">
+			   <input type="hidden" name="pg_custom" value="<?php echo($id); ?>">
 			   <input type="hidden" name="pg_price" value="15">
 			   <input type="hidden" name="pg_return_url" value="http://www.nefserver.net/vip-complete/">
 			   <input type="hidden" name="pg_cancel_url" value="http://nefserver.net/vip/">
@@ -76,7 +76,7 @@
 		<font size="2">
 		By using this service, you agree:<br>
 		a) That your payment rests as a donation in all cases.<br>
-		b) That charge backs or payment cancellations may result in a suspension of your account or service.<br>
+		b) That chargebacks or payment cancellations may result in a suspension of your account or service.<br>
 		c) That refunds can only be claimed within 24 hours.<br>
 		</font>
 		<?php
