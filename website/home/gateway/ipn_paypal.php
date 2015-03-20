@@ -1,5 +1,6 @@
 <?php
-
+error_reporting(-1);
+ini_set("display_errors", 1);
 // From: https://github.com/paypal/ipn-code-samples/blob/master/paypal_ipn.php
 
 // CONFIG: Enable debug mode. This means we'll log requests into 'ipn.log' in the same directory.
@@ -10,8 +11,9 @@ define("DEBUG", 1);
 // Set to 0 once you're ready to go live
 define("USE_SANDBOX", 1);
 
+define("LOG_FILE", "/tmp/ipn.log"); 
 
-define("LOG_FILE", "./ipn.log");
+error_log(date('[Y-m-d H:i e] '). "CALLED " . PHP_EOL, 3, LOG_FILE);
 
 
 // Read POST data

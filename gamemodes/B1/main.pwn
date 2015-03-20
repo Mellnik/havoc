@@ -101,7 +101,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define HOSTNAME                        "Havoc Server » Stunt/DM/Race/Derby/Minigames"
 #define SERVER_NAME                    	"Havoc Server"
 #define SERVER_SHORT                   	"Havoc"
-#define SERVER_LOGO						"{646464}«(-|-|"nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™{646464}|-|-)»" // TODO: Replace this and all NEF stuff names
+#define SERVER_LOGO						"{646464}«(-|-|{F0F0F0}Havoc Server{646464}|-|-)»" // TODO: Replace this and all NEF stuff names
 #define SERVER_URL                      "havocserver.com"
 #define SERVER_WWW                      "www.havocserver.com"
 #define SERVER_FORUM					"forum.havocserver.com"
@@ -115,6 +115,15 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SAMP_VERSION                    "0.3.7-RC2"
 
 // Script
+/* WORLD arrangement:
+
+*/
+#define WORLD_MINIGUN                   (1268565)
+#define WORLD_MINIGUN2                  (168566)
+#define WORLD_SNIPER                    (157412)
+#define WORLD_ROCKETDM                  (157411)
+#define WORLD_CNR                       (20)
+
 #define MAX_PLAYER_TOYS                 (6)
 #define REAC_TIME              			(900000)
 #define MAX_STORES                      (80)
@@ -123,10 +132,6 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define MAX_RACE_TIME 					(300)
 #define RACE_MAX_CHECKPOINTS            (75)
 #define RACE_MAX_PLAYERS 				(12)
-#define MINIGUN_WORLD                   (1268565)
-#define MINIGUN2_WORLD                  (168566)
-#define SNIPER_WORLD                    (157412)
-#define ROCKETDM_WORLD                  (157411)
 #define SERVERMSGS_TIME                 (850000)
 #define SALT_LENGTH                     (32)
 #define MAX_PLAYER_PVS	                (8)
@@ -279,7 +284,6 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define DM_4                            (4)
 
 // CNR
-#define CNR_WORLD                       (20)
 #define COLOR_CNR_COP 					0x1F75FEFF
 #define COLOR_CNR_PRO_ROBBER            0xFF3200FF
 
@@ -3094,7 +3098,7 @@ public OnPlayerSpawn(playerid)
         case JAIL:
         {
 			SetPlayerInterior(playerid, 3);
-			SetPlayerVirtualWorld(playerid, 10);
+			SetPlayerVirtualWorld(playerid, WORLD_JAIL);
 			SetPlayerFacingAngle(playerid, 360.0);
 			SetPlayerPos(playerid, 197.5662, 175.4800, 1004.0);
 			ResetPlayerWeapons(playerid);
@@ -3228,7 +3232,7 @@ public OnPlayerSpawn(playerid)
   			ResetPlayerWeapons(playerid);
   			GivePlayerWeapon(playerid, 35, 99999);
   			
-			SetPlayerVirtualWorld(playerid, ROCKETDM_WORLD);
+			SetPlayerVirtualWorld(playerid, WORLD_ROCKETDM);
    			SetPlayerInterior(playerid, 0);
 
 			new rand = random(8);
@@ -3238,7 +3242,7 @@ public OnPlayerSpawn(playerid)
 		case gSNIPER:
 		{
   			ResetPlayerWeapons(playerid);
-			SetPlayerVirtualWorld(playerid, SNIPER_WORLD);
+			SetPlayerVirtualWorld(playerid, WORLD_SNIPER);
 			GivePlayerWeapon(playerid, 34, 99999);
 			SetPlayerInterior(playerid, 0);
 
@@ -3252,7 +3256,7 @@ public OnPlayerSpawn(playerid)
 		{
 	        ResetPlayerWeapons(playerid);
 	        GivePlayerWeapon(playerid, 38, 99999);
-	        SetPlayerVirtualWorld(playerid, MINIGUN_WORLD);
+	        SetPlayerVirtualWorld(playerid, WORLD_MINIGUN);
 			SetPlayerInterior(playerid, 0);
 
 			new rand = random(10);
@@ -3263,7 +3267,7 @@ public OnPlayerSpawn(playerid)
 		{
 	        ResetPlayerWeapons(playerid);
 	        GivePlayerWeapon(playerid, 38, 99999);
-	        SetPlayerVirtualWorld(playerid, MINIGUN2_WORLD);
+	        SetPlayerVirtualWorld(playerid, WORLD_MINIGUN2);
 			SetPlayerInterior(playerid, 0);
 
 			new rand = random(19);
@@ -7879,7 +7883,7 @@ YCMD:war(playerid, params[], help)
 	Command_ReProcess(playerid, "/stopanims", false);
 	gTeam[playerid] = gWAR;
 	
-	SetPlayerVirtualWorld(playerid, 5);
+	SetPlayerVirtualWorld(playerid, WORLD_WAR);
 	SetCameraBehindPlayer(playerid);
 	SetPlayerInterior(playerid, 0);
 	SetPlayerWorldBounds(playerid, 432.0814, -81.74512, 2125.373, 1646.58);
@@ -9165,7 +9169,7 @@ YCMD:gungame(playerid, params[], help)
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
 	SetPlayerInterior(playerid, 0);
-	SetPlayerVirtualWorld(playerid, 1338);
+	SetPlayerVirtualWorld(playerid, WORLD_GUNGAME);
 
 	GunGame_Player[playerid][level] = 0;
 	GunGame_Player[playerid][dead] = true;
@@ -9307,8 +9311,8 @@ YCMD:duel(playerid, params[], help)
             GivePlayerWeapon(playerid, PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelWeapon], 700000);
             GivePlayerWeapon(PlayerData[playerid][DuelRequestRecv], PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelWeapon], 700000);
             
-            SetPlayerVirtualWorld(playerid, playerid + 10000);
-            SetPlayerVirtualWorld(PlayerData[playerid][DuelRequestRecv], playerid + 10000);
+            SetPlayerVirtualWorld(playerid, playerid + 4000);
+            SetPlayerVirtualWorld(PlayerData[playerid][DuelRequestRecv], playerid + 4000);
             
             SetPlayerPos(playerid, DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][0][0], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][0][1], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][0][2]);
             SetPlayerPos(PlayerData[playerid][DuelRequestRecv], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][1][0], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][1][1], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][1][2]);
@@ -9630,7 +9634,7 @@ YCMD:minigun(playerid, params[], help)
 	gTeam[playerid] = gMINIGUN;
 	ResetPlayerWeapons(playerid);
 	GivePlayerWeapon(playerid, 38, 99999);
-   	SetPlayerVirtualWorld(playerid, MINIGUN_WORLD);
+   	SetPlayerVirtualWorld(playerid, WORLD_MINIGUN);
 	SetPlayerInterior(playerid, 0);
 	HidePlayerInfoTextdraws(playerid);
 	new rand = random(10);
@@ -9652,7 +9656,7 @@ YCMD:minigun2(playerid, params[], help)
 	gTeam[playerid] = gMINIGUN2;
 	ResetPlayerWeapons(playerid);
 	GivePlayerWeapon(playerid, 38, 99999);
-   	SetPlayerVirtualWorld(playerid, MINIGUN2_WORLD);
+   	SetPlayerVirtualWorld(playerid, WORLD_MINIGUN2);
 	SetPlayerInterior(playerid, 0);
 	HidePlayerInfoTextdraws(playerid);
 	new rand = random(19);
@@ -9675,7 +9679,7 @@ YCMD:sniper(playerid, params[], help)
 	gTeam[playerid] = gSNIPER;
 	ResetPlayerWeapons(playerid);
 	GivePlayerWeapon(playerid, 34, 99999);
-	SetPlayerVirtualWorld(playerid, SNIPER_WORLD);
+	SetPlayerVirtualWorld(playerid, WORLD_SNIPER);
 	SetPlayerInterior(playerid, 0);
 	HidePlayerInfoTextdraws(playerid);
     LoadMap(playerid);
@@ -9698,7 +9702,7 @@ YCMD:rocketdm(playerid, params[], help)
 	gTeam[playerid] = gROCKETDM;
 	ResetPlayerWeapons(playerid);
 	GivePlayerWeapon(playerid, 35, 99999);
-	SetPlayerVirtualWorld(playerid, ROCKETDM_WORLD);
+	SetPlayerVirtualWorld(playerid, WORLD_ROCKETDM);
 	SetPlayerInterior(playerid, 0);
 	HidePlayerInfoTextdraws(playerid);
 	new rand = random(8);
@@ -12738,7 +12742,7 @@ YCMD:jail(playerid, params[], help)
 			gTeam[player] = JAIL;
 			PlayerData[player][iJailTime] = time;
 			SetPlayerInterior(player, 3);
-			SetPlayerVirtualWorld(player, 10);
+			SetPlayerVirtualWorld(player, WORLD_JAIL);
 			SetPlayerFacingAngle(player, 360.0);
 			SetPlayerPos(player, 197.5662, 175.4800, 1004.0);
 			ResetPlayerWeapons(player);
@@ -16703,7 +16707,7 @@ YCMD:escape(playerid, params[], help)
 			SCM(playerid, COLOR_ORANGE, "*** "RED_E"You have escaped from jail, the cops have been notified!");
 			SetPlayerPosition(playerid, 2290.6777,2423.7139,10.8203,181.2573);
 			SetPlayerInterior(playerid, 0);
-			SetPlayerVirtualWorld(playerid, 20);
+			SetPlayerVirtualWorld(playerid, WORLD_CNR);
 
             format(gstr2, sizeof(gstr2), "COP RADIO: "LB_E"Suspect %s(%d) has escaped from prision, units respond!", __GetName(playerid), playerid);
 			for(new i = 0; i < MAX_PLAYERS; i++)
@@ -26101,7 +26105,7 @@ procedure JailPlayer(playerid, namehash)
 	{
 		SetPVarInt(playerid, "Robber", 1);
 		SetPlayerInterior(playerid, 3);
-		SetPlayerVirtualWorld(playerid, 10);
+		SetPlayerVirtualWorld(playerid, WORLD_JAIL);
 		SetPlayerWantedLevel(playerid, 0);
 		SetPlayerFacingAngle(playerid, 360.0);
 		SetPlayerPos(playerid, 197.5662, 175.4800, 1004.0);
@@ -29437,7 +29441,7 @@ EnterHouse(playerid, i)
 
     gTeam[playerid] = gHOUSE;
     SetPlayerInterior(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][interior]);
-	SetPlayerVirtualWorld(playerid, HouseData[i][e_id] + 1000);
+	SetPlayerVirtualWorld(playerid, HouseData[i][e_id] + 6000);
 	SetPlayerPos(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][house_x], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_y], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_z]);
 	player_notice(playerid, "~w~type ~y~/exit ~w~to leave", "", 4000);
 	SCM(playerid, -1, ""er"Type /exit to leave the house");
