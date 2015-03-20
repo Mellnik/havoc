@@ -115,15 +115,6 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SAMP_VERSION                    "0.3.7-RC2"
 
 // Script
-/* WORLD arrangement:
-
-*/
-#define WORLD_MINIGUN                   (1268565)
-#define WORLD_MINIGUN2                  (168566)
-#define WORLD_SNIPER                    (157412)
-#define WORLD_ROCKETDM                  (157411)
-#define WORLD_CNR                       (20)
-
 #define MAX_PLAYER_TOYS                 (6)
 #define REAC_TIME              			(900000)
 #define MAX_STORES                      (80)
@@ -229,7 +220,6 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define DERBY_FALLOVER_M9               (1)
 #define MAX_DERBY_MAPS 					(9)
 #define MAX_DERBY_PLAYERS  				(20)
-#define DERBY_WORLD                     (5050)
 #define DERBY_TIME      				(180000)
 #define DERBY_VOTING_TIME     			(15000)
 #define DEFAULT_DERBY_TIME              (180)
@@ -238,7 +228,6 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define DERBY_FREEZE_INTERVAL 			(70)
 
 // TDM
-#define BG_WORLD                        (5048)
 #define DEFAULT_BG_TIME                 (240)
 #define BG_MAP1_WHILECAM                -512.8727, -121.8333, 97.8991
 #define BG_MAP2_WHILECAM                623.2424,-2418.4194,9.4857
@@ -272,12 +261,9 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 
 // Fallout
 #define FALLOUT_OBJECTS                 (100)
-#define FALLOUT_WORLD                   (121212)
 #define DEFAULT_FALLOUT_TIME            (240)
 
 // Deathmatch
-#define SAWN_WORLD                      (42014)
-#define DM_WORLD                        (541378)
 #define DM_1                            (1)
 #define DM_2                            (2)
 #define DM_3                            (3)
@@ -454,6 +440,40 @@ enum E_LOG_LEVEL
 	LOG_WORLD,
 	LOG_FAIL,
 	LOG_SUSPECT
+};
+
+// Virtual Worlds
+/*
+Car Shops:
+playerid + 1000
+
+Duel:
+playerid + 2000
+
+Häuser:
+HouseID + 3001
+
+Stores:
+r + 6001
+
+Races:
+8001 - 9999
+*/
+enum (+= 7)
+{
+	WORLD_SAWN,
+	WORLD_TDM,
+	WORLD_GUNGAME,
+	WORLD_JAIL,
+	WORLD_ROCKETDM,
+	WORLD_SNIPER,
+	WORLD_MINIGUN,
+	WORLD_MINIGUN2,
+	WORLD_CNR,
+	WORLD_WAR,
+	WORLD_DERBY,
+	WORLD_FALLOUT,
+	WORLD_DM
 };
 
 // Dialogs
@@ -3333,7 +3353,7 @@ public OnPlayerSpawn(playerid)
 						case 3: SetPlayerSkin(playerid, 280);
 					}
 					SetPlayerHealth(playerid, 100);
-					SetPlayerVirtualWorld(playerid, CNR_WORLD);
+					SetPlayerVirtualWorld(playerid, WORLD_CNR);
 					SetPVarInt(playerid, "inCNR", 1);
 				}
 				case 2: // Robbers
@@ -3362,7 +3382,7 @@ public OnPlayerSpawn(playerid)
 						case 4: SetPlayerSkin(playerid, 108);
 					}
 					SetPlayerHealth(playerid, 100);
-					SetPlayerVirtualWorld(playerid, CNR_WORLD);
+					SetPlayerVirtualWorld(playerid, WORLD_CNR);
 					SetPVarInt(playerid, "inCNR", 2);
 					SetPlayerWantedLevel(playerid, 1);
 				}
@@ -3387,7 +3407,7 @@ public OnPlayerSpawn(playerid)
 					SetPlayerSkin(playerid, 285);
 					SetPlayerHealth(playerid, 100);
 					SetPlayerArmour(playerid, 100);
-					SetPlayerVirtualWorld(playerid, CNR_WORLD);
+					SetPlayerVirtualWorld(playerid, WORLD_CNR);
 					SetPVarInt(playerid, "inCNR", 3);
 				}
 				case 4: // Pro Robbers
@@ -3411,7 +3431,7 @@ public OnPlayerSpawn(playerid)
 					SetPlayerPosition(playerid, 1276.4218,2670.2009,10.8203,278.1060);
 					SetPlayerSkin(playerid, 113);
 					SetPlayerHealth(playerid, 100);
-					SetPlayerVirtualWorld(playerid, CNR_WORLD);
+					SetPlayerVirtualWorld(playerid, WORLD_CNR);
 					SetPVarInt(playerid, "inCNR", 4);
     			}
 				case 5: // Army
@@ -3434,7 +3454,7 @@ public OnPlayerSpawn(playerid)
 					SetPlayerPosition(playerid, 1286.8466,1269.5372,10.8203,333.2522);
 					SetPlayerSkin(playerid, 287);
   					SetPlayerHealth(playerid, 100);
-					SetPlayerVirtualWorld(playerid, CNR_WORLD);
+					SetPlayerVirtualWorld(playerid, WORLD_CNR);
 					SetPVarInt(playerid, "inCNR", 5);
 				}
   			}
@@ -6349,7 +6369,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 	if(pickupid == g_CarShopDialogPickup)
 	{
 	    if(!islogged(playerid)) return notlogged(playerid);
-		SetPlayerVirtualWorld(playerid, playerid + 101);
+		SetPlayerVirtualWorld(playerid, playerid + 1000);
 		SetPlayerCameraPos(playerid,-1407.6005,1021.9415,1051.4486);
 		SetPlayerCameraLookAt(playerid, -1407.9410,1022.4058,1051.1681);
 		SetPlayerPos(playerid, -1409.6410, 1032.6376, 1049.0288);
@@ -6439,7 +6459,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 				        SetPlayerInterior(playerid, 5);
 				    }
 				}
-				SetPlayerVirtualWorld(playerid, r + 1000);
+				SetPlayerVirtualWorld(playerid, r + 6001);
 				return 1;
 		    }
 		}
@@ -7833,7 +7853,7 @@ YCMD:derby(playerid, params[], help)
 	SetPlayerDerbyStaticMeshes(playerid);
 	ShowPlayerDerbyTextdraws(playerid);
 	CurrentDerbyPlayers++;
-	SetPlayerVirtualWorld(playerid, DERBY_WORLD);
+	SetPlayerVirtualWorld(playerid, WORLD_DERBY);
 	SetPlayerInterior(playerid, 0);
 	
     Streamer_ToggleItemUpdate(playerid, STREAMER_TYPE_MAP_ICON, 0);
@@ -7907,7 +7927,7 @@ YCMD:dm(playerid, params[], help)
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
     ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-	SetPlayerVirtualWorld(playerid, DM_WORLD);
+	SetPlayerVirtualWorld(playerid, WORLD_DM);
 	ResetPlayerWeapons(playerid);
 	ShowPlayerDMTextdraws(playerid);
 	new rand = random(2);
@@ -7941,7 +7961,7 @@ YCMD:dm2(playerid, params[], help)
     CheckPlayerGod(playerid);
 	Command_ReProcess(playerid, "/stopanims", false);
     ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-	SetPlayerVirtualWorld(playerid, DM_WORLD + 1);
+	SetPlayerVirtualWorld(playerid, WORLD_DM + 1);
 	ResetPlayerWeapons(playerid);
 	ShowPlayerDMTextdraws(playerid);
 	new rand = random(2);
@@ -7976,7 +7996,7 @@ YCMD:dm3(playerid, params[], help)
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
     ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-	SetPlayerVirtualWorld(playerid, DM_WORLD + 2);
+	SetPlayerVirtualWorld(playerid, WORLD_DM + 2);
 	ResetPlayerWeapons(playerid);
 	ShowPlayerDMTextdraws(playerid);
 	new rand = random(2);
@@ -8010,7 +8030,7 @@ YCMD:dm4(playerid, params[], help)
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
     ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-	SetPlayerVirtualWorld(playerid, DM_WORLD + 3);
+	SetPlayerVirtualWorld(playerid, WORLD_DM + 3);
 	ResetPlayerWeapons(playerid);
 	ShowPlayerDMTextdraws(playerid);
 	new rand = random(2);
@@ -8045,7 +8065,7 @@ YCMD:sawn(playerid, params[], help)
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
     ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-	SetPlayerVirtualWorld(playerid, SAWN_WORLD);
+	SetPlayerVirtualWorld(playerid, WORLD_SAWN);
 	ResetPlayerWeapons(playerid);
 	ShowPlayerDMTextdraws(playerid);
 	new rand = random(2);
@@ -8576,7 +8596,7 @@ YCMD:spawn(playerid, params[], help)
 	    if(HouseData[i][e_ormid] == ORM:-1)
 	        continue;
 
-    	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 1000))
+    	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 3001))
 		{
 		    PlayerSettings[playerid][e_house_spawn] = HouseData[i][e_id];
 		    player_notice(playerid, "Spawn:", "House");
@@ -8670,7 +8690,7 @@ YCMD:accept(playerid, params[], help)
 
         for(new pid = 0; pid < MAX_PLAYERS; pid++)
         {
-            if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[r][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[r][e_id] + 1000))
+            if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[r][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[r][e_id] + 3001))
             {
                 gTeam[pid] = gFREEROAM;
                 SetPlayerPos(pid, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2]);
@@ -8996,7 +9016,7 @@ YCMD:sell(playerid, params[], help)
 		    
         for(new pid = 0; pid < MAX_PLAYERS; pid++)
         {
-            if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[i][e_id] + 1000))
+            if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[i][e_id] + 3001))
             {
                 gTeam[pid] = gFREEROAM;
                 SetPlayerPos(pid, HouseData[i][e_pos][0], HouseData[i][e_pos][1], HouseData[i][e_pos][2]);
@@ -9080,7 +9100,7 @@ YCMD:lock(playerid, params[], help)
 		        
 			if(IsPlayerInRangeOfPoint(playerid, 100.0, g_aHouseInteriorTypes[HouseData[i][e_interior]][house_x], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_y], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_z])
 				&& GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior]
-				&& GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 1000))
+				&& GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 3001))
 			{
 			    if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid])
 				{
@@ -9311,8 +9331,8 @@ YCMD:duel(playerid, params[], help)
             GivePlayerWeapon(playerid, PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelWeapon], 700000);
             GivePlayerWeapon(PlayerData[playerid][DuelRequestRecv], PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelWeapon], 700000);
             
-            SetPlayerVirtualWorld(playerid, playerid + 4000);
-            SetPlayerVirtualWorld(PlayerData[playerid][DuelRequestRecv], playerid + 4000);
+            SetPlayerVirtualWorld(playerid, playerid + 2000);
+            SetPlayerVirtualWorld(PlayerData[playerid][DuelRequestRecv], playerid + 2000);
             
             SetPlayerPos(playerid, DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][0][0], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][0][1], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][0][2]);
             SetPlayerPos(PlayerData[playerid][DuelRequestRecv], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][1][0], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][1][1], DuelMaps[PlayerData[PlayerData[playerid][DuelRequestRecv]][DuelLocation] - 1][1][2]);
@@ -9378,7 +9398,7 @@ YCMD:tdm(playerid, params[], help)
 	
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
-	SetPlayerVirtualWorld(playerid, BG_WORLD);
+	SetPlayerVirtualWorld(playerid, WORLD_TDM);
 	SetPlayerInterior(playerid, 0);
 	ResetPlayerWeapons(playerid);
 
@@ -9417,7 +9437,7 @@ YCMD:tdm(playerid, params[], help)
 	}
 	else if(CurrentBGMap == BG_MAP2)
 	{
-	    SetPlayerVirtualWorld(playerid, BG_WORLD);
+	    SetPlayerVirtualWorld(playerid, WORLD_TDM);
 	    SetPlayerInterior(playerid, 0);
 
 		ShowPlayerBGTextdraws(playerid);
@@ -9447,7 +9467,7 @@ YCMD:tdm(playerid, params[], help)
 	}
 	else if(CurrentBGMap == BG_MAP3)
 	{
-	    SetPlayerVirtualWorld(playerid, BG_WORLD);
+	    SetPlayerVirtualWorld(playerid, WORLD_TDM);
 	    SetPlayerInterior(playerid, 0);
 
 		ShowPlayerBGTextdraws(playerid);
@@ -9477,7 +9497,7 @@ YCMD:tdm(playerid, params[], help)
 	}
 	else if(CurrentBGMap == BG_MAP4)
 	{
-	    SetPlayerVirtualWorld(playerid, BG_WORLD);
+	    SetPlayerVirtualWorld(playerid, WORLD_TDM);
 	    SetPlayerInterior(playerid, 0);
 
 		ShowPlayerBGTextdraws(playerid);
@@ -9507,7 +9527,7 @@ YCMD:tdm(playerid, params[], help)
 	}
 	else if(CurrentBGMap == BG_MAP5)
 	{
-	    SetPlayerVirtualWorld(playerid, BG_WORLD);
+	    SetPlayerVirtualWorld(playerid, WORLD_TDM);
 	    SetPlayerInterior(playerid, 0);
 
 		ShowPlayerBGTextdraws(playerid);
@@ -9537,7 +9557,7 @@ YCMD:tdm(playerid, params[], help)
 	}
 	else if(CurrentBGMap == BG_MAP6)
 	{
-	    SetPlayerVirtualWorld(playerid, BG_WORLD);
+	    SetPlayerVirtualWorld(playerid, WORLD_TDM);
 	    SetPlayerInterior(playerid, 0);
 
 		ShowPlayerBGTextdraws(playerid);
@@ -17231,7 +17251,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	  						case 3: SetPlayerSkin(playerid, 280);
 	  					}
 						SetPlayerHealth(playerid, 100);
-						SetPlayerVirtualWorld(playerid, CNR_WORLD);
+						SetPlayerVirtualWorld(playerid, WORLD_CNR);
 						Command_ReProcess(playerid, "/cnrhelp", false);
 						SetPVarInt(playerid, "inCNR", 1);
 					}
@@ -17273,7 +17293,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 							case 4: SetPlayerSkin(playerid, 108);
 						}
 						SetPlayerHealth(playerid, 100);
-						SetPlayerVirtualWorld(playerid, CNR_WORLD);
+						SetPlayerVirtualWorld(playerid, WORLD_CNR);
 						Command_ReProcess(playerid, "/cnrhelp", false);
 						SetPVarInt(playerid, "inCNR", 2);
 					}
@@ -17315,7 +17335,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						SetPlayerPosition(playerid, 1276.4218,2670.2009,10.8203,278.1060);
 						SetPlayerSkin(playerid, 113);
 						SetPlayerHealth(playerid, 100);
-						SetPlayerVirtualWorld(playerid, CNR_WORLD);
+						SetPlayerVirtualWorld(playerid, WORLD_CNR);
 						SetPVarInt(playerid, "inCNR", 4);
 						Command_ReProcess(playerid, "/cnrhelp", false);
   	    			}
@@ -17351,7 +17371,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						SetPlayerPosition(playerid, 1286.8466,1269.5372,10.8203,333.2522);
 						SetPlayerSkin(playerid, 287);
 						SetPlayerHealth(playerid, 100);
-						SetPlayerVirtualWorld(playerid, CNR_WORLD);
+						SetPlayerVirtualWorld(playerid, WORLD_CNR);
 						SetPVarInt(playerid, "inCNR", 5);
 						Command_ReProcess(playerid, "/cnrhelp", false);
   	    			}
@@ -17388,7 +17408,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						SetPlayerSkin(playerid, 285);
 						SetPlayerHealth(playerid, 100);
 						SetPlayerArmour(playerid, 100);
-						SetPlayerVirtualWorld(playerid, CNR_WORLD);
+						SetPlayerVirtualWorld(playerid, WORLD_CNR);
 						SetPVarInt(playerid, "inCNR", 3);
 						Command_ReProcess(playerid, "/cnrhelp", false);
   	    			}
@@ -18280,7 +18300,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				/* Remove all players from house */
 	            for(new pid = 0; pid < MAX_PLAYERS; pid++)
 	            {
-	                if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[PlayerData[playerid][iHouseLastSel]][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[PlayerData[playerid][iHouseLastSel]][e_id] + 1000))
+	                if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[PlayerData[playerid][iHouseLastSel]][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[PlayerData[playerid][iHouseLastSel]][e_id] + 3001))
 	                {
 	                    gTeam[pid] = gFREEROAM;
 	                    SetPlayerPos(pid, HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][0], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][1], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][2]);
@@ -20036,7 +20056,7 @@ procedure BGVoting()
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
-		        SetPlayerVirtualWorld(i, BG_WORLD);
+		        SetPlayerVirtualWorld(i, WORLD_TDM);
 		        ShowPlayerDialog(i, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
 
 		    	if(BGTeam1Players > BGTeam2Players)
@@ -20089,7 +20109,7 @@ procedure BGVoting()
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
-		        SetPlayerVirtualWorld(i, BG_WORLD);
+		        SetPlayerVirtualWorld(i, WORLD_TDM);
 		        ShowPlayerDialog(i, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
 
 		    	if(BGTeam1Players > BGTeam2Players)
@@ -20142,7 +20162,7 @@ procedure BGVoting()
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
-		        SetPlayerVirtualWorld(i, BG_WORLD);
+		        SetPlayerVirtualWorld(i, WORLD_TDM);
 		        ShowPlayerDialog(i, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
 
 		    	if(BGTeam1Players > BGTeam2Players)
@@ -20195,7 +20215,7 @@ procedure BGVoting()
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
-		        SetPlayerVirtualWorld(i, BG_WORLD);
+		        SetPlayerVirtualWorld(i, WORLD_TDM);
 		        ShowPlayerDialog(i, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
 
 		    	if(BGTeam1Players > BGTeam2Players)
@@ -20248,7 +20268,7 @@ procedure BGVoting()
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
-		        SetPlayerVirtualWorld(i, BG_WORLD);
+		        SetPlayerVirtualWorld(i, WORLD_TDM);
 		        ShowPlayerDialog(i, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
 
 		    	if(BGTeam1Players > BGTeam2Players)
@@ -20301,7 +20321,7 @@ procedure BGVoting()
 		    {
 		        SetCameraBehindPlayer(i);
 		        TogglePlayerControllable(i, true);
-		        SetPlayerVirtualWorld(i, BG_WORLD);
+		        SetPlayerVirtualWorld(i, WORLD_TDM);
 		        ShowPlayerDialog(i, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
 
 		    	if(BGTeam1Players > BGTeam2Players)
@@ -22329,60 +22349,60 @@ server_load_visuals()
     
     // CNR START
 	// Refill Stations
-	CreateDynamicCP(2199.9460,2474.7231,10.8203, 3.0, CNR_WORLD, -1, -1, 100.0);
-	CreateDynamicCP(1596.1165,2196.8958,10.8203, 3.0, CNR_WORLD, -1, -1, 100.0);
-	CreateDynamicCP(2116.7163,922.6126,10.8203, 3.0, CNR_WORLD, -1, -1, 100.0);
-	CreateDynamicCP(2637.9185,1103.4926,10.8203, 3.0, CNR_WORLD, -1, -1, 100.0); // 10
+	CreateDynamicCP(2199.9460,2474.7231,10.8203, 3.0, WORLD_CNR, -1, -1, 100.0);
+	CreateDynamicCP(1596.1165,2196.8958,10.8203, 3.0, WORLD_CNR, -1, -1, 100.0);
+	CreateDynamicCP(2116.7163,922.6126,10.8203, 3.0, WORLD_CNR, -1, -1, 100.0);
+	CreateDynamicCP(2637.9185,1103.4926,10.8203, 3.0, WORLD_CNR, -1, -1, 100.0); // 10
 	// Robbery Locations
-	CreateDynamicCP(2097.5847,2224.0974,11.0234, 3.0, CNR_WORLD, -1, -1, 100.0); //24/7
-	CreateDynamicCP(2194.4106,1990.7670,12.2969, 3.0, CNR_WORLD, -1, -1, 100.0); // 24/7 2
-	CreateDynamicCP(2167.2432,2114.3831,10.8203, 3.0, CNR_WORLD, -1, -1, 100.0); // Casino
-	CreateDynamicCP(2159.0449,943.1320,10.8203, 3.0, CNR_WORLD, -1, -1, 100.0); // Ammunation
+	CreateDynamicCP(2097.5847,2224.0974,11.0234, 3.0, WORLD_CNR, -1, -1, 100.0); //24/7
+	CreateDynamicCP(2194.4106,1990.7670,12.2969, 3.0, WORLD_CNR, -1, -1, 100.0); // 24/7 2
+	CreateDynamicCP(2167.2432,2114.3831,10.8203, 3.0, WORLD_CNR, -1, -1, 100.0); // Casino
+	CreateDynamicCP(2159.0449,943.1320,10.8203, 3.0, WORLD_CNR, -1, -1, 100.0); // Ammunation
 	// Exits
-	CreateDynamicCP(-31.0415,-92.0112,1003.5469, 2.0, CNR_WORLD, -1, -1, 50.0); //24/7
-	CreateDynamicCP(-25.4077,-188.2529,1003.5469, 2.0, CNR_WORLD, -1, -1, 50.0); // 24/7 2
-	CreateDynamicCP(1132.9701,-14.2267,1000.6797, 2.0, CNR_WORLD, -1, -1, 50.0); // Casino
-	CreateDynamicCP(286.1115,-41.6959,1001.5156, 2.0, CNR_WORLD, -1, -1, 50.0); // Ammunation
-	CreateDynamicCP(294.4077,-38.3232,1001.5156, 2.0, CNR_WORLD, -1, -1, 50.0); // Ammunation Menu
-	CreateDynamicCP(2297.6804,2466.7480,3.2734, 2.0, CNR_WORLD, -1, -1, 50.0); // PD Refill // 20
-	CreateDynamicCP(1291.7106,2672.7725,11.2392, 2.0, CNR_WORLD, -1, -1, 50.0); // Robber Refill
-	CreateDynamicCP(2287.0718,2432.3665,10.8203, 2.0, CNR_WORLD, -1, -1, 75.0); // PD Entrance // 22
-	CreateDynamicCP(238.7167,138.6336,1003.0234, 2.0, CNR_WORLD, -1, -1, 75.0); // PD Exit
-	CreateDynamicCP(2271.0574,2293.2908,10.8203, 2.0, CNR_WORLD, -1, -1, 75.0); // Roca Escalente Bank // 24
-	CreateDynamicCP(2355.3020,1544.3804,10.8203, 2.0, CNR_WORLD, -1, -1, 75.0); // LV Bank
-	CreateDynamicCP(2305.3713,-16.0632,26.7496, 2.0, CNR_WORLD, -1, -1, 75.0); // Roca/LV Bank Exit // 26
-	CreateDynamicCP(2019.7651,1007.6656,10.8203, 2.0, CNR_WORLD, -1, -1, 75.0); // 4D Casino
-	CreateDynamicCP(2019.0719,1017.8808,996.8750, 2.0, CNR_WORLD, -1, -1, 75.0); // 4D Exit
-	CreateDynamicCP(2089.7944,1514.4180,10.8203, 2.0, CNR_WORLD, -1, -1, 75.0); // Royal Casino
-	CreateDynamicCP(2539.2773,2083.7363,10.8203, 2.0, CNR_WORLD, -1, -1, 75.0); // Ammunation
-	CreateDynamicCP(2196.8345,1677.1240,12.3672, 2.0, CNR_WORLD, -1, -1, 75.0); // Caligulas Casino
-	CreateDynamicCP(2234.1003,1714.3649,1012.3828, 2.0, CNR_WORLD, -1, -1, 75.0); // Caligulas Exit
-	CreateDynamicCP(1391.6522,2693.8896,10.8203, 1.5, CNR_WORLD, -1, -1, 75.0); // Robbers Gate
-	CreateDynamicCP(1400.9669,2685.9114,10.8203, 1.5, CNR_WORLD, -1, -1, 75.0); // Robbers Gate
+	CreateDynamicCP(-31.0415,-92.0112,1003.5469, 2.0, WORLD_CNR, -1, -1, 50.0); //24/7
+	CreateDynamicCP(-25.4077,-188.2529,1003.5469, 2.0, WORLD_CNR, -1, -1, 50.0); // 24/7 2
+	CreateDynamicCP(1132.9701,-14.2267,1000.6797, 2.0, WORLD_CNR, -1, -1, 50.0); // Casino
+	CreateDynamicCP(286.1115,-41.6959,1001.5156, 2.0, WORLD_CNR, -1, -1, 50.0); // Ammunation
+	CreateDynamicCP(294.4077,-38.3232,1001.5156, 2.0, WORLD_CNR, -1, -1, 50.0); // Ammunation Menu
+	CreateDynamicCP(2297.6804,2466.7480,3.2734, 2.0, WORLD_CNR, -1, -1, 50.0); // PD Refill // 20
+	CreateDynamicCP(1291.7106,2672.7725,11.2392, 2.0, WORLD_CNR, -1, -1, 50.0); // Robber Refill
+	CreateDynamicCP(2287.0718,2432.3665,10.8203, 2.0, WORLD_CNR, -1, -1, 75.0); // PD Entrance // 22
+	CreateDynamicCP(238.7167,138.6336,1003.0234, 2.0, WORLD_CNR, -1, -1, 75.0); // PD Exit
+	CreateDynamicCP(2271.0574,2293.2908,10.8203, 2.0, WORLD_CNR, -1, -1, 75.0); // Roca Escalente Bank // 24
+	CreateDynamicCP(2355.3020,1544.3804,10.8203, 2.0, WORLD_CNR, -1, -1, 75.0); // LV Bank
+	CreateDynamicCP(2305.3713,-16.0632,26.7496, 2.0, WORLD_CNR, -1, -1, 75.0); // Roca/LV Bank Exit // 26
+	CreateDynamicCP(2019.7651,1007.6656,10.8203, 2.0, WORLD_CNR, -1, -1, 75.0); // 4D Casino
+	CreateDynamicCP(2019.0719,1017.8808,996.8750, 2.0, WORLD_CNR, -1, -1, 75.0); // 4D Exit
+	CreateDynamicCP(2089.7944,1514.4180,10.8203, 2.0, WORLD_CNR, -1, -1, 75.0); // Royal Casino
+	CreateDynamicCP(2539.2773,2083.7363,10.8203, 2.0, WORLD_CNR, -1, -1, 75.0); // Ammunation
+	CreateDynamicCP(2196.8345,1677.1240,12.3672, 2.0, WORLD_CNR, -1, -1, 75.0); // Caligulas Casino
+	CreateDynamicCP(2234.1003,1714.3649,1012.3828, 2.0, WORLD_CNR, -1, -1, 75.0); // Caligulas Exit
+	CreateDynamicCP(1391.6522,2693.8896,10.8203, 1.5, WORLD_CNR, -1, -1, 75.0); // Robbers Gate
+	CreateDynamicCP(1400.9669,2685.9114,10.8203, 1.5, WORLD_CNR, -1, -1, 75.0); // Robbers Gate
 	CreateDynamicCP(3360.8054,-1934.1283,43.3184, 3.5, 0, -1, -1, 50.0); // bmx bike spawn
 	CreateDynamicCP(249.9905, 3772.1204, 18.3780, 12.0, 0, -1, -1, 100.0); // skydive5 checkpoint
 	CreateDynamicCP(-1839.5253, -3856.7036, 16.9936, 12.0, 0, -1, -1, 100.0); // skydive6 checkpoint
 
 	//Stores
-	CreateDynamicMapIcon(2539.3477,2081.2295,10.8203, 6, 0, CNR_WORLD); //Ammunation 1
-	CreateDynamicMapIcon(2159.0449,943.1320,10.8203, 6, 0, CNR_WORLD); //Ammunation 2
-	CreateDynamicMapIcon(2097.5847,2224.0974,11.0234, 49, 0, CNR_WORLD); //24/7 1
-	CreateDynamicMapIcon(2194.4106,1990.7670,12.2969, 49, 0, CNR_WORLD); //24/7 2
-	CreateDynamicMapIcon(2196.8345,1677.1240,12.3672, 25, 0, CNR_WORLD); //Caligulas
-	CreateDynamicMapIcon(2019.7651,1007.6656,10.8203, 25, 0, CNR_WORLD); //4D
-	CreateDynamicMapIcon(2167.2432,2114.3831,10.8203, 25, 0, CNR_WORLD); //Other Casino
-	CreateDynamicMapIcon(2271.0574,2293.2908,10.8203, 52, 0, CNR_WORLD); //Bank
-	CreateDynamicMapIcon(2355.3020,1544.3804,10.8203, 52, 0, CNR_WORLD); //Bank 2
-	CreateDynamicMapIcon(-1550.4073,1168.7106,7.1875, 52, 0, CNR_WORLD); //Bank
-	CreateDynamicMapIcon(-2455.3555,503.9716,30.0781, 52, 0, CNR_WORLD); //Bank
-	CreateDynamicMapIcon(1877.7257,-1737.5585,13.3501, 52, 0, CNR_WORLD); //Bank
-	CreateDynamicMapIcon(1550.1409,-1790.7477,15.2916, 52, 0, CNR_WORLD); //Bank
-	CreateDynamicMapIcon(1462.5692,-1010.9126,26.8438, 52, 0, CNR_WORLD); //Bank
-	CreateDynamicMapIcon(1498.3008,-1581.9375,13.5498, 52, 0, CNR_WORLD); //Bank
-	CreateDynamicMapIcon(368.8708,2580.0532,16.9099, 52, 0, CNR_WORLD); //Bank
-	CreateDynamicMapIcon(2225.7664,1838.6151,10.8203, 48, 0, CNR_WORLD); // RPC 1
-	CreateDynamicMapIcon(-26.1917,2531.7217,17.4203, 48, 0, CNR_WORLD); // RPC 2
-	CreateDynamicMapIcon(-2624.0850,1411.7439,7.0938, 48, 0, CNR_WORLD); // RPC 3
+	CreateDynamicMapIcon(2539.3477,2081.2295,10.8203, 6, 0, WORLD_CNR); //Ammunation 1
+	CreateDynamicMapIcon(2159.0449,943.1320,10.8203, 6, 0, WORLD_CNR); //Ammunation 2
+	CreateDynamicMapIcon(2097.5847,2224.0974,11.0234, 49, 0, WORLD_CNR); //24/7 1
+	CreateDynamicMapIcon(2194.4106,1990.7670,12.2969, 49, 0, WORLD_CNR); //24/7 2
+	CreateDynamicMapIcon(2196.8345,1677.1240,12.3672, 25, 0, WORLD_CNR); //Caligulas
+	CreateDynamicMapIcon(2019.7651,1007.6656,10.8203, 25, 0, WORLD_CNR); //4D
+	CreateDynamicMapIcon(2167.2432,2114.3831,10.8203, 25, 0, WORLD_CNR); //Other Casino
+	CreateDynamicMapIcon(2271.0574,2293.2908,10.8203, 52, 0, WORLD_CNR); //Bank
+	CreateDynamicMapIcon(2355.3020,1544.3804,10.8203, 52, 0, WORLD_CNR); //Bank 2
+	CreateDynamicMapIcon(-1550.4073,1168.7106,7.1875, 52, 0, WORLD_CNR); //Bank
+	CreateDynamicMapIcon(-2455.3555,503.9716,30.0781, 52, 0, WORLD_CNR); //Bank
+	CreateDynamicMapIcon(1877.7257,-1737.5585,13.3501, 52, 0, WORLD_CNR); //Bank
+	CreateDynamicMapIcon(1550.1409,-1790.7477,15.2916, 52, 0, WORLD_CNR); //Bank
+	CreateDynamicMapIcon(1462.5692,-1010.9126,26.8438, 52, 0, WORLD_CNR); //Bank
+	CreateDynamicMapIcon(1498.3008,-1581.9375,13.5498, 52, 0, WORLD_CNR); //Bank
+	CreateDynamicMapIcon(368.8708,2580.0532,16.9099, 52, 0, WORLD_CNR); //Bank
+	CreateDynamicMapIcon(2225.7664,1838.6151,10.8203, 48, 0, WORLD_CNR); // RPC 1
+	CreateDynamicMapIcon(-26.1917,2531.7217,17.4203, 48, 0, WORLD_CNR); // RPC 2
+	CreateDynamicMapIcon(-2624.0850,1411.7439,7.0938, 48, 0, WORLD_CNR); // RPC 3
 	// CNR END
     
 	// anti vehile drop
@@ -22732,7 +22752,7 @@ server_load_visuals()
 
 	for(new iit = 0; iit < sizeof(veh_cnr); iit++)
 	{
-		SetVehicleVirtualWorld(veh_cnr[iit], CNR_WORLD);
+		SetVehicleVirtualWorld(veh_cnr[iit], WORLD_CNR);
 	}
 	
 	#if WINTER_EDITION == true
@@ -23506,7 +23526,7 @@ procedure DerbyVoting()
 	{
 	    if(gTeam[i] == gDERBY)
 		{
-	        SetPlayerVirtualWorld(i, DERBY_WORLD); // <bla>
+	        SetPlayerVirtualWorld(i, WORLD_DERBY); // <bla>
 	        if(IsPlayerOnDesktop(i, 5000))
 			{
 	            PlayerData[i][bDerbyAFK] = true;
@@ -23668,7 +23688,7 @@ procedure Derby()
     	{
   			if(gTeam[i] == gDERBY)
 			{
-       			SetPlayerVirtualWorld(i, DERBY_WORLD);
+       			SetPlayerVirtualWorld(i, WORLD_DERBY);
        			SetPlayerDerbyStaticMeshes(i);
 				ShowDialog(i, DIALOG_DERBY_VOTING);
 			}
@@ -24921,7 +24941,7 @@ fallout_setplayer(playerid)
 	Streamer_Update(playerid);
 	TogglePlayerControllable(playerid, false);
 	SetCameraBehindPlayer(playerid);
-	SetPlayerVirtualWorld(playerid, FALLOUT_WORLD);
+	SetPlayerVirtualWorld(playerid, WORLD_FALLOUT);
 	ShowPlayerFalloutTextdraws(playerid);
 	ResetPlayerWeapons(playerid);
 }
@@ -27009,7 +27029,7 @@ ExitPlayer(playerid)
 			    if(HouseData[i][e_ormid] == ORM:-1)
 			        continue;
 
-		    	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 1000))
+		    	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 3001))
 				{
 				    LoadMap(playerid);
 			    	SetPlayerPos(playerid, HouseData[i][e_pos][0], HouseData[i][e_pos][1], HouseData[i][e_pos][2]);
@@ -29441,7 +29461,7 @@ EnterHouse(playerid, i)
 
     gTeam[playerid] = gHOUSE;
     SetPlayerInterior(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][interior]);
-	SetPlayerVirtualWorld(playerid, HouseData[i][e_id] + 6000);
+	SetPlayerVirtualWorld(playerid, HouseData[i][e_id] + 3001);
 	SetPlayerPos(playerid, g_aHouseInteriorTypes[HouseData[i][e_interior]][house_x], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_y], g_aHouseInteriorTypes[HouseData[i][e_interior]][house_z]);
 	player_notice(playerid, "~w~type ~y~/exit ~w~to leave", "", 4000);
 	SCM(playerid, -1, ""er"Type /exit to leave the house");
