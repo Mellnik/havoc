@@ -37,8 +37,11 @@ VIP Features
 - Ability to refill your health and armor for $5,000 (/harefill)
 - Chat color codes: <blue> <red> <green> <yellow>
 Example:
+
 ![alt tag](http://puu.sh/gIrCV/1392b550c7.jpg)
+
 gives you:
+
 ![alt tag](http://puu.sh/gIrJJ/e6212f9d33.jpg)
 
 
