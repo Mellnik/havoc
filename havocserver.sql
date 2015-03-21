@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 4.3.9
+-- version 4.3.11.1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 08, 2015 at 03:19 PM
+-- Generation Time: Mar 21, 2015 at 08:40 PM
 -- Server version: 5.5.41-MariaDB
 -- PHP Version: 5.4.16
 
@@ -109,6 +109,24 @@ CREATE TABLE IF NOT EXISTS `bans` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `donations`
+--
+
+CREATE TABLE IF NOT EXISTS `donations` (
+  `id` int(10) unsigned NOT NULL,
+  `type` enum('DONATION_VIP','DONATION_CUSTOM') NOT NULL,
+  `txn_id` varchar(20) NOT NULL,
+  `payer_info` varchar(45) NOT NULL COMMENT 'email if paypal, phone number if sms',
+  `mc_gross` float(8,2) NOT NULL,
+  `receiver_name` varchar(24) NOT NULL,
+  `receiver_id` int(10) unsigned NOT NULL,
+  `payment_processor` enum('P_PAYPAL','P_SMS','P_BITCOIN','P_OTHER') NOT NULL,
+  `error` enum('NOT_COMPLETE','USER_NOT_FOUND','USER_ALREADY_VIP','TXN_ID_EXISTS','INVALID_RESPONSE','UNKNOWN','OK','UNKNOWN_ITEM','PAYMENT_FAILED') NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `enterprises`
 --
 
@@ -199,13 +217,14 @@ CREATE TABLE IF NOT EXISTS `ipbans` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `loginlog`
+-- Table structure for table `logonlog`
 --
 
-CREATE TABLE IF NOT EXISTS `loginlog` (
+CREATE TABLE IF NOT EXISTS `logonlog` (
   `id` int(10) unsigned NOT NULL,
   `ip` varchar(45) NOT NULL,
-  `service` tinyint(3) unsigned NOT NULL,
+  `action` enum('ACTION_LOGIN','ACTION_LOGOUT') NOT NULL,
+  `service` enum('SERVICE_SERVER','SERVICE_PANEL') NOT NULL,
   `date` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -434,22 +453,6 @@ CREATE TABLE IF NOT EXISTS `vehicles` (
   `mod17` smallint(5) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `viporder`
---
-
-CREATE TABLE IF NOT EXISTS `viporder` (
-  `id` int(10) unsigned NOT NULL,
-  `txn_id` varchar(18) NOT NULL,
-  `email` varchar(45) NOT NULL,
-  `receiver` varchar(24) NOT NULL,
-  `payment` varchar(10) NOT NULL,
-  `method` tinyint(4) NOT NULL,
-  `issue` enum('NOT_COMPLETE','USER_NOT_FOUND','USER_ALREADY_VIP','TXN_ID_EXISTS','INVALID_RESPONSE','UNKNOWN','OK') NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
 --
 -- Indexes for dumped tables
 --
@@ -471,6 +474,12 @@ ALTER TABLE `achievements`
 --
 ALTER TABLE `bans`
   ADD KEY `id` (`id`);
+
+--
+-- Indexes for table `donations`
+--
+ALTER TABLE `donations`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `enterprises`
@@ -497,9 +506,9 @@ ALTER TABLE `houses`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `loginlog`
+-- Indexes for table `logonlog`
 --
-ALTER TABLE `loginlog`
+ALTER TABLE `logonlog`
   ADD KEY `id` (`id`);
 
 --
@@ -581,12 +590,6 @@ ALTER TABLE `vehicles`
   ADD KEY `id` (`id`);
 
 --
--- Indexes for table `viporder`
---
-ALTER TABLE `viporder`
-  ADD PRIMARY KEY (`id`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -594,6 +597,11 @@ ALTER TABLE `viporder`
 -- AUTO_INCREMENT for table `accounts`
 --
 ALTER TABLE `accounts`
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `donations`
+--
+ALTER TABLE `donations`
   MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `enterprises`
@@ -636,11 +644,6 @@ ALTER TABLE `races`
 ALTER TABLE `stores`
   MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `viporder`
---
-ALTER TABLE `viporder`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
 -- Constraints for dumped tables
 --
 
@@ -657,10 +660,10 @@ ALTER TABLE `bans`
 ADD CONSTRAINT `bans_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `loginlog`
+-- Constraints for table `logonlog`
 --
-ALTER TABLE `loginlog`
-ADD CONSTRAINT `loginlog_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `logonlog`
+ADD CONSTRAINT `logonlog_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `ncrecords`

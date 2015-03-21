@@ -23,7 +23,7 @@ VIP Features
 - Start a countdown for you and players nearby (/cd)
 - Spawn jetpacks in freeroam mode (/jetpack)
 - Change your nickname every 30 days instead of 90 days
-- Ability to specate players (/spec <playerid>)
+- Ability to spectate players (/spec <playerid>)
 - Spawn the Hydra jet at your location (/hydra)
 - The rainbow effect changes the color of your car very fast (/rainbow)
 - Labels:
@@ -36,6 +36,7 @@ VIP Features
 - Simply attach a trailer to your truck (/trailer)
 - Ability to refill your health and armor for $5,000 (/harefill)
 - Chat color codes: <blue> <red> <green> <yellow>
+To enable color codes use '$$$' at the beginning of your message.
 Example:
 
 ![alt tag](http://puu.sh/gIrCV/1392b550c7.jpg)
