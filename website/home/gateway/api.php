@@ -12,6 +12,7 @@ define("API_VERSION", "1.0");
 $script_access = "ALL_ACCESS_VALID_INDEX";
 
 include("../inc/mysql.inc.php");
+include("../inc/mailer.inc.php");
 
 switch($_GET['a'])
 {
@@ -25,6 +26,13 @@ switch($_GET['a'])
 		$output .= $row[3] . "\n\n{969696}Posted on " . date("F d, Y", $row[4]);
 		
 		echo strip_tags($output);
+		break;
+	}
+	case "email":
+	{
+		$player = $_GET['player_name'];
+		$receiver = $_GET['player_email'];
+		send_mail("Havoc Freeroam password reset", "Dear $player,<br><br>a password reset for your account has been requested. Please click on the link below to ", $receiver);
 		break;
 	}
 }
