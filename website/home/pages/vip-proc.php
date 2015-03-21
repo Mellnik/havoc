@@ -53,18 +53,9 @@
 			</div>
 			
  			<div style="vertical-align: middle; display: table-cell; padding-left: 10px;">
-			<b><font size="2">PayGol (Phone)</font></b>
+			<b><font size="2">Pay by phone (SMS)</font></b><br>
 			
-			<form name="pg_frm" method="post" action="https://www.paygol.com/pay" >
-			   <input type="hidden" name="pg_serviceid" value="55506">
-			   <input type="hidden" name="pg_currency" value="USD">
-			   <input type="hidden" name="pg_name" value="New Evolution Freeroam VIP">
-			   <input type="hidden" name="pg_custom" value="<?php echo($id); ?>">
-			   <input type="hidden" name="pg_price" value="15">
-			   <input type="hidden" name="pg_return_url" value="http://www.nefserver.net/vip-complete/">
-			   <input type="hidden" name="pg_cancel_url" value="http://nefserver.net/vip/">
-			   <input type="image" name="pg_button" src="https://www.paygol.com/micropayment/buttons/en/white.png" border="0" alt="Make payments with PayGol: the easiest way!" title="Make payments with PayGol: the easiest way!" >    
-			</form>
+			<a id="fmp-button" href="#" rel="d91bf7c4215dcde69361c826c3532a5c/<?php echo($id); ?>"><img src="//fortumo.com/images/fmp/fortumopay_96x47.png" width="96" height="47" alt="Mobile Payments by Fortumo" border="0" /></a>
 			
 			</div>
 			</div>

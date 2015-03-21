@@ -13,7 +13,7 @@
 		}
 		else
 		{
-			$stmt = $mysqli->prepare("SELECT `id`, `name`, `level`, `score`, `money`, `bank`, `kills`, `deaths`, `time`, `reaction`, `houses`, `gangid`, `gangrank`, `skin`, `derbywins`, `racewins`, `tdmwins`, `falloutwins`, `gungamewins`, `vip`, `credits`, `regdate`, `lastlogin` FROM `accounts` WHERE `name` = ?;");
+			$stmt = $mysqli->prepare("SELECT `id`, `name`, `admin`, `score`, `money`, `bank`, `kills`, `deaths`, `time`, `reactions`, `gangid`, `gangrank`, `skin`, `winderby`, `winrace`, `wintdm`, `winfallout`, `wingungame`, `vip`, `regdate`, `lastlogin` FROM `accounts` WHERE `name` = ?;");
 
 			$stmt->bind_param("s", $player);
 			$stmt->execute();
@@ -28,7 +28,7 @@
 			}
 			else
 			{
-				$stmt->bind_result($id, $name, $alevel, $score, $cash, $bank, $kills, $deaths, $time, $reaction, $houses, $gangid, $gangrank, $skin, $derby, $race, $tdm, $fallout, $gungame, $vip, $gc, $reg, $lastlogged);
+				$stmt->bind_result($id, $name, $alevel, $score, $cash, $bank, $kills, $deaths, $time, $reaction, $gangid, $gangrank, $skin, $derby, $race, $tdm, $fallout, $gungame, $vip, $reg, $lastlogged);
 			
 				$stmt->fetch();
 				$stmt->free_result();
@@ -96,13 +96,16 @@
 						$stmt->free_result();
 						$stmt->close();
 						
-						$q = $mysqli->query("SELECT COUNT(`id`) FROM `businesses` WHERE `owner` = '$name';");
+						$q = $mysqli->query("SELECT COUNT(`id`) FROM `enterprises` WHERE `id` = $id;");
 						$r = $q->fetch_row();
 						$businesses = $r[0];
 						
+						$q = $mysqli->query("SELECT COUNT(`id`) FROM `houses` WHERE `id` = $id;");
+						$r = $q->fetch_row();
+						$houses = $r[0];
+						
 						echo "<tr><td>Account Status:</td><td width='60%'>$status</td></tr>";
 						echo "<tr><td>Very Important Player:</td><td width='60%'>$vip</td></tr>";
-						echo "<tr><td>Gold Credits:</td><td width='60%'>".number_format($gc)."</td></tr>";
 						echo "<tr><td>Last seen:</td><td width='60%'>$lastlogged</td></tr>";
 						echo "<tr><td>Score:</td><td width='60%'>$score</td></tr>";
 						echo "<tr><td>Money:</td><td width='60%'>$$cash</td></tr>";
@@ -112,7 +115,7 @@
 						echo "<tr><td>K/D:</td><td width='60%'>".round($kills / ($deaths == 0 ? 1 : $deaths), 2)."</td></tr>";
 						echo "<tr><td>Time spent playing:</td><td width='60%'>".$time['h']." hours, ".$time['m']." minutes and ".$time['s']." seconds</td></tr>";
 						echo "<tr><td>Houses:</td><td width='60%'>$houses</td></tr>";
-						echo "<tr><td>Businesses:</td><td width='60%'>$businesses</td></tr>";
+						echo "<tr><td>Enterprises:</td><td width='60%'>$businesses</td></tr>";
 						echo "<tr><td>Reactions won:</td><td width='60%'>$reaction</td></tr>";
 						echo "<tr><td>Derbys won:</td><td width='60%'>$derby</td></tr>";
 						echo "<tr><td>Races won:</td><td width='60%'>$race</td></tr>";

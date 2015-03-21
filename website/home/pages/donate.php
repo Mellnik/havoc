@@ -1,6 +1,6 @@
 	<div id="smallbox" style="padding: 5px 15px 5px 15px;">
 	<b><font size="4">Very Important Player (VIP) - $15 one time donation</font></b>
-	<p>All VIP features are listed on the <a class="neflink" href="http://forum.nefserver.net/showthread.php?799-Very-Important-Players-%28VIPs%29">forums</a>.</p>
+	<p>All VIP features are listed on the <a class="neflink" href="http://forum.havocserver.com/showthread.php?19-Very-Important-Player-%28VIP%29-Features">forums</a>.</p>
 	<p>
 	<div align="center">
 	<form class="form" role="form" method="post" action="/vip-proc" accept-charset="UTF-8">

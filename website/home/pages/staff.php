@@ -3,17 +3,17 @@
 			<caption>NEF Staff</caption>
 
 			<tr>
-			<th>Name</th><th>Level</th><th>Join date</th><th>Last login</th>
+			<th>Name</th><th>Admin Level</th><th>Join date</th><th>Last login</th>
 			</tr>
 			
 			<?php
 			
-				$query = $mysqli->query("SELECT `name`, `level`, `regdate`, `lastlogin` FROM `accounts` WHERE `level` > 0 ORDER BY `level` DESC;");
+				$query = $mysqli->query("SELECT `name`, `admin`, `regdate`, `lastlogin` FROM `accounts` WHERE `admin` > 0 ORDER BY `admin` DESC;");
 				
 				for(; $row = $query->fetch_assoc();)
 				{
 					$player = $row['name'];
-					$level = $row['level'];
+					$level = $row['admin'];
 					$jd = date("d.m.Y H:i:s", $row['regdate']);
 					$ll = date("d.m.Y H:i:s", $row['lastlogin']);
 					

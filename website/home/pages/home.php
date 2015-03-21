@@ -1,5 +1,5 @@
 		<div align="center">
-			<img src="https://cdn-ams1.horzine.net/nef/nef.png" alt="Logo"/>
+			<img src="/graphics/havoc.png" alt="Logo"/>
 		</div>
 
 		<br>

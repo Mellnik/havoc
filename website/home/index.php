@@ -6,10 +6,11 @@ ini_set("display_errors", 1);
 
 define("_SITE_", "http://havocserver.com");
 define("_FORUM_", "http://forum.havocserver.com");
-define("_DONATION_REWARD", 200000);
+define("_DONATION_REWARD", 200000); // auch in ipn_paypal.php und ipn_sms.php
 
 include("inc/mysql.inc.php");
 include("inc/function.inc.php");
+include("inc/mailer.inc.php");
 ?>
 
 <html lang="en">
@@ -19,6 +20,7 @@ include("inc/function.inc.php");
 		<meta name="description" content="Anything you have ever wanted from a SA-MP server including Deathmatch/Race/Derby/Gungame and much more." />
 		<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Oswald" />
 		<link rel="stylesheet" type="text/css" href="/css/style.css" media="all" />
+		<script src="//fortumo.com/javascripts/fortumopay.js" type="text/javascript"></script>
 		<link rel="icon" type="image/ico" href="/graphics/favicon.ico"/>
 		<style type="text/css">
 		body {

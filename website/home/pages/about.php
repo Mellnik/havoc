@@ -1,8 +1,7 @@
 			<div id="box">
 				<div class="about">
-					
 					<span>
-						<img src="/graphics/nef_300x100.png" alt="logo" />
+						<img src="/graphics/havoc_tiny.png" alt="logo" />
 					</span>
 					
 					<span>
