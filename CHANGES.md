@@ -80,8 +80,9 @@ Build 1 (1st Feb 2015)
 - Code improvements.
 
 Gameplay changes made possible by SA-MP 0.3.7
-- Sold house icon color has been changed to red.
-- Vehicle collisions are now disabled in the /race minigame.
+- Sold house icon color has been changed to red
+- Vehicle collisions are now disabled in the /race minigame
+- Clear dialogs with TABs, for example: /h
 
 Admin changelog:
 - Renamed /togglegc to /tgc.

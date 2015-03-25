@@ -13,7 +13,7 @@
 
 /*
 || Build Dependencies:
-|| SA-MP Server 0.3.7-RC2
+|| SA-MP Server 0.3.7-RC3
 || Havoc Core
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1
@@ -8477,19 +8477,20 @@ YCMD:h(playerid, params[], help)
     if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE) return SCM(playerid, RED, NOT_AVAIL);
 
 	new string[512], count = 0;
+	strcat(string, "Slot\tHouse ID\tLock\tPV Slots\tValue");
 	for(new i = 0; i < MAX_HOUSES; i++)
 	{
 	    if(HouseData[i][e_ormid] == ORM:-1)
 	        continue;
 
 		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
-		    format(gstr, sizeof(gstr), ""white"[Slot %i] House ID: %i (%s"white") (%i PV Slots) Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), HouseData[i][e_pvslots], number_format(HouseData[i][e_value]));
+		    format(gstr, sizeof(gstr), ""white"%i\t%i\t%s\t"white"%i\t"nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), HouseData[i][e_pvslots], number_format(HouseData[i][e_value]));
 		    strcat(string, gstr);
 		}
 	}
 	if(count == 0) return SCM(playerid, -1, ""er"You don't own any houses");
 
-	ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU, DIALOG_STYLE_LIST, ""nef" :: House Menu", string, "Goto", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_HOUSE_MENU, DIALOG_STYLE_TABLIST_HEADERS, ""nef" :: House Menu", string, "Goto", "Cancel");
 	return 1;
 }
 
@@ -28331,7 +28332,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 			
 			if(PlayerSettings[playerid][e_auto_login] == 1)
 			{
-				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `loginlog` WHERE `id` = %i AND `ip` = '%e' ORDER BY `date` DESC LIMIT 1;",
+				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `logonlog` WHERE `id` = %i AND `ip` = '%e' AND `service` = 'SERVICE_SERVER' AND `action` = 'ACTION_LOGIN' ORDER BY `date` DESC LIMIT 1;",
 						PlayerData[playerid][e_accountid], __GetIP(playerid));
 				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_AUTOLOGIN);
 			}
@@ -28413,7 +28414,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				format(gstr, sizeof(gstr), "~y~[] ~w~%i", PlayerData[playerid][e_wanteds]);
 				PlayerTextDrawSetString(playerid, TXTWantedsTD[playerid], gstr);
 
-				mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `loginlog` VALUES (%i, '%s', 0, UNIX_TIMESTAMP());", PlayerData[playerid][e_accountid], __GetIP(playerid));
+				mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `logonlog` VALUES (%i, '%s', 'ACTION_LOGIN', 'SERVICE_SERVER', UNIX_TIMESTAMP());", PlayerData[playerid][e_accountid], __GetIP(playerid));
 				mysql_pquery(pSQL, gstr);
 
 				if(PlayerData[playerid][e_level] > 0)
