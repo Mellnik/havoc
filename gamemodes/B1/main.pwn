@@ -3584,9 +3584,12 @@ public OnPlayerDisconnect(playerid, reason)
 
    	if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED && PlayerData[playerid][bLogged])
 	{
+		mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `logonlog` VALUES (%i, '%s', 'ACTION_LOGOUT', 'SERVICE_SERVER', UNIX_TIMESTAMP());", PlayerData[playerid][e_accountid], __GetIP(playerid));
+		mysql_pquery(pSQL, gstr);
+	
 	    SQL_SaveAccount(playerid);
 	    SQL_SaveAccountSettings(playerid);
-	    
+
 		switch(gTeam[playerid])
 		{
 		    case gDUEL:
@@ -8477,12 +8480,11 @@ YCMD:h(playerid, params[], help)
     if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE) return SCM(playerid, RED, NOT_AVAIL);
 
 	new string[512], count = 0;
-	strcat(string, "Slot\tHouse ID\tLock\tPV Slots\tValue");
+	strcat(string, "Slot\tHouse ID\tLock\tPV Slots\tValue\n");
 	for(new i = 0; i < MAX_HOUSES; i++)
 	{
 	    if(HouseData[i][e_ormid] == ORM:-1)
 	        continue;
-
 		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
 		    format(gstr, sizeof(gstr), ""white"%i\t%i\t%s\t"white"%i\t"nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), HouseData[i][e_pvslots], number_format(HouseData[i][e_value]));
 		    strcat(string, gstr);
