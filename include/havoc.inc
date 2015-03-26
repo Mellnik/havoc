@@ -14,7 +14,7 @@
 #endif
 #define _havoc_included
 
-#define CORE_VERSION 0xE
+#define CORE_VERSION 0xF
 
 #define MAX_TELE_CATEGORIES 9
 #define MAX_TELES_PER_CATEGORY 32
@@ -22,6 +22,7 @@
 #define WHIRLPOOL_LENGTH 128
 
 native NC_Init(nc_version = CORE_VERSION);
+native NC_Exit();
 
 // Teleport System
 native NC_AddTeleport(tp_category, const tp_name[], const tp_cmd[], Float:x, Float:y, Float:z);

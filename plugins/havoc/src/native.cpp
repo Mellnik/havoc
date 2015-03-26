@@ -42,6 +42,14 @@ cell AMX_NATIVE_CALL Native::Init(AMX *amx, cell *params)
 	return 1;
 }
 
+/* NC_Exit() */
+cell AMX_NATIVE_CALL Native::Exit(AMX *amx, cell *params)
+{
+	// For /gmx
+	pTeleport.reset(new Teleport());
+	return 1;
+}
+
 /* ServerLog(const file[], const data[]) */
 cell AMX_NATIVE_CALL Native::ServerLog(AMX *amx, cell *params)
 {
