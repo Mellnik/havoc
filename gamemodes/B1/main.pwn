@@ -8480,14 +8480,19 @@ YCMD:h(playerid, params[], help)
     if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE) return SCM(playerid, RED, NOT_AVAIL);
 
 	new string[512], count = 0;
-	strcat(string, "Slot\tHouse ID\tLock\tPV Slots\tValue\n");
+	strcat(string, "House ID\tLock\tValue\tPrivate Vehicle Slots\n");
 	for(new i = 0; i < MAX_HOUSES; i++)
 	{
 	    if(HouseData[i][e_ormid] == ORM:-1)
 	        continue;
 		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
-		    format(gstr, sizeof(gstr), ""white"%i\t%i\t%s\t"white"%i\t"nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), HouseData[i][e_pvslots], number_format(HouseData[i][e_value]));
+		    format(gstr, sizeof(gstr), ""white"#%i\t%s\t"white"%i\t"nef_green"$%s\n",
+				HouseData[i][e_id],
+				HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"),
+				number_format(HouseData[i][e_value]),
+				HouseData[i][e_pvslots]);
 		    strcat(string, gstr);
+			++count;
 		}
 	}
 	if(count == 0) return SCM(playerid, -1, ""er"You don't own any houses");
@@ -8502,19 +8507,25 @@ YCMD:e(playerid, params[], help)
     if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
     
 	new string[512], count = 0;
+	strcat(string, "Enterprise ID\tLevel\tType\tValue\n");
 	for(new i = 0; i < MAX_PLAYER_ENTERPRISES; i++)
 	{
 	    if(EnterpriseData[i][e_ormid] == ORM:-1)
 	        continue;
 
 		if(EnterpriseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
-		    format(gstr, sizeof(gstr), ""white"[Slot %i] Enterprise ID: %i (%s"white") Value: "nef_green"$%s\n", ++count, HouseData[i][e_id], HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"), number_format(HouseData[i][e_value]));
+		    format(gstr, sizeof(gstr), ""white"#%i\t%i\t%s\t"nef_green"$%s\n",
+				EnterpriseData[i][e_id],
+				EnterpriseData[i][e_level],
+				g_szEnterpriseTypes[_:EnterpriseData[i][e_type]],
+				number_format(EnterpriseData[i][e_value]));
 		    strcat(string, gstr);
+		    ++count;
 		}
 	}
 	if(count == 0) return SCM(playerid, -1, ""er"You don't own any enterprises");
     
-    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_MENU, DIALOG_STYLE_LIST, ""nef" :: Enterprise Menu", string, "Select", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_ENTERPRISE_MENU, DIALOG_STYLE_TABLIST_HEADERS, ""nef" :: Enterprise Menu", string, "Select", "Cancel");
 	return 1;
 }
 
