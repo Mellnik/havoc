@@ -27,6 +27,7 @@
 ||
 || Database changes:
 ||
+||
 || Script limits:
 || Max teleport categories: 9
 || Max teleports per category: 32
@@ -2966,6 +2967,8 @@ public OnGameModeExit()
 
 	Log(LOG_EXIT, "MySQL: Closing");
  	mysql_close(pSQL);
+ 	
+ 	NC_Exit();
  	
 	Log(LOG_EXIT, "Now exiting.");
 	return 1;
@@ -8486,7 +8489,7 @@ YCMD:h(playerid, params[], help)
 	    if(HouseData[i][e_ormid] == ORM:-1)
 	        continue;
 		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
-		    format(gstr, sizeof(gstr), ""white"#%i\t%s\t"white"%i\t"nef_green"$%s\n",
+		    format(gstr, sizeof(gstr), ""white"#%i\t%s\t"nef_green"$%s\t"white"%i\n",
 				HouseData[i][e_id],
 				HouseData[i][e_locked] == 0 ? (""nef_green"Open") : (""red"Closed"),
 				number_format(HouseData[i][e_value]),
@@ -25623,7 +25626,7 @@ procedure ShowDialog(playerid, dialogid)
 	    }
 	    case DIALOG_SETTINGS:
 	    {
-	    	ShowPlayerDialog(playerid, DIALOG_SETTINGS, DIALOG_STYLE_LIST, ""nef" :: Settings", GetPlayerSettings(playerid), "Select", "Cancel");
+	    	ShowPlayerDialog(playerid, DIALOG_SETTINGS, DIALOG_STYLE_TABLIST_HEADERS, ""nef" :: Settings", GetPlayerSettings(playerid), "Select", "Cancel");
 	    }
 	    case DIALOG_HELP:
 	    {
@@ -25907,46 +25910,122 @@ procedure Kick_Delay(playerid, namehash)
 	return 1;
 }
 
+GetFightingStyleString(fs)
+{
+	new bug[16];
+	switch(fs)
+	{
+	    case 4: bug = "Normal";
+	    case 5: bug = "Boxing";
+	    case 6: bug = "Kung Fu";
+	    case 7: bug = "Kneehead";
+	    case 15: bug = "Grabkick";
+	    case 16: bug = "Elbow";
+		default: bug = "Unknown";
+	}
+	return bug;
+}
+
 GetPlayerSettings(playerid)
 {
-	new string[1024];
+	new string[2048], c = 0;
+	strcat(string, "Setting\tValue\n");
+
+	format(gstr, sizeof(gstr), ""white"%i) Fighting style\t%s\n", ++c, GetFightingStyleString(PlayerSettings[playerid][e_fightstyle]));
+	strcat(string, gstr);
+	
+	if(PlayerSettings[playerid][e_namecolor] == 0)
+	{
+		format(gstr, sizeof(gstr), ""white"%i) Nametag color\tRandom\n", ++c);
+		strcat(string, gstr);
+	}
+	else
+	{
+		format(gstr, sizeof(gstr), ""white"%i) Nametag color\t{%06x}%s\n", ++c, PlayerSettings[playerid][e_namecolor] >>> 8, __GetName(playerid));
+		strcat(string, gstr);
+	}
+	
+	if(PlayerSettings[playerid][e_skin] == -1)
+	{
+		format(gstr, sizeof(gstr), ""white"%i) Player skin\tRandom\n", ++c);
+		strcat(string, gstr);
+	}
+	else
+	{
+		format(gstr, sizeof(gstr), ""white"%i) Player skin\tID %i\n", ++c, PlayerSettings[playerid][e_skin]);
+		strcat(string, gstr);
+	}
+	
+	format(gstr, sizeof(gstr), ""white"%i) Autologin\t%s\n", ++c, PlayerSettings[playerid][e_auto_login] == 1 ?
+	 (""vgreen"[ON]") : (""red"[OFF]"));
+	strcat(string, gstr);
+
+	format(gstr, sizeof(gstr), ""white"%i) Vehicle boost factor\t%f\n", ++c, PlayerSettings[playerid][e_boost_level]);
+	strcat(string, gstr);
+
+	format(gstr, sizeof(gstr), ""white"%i) Vehicle jump factor\t%f\n", ++c, PlayerSettings[playerid][e_jump_level]);
+	strcat(string, gstr);
+
+	format(gstr, sizeof(gstr), ""white"%i) Spwan in house\tID %i\n", ++c, PlayerSettings[playerid][e_house_spawn]);
+	strcat(string, gstr);
+
+	format(gstr, sizeof(gstr), ""white"%i) Server join message (VIP only)\t%s\n", ++c, PlayerSettings[playerid][e_vip_join_msg] == 1 ?
+	 (""vgreen"[ON]") : (""red"[OFF]"));
+	strcat(string, gstr);
+
+	format(gstr, sizeof(gstr), ""white"%i) Allow teleports to you\t%s\n", ++c, PlayerSettings[playerid][e_allow_teleport] == 1 ?
+	 (""vgreen"[ON]") : (""red"[OFF]"));
+	strcat(string, gstr);
+
+	format(gstr, sizeof(gstr), ""white"%i) Allow private messages to you\t%s\n", ++c, PlayerSettings[playerid][e_allow_pm] == 1 ?
+	 (""vgreen"[ON]") : (""red"[OFF]"));
+	strcat(string, gstr);
+	
+	format(gstr, sizeof(gstr), ""white"%i) Vehicle Speedometer\t%s\n", ++c, PlayerSettings[playerid][e_speedo] == 1 ?
+	 (""vgreen"[ON]") : (""red"[OFF]"));
+	strcat(string, gstr);
 
 	if(PlayerData[playerid][bSpeedBoost])
 	{
-	    format(gstr, sizeof(gstr), ""white"1)\tSpeedboost\t"vgreen"[ON]\n");
+	    format(gstr, sizeof(gstr), ""white"%i) Speedboost\t"vgreen"[ON]\n", ++c);
 	    strcat(string, gstr);
 	}
 	else
 	{
-	    format(gstr, sizeof(gstr), ""white"1)\tSpeedboost\t"red"[OFF]\n");
+	    format(gstr, sizeof(gstr), ""white"%i) Speedboost\t"red"[OFF]\n", ++c);
 	    strcat(string, gstr);
 	}
 
 	if(PlayerData[playerid][bSuperJump])
 	{
-	    format(gstr, sizeof(gstr), ""white"2)\tSuperjump\t"vgreen"[ON]\n");
+	    format(gstr, sizeof(gstr), ""white"%i) Superjump\t"vgreen"[ON]\n", ++c);
 	    strcat(string, gstr);
 	}
 	else
 	{
-	    format(gstr, sizeof(gstr), ""white"2)\tSuperjump\t"red"[OFF]\n");
+	    format(gstr, sizeof(gstr), ""white"%i) Superjump\t"red"[OFF]\n", ++c);
 	    strcat(string, gstr);
 	}
 
 	if(PlayerData[playerid][bTextdraws])
 	{
-	    format(gstr, sizeof(gstr), ""white"3)\tTextdraws\t"vgreen"[ON]\n");
+	    format(gstr, sizeof(gstr), ""white"%i) Textdraws\t"vgreen"[ON]\n", ++c);
 	    strcat(string, gstr);
 	}
 	else
 	{
-	    format(gstr, sizeof(gstr), ""white"3)\tTextdraws\t"red"[OFF]\n");
+	    format(gstr, sizeof(gstr), ""white"%i) Textdraws\t"red"[OFF]\n", ++c);
 	    strcat(string, gstr);
 	}
-
-    format(gstr, sizeof(gstr), ""white"4)\tColor\t\t{%06x}Color\n", GetColorEx(playerid) >>> 8);
+	
+    format(gstr, sizeof(gstr), ""grey"%i) Change password\n", ++c);
     strcat(string, gstr);
-
+    format(gstr, sizeof(gstr), ""grey"%i) Set recovery email\n", ++c);
+    strcat(string, gstr);
+    format(gstr, sizeof(gstr), ""grey"%i) Player stats\n", ++c);
+    strcat(string, gstr);
+	
+/*
 	if(!PlayerData[playerid][bHasCustomSpawn])
 	{
 	    format(gstr, sizeof(gstr), ""white"5)\tSpawn Place\t"vgreen"Default Random\n");
@@ -25989,16 +26068,7 @@ GetPlayerSettings(playerid)
 	{
 	    format(gstr, sizeof(gstr), ""white"8)\tSpeedometer\t"red"[OFF]\n");
 	    strcat(string, gstr);
-	}
-
-    format(gstr, sizeof(gstr), ""grey"9)\tChange password\n");
-    strcat(string, gstr);
-    format(gstr, sizeof(gstr), ""grey"10)\tSet recovery Email\n");
-    strcat(string, gstr);
-    format(gstr, sizeof(gstr), ""grey"11)\tStats\n");
-    strcat(string, gstr);
-    format(gstr, sizeof(gstr), ""grey"12)\tHelp\n");
-    strcat(string, gstr);
+	}*/
 	return string;
 }
 
