@@ -8488,6 +8488,7 @@ YCMD:h(playerid, params[], help)
 	{
 	    if(HouseData[i][e_ormid] == ORM:-1)
 	        continue;
+	        
 		if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
 		    format(gstr, sizeof(gstr), ""white"#%i\t%s\t"nef_green"$%s\t"white"%i\n",
 				HouseData[i][e_id],
@@ -10090,6 +10091,15 @@ YCMD:grantnc(playerid, params[], help)
 	}
 	return 1;
 }*/
+
+YCMD:supervision(playerid, params[], help)
+{
+	if (PlayerData[playerid][e_level] == 0)
+	    return SCM(playerid, -1, NO_PERM);
+	    
+
+	return 1;
+}
 
 YCMD:suspect(playerid, params[], help)
 {
@@ -17481,6 +17491,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        }
 	        case DIALOG_HOUSE_MENU:
 	        {
+	            if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
+	        
 	            if(++listitem > GetPlayerHouseCount(playerid))
 	                return true;
 	                
@@ -17897,86 +17909,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        }
 	        case DIALOG_SETTINGS:
 	        {
-	            switch(listitem)
-	            {
-					case 0:
-					{
-					    Command_ReProcess(playerid, "/sb", false);
-					    ShowDialog(playerid, DIALOG_SETTINGS);
-					}
-					case 1:
-					{
-					    Command_ReProcess(playerid, "/sj", false);
-					    ShowDialog(playerid, DIALOG_SETTINGS);
-					}
-					case 2:
-					{
-					    if(PlayerData[playerid][bTextdraws]) Command_ReProcess(playerid, "/hidef", false);
-					    else Command_ReProcess(playerid, "/showf", false);
-					    ShowDialog(playerid, DIALOG_SETTINGS);
-					}
-					case 3:
-					{
-					    Command_ReProcess(playerid, "/random", false);
-					    ShowDialog(playerid, DIALOG_SETTINGS);
-					}
-					case 4:
-					{
-					    if(PlayerData[playerid][bHasCustomSpawn])
-					    {
-					        PlayerData[playerid][bHasCustomSpawn] = false;
-					    }
-					    else
-					    {
-					    	Command_ReProcess(playerid, "/setspawn", false);
-						}
-						ShowDialog(playerid, DIALOG_SETTINGS);
-					}
-					case 5:
-					{
-					    if(PlayerSettings[playerid][e_namecolor] == 0)
-					    {
-					        Command_ReProcess(playerid, "/savecolor", false);
-					    }
-					    else
-					    {
-					    	Command_ReProcess(playerid, "/deletecolor", false);
-						}
-						ShowDialog(playerid, DIALOG_SETTINGS);
-					}
-					case 6:
-					{
-					    if(PlayerSettings[playerid][e_skin] == -1)
-					    {
-					        Command_ReProcess(playerid, "/saveskin", false);
-					    }
-					    else
-					    {
-					    	Command_ReProcess(playerid, "/deleteskin", false);
-						}
-						ShowDialog(playerid, DIALOG_SETTINGS);
-					}
-					case 7:
-					{
-						ToggleSpeedo(playerid, !PlayerData[playerid][bSpeedo]);
-					}
-					case 8:
-					{
-					    Command_ReProcess(playerid, "/changepass", false);
-					}
-					case 9:
-					{
-					    ShowPlayerDialog(playerid, DIALOG_RECOVERY_EMAIL, DIALOG_STYLE_INPUT, ""nef" :: Recovery E-mail", ""white"This email can be used to recover your password in case\nyou lose access to your account. No staff/player is able\nto view your email.", "Set", "Cancel");
-					}
-					case 10:
-					{
-					    Command_ReProcess(playerid, "/stats", false);
-					}
-					case 11:
-					{
-					    Command_ReProcess(playerid, "/help", false);
-					}
-	            }
+				ProcessSettingsDialog(playerid, listitem);
 	            return true;
 	        }
 	        case DIALOG_HELP:
@@ -25956,17 +25889,14 @@ GetPlayerSettings(playerid)
 		strcat(string, gstr);
 	}
 	
+	if (PlayerSettings[playerid][e_house_spawn] > 0) // Player wants to spawn in their house.
+	{
+	    format(gstr, sizeof(gstr), ""white"%i) Spawn location\tID %i\n", ++c, PlayerSettings[playerid][e_house_spawn]);
+	}
+	strcat(string, gstr);
+	
 	format(gstr, sizeof(gstr), ""white"%i) Autologin\t%s\n", ++c, PlayerSettings[playerid][e_auto_login] == 1 ?
 	 (""vgreen"[ON]") : (""red"[OFF]"));
-	strcat(string, gstr);
-
-	format(gstr, sizeof(gstr), ""white"%i) Vehicle boost factor\t%f\n", ++c, PlayerSettings[playerid][e_boost_level]);
-	strcat(string, gstr);
-
-	format(gstr, sizeof(gstr), ""white"%i) Vehicle jump factor\t%f\n", ++c, PlayerSettings[playerid][e_jump_level]);
-	strcat(string, gstr);
-
-	format(gstr, sizeof(gstr), ""white"%i) Spwan in house\tID %i\n", ++c, PlayerSettings[playerid][e_house_spawn]);
 	strcat(string, gstr);
 
 	format(gstr, sizeof(gstr), ""white"%i) Server join message (VIP only)\t%s\n", ++c, PlayerSettings[playerid][e_vip_join_msg] == 1 ?
@@ -25983,6 +25913,12 @@ GetPlayerSettings(playerid)
 	
 	format(gstr, sizeof(gstr), ""white"%i) Vehicle Speedometer\t%s\n", ++c, PlayerSettings[playerid][e_speedo] == 1 ?
 	 (""vgreen"[ON]") : (""red"[OFF]"));
+	strcat(string, gstr);
+
+	format(gstr, sizeof(gstr), ""white"%i) Vehicle boost factor\t%f\n", ++c, PlayerSettings[playerid][e_boost_level]);
+	strcat(string, gstr);
+
+	format(gstr, sizeof(gstr), ""white"%i) Vehicle jump factor\t%f\n", ++c, PlayerSettings[playerid][e_jump_level]);
 	strcat(string, gstr);
 
 	if(PlayerData[playerid][bSpeedBoost])
@@ -26020,55 +25956,10 @@ GetPlayerSettings(playerid)
 	
     format(gstr, sizeof(gstr), ""grey"%i) Change password\n", ++c);
     strcat(string, gstr);
-    format(gstr, sizeof(gstr), ""grey"%i) Set recovery email\n", ++c);
+    format(gstr, sizeof(gstr), ""grey"%i) Set password recovery email\n", ++c);
     strcat(string, gstr);
     format(gstr, sizeof(gstr), ""grey"%i) Player stats\n", ++c);
     strcat(string, gstr);
-	
-/*
-	if(!PlayerData[playerid][bHasCustomSpawn])
-	{
-	    format(gstr, sizeof(gstr), ""white"5)\tSpawn Place\t"vgreen"Default Random\n");
-	    strcat(string, gstr);
-	}
-	else
-	{
-	    format(gstr, sizeof(gstr), ""white"5)\tSpawn Place\t"vgreen"Custom\n");
-	    strcat(string, gstr);
-	}
-
-	if(PlayerSettings[playerid][e_namecolor] == 0)
-	{
-	    format(gstr, sizeof(gstr), ""white"6)\tSaved Color\tRandom\n");
-	    strcat(string, gstr);
-	}
-	else
-	{
-	    format(gstr, sizeof(gstr), ""white"6)\tSaved Color\t{%06x}Saved Color\n", PlayerSettings[playerid][e_namecolor] >>> 8);
-	    strcat(string, gstr);
-	}
-
-	if(PlayerSettings[playerid][e_skin] == -1)
-	{
-	    format(gstr, sizeof(gstr), ""white"7)\tSaved Skin\tRandom\n");
-	    strcat(string, gstr);
-	}
-	else
-	{
-	    format(gstr, sizeof(gstr), ""white"7)\tSaved Skin\tID: %i\n", PlayerSettings[playerid][e_skin]);
-	    strcat(string, gstr);
-	}
-
-	if(PlayerData[playerid][bSpeedo])
-	{
-	    format(gstr, sizeof(gstr), ""white"8)\tSpeedometer\t"vgreen"[ON]\n");
-	    strcat(string, gstr);
-	}
-	else
-	{
-	    format(gstr, sizeof(gstr), ""white"8)\tSpeedometer\t"red"[OFF]\n");
-	    strcat(string, gstr);
-	}*/
 	return string;
 }
 
@@ -29924,4 +29815,79 @@ no_vip(playerid, msg[])
 {
 	format(gstr2, sizeof(gstr2), ""nef_green"%s\n\n"white"Get your VIP status at www.havocserver.com/vip", msg);
 	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player", gstr2, "OK", "");
+}
+
+ProcessSettingsDialog(playerid, listitem)
+{
+	switch(listitem)
+	{
+	    case 0:
+	    {
+	    
+	    }
+	    case 1:
+	    {
+
+	    }
+	    case 2:
+	    {
+
+	    }
+	    case 3:
+	    {
+
+	    }
+	    case 4:
+	    {
+
+	    }
+	    case 5:
+	    {
+
+	    }
+	    case 6:
+	    {
+
+	    }
+	    case 7:
+	    {
+
+	    }
+	    case 8:
+	    {
+
+	    }
+	    case 9:
+	    {
+
+	    }
+	    case 10:
+	    {
+
+	    }
+	    case 11:
+	    {
+
+	    }
+	    case 12:
+	    {
+
+	    }
+	    case 13:
+	    {
+
+	    }
+	    case 14:
+	    {
+
+	    }
+	    case 15:
+	    {
+
+	    }
+	    case 16:
+	    {
+
+	    }
+	}
 }
