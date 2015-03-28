@@ -541,6 +541,7 @@ enum (+= 56)
     DIALOG_REFILL_COPS,
     DIALOG_REFILL_ROBBERS,
     DIALOG_DUEL,
+    DIALOG_SUPERVISION,
     NO_DIALOG_ID
 };
 
@@ -8569,7 +8570,7 @@ YCMD:upgrade(playerid, params[], help)
 		ShowDialog(playerid, DIALOG_HOUSE_UPGRADE);
 		return 1;
 	}
-	
+
 	for(new r = 0; r < MAX_ENTERPRISES; r++)
 	{
 	    if(EnterpriseData[r][e_ormid] == ORM:-1) continue;
@@ -8577,7 +8578,7 @@ YCMD:upgrade(playerid, params[], help)
 
 		if(EnterpriseData[r][e_owner] != PlayerData[playerid][e_accountid])
 		    return SCM(playerid, -1, ""er"This enterprise does not belong to you");
-		    
+
 		PlayerData[playerid][iEnterpriseLastSel] = r;
         ShowDialog(playerid, DIALOG_ENTERPRISE_UPGRADE);
 		return 1;
@@ -10096,8 +10097,8 @@ YCMD:supervision(playerid, params[], help)
 {
 	if (PlayerData[playerid][e_level] == 0)
 	    return SCM(playerid, -1, NO_PERM);
-	    
 
+	ShowPlayerDialog(playerid, DIALOG_SUPERVISION, DIALOG_STYLE_LIST, ""nef" :: Supervisor program", ""white"Suspect output\nAccount association\nBan server snapshot\nPlayer identification\nLogon logs", "Select", "Cancel");
 	return 1;
 }
 
@@ -18218,56 +18219,58 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		    }
 	        case DIALOG_HOUSE_UPGRADE:
 	        {
+	            if(listitem < 0 || listitem > sizeof(g_aHouseInteriorTypes))
+	                return true;
+	                
 				format(gstr2, sizeof(gstr2), ""white"House Upgrade\n\n- Interior: %s\n- Price: $%s\n\nClick \"Upgrade\" in order to apply the new interior.\n"green"* "white"All House Items will be removed in this slot!", g_aHouseInteriorTypes[listitem][intname], number_format(g_aHouseInteriorTypes[listitem][price]));
 				ShowPlayerDialog(playerid, DIALOG_HOUSE_UPGRADE + 1, DIALOG_STYLE_MSGBOX, ""nef" :: House Upgrade", gstr2, "Upgrade", "Cancel");
 				return true;
 	        }
 	        case DIALOG_HOUSE_UPGRADE + 1:
 	        {
-	            if(listitem < 0 || listitem > sizeof(g_aHouseInteriorTypes))
-	                return true;
-	                
                 PlayerData[playerid][HouseIntSelected] = listitem;
-	        
+				new slot_selected = PlayerData[playerid][iHouseLastSel];
+
 		        if(gTeam[playerid] != gFREEROAM)
 				{
 					player_notice(playerid, "You must be in freeroam mode to upgrade", "");
 					return 1;
 				}
-				
-	            if(GetPlayerMoneyEx(playerid) < g_aHouseInteriorTypes[PlayerData[playerid][iHouseLastSel]][price])
+
+	            if(GetPlayerMoneyEx(playerid) < g_aHouseInteriorTypes[slot_selected][price])
 	                return SCM(playerid, -1, ""er"You can't afford that interior");
 
-				if(HouseData[PlayerData[playerid][iHouseLastSel]][e_owner] != PlayerData[playerid][e_accountid])
+				if(HouseData[slot_selected][e_owner] != PlayerData[playerid][e_accountid])
 				    return SCM(playerid, -1, ""er"This house does not belong to you");
-				    
-  	            if(PlayerData[playerid][HouseIntSelected] == HouseData[PlayerData[playerid][iHouseLastSel]][e_interior])
-         			return SCM(playerid, -1, ""er"This house already got the interior");
-				    
-				HouseData[PlayerData[playerid][iHouseLastSel]][e_locked] = 1;
-				HouseData[PlayerData[playerid][iHouseLastSel]][e_interior] = PlayerData[playerid][HouseIntSelected];
 
+  	            if(PlayerData[playerid][HouseIntSelected] == HouseData[slot_selected][e_interior])
+         			return SCM(playerid, -1, ""er"This house already got the interior");
+
+				HouseData[slot_selected][e_locked] = 1;
+				HouseData[slot_selected][e_interior] = PlayerData[playerid][HouseIntSelected];
+				
 				/* Remove all players from house */
 	            for(new pid = 0; pid < MAX_PLAYERS; pid++)
 	            {
-	                if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[PlayerData[playerid][iHouseLastSel]][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[PlayerData[playerid][iHouseLastSel]][e_id] + 3001))
+	                if(pid == playerid) continue;
+	                if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[slot_selected][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[slot_selected][e_id] + 3001))
 	                {
 	                    gTeam[pid] = gFREEROAM;
-	                    SetPlayerPos(pid, HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][0], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][1], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][2]);
+	                    SetPlayerPos(pid, HouseData[slot_selected][e_pos][0], HouseData[slot_selected][e_pos][1], HouseData[slot_selected][e_pos][2]);
 						ResetPlayerWorld(pid);
 	                }
 	            }
 
-				DestroyDynamic3DTextLabel(HouseData[PlayerData[playerid][iHouseLastSel]][e_labelid]);
-                HouseData[PlayerData[playerid][iHouseLastSel]][e_labelid] = Text3D:-1;
-	            SetupHouse(PlayerData[playerid][iHouseLastSel], HouseData[PlayerData[playerid][iHouseLastSel]][e_namecache]);
-	            
+				DestroyDynamic3DTextLabel(HouseData[slot_selected][e_labelid]);
+                HouseData[slot_selected][e_labelid] = Text3D:-1;
+	            SetupHouse(slot_selected, HouseData[slot_selected][e_namecache]);
+
 	            GivePlayerMoneyEx(playerid, -g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][price]);
-       			SetPlayerPos(playerid, HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][0], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][1], HouseData[PlayerData[playerid][iHouseLastSel]][e_pos][2]);
+       			SetPlayerPos(playerid, HouseData[slot_selected][e_pos][0], HouseData[slot_selected][e_pos][1], HouseData[slot_selected][e_pos][2]);
 				ResetPlayerWorld(playerid);
 				gTeam[playerid] = gFREEROAM;
-				
-				orm_update(HouseData[PlayerData[playerid][iHouseLastSel]][e_ormid]);
+
+				orm_update(HouseData[slot_selected][e_ormid]);
                 SQL_SaveAccount(playerid, false, false);
                 SCM(playerid, GREEN, "Successfully upgraded the interior!");
 				return true;
@@ -25889,7 +25892,7 @@ GetPlayerSettings(playerid)
 		strcat(string, gstr);
 	}
 	
-	if (PlayerSettings[playerid][e_house_spawn] > 0) // Player wants to spawn in their house.
+	if(PlayerSettings[playerid][e_house_spawn] > 0) // Player wants to spawn in their house.
 	{
 	    format(gstr, sizeof(gstr), ""white"%i) Spawn location\tID %i\n", ++c, PlayerSettings[playerid][e_house_spawn]);
 	}
