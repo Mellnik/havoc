@@ -30,9 +30,14 @@ switch($_GET['a'])
 	}
 	case "email":
 	{
-		$player = $_GET['player_name'];
-		$receiver = $_GET['player_email'];
-		send_mail("Havoc Freeroam password reset", "Dear $player,<br><br>a password reset for your account has been requested. Please click on the link below to ", $receiver);
+		//$player = $_GET['player_name'];
+		//$receiver = $_GET['player_email'];
+		//send_mail("Havoc Freeroam password reset", "Dear $player,<br><br>a password reset for your account has been requested. Please click on the link below to ", $receiver);
+		break;
+	}
+	case "geoip_asn":
+	{
+		
 		break;
 	}
 }
