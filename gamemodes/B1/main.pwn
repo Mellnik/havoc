@@ -542,6 +542,10 @@ enum (+= 56)
     DIALOG_REFILL_ROBBERS,
     DIALOG_DUEL,
     DIALOG_SUPERVISION,
+    DIALOG_SET_AUTOLOGIN,
+    DIALOG_SET_JOINMSG,
+    DIALOG_SET_ALLOW_TP,
+    DIALOG_SET_ALLOW_PM,
     NO_DIALOG_ID
 };
 
@@ -15703,11 +15707,11 @@ YCMD:saveskin(playerid, params[], help)
 
 	if(PlayerSettings[playerid][e_skin] == -1)
 	{
-	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Skin saved! Skipping class selection next login. Use /deleteskin to remove it");
+	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Skin saved! Skipping class selection next login, use /deleteskin to remove it.");
 	}
 	else
 	{
-	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Saved skin overwritten! Skipping class selection next login. Use /deleteskin to remove it");
+	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Saved skin overwritten! Skipping class selection next login, use /deleteskin to remove it.");
 	}
 	new skin = GetPlayerSkin(playerid);
 	
@@ -15741,11 +15745,11 @@ YCMD:savecolor(playerid, params[], help)
 
 	if(PlayerSettings[playerid][e_namecolor] == 0)
 	{
-	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Color saved! It will be loaded on next login. Use /deletecolor to remove it");
+	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Color saved! It will be loaded on next login, use /deletecolor to remove it.");
 	}
 	else
 	{
-	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Saved color overwritten! It will be loaded on next login. Use /deletecolor to remove it");
+	    SCM(playerid, COLOR_GREY, ""nef" "GREY2_E"Saved color overwritten! It will be loaded on next login, use /deletecolor to remove it.");
 	}
     PlayerSettings[playerid][e_namecolor] = GetPlayerColor(playerid);
 	return 1;
@@ -16996,6 +17000,30 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 	    switch(dialogid)
 	    {
+	        case DIALOG_SET_ALLOW_TP:
+	        {
+				PlayerSettings[playerid][e_allow_teleport] = 1;
+				player_notice(playerid, "Teleports", "~y~Enabled");
+	            return true;
+	        }
+	        case DIALOG_SET_ALLOW_PM:
+	        {
+				PlayerSettings[playerid][e_allow_pm] = 1;
+				player_notice(playerid, "Private messages", "~y~Enabled");
+	            return true;
+	        }
+			case DIALOG_SET_JOINMSG:
+			{
+	            PlayerSettings[playerid][e_vip_join_msg] = 1;
+	            player_notice(playerid, "Join message", "~y~Enabled");
+	            return true;
+			}
+	        case DIALOG_SET_AUTOLOGIN:
+	        {
+	            PlayerSettings[playerid][e_auto_login] = 1;
+	            player_notice(playerid, "Autologin", "~y~Enabled");
+	            return true;
+	        }
 	        case DIALOG_RECOVERY_EMAIL:
 	        {
 	            if(strlen(inputtext) > 25 || strlen(inputtext) < 6) return SCM(playerid, -1, ""er"Input length: 6-25 characters");
@@ -19522,6 +19550,30 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
  		switch(dialogid)
  		{
+	        case DIALOG_SET_ALLOW_TP:
+	        {
+				PlayerSettings[playerid][e_allow_teleport] = 0;
+				player_notice(playerid, "Teleports", "~y~Enabled");
+	            return true;
+	        }
+	        case DIALOG_SET_ALLOW_PM:
+	        {
+				PlayerSettings[playerid][e_allow_pm] = 0;
+				player_notice(playerid, "Private messages", "~y~Enabled");
+	            return true;
+	        }
+	        case DIALOG_SET_JOINMSG:
+	        {
+	            PlayerSettings[playerid][e_vip_join_msg] = 0;
+	            player_notice(playerid, "Join message", "~y~Disabled");
+	            return true;
+	        }
+	        case DIALOG_SET_AUTOLOGIN:
+	        {
+	            PlayerSettings[playerid][e_auto_login] = 0;
+	            player_notice(playerid, "Autologin", "~y~Disabled");
+	            return true;
+	        }
  		    case DIALOG_DUEL + 1:
  		    {
  		        ShowDialog(playerid, DIALOG_DUEL);
@@ -29870,15 +29922,23 @@ ProcessSettingsDialog(playerid, listitem)
 	{
 	    case 0:
 	    {
-			ShowPlayerDialog(playerid, DIALOG_SET_FIGHTINGSTYLE, DIALOG_STYLE_MSGBOX, ""nef" :: Fighting Styles", "/boxing /kungfu /kneehead /grabkick /elbow /normal"
+			ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Fighting Styles", ""white"/boxing /kungfu /kneehead /grabkick /elbow /normal", "OK", "");
 	    }
 	    case 1:
 	    {
-
+		    if(PlayerSettings[playerid][e_namecolor] == 0)
+		    {
+		        Command_ReProcess(playerid, "/savecolor", false);
+		    }
+		    else
+		    {
+		    	Command_ReProcess(playerid, "/deletecolor", false);
+			}
+			ShowDialog(playerid, DIALOG_SETTINGS);
 	    }
 	    case 2:
 	    {
-
+            ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Player Skin", ""white"Save your current skin: /saveskin\n\n/deleteskin to use skin selection when logging in", "OK", "");
 	    }
 	    case 3:
 	    {
@@ -29886,19 +29946,19 @@ ProcessSettingsDialog(playerid, listitem)
 	    }
 	    case 4:
 	    {
-
+            ShowPlayerDialog(playerid, DIALOG_SET_AUTOLOGIN, DIALOG_STYLE_MSGBOX, ""nef" :: Autologin", ""white"Do you want to enable auto login?", "Enable", "Disable");
 	    }
 	    case 5:
 	    {
-
+			ShowPlayerDialog(playerid, DIALOG_SET_JOINMSG, DIALOG_STYLE_MSGBOX, ""nef" :: Join message", ""white"Send a message to all players upon login? (VIP)", "Enable", "Disable");
 	    }
 	    case 6:
 	    {
-
+            ShowPlayerDialog(playerid, DIALOG_SET_ALLOW_TP, DIALOG_STYLE_MSGBOX, ""nef" :: Account", ""white"Can other players teleport to you?", "Enable", "Disable");
 	    }
 	    case 7:
 	    {
-
+            ShowPlayerDialog(playerid, DIALOG_SET_ALLOW_PM, DIALOG_STYLE_MSGBOX, ""nef" :: Account", ""white"Can other players send you private messages?", "Enable", "Disable");
 	    }
 	    case 8:
 	    {
@@ -29914,27 +29974,31 @@ ProcessSettingsDialog(playerid, listitem)
 	    }
 	    case 11:
 	    {
-
+			Command_ReProcess(playerid, "/sb", false);
+			ShowDialog(playerid, DIALOG_SETTINGS);
 	    }
 	    case 12:
-	    {
-
+		{
+		    Command_ReProcess(playerid, "/sj", false);
+		    ShowDialog(playerid, DIALOG_SETTINGS);
 	    }
 	    case 13:
 	    {
-
+		    if(PlayerData[playerid][bTextdraws]) Command_ReProcess(playerid, "/hidef", false);
+		    else Command_ReProcess(playerid, "/showf", false);
+		    ShowDialog(playerid, DIALOG_SETTINGS);
 	    }
 	    case 14:
 	    {
-
+            ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Account Security", ""white"To change your password, please use /changepass\n\nFor additional security make sure to set a recovery email in /settings", "OK", "");
 	    }
 	    case 15:
 	    {
-
+			ShowPlayerDialog(playerid, DIALOG_RECOVERY_EMAIL, DIALOG_STYLE_INPUT, ""nef" :: Recovery Email", ""white"This email can be used to recover your password in case\nyou lose access to your account. No staff/player is able\nto view your email.", "Set", "Cancel");
 	    }
 	    case 16:
 	    {
-
+			Command_ReProcess(playerid, "/stats", false);
 	    }
 	}
 }
