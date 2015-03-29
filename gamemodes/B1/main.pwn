@@ -3571,7 +3571,7 @@ public OnPlayerConnect(playerid)
 		PreloadAnimLib(playerid, "PED");
         ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.0, 1, 0, 0, 0, -1);
         
-		PlayAudioStreamForPlayer(playerid, "http://s.havocserver.net/login.mp3");
+		PlayAudioStreamForPlayer(playerid, "http://havocserver.net/login.mp3");
 
         DEBUG_P1(playerid, "OnPlayerConnect")
 		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", __GetName(playerid));
@@ -10098,7 +10098,7 @@ YCMD:supervision(playerid, params[], help)
 	if (PlayerData[playerid][e_level] == 0)
 	    return SCM(playerid, -1, NO_PERM);
 
-	ShowPlayerDialog(playerid, DIALOG_SUPERVISION, DIALOG_STYLE_LIST, ""nef" :: Supervisor program", ""white"Suspect output\nAccount association\nBan server snapshot\nPlayer identification\nLogon logs", "Select", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_SUPERVISION, DIALOG_STYLE_LIST, ""nef" :: Supervisor program", ""white"Suspect output\nAccount association\nBan server snapshot (banlookup)\nPlayer identification\nLogon logs", "Select", "Cancel");
 	return 1;
 }
 
@@ -17005,9 +17005,50 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            
 	            strmid(PlayerData[playerid][e_email], email, 0, 26, 26);
 	            
-	            player_notice(playerid, "New email set", "");
+	            player_notice(playerid, "Email updated", "");
 	            return true;
 	        }
+			case DIALOG_SUPERVISION:
+			{
+			    switch(listitem)
+			    {
+			        case 0:
+			        {
+			            Command_ReProcess(playerid, "/suspect", false);
+			        }
+			        case 1:
+			        {
+			        
+			        }
+			        case 2:
+			        {
+			            ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 1, DIALOG_STYLE_INPUT, ""nef" :: banlookup", ""white"Enter a playername or account id:", "OK", "Cancel");
+			        }
+			        case 3:
+			        {
+			        
+			        }
+			        case 4:
+			        {
+			        
+			        }
+			    }
+			    return true;
+			}
+			case DIALOG_SUPERVISION + 1:
+			{
+	            if(strlen(inputtext) > MAX_PLAYER_NAME + 1 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Invalid name length");
+
+	            new player[MAX_PLAYER_NAME + 1];
+	            sscanf(inputtext, "s[25]", player);
+	            
+	            if(IsNumeric(player))
+	            {
+					//new acc_id = strval(player);
+					//mysql_format(pSQL, gstr, sizeof(gstr), "SELECT
+	            }
+			    return true;
+			}
 	        case DIALOG_DUEL:
 	        {
                 PlayerData[playerid][DuelWeapon] = DuelWeapons[listitem];
@@ -29367,7 +29408,10 @@ GetPlayer2DZone(playerid, zone[], len)
 
 IsNumeric(string[])
 {
-	for(new i = 0, j = strlen(string); i < j; i++)
+	new j = strlen(string);
+	if(j == 0) return 0;
+	
+	for(new i = 0; i < j; i++)
 	{
 		if(string[i] > '9' || string[i] < '0') return 0;
 	}
@@ -29826,7 +29870,7 @@ ProcessSettingsDialog(playerid, listitem)
 	{
 	    case 0:
 	    {
-	    
+			ShowPlayerDialog(playerid, DIALOG_SET_FIGHTINGSTYLE, DIALOG_STYLE_MSGBOX, ""nef" :: Fighting Styles", "/boxing /kungfu /kneehead /grabkick /elbow /normal"
 	    }
 	    case 1:
 	    {
