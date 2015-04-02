@@ -113,7 +113,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #else
 #define SERVER_VERSION					"Beta:Build 1"
 #endif
-#define SAMP_VERSION                    "0.3.7-RC2"
+#define SAMP_VERSION                    "0.3.7-RC3"
 
 // Script
 #define MAX_PLAYER_TOYS                 (6)
@@ -522,6 +522,7 @@ enum (+= 56)
     DIALOG_COMMANDS,
 	DIALOG_HOUSE_UPGRADE,
 	DIALOG_HOUSE_PASSWORD,
+	DIALOG_HOUSE_ASK_PASSWORD,
 	DIALOG_HOUSE_MENU,
 	DIALOG_ENTERPRISE_MENU,
 	DIALOG_ENTERPRISE_UPGRADE,
@@ -8473,6 +8474,11 @@ YCMD:enter(playerid, params[], help)
 	new i = -1;
 	if((i = GetNearestHouse(playerid)) != -1)
 	{
+	    if(strlen(HouseData[i][e_password]) > 1)
+	    {
+	        return ShowPlayerDialog(playerid, DIALOG_HOUSE_ASK_PASSWORD, DIALOG_STYLE_INPUT, ""white"House Password", ""white"The owner of this house has set a password...", "Enter", "Cancel");
+	    }
+	
 	    EnterHouse(playerid, i);
 	}
 	else
@@ -8723,8 +8729,8 @@ YCMD:accept(playerid, params[], help)
         
         HouseData[r][e_owner] = PlayerData[playerid][e_accountid];
         HouseData[r][e_date] = gettime();
-        HouseData[r][e_password][0] = '\0';
         HouseData[r][e_locked] = 0;
+        strmid(HouseData[r][e_password], "-", 0, 41, 41);
         strmid(HouseData[r][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
         
 		DestroyDynamic3DTextLabel(HouseData[r][e_labelid]);
@@ -8847,7 +8853,7 @@ YCMD:buy(playerid, params[], help)
 		
 		HouseData[i][e_owner] = PlayerData[playerid][e_accountid];
 		HouseData[i][e_date] = gettime();
-		HouseData[i][e_password][0] = '\0';
+		strmid(HouseData[i][e_password], "-", 0, 41, 41);
 		strmid(HouseData[i][e_namecache], __GetName(playerid), 0, MAX_PLAYER_NAME, MAX_PLAYER_NAME);
 		
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
@@ -9050,7 +9056,7 @@ YCMD:sell(playerid, params[], help)
         HouseData[i][e_owner] = 0;
         HouseData[i][e_date] = 0;
         HouseData[i][e_locked] = 0;
-        HouseData[i][e_password][0] = '\0';
+        strmid(HouseData[i][e_password], "-", 0, 41, 41);
         HouseData[i][e_interior] = HouseData[i][e_originterior];
 
 		DestroyDynamic3DTextLabel(HouseData[i][e_labelid]);
@@ -9127,6 +9133,11 @@ YCMD:lock(playerid, params[], help)
 			{
 			    if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid])
 				{
+				    if(strlen(HouseData[i][e_password]) > 1)
+				    {
+				        return SCM(playerid, -1, ""er"Your house is passworded, see /password to remove it.");
+				    }
+				    
 					HouseData[i][e_locked] = !HouseData[i][e_locked];
 					player_notice(playerid, "House:", HouseData[i][e_locked] ? ("~g~locked") : ("~r~unlocked"));
 					PlayerPlaySound(playerid, 1027, 0.0, 0.0, 0.0);
@@ -18266,7 +18277,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		    {
 		        if(strlen(inputtext) == 0)
 		        {
-		            HouseData[PlayerData[playerid][iHouseLastSel]][e_password][0] = '\0';
+		            strmid(HouseData[PlayerData[playerid][iHouseLastSel]][e_password], "-", 0, 41, 41);
 		            SCM(playerid, -1, ""er"House password has been removed");
 		            return true;
 		        }
@@ -18282,8 +18293,32 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				new hash[41];
 				NC_RMD160(gstr, hash, sizeof(hash));
 				strmid(HouseData[PlayerData[playerid][iHouseLastSel]][e_password], hash, 0, 41, 41);
+				HouseData[PlayerData[playerid][iHouseLastSel]][e_locked] = 0;
 				SCM(playerid, -1, ""er"House password has been set");
 				orm_update(HouseData[PlayerData[playerid][iHouseLastSel]][e_ormid]);
+		        return true;
+		    }
+		    case DIALOG_HOUSE_ASK_PASSWORD:
+		    {
+				if(sscanf(inputtext, "s[143]", gstr))
+				{
+				    return SCM(playerid, -1, ""er"Wrong password!");
+				}
+				if(strlen(gstr) < 3 || strlen(gstr) > 32)
+				{
+				    return SCM(playerid, -1, ""er"Wrong password!");
+				}
+				new hash[41];
+				NC_RMD160(gstr, hash, sizeof(hash));
+				
+				if(strcmp(hash, HouseData[PlayerData[playerid][iHouseLastSel]][e_password]) == 0)
+				{
+				    EnterHouse(playerid, PlayerData[playerid][iHouseLastSel]); // Racecheck: Check ob irgendwas wichtiges am Haus verändert wurde während das passwort eingegen wurde. In EnterHouse wird gecheckt ob es noch einen Owner gibt.
+				}
+				else
+				{
+				    SCM(playerid, -1, ""er"Wrong password!");
+				}
 		        return true;
 		    }
 	        case DIALOG_HOUSE_UPGRADE:
@@ -29877,7 +29912,7 @@ ResetHouse(slot = -1)
             HouseData[r][e_originterior] = 0;
             HouseData[r][e_value] = 0;
             HouseData[r][e_locked] = 0;
-            HouseData[r][e_password][0] = '\0';
+            strmid(HouseData[r][e_password], "-", 0, 41, 41);
             HouseData[r][e_date] = 0;
             HouseData[r][e_creator] = 0;
             HouseData[r][e_labelid] = Text3D:-1;
@@ -29899,7 +29934,7 @@ ResetHouse(slot = -1)
         HouseData[r][e_originterior] = 0;
         HouseData[r][e_value] = 0;
         HouseData[r][e_locked] = 0;
-        HouseData[r][e_password][0] = '\0';
+        strmid(HouseData[r][e_password], "-", 0, 41, 41);
         HouseData[r][e_date] = 0;
         HouseData[r][e_creator] = 0;
         HouseData[r][e_labelid] = Text3D:-1;
@@ -29920,11 +29955,11 @@ ProcessSettingsDialog(playerid, listitem)
 {
 	switch(listitem)
 	{
-	    case 0:
+	    case 0: // Fightstyles
 	    {
 			ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Fighting Styles", ""white"/boxing /kungfu /kneehead /grabkick /elbow /normal", "OK", "");
 	    }
-	    case 1:
+	    case 1: // Color saving
 	    {
 		    if(PlayerSettings[playerid][e_namecolor] == 0)
 		    {
@@ -29936,53 +29971,53 @@ ProcessSettingsDialog(playerid, listitem)
 			}
 			ShowDialog(playerid, DIALOG_SETTINGS);
 	    }
-	    case 2:
+	    case 2: // Save skin
 	    {
-            ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Player Skin", ""white"Save your current skin: /saveskin\n\n/deleteskin to use skin selection when logging in", "OK", "");
+            ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Player Skin", ""white"Use /saveskin to save you current skin for the next visit.\n\n/deleteskin to use skin selection when logging in.", "OK", "");
 	    }
-	    case 3:
+	    case 3: // Spawn location
 	    {
 
 	    }
-	    case 4:
+	    case 4: // Autologin
 	    {
             ShowPlayerDialog(playerid, DIALOG_SET_AUTOLOGIN, DIALOG_STYLE_MSGBOX, ""nef" :: Autologin", ""white"Do you want to enable auto login?", "Enable", "Disable");
 	    }
-	    case 5:
+	    case 5: // Server join messages
 	    {
 			ShowPlayerDialog(playerid, DIALOG_SET_JOINMSG, DIALOG_STYLE_MSGBOX, ""nef" :: Join message", ""white"Send a message to all players upon login? (VIP)", "Enable", "Disable");
 	    }
-	    case 6:
+	    case 6: // Allow Teleports
 	    {
             ShowPlayerDialog(playerid, DIALOG_SET_ALLOW_TP, DIALOG_STYLE_MSGBOX, ""nef" :: Account", ""white"Can other players teleport to you?", "Enable", "Disable");
 	    }
-	    case 7:
+	    case 7: // Allow private messages
 	    {
             ShowPlayerDialog(playerid, DIALOG_SET_ALLOW_PM, DIALOG_STYLE_MSGBOX, ""nef" :: Account", ""white"Can other players send you private messages?", "Enable", "Disable");
 	    }
-	    case 8:
+	    case 8: // Vehicle speedometer
 	    {
 
 	    }
-	    case 9:
+	    case 9: // Vehicle boost factor
 	    {
 
 	    }
-	    case 10:
+	    case 10: // Vehicle jump factor
 	    {
 
 	    }
-	    case 11:
+	    case 11: // Speedboost
 	    {
 			Command_ReProcess(playerid, "/sb", false);
 			ShowDialog(playerid, DIALOG_SETTINGS);
 	    }
-	    case 12:
+	    case 12: // Superjump
 		{
 		    Command_ReProcess(playerid, "/sj", false);
 		    ShowDialog(playerid, DIALOG_SETTINGS);
 	    }
-	    case 13:
+	    case 13: // Textdraws
 	    {
 		    if(PlayerData[playerid][bTextdraws]) Command_ReProcess(playerid, "/hidef", false);
 		    else Command_ReProcess(playerid, "/showf", false);
