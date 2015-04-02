@@ -25949,13 +25949,6 @@ procedure InitSession(playerid)
 	return 1;
 }
 
-player_notice(playerid, const top[], const desc[], time = 3000, type = 3)
-{
-	format(gstr, sizeof(gstr), "~y~%s~n~~w~%s", top, desc);
-    GameTextForPlayer(playerid, gstr, time, type);
-	return 1;
-}
-
 KickEx(playerid, delay = 3200)
 {
 	PlayerData[playerid][bOpenSeason] = true;
@@ -30036,4 +30029,25 @@ ProcessSettingsDialog(playerid, listitem)
 			Command_ReProcess(playerid, "/stats", false);
 	    }
 	}
+}
+
+player_notice(playerid, const top[], const desc[], time = 3000, type = 3)
+{
+	format(gstr, sizeof(gstr), "~y~%s~n~~w~%s", top, desc);
+    GameTextForPlayer(playerid, gstr, time, type);
+	return 1;
+}
+
+MessageText(playerid, top[], down[] = "", time = 3000, style = 3)
+{
+	if(strlen(down) > 0)
+	    format(gstr, sizeof(gstr), "~y~%s~n~~w~%s", top, down);
+	else
+	    format(gstr, sizeof(gstr), "~y~%s", top);
+	GameTextForPlayer(playerid, gstr, time, style);
+}
+
+MessageDialog(playerid, caption[], text[])
+{
+	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, caption, text, "OK", "");
 }
