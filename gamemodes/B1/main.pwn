@@ -13410,16 +13410,22 @@ YCMD:vip(playerid, params[], help)
 {
 	new string[2048];
 	
-	strcat(string, ""nef_yellow"Very Important Player (VIP)\n\n"yellow_e"Features:"white"\n Access to VIP vehicles in /v\n $1,000,000 to your bank (/bank)\n");
-	strcat(string, " 2 PV slots + 1 house/enterprise slot\n");
-	strcat(string, " VIP Chat (/p)\n 100\% armor on spawn\n Jetpack spawn (/jetpack)\n Hydra spawn (/hydra)\n");
-	strcat(string, " Countdown command (/cd)\n Namechange all 14 days (/changename)\n Open/Close Mellnik's Gate (/opengate /closegate)");
-	strcat(string, "\n Spectate players (/spec)\n More interest each PayDay\n Access to VIP Forums\n Access to Beta Changelogs\n Rainbow effect (/rainbow)\n Custom label (/label)\n");
-	strcat(string, " Get listed in /vips and /admins\n Namechange lookup (/ncrecords)\n Play as "BLUE_E"SWAT "white"in CNR");
-	strcat(string, "\n Message to all players when joining the server\n Vehicle Control System (/vcs)\n VIP Lounge (/vipl)\n VIP Lounge Invite (/vipli)\n Direct spawn in /adminhq\n Access to VIP private vehicles");
-	strcat(string, "\n Attach trailers to your truck (/trailer)\n Create ramps (/ramp)\n Health and armor (/harefill)");
-	strcat(string, "\n\n"nef_yellow"Get VIP today! Go to:\n");
-	strcat(string, ""red"-> "yellow_e""SERVER_WWW"/vip");
+	strcat(string, ""nef_yellow"Very Important Player (VIP)\n\nFeatures:"white"\n");
+	strcat(string, "- Access to special modded VIP vehicles in /v\n- Access to VIP-Only chat (/p <text>)\n");
+	strcat(string, "- Get listed in /vip and /admins\n- Special VIP-Badge on the Havoc Forums + 10,000 PM inbox\n");
+	strcat(string, "- A join message to all players (can be disabled in /settings)\n- Spawn with 100% armor in freeroam mode\n");
+	strcat(string, "- Additional slot #5 and #6 in /toys\n- Start a countdown for you and players nearby (/cd)\n");
+	strcat(string, "- Spawn jetpacks in freeroam mode (/jetpack)\n- Change your nickname every 30 days instead of 90 days\n");
+	strcat(string, "- Ability to spectate players (/spec <playerid>)\n- Spawn the Hydra jet at your location (/hydra)\n");
+	strcat(string, "- The rainbow effect changes the color of your car very fast (/rainbow)\n- Labels:\n");
+	strcat(string, " /label - attach a label and choose a text\n /dlabel - delete the label\n");
+	strcat(string, " /elabel - edit the label text and color\n");
+	strcat(string, "- Access to VIP-Lounge and VIP-Lounge invites.\n- Access to the restricted part of the admin headquarters (/adminhq)\n");
+	strcat(string, "- Access to exclusive VIP Private Vehicles: Hustler, Bandito, Mower, S.W.A.T., Kotknife and Kart.\n");
+	strcat(string, "- Play as SWAT in the Cops and Robbers minigame.\n- Simply attach a trailer to your truck (/trailer)\n");
+	strcat(string, "- Ability to refill your health and armor for $5,000 (/harefill)\n- Chat color codes: <blue> <red> <green> <yellow>\n");
+	strcat(string, " To enable color codes use '$$$' at the beginning of your message.\n\n"nef_yellow"Get VIP at "SERVER_WWW"/donate");
+	
     ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player (VIP)", string, "OK", "");
 	return 1;
 }

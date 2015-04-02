@@ -85,6 +85,7 @@ Gameplay changes made possible by SA-MP 0.3.7
 - Clear dialogs with TABs, for example: /h
 
 Admin changelog:
+- /supervision
 - Renamed /togglegc to /tgc.
 - /caps command has been removed.
 - Removed /scorefall, /cashfall and announce commands.

@@ -33,6 +33,7 @@ VIP Features
 - Access to VIP-Lounge and VIP-Lounge invites.
 - Access to the restricted part of the admin headquarters (/adminhq)
 - Access to exclusive VIP Private Vehicles: Hustler, Bandito, Mower, S.W.A.T., Kotknife and Kart.
+- Play as SWAT in the Cops and Robbers minigame.
 - Simply attach a trailer to your truck (/trailer)
 - Ability to refill your health and armor for $5,000 (/harefill)
 - Chat color codes: <blue> <red> <green> <yellow>
