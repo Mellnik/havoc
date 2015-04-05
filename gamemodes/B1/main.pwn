@@ -2994,6 +2994,10 @@ public OnPlayerRequestClass(playerid, classid)
 		SCM(playerid, -1, ""er"You are bugged in class selection. Please reconnect. "SERVER_IP"");
 		PlayerData[playerid][bAllowSpawn] = false;
 		KickEx(playerid);*/
+		
+		/* Set the login time here because this line below at OnPlayerSpawn should not be called since bFirstSpawn is still false here */
+		PlayerData[playerid][iLoginTime] = gettime();
+		
 	    new rand = random(4);
 	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
         SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
@@ -20709,10 +20713,11 @@ GetPlayingTimeFormat(playerid)
     new ptime[32],
         time[4];
 
-	time[3] = GetPlayingTime(playerid);
-    time[0] = floatround(time[3] / 3600, floatround_floor);
-    time[1] = floatround(time[3] / 60, floatround_floor) % 60;
-    time[2] = floatround(time[3] % 60, floatround_floor);
+	time[0] = GetPlayingTime(playerid);
+	time[2] = time[0] / 60;
+	time[1] = time[0] % 60;
+	time[3] = time[2] / 60;
+	time[2] = time[2] % 60;
 
 	format(ptime, sizeof(ptime), "%ih %02im %02is", time[0], time[1], time[2]);
 	return ptime;

@@ -31,6 +31,7 @@ Build 1 (1st Feb 2015)
    * Removed house item system.
    * /hlock has been merged into /lock.
    * /hmenu has been removed.
+- Houses now determine how many private vehicles you may held within your account.
 - Enterprise (Business) changes:
    * Businesses have been renamed to Enterprises.
    * Added new type: Bitcoin Mining Farm.
@@ -53,7 +54,6 @@ Build 1 (1st Feb 2015)
   Example: http://puu.sh/grYnS/0d0c51b768.jpg
   Results in: http://puu.sh/grYsF/f2503fc124.jpg  
 - Command /ncrecords is now accessible by everyone.
-- Houses now determine how many private vehicles you may held within your account.
 - Player bounties are now being saved within your account.
 - Duel wins and defeats are now being saved within your account.
 - Derby: Each map has it's own vehicle for all players.
