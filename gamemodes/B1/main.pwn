@@ -6802,7 +6802,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 			    {
 			        new cammode = GetPlayerCameraMode(playerid);
 
-			        if(cammode != 7 && cammode != 46 && cammode != 51 && cammode != 53)
+			        if(cammode != 7 && cammode != 8 && cammode != 46 && cammode != 51 && cammode != 53)
 			        {
 						new Float:POS[3];
 						GetPlayerVelocity(playerid, POS[0], POS[1], POS[2]);
@@ -26102,12 +26102,12 @@ GetPlayerSettings(playerid)
 
 	if(PlayerData[playerid][bSuperJump])
 	{
-	    format(gstr, sizeof(gstr), ""white"%i) Superjump\t"vgreen"[ON]\n", ++c);
+	    format(gstr, sizeof(gstr), ""white"%i) Player Superjump\t"vgreen"[ON]\n", ++c);
 	    strcat(string, gstr);
 	}
 	else
 	{
-	    format(gstr, sizeof(gstr), ""white"%i) Superjump\t"red"[OFF]\n", ++c);
+	    format(gstr, sizeof(gstr), ""white"%i) Player Superjump\t"red"[OFF]\n", ++c);
 	    strcat(string, gstr);
 	}
 
