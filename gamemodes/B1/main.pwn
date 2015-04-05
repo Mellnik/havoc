@@ -8479,9 +8479,11 @@ YCMD:enter(playerid, params[], help)
 	new i = -1;
 	if((i = GetNearestHouse(playerid)) != -1)
 	{
+	    PlayerData[playerid][iHouseLastSel] = i;
+	    
 	    if(strlen(HouseData[i][e_password]) > 1)
 	    {
-	        return ShowPlayerDialog(playerid, DIALOG_HOUSE_ASK_PASSWORD, DIALOG_STYLE_INPUT, ""white"House Password", ""white"The owner of this house has set a password...", "Enter", "Cancel");
+	        return ShowPlayerDialog(playerid, DIALOG_HOUSE_ASK_PASSWORD, DIALOG_STYLE_PASSWORD, ""white"House Password", ""white"The owner of this house has set a password...", "Enter", "Cancel");
 	    }
 	
 	    EnterHouse(playerid, i);
@@ -8653,7 +8655,7 @@ YCMD:password(playerid, params[], help)
 		    return SCM(playerid, -1, ""er"This house does not belong to you");
 
 		PlayerData[playerid][iHouseLastSel] = i;
-		ShowPlayerDialog(playerid, DIALOG_HOUSE_PASSWORD, DIALOG_STYLE_INPUT, ""nef" :: House Password", ""white"Set a password for this house. Everyone who would like\nto enter it must type the correct password.\n\nTo remove it just hit 'Set' without any input.", "Set", "Cancel");
+		ShowPlayerDialog(playerid, DIALOG_HOUSE_PASSWORD, DIALOG_STYLE_PASSWORD, ""nef" :: House Password", ""white"Set a password for this house. Everyone who would like\nto enter it must type the correct password.\n\nTo remove it just hit 'Set' without any input.", "Set", "Cancel");
 	}
 	else
 	{
