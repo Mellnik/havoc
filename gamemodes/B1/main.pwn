@@ -43,7 +43,7 @@
 #pragma dynamic 8192        // for md-sort
 
 #define IS_RELEASE_BUILD (true)
-#define INC_ENVIRONMENT (false)
+#define INC_ENVIRONMENT (true)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
 #define YSI_IS_SERVER
@@ -104,8 +104,8 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_SHORT                   	"Havoc"
 #define SERVER_LOGO						"{646464}«(-|-|{F0F0F0}Havoc Server{646464}|-|-)»" // TODO: Replace this and all NEF stuff names
 #define SERVER_URL                      "havocserver.com"
-#define SERVER_WWW                      "www.havocserver.com"
-#define SERVER_FORUM					"forum.havocserver.com"
+#define SERVER_WWWURL                   "www.havocserver.com"
+#define SERVER_FORUMURL					"forum.havocserver.com"
 #define SERVER_IP                       "46.105.40.127:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
@@ -3022,16 +3022,21 @@ public OnPlayerRequestClass(playerid, classid)
 	if(PlayerSettings[playerid][e_skin] != -1)
 	{
 	    SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
-	    SCM(playerid, -1, ""server_sign" "r_besch"Your saved skin has been set. (/deleteskin to remove)");
+	    SCM(playerid, -1, ""server_sign" "r_besch"Your saved skin has been set (/deleteskin to remove)");
 	    return 0;
 	}
 	else
 	{
-		Streamer_UpdateEx(playerid, 1797.5835, -1305.0114, 121.2348, -1, -1);
+		/*Streamer_UpdateEx(playerid, 1797.5835, -1305.0114, 121.2348, -1, -1);
 		SetPlayerPos(playerid, 1797.5835, -1305.0114, 121.2348);
 		SetPlayerFacingAngle(playerid, 359.9696);
 		SetPlayerCameraPos(playerid, 1797.3688, -1299.8156, 121.4657);
-		SetPlayerCameraLookAt(playerid, 1797.3661, -1300.8164, 121.4556);
+		SetPlayerCameraLookAt(playerid, 1797.3661, -1300.8164, 121.4556);*/
+
+		SetPlayerPos(playerid, 2526.1675, -1853.9927, 13.5469);
+		SetPlayerFacingAngle(playerid, 103.7086);
+		SetPlayerCameraPos(playerid, 2522.4890, -1855.3513, 13.9283);
+		SetPlayerCameraLookAt(playerid, 2523.4316, -1855.0209, 13.8781);
 
 		ShowPlayerWelcomeTextdraws(playerid);
 
@@ -12402,7 +12407,7 @@ YCMD:tban(playerid, params[], help)
 				SCMToAll(-1, gstr);
                 admin_broadcast(COLOR_RED, amsg);
 
-	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"",
+	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUMURL"",
 					__GetName(playerid),
 					reason,
 					UTConvert(gettime() + (time * 60)));
@@ -12493,7 +12498,7 @@ YCMD:ban(playerid, params[], help)
 				SCMToAll(-1, gstr);
                 admin_broadcast(COLOR_RED, amsg);
 
-	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM"",
+	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUMURL"",
 					__GetName(playerid),
 					reason,
 					"Permanent");
@@ -13424,7 +13429,7 @@ YCMD:vip(playerid, params[], help)
 	strcat(string, "- Access to exclusive VIP Private Vehicles: Hustler, Bandito, Mower, S.W.A.T., Kotknife and Kart.\n");
 	strcat(string, "- Play as SWAT in the Cops and Robbers minigame.\n- Simply attach a trailer to your truck (/trailer)\n");
 	strcat(string, "- Ability to refill your health and armor for $5,000 (/harefill)\n- Chat color codes: <blue> <red> <green> <yellow>\n");
-	strcat(string, " To enable color codes use '$$$' at the beginning of your message.\n\n"nef_yellow"Get VIP at "SERVER_WWW"/donate");
+	strcat(string, " To enable color codes use '$$$' at the beginning of your message.\n\n"nef_yellow"Get VIP at "SERVER_WWWURL"/donate");
 	
     ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player (VIP)", string, "OK", "");
 	return 1;
@@ -15790,7 +15795,7 @@ YCMD:deletecolor(playerid, params[], help)
 
 YCMD:new(playerid, params[], help)
 {
-	HTTP(playerid, HTTP_GET, ""SERVER_WWW"/gateway/api.php?a=news", "", "OnNewsReceive");
+	HTTP(playerid, HTTP_GET, ""SERVER_WWWURL"/gateway/api.php?a=news", "", "OnNewsReceive");
 	return 1;
 }
 
@@ -20639,7 +20644,7 @@ SkipLogin(playerid)
 	{
 	    GetPlayerName(playerid, PlayerData[playerid][e_name], MAX_PLAYER_NAME + 1);
 			
-		format(gstr, sizeof(gstr), ""white"Your name has been changed to %s because you failed to log in.\n\n"nef_yellow"Please restart the game if this is incorrect.", newname);
+		format(gstr, sizeof(gstr), ""white"Your name has been changed to %s because you failed to log in.\n\n"nef_yellow"Please restart the game if this is incorrect.\n\n\n"red"You can reset your password at "SERVER_WWWURL"/reset", newname);
 		ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef"", gstr, "OK", "");
 		
 	    PlayerData[playerid][e_regdate] = gettime();
@@ -21599,8 +21604,8 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTRandomInfo, 1);
 	TextDrawSetSelectable(TXTRandomInfo, 0);
 
-	// TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~"SERVER_WWW"");
-	TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~"SERVER_WWW"");
+	// TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~"SERVER_WWWURL"");
+	TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~"SERVER_WWWURL"");
 	TextDrawAlignment(TXTOnJoin[0], 2);
 	TextDrawBackgroundColor(TXTOnJoin[0], 168430202);
 	TextDrawFont(TXTOnJoin[0], 1);
@@ -21799,7 +21804,7 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTWelcome[2], 1);
 	TextDrawSetSelectable(TXTWelcome[2], 0);
 
-	TXTWelcome[3] = TextDrawCreate(438.000000, 243.000000, "~n~~n~  ~b~~h~~h~See /help for server guides.~n~~n~~w~Stay connected on our forums!~n~~n~  ~p~Visit "SERVER_FORUM"");
+	TXTWelcome[3] = TextDrawCreate(438.000000, 243.000000, "~n~~n~  ~b~~h~~h~See /help for server guides.~n~~n~~w~Stay connected on our forums!~n~~n~  ~p~Visit "SERVER_FORUMURL"");
 	TextDrawBackgroundColor(TXTWelcome[3], 168430202);
 	TextDrawFont(TXTWelcome[3], 1);
 	TextDrawLetterSize(TXTWelcome[3], 0.229999, 1.099997);
@@ -22034,7 +22039,7 @@ server_initialize()
 	// SA_MP Server config
 	format(gstr, sizeof(gstr), "hostname %s", HOSTNAME);
 	SendRconCommand(gstr);
-	SendRconCommand("weburl "SERVER_WWW"");
+	SendRconCommand("weburl "SERVER_WWWURL"");
     SetGameModeText("TdmDerbyRaceCNRFunStuntFreeroam");
 	SendRconCommand("mapname "SERVER_SHORT" "SERVER_VERSION"");
 	
@@ -22355,10 +22360,10 @@ server_load_visuals()
 	MellnikRamp = CreateDynamicObject(3115, -153.74190, -2210.68457, 27.16690,   0.00000, 0.00000, -145.55995);
 
 	new mc_text = CreateDynamicObject(19479, -2331.787841, -1635.757690, 484.685546, 0.099999, -90.299964, 178.450790);
-	SetDynamicObjectMaterialText(mc_text, 0, ""nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™\n"SERVER_VERSION"\n"SERVER_WWW"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 20, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+	SetDynamicObjectMaterialText(mc_text, 0, ""nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™\n"SERVER_VERSION"\n"SERVER_WWWURL"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 20, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
 	new beach_text = CreateDynamicObject(19479, 309.903930, -1934.953369, 12.736993, 0.000000, 0.000000, 39.940856);
-	SetDynamicObjectMaterialText(beach_text, 0, ""orange""SERVER_WWW"\n"red""SERVER_VERSION"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 30, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+	SetDynamicObjectMaterialText(beach_text, 0, ""orange""SERVER_WWWURL"\n"red""SERVER_VERSION"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 30, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
     pick_chainsaw = CreateDynamicPickup(341, 23, 1219.1809,-924.6318,42.9045);
     pick_life[0] = CreateDynamicPickup(1240, 23, -1987.6259,274.7049,34.9564);
@@ -22404,7 +22409,7 @@ server_load_visuals()
 	mc_weps = CreateDynamicPickup(1254, 2, -2340.0862,-1644.3979,485.6543);
 	CreateDynamic3DTextLabel("Weapons "green"(/w)", RED, -2340.0862,-1644.3979,485.6543+0.5, 30.0);
 
-    CreateDynamic3DTextLabel(""SERVER_LOGO"\n"r_besch"Beach Zone "grey"(/beach)\n"orange""SERVER_WWW"\n"white"Are you a "orange"new "white"player? Explore our maps "orange"/t\n"white"Use "orange"/god "white"for freeroam mode!", -1, 323.8153,-1853.5037,8.2406+0.5, 35.0);
+    CreateDynamic3DTextLabel(""SERVER_LOGO"\n"r_besch"Beach Zone "grey"(/beach)\n"orange""SERVER_WWWURL"\n"white"Are you a "orange"new "white"player? Explore our maps "orange"/t\n"white"Use "orange"/god "white"for freeroam mode!", -1, 323.8153,-1853.5037,8.2406+0.5, 35.0);
 	beach_dive = CreateDynamicPickup(371, 23, 327.5385,-1864.1561,8.2406);
 	CreateDynamic3DTextLabel("Dive", GREEN, 327.5385,-1864.1561,8.2406+0.5, 30.0);
 	beach_tp = CreateDynamicPickup(19130, 2, 336.6495,-1836.6848,8.2481);
@@ -23487,7 +23492,7 @@ SendWelcomeMSG(playerid)
 	SCM(playerid, RED, "» Welcome to "SERVER_LOGO"");
 	SCM(playerid, NEF_GREEN, "» Type /help for further information");
 	SCM(playerid, BLUE, "» You can show/hide the textdraws with /textdraws");
-	SCM(playerid, YELLOW, "» Visit our forum at http://"SERVER_FORUM"");
+	SCM(playerid, YELLOW, "» Visit our forum at http://"SERVER_FORUMURL"");
 	SCM(playerid, NEF_YELLOW, "» You can use /radio or /streams for music streams");
 	SCM(playerid, GREY, "===================="white""SERVER_VERSION""grey"=======================");
 	return 1;
@@ -25827,16 +25832,16 @@ procedure server_random_broadcast()
 {
 	static const szRandomServerMessages[12][] =
 	{
-		""yellow_e"- Server - "LB2_E"Visit our site: "SERVER_WWW"",
+		""yellow_e"- Server - "LB2_E"Visit our site: "SERVER_WWWURL"",
 		""yellow_e"- Server - "LB2_E"Join Minigames for money and score - /help",
 		""yellow_e"- Server - "LB2_E"Access your player preferences: /settings",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWW"/vip",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWW"/vip",
+		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
+		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
 		""yellow_e"- Server - "LB2_E"Join Minigames to earn money and score - /help",
-		""yellow_e"- Server - "LB2_E"Got suggestions? Post them on our forums! ("SERVER_FORUM")",
+		""yellow_e"- Server - "LB2_E"Got suggestions? Post them on our forums! ("SERVER_FORUMURL")",
 		""yellow_e"- Server - "LB2_E"Use /report to report a player to the admins",
 		""yellow_e"- Server - "LB2_E"Add "SERVER_SHORT" to your favlist! samp."SERVER_URL":7777",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWW"/vip/",
+		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip/",
 		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!",
 		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!"
 	};
@@ -27604,7 +27609,7 @@ procedure RandomTXTInfo()
 		"~w~Want access to ~y~bonus commands~w~? Check out ~r~~h~/premium~w~!",
 		"~w~Edit your server preferences and features using ~r~~h~/settings~w~!",
 		"~w~Flip your vehicle with the key ~g~~h~~h~'2'",
-		"~w~Join our ~r~~h~forums~w~! Register at ~b~~h~~h~"SERVER_WWW"~w~!",
+		"~w~Join our ~r~~h~forums~w~! Register at ~b~~h~~h~"SERVER_WWWURL"~w~!",
 		"~w~Try our ~y~Cops and Robbers ~w~Minigame! ~y~/cnr",
 		"~w~Type ~g~~h~~h~/c ~b~~h~~h~/t~w~ for ~y~commands ~w~and ~y~teleports!",
 		"~w~Go to ~g~~h~~h~/vs ~w~and get your own car which you can tune!",
@@ -28340,12 +28345,12 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				
 				if(lift != 0) // Was he timebanned?
 				{
-					format(string, sizeof(string), ""red"You have been time banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate %s\nYou will be unbanned on %s!\n\nf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM".",
+					format(string, sizeof(string), ""red"You have been time banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate %s\nYou will be unbanned on %s!\n\nf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUMURL".",
 						szAdmin, __GetName(playerid), szReason, UTConvert(iTimeStamp), UTConvert(lift));
 				}
 				else
 				{
-					format(string, sizeof(string), ""red"You have been banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate %s\n\nf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUM".",
+					format(string, sizeof(string), ""red"You have been banned!"white"\n\nAdmin: %s\nYour name: %s\nReason: %s\nDate %s\n\nf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUMURL".",
 						szAdmin, __GetName(playerid), szReason, UTConvert(iTimeStamp));
 				}
 				ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Notice", string, "OK", "");
@@ -29946,7 +29951,7 @@ ResetHouse(slot = -1)
 
 no_vip(playerid, msg[])
 {
-	format(gstr2, sizeof(gstr2), ""nef_green"%s\n\n"white"Get your VIP status at www.havocserver.com/vip", msg);
+	format(gstr2, sizeof(gstr2), ""nef_green"%s\n\n"white"Get your VIP status at "SERVER_WWWURL"/vip", msg);
 	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Very Important Player", gstr2, "OK", "");
 }
 
