@@ -547,6 +547,8 @@ enum (+= 56)
     DIALOG_SET_JOINMSG,
     DIALOG_SET_ALLOW_TP,
     DIALOG_SET_ALLOW_PM,
+    DIALOG_SET_BOOST_FACTOR,
+    DIALOG_SET_JUMP_FACTOR,
     NO_DIALOG_ID
 };
 
@@ -4845,6 +4847,7 @@ public OnPlayerText(playerid, text[])
 	if(szMessage[0] == '$' && szMessage[1] == '$' && szMessage[2] == '$' && PlayerData[playerid][e_vip] == 1)
 	{
 		last_color_format = NC_FormatColorCodes(szMessage);
+		printf("jaaa: %i", last_color_format);
 	}
 	
 	if(PlayerData[playerid][e_gangrank] != 0)
@@ -4871,8 +4874,9 @@ public OnPlayerText(playerid, text[])
 				    strcat(tmp, gstr);
 				}
 			}
-			
+			printf("ssss: %s", tmp);
 			strcat(tmp, szMessage[pos]);
+			printf("ccccc: %s", tmp);
 			szMessage[pos] = EOS;
 
 			if(PlayerData[playerid][e_level] == 0)
@@ -4927,7 +4931,9 @@ public OnPlayerText(playerid, text[])
 			}
 		}
 		
+		printf("ssss2: %s", tmp);
 		strcat(tmp, szMessage[pos]);
+		printf("ccccc2: %s", tmp);
 		szMessage[pos] = EOS;
 		
 		if(PlayerData[playerid][e_level] == 0)
@@ -17052,6 +17058,58 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 	    switch(dialogid)
 	    {
+	        case DIALOG_SET_BOOST_FACTOR:
+	        {
+	            static const Float:ffactor_b[6] = {
+	                1.10,
+	                1.30,
+	                1.50,
+	                1.70,
+	                1.85,
+	                2.00
+	            };
+	            static const szfactor_b[6][5] = {
+	                "1.10",
+	                "1.30",
+	                "1.50",
+	                "1.70",
+	                "1.85",
+	                "2.00"
+	            };
+	            
+				if(listitem < 0 || listitem > sizeof(ffactor_b))
+				    return true;
+
+				PlayerSettings[playerid][e_boost_level] = ffactor_b[listitem];
+				player_notice(playerid, "Boost factor:", szfactor_b[listitem]);
+	            return true;
+	        }
+	        case DIALOG_SET_JUMP_FACTOR:
+			{
+	            static const Float:ffactor_j[6] = {
+	                0.10,
+	                0.20,
+	                0.30,
+	                0.50,
+	                0.70,
+	                1.00
+	            };
+	            static const szfactor_j[6][5] = {
+	                "0.10",
+	                "0.20",
+	                "0.30",
+	                "0.50",
+	                "0.70",
+	                "1.00"
+	            };
+
+				if(listitem < 0 || listitem > sizeof(ffactor_j))
+				    return true;
+				    
+				PlayerSettings[playerid][e_jump_level] = ffactor_j[listitem];
+				player_notice(playerid, "Jump factor:", szfactor_j[listitem]);
+	            return true;
+	        }
 	        case DIALOG_SET_ALLOW_TP:
 	        {
 				PlayerSettings[playerid][e_allow_teleport] = 1;
@@ -30065,15 +30123,15 @@ ProcessSettingsDialog(playerid, listitem)
 	    }
 	    case 8: // Vehicle speedometer
 	    {
-
+			ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Info", "Not yet implemented, sorry.", "OK", "");
 	    }
 	    case 9: // Vehicle boost factor
 	    {
-
+            ShowPlayerDialog(playerid, DIALOG_SET_BOOST_FACTOR, DIALOG_STYLE_LIST, ""nef" :: Vehicle boost", ""white"1.10\n1.30 (default)\n1.50\n1.70\n1.85\n2.00", "Set", "Cancel");
 	    }
 	    case 10: // Vehicle jump factor
 	    {
-
+            ShowPlayerDialog(playerid, DIALOG_SET_JUMP_FACTOR, DIALOG_STYLE_LIST, ""nef" :: Vehicle jump factor", ""white"0.10\n0.20 (default)\n0.30\n0.50\n0.70\n1.00", "Set", "Cancel");
 	    }
 	    case 11: // Speedboost
 	    {
