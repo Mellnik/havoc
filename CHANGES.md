@@ -40,11 +40,6 @@ Build 1 (1st Feb 2015)
    * Using /sell resets the enterprise level to 1.
    * Added '/accept enterprise' to to accept an enterprise offer from another player.
 - Merged old /accept command into '/accept vip'
-- Removed bullet hit sound from deathmatches.
-- Renamed /toggletp to /tgo.
-- Renamed /specoff to /unspec.
-- Renamed /gsetrank to /grank.
-- Removed /locate. Now redirects to /id.
 - /sell /buy can now be used for houses and enterprises.
 - You can now sell/buy houses/enterprises/custom cars on the Havoc Forums.
 - Vehicle flip key has been set to key 'Y'.
@@ -74,6 +69,11 @@ Build 1 (1st Feb 2015)
   * /jlevel (severity of vehicle jumps)
   * Join message (VIP only)
   * Spawn location (House or Hotspot) 
+  - Removed bullet hit sound from deathmatches.
+- Renamed /toggletp to /tgo.
+- Renamed /specoff to /unspec.
+- Renamed /gsetrank to /grank.
+- Removed /locate. Now redirects to /id.
 - Removed dialog/teleport sounds.
 - Removed dynamic ramps.
 - Removed godmode textdraw.
@@ -83,7 +83,7 @@ Build 1 (1st Feb 2015)
 Gameplay changes made possible by SA-MP 0.3.7
 - Sold house icon color has been changed to red
 - Vehicle collisions are now disabled in the /race minigame
-- Clear dialogs with TABs, for example: /h
+- Dialogs with columns for a better overview. Example: /h
 
 Admin changelog:
 - /supervision

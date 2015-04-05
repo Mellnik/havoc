@@ -4836,10 +4836,11 @@ public OnPlayerText(playerid, text[])
 	
     PlayerData[playerid][iCoolDownChat] = GetTickCountEx();
 	SetPlayerChatBubble(playerid, szMessage, WHITE, 40.0, 5000);
+	new last_color_format = 1;
 	
 	if(szMessage[0] == '$' && szMessage[1] == '$' && szMessage[2] == '$' && PlayerData[playerid][e_vip] == 1)
 	{
-		NC_FormatColorCodes(szMessage);
+		last_color_format = NC_FormatColorCodes(szMessage);
 	}
 	
 	if(PlayerData[playerid][e_gangrank] != 0)
@@ -4854,7 +4855,19 @@ public OnPlayerText(playerid, text[])
 
 	        new tmp[144];
 			tmp[0] = EOS;
-			if(PlayerData[playerid][e_level] != 0) strcat(tmp, "{A8DBFF}");
+			if(PlayerData[playerid][e_level] != 0)
+			{
+				if(last_color_format == 1)
+				{
+					strcat(tmp, "{A8DBFF}");
+				}
+				else
+				{
+				    format(gstr, sizeof(gstr), "{%06x}", last_color_format >>> 8);
+				    strcat(tmp, gstr);
+				}
+			}
+			
 			strcat(tmp, szMessage[pos]);
 			szMessage[pos] = EOS;
 
@@ -4897,7 +4910,19 @@ public OnPlayerText(playerid, text[])
 
         new tmp[144];
 		tmp[0] = EOS;
-		if(PlayerData[playerid][e_level] != 0) strcat(tmp, "{A8DBFF}");
+		if(PlayerData[playerid][e_level] != 0)
+		{
+			if(last_color_format == 1)
+			{
+				strcat(tmp, "{A8DBFF}");
+			}
+			else
+			{
+			    format(gstr, sizeof(gstr), "{%06x}", last_color_format >>> 8);
+			    strcat(tmp, gstr);
+			}
+		}
+		
 		strcat(tmp, szMessage[pos]);
 		szMessage[pos] = EOS;
 		
@@ -26034,7 +26059,7 @@ GetPlayerSettings(playerid)
 	}
 	else
 	{
-	    format(gstr, sizeof(gstr), ""white"%i) Spawn location\tRandom\n", ++c);
+	    format(gstr, sizeof(gstr), ""white"%i) Spawn location\tHotspot\n", ++c);
 	}
 	strcat(string, gstr);
 	
@@ -30007,7 +30032,15 @@ ProcessSettingsDialog(playerid, listitem)
 	    }
 	    case 3: // Spawn location
 	    {
-
+			if(PlayerSettings[playerid][e_house_spawn] != 0)
+			{
+                PlayerSettings[playerid][e_house_spawn] = 0;
+                player_notice(playerid, "Spawn:", "Hotspot");
+			}
+			else
+			{
+				ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Spawn location", ""white"You can spawn at your house using the /spawn command.", "OK", "");
+			}
 	    }
 	    case 4: // Autologin
 	    {
