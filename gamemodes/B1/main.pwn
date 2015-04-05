@@ -767,6 +767,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	bool:bDerbyWinner,
 	bool:bDerbyAFK,
 	bool:bDerbyHealthBarShowing,
+	e_iHouseIdForSpawn,
 	iLoginTime,
 	iHouseLastSel,
 	iEnterpriseLastSel,
@@ -833,10 +834,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	Float:SpecY,
 	Float:SpecZ,
 	Float:SpecA,
-	Float:CSpawnX,
-	Float:CSpawnY,
-	Float:CSpawnZ,
-	Float:CSpawnA,
 	Float:sX,
 	Float:sY,
 	Float:sZ,
@@ -1075,7 +1072,7 @@ enum E_HOUSE_DATA
 	/* DATA */
 	e_id,
 	e_owner,
-	Float:e_pos[3],
+	Float:e_pos[4],
 	e_pvslots,
 	e_interior,
 	e_originterior,
@@ -3101,15 +3098,8 @@ public OnPlayerSpawn(playerid)
         {
             ResetPlayerWorld(playerid);
             
-            /*if(PlayerData[playerid][bHasCustomSpawn]) Moved to OPD system
-            {
-        		SetPlayerPos(playerid, PlayerData[playerid][CSpawnX], PlayerData[playerid][CSpawnY], PlayerData[playerid][CSpawnZ]);
-			    SetPlayerFacingAngle(playerid, PlayerData[playerid][CSpawnA]);
-            }
-            else
-            {
-                RandomSpawn(playerid);
-            }*/
+			// Spawn setzung moved to OPD (OnPlayerDeath) SetPlayerSpawnInfo, deshalb ist hier kein RandomSpawn call
+
 			SetCameraBehindPlayer(playerid);
 
 			if(PlayerData[playerid][bGod])
@@ -5110,16 +5100,20 @@ public OnPlayerDeath(playerid, killerid, reason)
 		}
 	    case gFREEROAM:
 	    {
-            if(PlayerData[playerid][bHasCustomSpawn] && !PlayerData[playerid][bGWarMode])
-            {
-                SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid), PlayerData[playerid][CSpawnX], PlayerData[playerid][CSpawnY], PlayerData[playerid][CSpawnZ], PlayerData[playerid][CSpawnA]);
+	        if(PlayerSettings[playerid][e_house_spawn] == 0)
+	        {
+	            new rand = random(4);
+	            SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
             }
             else
             {
-                new rand = random(4);
-                SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
+                SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid),
+					HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][0],
+					HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][1],
+					HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][2] + 0.5,
+					HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][3]);
             }
-	    
+            
 	        if(IsPlayerAvail(killerid) && playerid != killerid && gTeam[killerid] == gFREEROAM)
      		{
 			    PlayerData[killerid][e_wanteds]++;
@@ -9831,23 +9825,6 @@ YCMD:exit(playerid, params[], help)
 	return 1;
 }
 
-YCMD:setspawn(playerid, params[], help)
-{
-    if(!islogged(playerid)) return notlogged(playerid);
-    if(PlayerData[playerid][bGWarMode]) return SCM(playerid, -1, ""er"You can't use this command in Gang War mode, use /exit");
-    if(gTeam[playerid] != gFREEROAM) return SCM(playerid, GREY, NOT_AVAIL);
-    if(GetPlayerInterior(playerid) != 0) return SCM(playerid, GREY, ""er"Wrong interior");
-    if(GetPVarInt(playerid, "doingStunt") != 0) return SCM(playerid, -1, ""er"You can't use this command now");
-    
-    GetPlayerPos(playerid, PlayerData[playerid][CSpawnX], PlayerData[playerid][CSpawnY], PlayerData[playerid][CSpawnZ]);
-    GetPlayerFacingAngle(playerid, PlayerData[playerid][CSpawnA]);
-    PlayerData[playerid][bHasCustomSpawn] = true;
-
-	SCM(playerid, YELLOW, "You will now spawn here!");
-	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
-	return 1;
-}
-
 YCMD:radio(playerid, params[], help)
 {
     ShowDialog(playerid, DIALOG_STREAM_RADIO);
@@ -14290,6 +14267,7 @@ YCMD:hcreate(playerid, params[], help)
 
     ResetHouse(r);
   	GetPlayerPos(playerid, HouseData[r][e_pos][0], HouseData[r][e_pos][1], HouseData[r][e_pos][2]);
+  	GetPlayerFacingAngle(playerid, HouseData[r][e_pos][3]);
   	HouseData[r][e_pvslots] = pvslots;
     HouseData[r][e_value] = value;
     HouseData[r][e_interior] = inter;
@@ -22101,6 +22079,7 @@ server_initialize()
     Command_AddAltNamed("xmas", "christmas");
     Command_AddAltNamed("xmas", "christ");
 	#endif
+	Command_AddAltNamed("spawn", "setspawn");
 	Command_AddAltNamed("grank", "glevel");
 	Command_AddAltNamed("gregister", "gcreate");
 	Command_AddAltNamed("unspec", "specoff");
@@ -26035,7 +26014,11 @@ GetPlayerSettings(playerid)
 	
 	if(PlayerSettings[playerid][e_house_spawn] > 0) // Player wants to spawn in their house.
 	{
-	    format(gstr, sizeof(gstr), ""white"%i) Spawn location\tID %i\n", ++c, PlayerSettings[playerid][e_house_spawn]);
+	    format(gstr, sizeof(gstr), ""white"%i) Spawn location\tHouse ID %i\n", ++c, PlayerSettings[playerid][e_house_spawn]);
+	}
+	else
+	{
+	    format(gstr, sizeof(gstr), ""white"%i) Spawn location\tRandom\n", ++c);
 	}
 	strcat(string, gstr);
 	
@@ -28448,6 +28431,15 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				PlayerSettings[playerid][e_vip_join_msg] = cache_get_field_content_int(0, "vip_join_msg");
 			}
 			
+			for(new i = 0; i < MAX_HOUSES; i++)
+			{
+			    if(HouseData[i][e_id] == PlayerSettings[playerid][e_house_spawn])
+			    {
+			        PlayerData[playerid][e_iHouseIdForSpawn] = i;
+			        break;
+			    }
+			}
+			
 			if(PlayerSettings[playerid][e_auto_login] == 1)
 			{
 				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT `id` FROM `logonlog` WHERE `id` = %i AND `ip` = '%e' AND `service` = 'SERVICE_SERVER' AND `action` = 'ACTION_LOGIN' ORDER BY `date` DESC LIMIT 1;",
@@ -29352,6 +29344,7 @@ ResetPlayerData(playerid)
 	PlayerData[playerid][tMedkit] = -1;
 	PlayerData[playerid][iMedkitTime] = 0;
 	PlayerData[playerid][e_payday] = 60;
+	PlayerData[playerid][e_iHouseIdForSpawn] = 0;
 	PlayerData[playerid][VIPPlayer] = INVALID_PLAYER_ID;
 	PlayerData[playerid][VIPNameHash] = 0;
 	PlayerData[playerid][VIPOffer] = 0;
@@ -29716,6 +29709,7 @@ AssembleHouseORM(ORM:_ormid, slot)
 	orm_addvar_float(_ormid, HouseData[slot][e_pos][0], "xpos");
 	orm_addvar_float(_ormid, HouseData[slot][e_pos][1], "ypos");
 	orm_addvar_float(_ormid, HouseData[slot][e_pos][2], "zpos");
+	orm_addvar_float(_ormid, HouseData[slot][e_pos][3], "apos");
 	orm_addvar_int(_ormid, HouseData[slot][e_pvslots], "pvslots");
 	orm_addvar_int(_ormid, HouseData[slot][e_interior], "interior");
 	orm_addvar_int(_ormid, HouseData[slot][e_originterior], "originterior");
