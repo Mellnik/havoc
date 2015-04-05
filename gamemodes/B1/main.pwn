@@ -1076,6 +1076,7 @@ enum E_HOUSE_DATA
 	e_pvslots,
 	e_interior,
 	e_originterior,
+	e_preload,
 	e_value,
 	e_locked,
 	e_password[41],
@@ -14235,14 +14236,15 @@ YCMD:hcreate(playerid, params[], help)
 		return SCM(playerid, -1, NO_PERM);
 	}
 
-	extract params -> new value, inter, pvslots; else
+	extract params -> new value, inter, pvslots, preload; else
 	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /hcreate <value> <interior> <pvslots>");
+	    return SCM(playerid, NEF_GREEN, "Usage: /hcreate <value> <interior> <pvslots> <preload>");
 	}
 
 	if(value > 1000000000 || value < 1) return SCM(playerid, -1, ""er"Value $1 - $1kkk");
 	if(inter > 13 || inter < 0) return SCM(playerid, -1, ""er"Interior: 1 - 13");
 	if(pvslots < 0 || pvslots > 20) return SCM(playerid, -1, ""er"Private vehicle slots: 0 - 20");
+	if(preload != 0 || preload != 1) return SCM(playerid, -1, ""er"preload: 1 = yes, 0 = no (Only set to '1' if house icon is on top of a dynamic object)");
 
 	new count = 0;
 	for(new i = 0; i < MAX_HOUSES; i++) {
@@ -14272,6 +14274,7 @@ YCMD:hcreate(playerid, params[], help)
     HouseData[r][e_value] = value;
     HouseData[r][e_interior] = inter;
 	HouseData[r][e_originterior] = inter;
+	HouseData[r][e_preload] = preload;
     HouseData[r][e_date] = gettime();
     HouseData[r][e_creator] = PlayerData[playerid][e_accountid];
 
@@ -29713,6 +29716,7 @@ AssembleHouseORM(ORM:_ormid, slot)
 	orm_addvar_int(_ormid, HouseData[slot][e_pvslots], "pvslots");
 	orm_addvar_int(_ormid, HouseData[slot][e_interior], "interior");
 	orm_addvar_int(_ormid, HouseData[slot][e_originterior], "originterior");
+	orm_addvar_int(_ormid, HouseData[slot][e_preload], "preload");
 	orm_addvar_int(_ormid, HouseData[slot][e_value], "value");
 	orm_addvar_int(_ormid, HouseData[slot][e_locked], "locked");
 	orm_addvar_string(_ormid, HouseData[slot][e_password], 41, "password");
@@ -29920,6 +29924,7 @@ ResetHouse(slot = -1)
 		    HouseData[r][e_pvslots] = 0;
             HouseData[r][e_interior] = 0;
             HouseData[r][e_originterior] = 0;
+            HouseData[r][e_preload] = 0;
             HouseData[r][e_value] = 0;
             HouseData[r][e_locked] = 0;
             strmid(HouseData[r][e_password], "-", 0, 41, 41);
@@ -29942,6 +29947,7 @@ ResetHouse(slot = -1)
 	    HouseData[r][e_pvslots] = 0;
         HouseData[r][e_interior] = 0;
         HouseData[r][e_originterior] = 0;
+        HouseData[r][e_preload] = 0;
         HouseData[r][e_value] = 0;
         HouseData[r][e_locked] = 0;
         strmid(HouseData[r][e_password], "-", 0, 41, 41);
