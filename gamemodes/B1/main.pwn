@@ -2995,15 +2995,26 @@ public OnPlayerRequestClass(playerid, classid)
 		PlayerData[playerid][bAllowSpawn] = false;
 		KickEx(playerid);*/
 	    new rand = random(4);
-	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
+	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
         SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
 		return 0;
 	}
 		
     PlayerData[playerid][bFirstSpawn] = true;
 
-    new rand = random(4);
-    SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
+    if(PlayerSettings[playerid][e_house_spawn] == 0)
+    {
+        new rand = random(4);
+        SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
+    }
+    else
+    {
+        SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid),
+			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][0],
+			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][1],
+			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][2] + 0.5,
+			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][3]);
+    }
 
 	TextDrawShowForPlayer(playerid, TXTTeleportInfo);
 	HidePlayerInfoTextdraws(playerid);
@@ -8602,7 +8613,7 @@ YCMD:upgrade(playerid, params[], help)
 
 YCMD:spawn(playerid, params[], help)
 {
-	if(gTeam[playerid] != gFREEROAM || gTeam[playerid] != gHOUSE) return SCM(playerid, RED, NOT_AVAIL);
+	if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE) return SCM(playerid, RED, NOT_AVAIL);
     if(!islogged(playerid)) return notlogged(playerid);
 
 	if(PlayerSettings[playerid][e_house_spawn] != 0)
@@ -8619,6 +8630,7 @@ YCMD:spawn(playerid, params[], help)
 		    return SCM(playerid, -1, ""er"This house does not belong to you");
 
 		PlayerSettings[playerid][e_house_spawn] = HouseData[r][e_id];
+		PlayerData[playerid][e_iHouseIdForSpawn] = r;
 		player_notice(playerid, "Spawn:", "House");
 		return 1;
 	}
@@ -8630,6 +8642,7 @@ YCMD:spawn(playerid, params[], help)
     	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 3001))
 		{
 		    PlayerSettings[playerid][e_house_spawn] = HouseData[i][e_id];
+		    PlayerData[playerid][e_iHouseIdForSpawn] = i;
 		    player_notice(playerid, "Spawn:", "House");
 			return 1;
 		}
@@ -28434,6 +28447,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				PlayerSettings[playerid][e_vip_join_msg] = cache_get_field_content_int(0, "vip_join_msg");
 			}
 			
+			/* The internal array id for the house to spawn later on */
 			for(new i = 0; i < MAX_HOUSES; i++)
 			{
 			    if(HouseData[i][e_id] == PlayerSettings[playerid][e_house_spawn])
