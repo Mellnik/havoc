@@ -8653,7 +8653,7 @@ YCMD:password(playerid, params[], help)
 		    return SCM(playerid, -1, ""er"This house does not belong to you");
 
 		PlayerData[playerid][iHouseLastSel] = i;
-		ShowPlayerDialog(playerid, DIALOG_HOUSE_PASSWORD, DIALOG_STYLE_INPUT, ""nef" :: House Password", ""white"Set a password for this house. Everyone who would like\nto enter it must type the correct password. If you would\nlike to remove it just hit 'Set'.", "Set", "Cancel");
+		ShowPlayerDialog(playerid, DIALOG_HOUSE_PASSWORD, DIALOG_STYLE_INPUT, ""nef" :: House Password", ""white"Set a password for this house. Everyone who would like\nto enter it must type the correct password.\n\nTo remove it just hit 'Set' without any input.", "Set", "Cancel");
 	}
 	else
 	{
@@ -9164,6 +9164,11 @@ YCMD:lock(playerid, params[], help)
 			{
 			    if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid])
 				{
+				    if(strlen(HouseData[i][e_password]) > 1)
+				    {
+				        return SCM(playerid, -1, ""er"Your house is passworded, see /password to remove it.");
+				    }
+				
 					HouseData[i][e_locked] = !HouseData[i][e_locked];
 					player_notice(playerid, "House:", HouseData[i][e_locked] ? ("~g~locked") : ("~r~unlocked"));
 					PlayerPlaySound(playerid, 1027, 0.0, 0.0, 0.0);
@@ -20631,6 +20636,8 @@ SkipLogin(playerid)
 		return Kick(playerid);
 	}
 	
+	ResetPlayerSettings(playerid);
+	
 	new number = random(998) + 1,
 	    newname[26],
 	    oldname[26];
@@ -29416,6 +29423,17 @@ ResetPlayerData(playerid)
 	PlayerData[playerid][DuelRequest] = INVALID_PLAYER_ID;
 	PlayerData[playerid][DuelRequestRecv] = INVALID_PLAYER_ID;
 
+	ResetPlayerSettings(playerid);
+
+    if(PlayerData[playerid][pPreviewVehicle] != INVALID_VEHICLE_ID)
+    {
+		DestroyVehicleEx(PlayerData[playerid][pPreviewVehicle]);
+		PlayerData[playerid][pPreviewVehicle] = INVALID_VEHICLE_ID;
+	}
+}
+
+ResetPlayerSettings(playerid)
+{
 	PlayerSettings[playerid][e_allow_teleport] = 1;
 	PlayerSettings[playerid][e_allow_pm] = 1;
 	PlayerSettings[playerid][e_fightstyle] = 4;
@@ -29427,14 +29445,6 @@ ResetPlayerData(playerid)
 	PlayerSettings[playerid][e_jump_level] = 0.20;
 	PlayerSettings[playerid][e_house_spawn] = 0;
 	PlayerSettings[playerid][e_vip_join_msg] = 1;
-
-    PlayerSettings[playerid][e_namecolor] = 0;
-
-    if(PlayerData[playerid][pPreviewVehicle] != INVALID_VEHICLE_ID)
-    {
-		DestroyVehicleEx(PlayerData[playerid][pPreviewVehicle]);
-		PlayerData[playerid][pPreviewVehicle] = INVALID_VEHICLE_ID;
-	}
 }
 
 SQL_SaveAccountSettings(playerid)
