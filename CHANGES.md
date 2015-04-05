@@ -73,10 +73,11 @@ Build 1 (1st Feb 2015)
   * /blevel (severity of vehicle boost)
   * /jlevel (severity of vehicle jumps)
   * Join message (VIP only)
-  * Spawn location (House/Hotspot) 
+  * Spawn location (House or Hotspot) 
 - Removed dialog/teleport sounds.
 - Removed dynamic ramps.
 - Removed godmode textdraw.
+- Custom xyz spawn has been removed. New options are house spawn or random hotspot.
 - Code improvements.
 
 Gameplay changes made possible by SA-MP 0.3.7
