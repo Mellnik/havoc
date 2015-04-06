@@ -24,7 +24,7 @@
 #include "native.h"
 #include "teleport.h"
 
-int32_t ReplaceAll(std::string &str, const std::string &from, const std::string &to, int32_t color);
+int32_t ReplaceAll(std::string &str, const std::string &from, const std::string &to, int32_t color, int32_t last);
 
 /* NC_Init(nc_version) */
 cell AMX_NATIVE_CALL Native::Init(AMX *amx, cell *params)
@@ -380,11 +380,11 @@ cell AMX_NATIVE_CALL Native::FormatColorCodes(AMX *amx, cell *params)
 	
 	int32_t last_color = 1;
 	std::string transform(message);
-	last_color = ReplaceAll(transform, "<red>", "{FF000F}", 0xFF000FFF);
-	last_color = ReplaceAll(transform, "<green>", "{2DFF00}", 0x2DFF00FF);
-	last_color = ReplaceAll(transform, "<blue>", "{0087FF}", 0x3793FAFF);
-	last_color = ReplaceAll(transform, "<yellow>", "{FFE600}", 0xFFE600FF);
-	last_color = ReplaceAll(transform, "<white>", "{F0F0F0}", 0xFEFEFEFF);
+	last_color = ReplaceAll(transform, "<red>", "{FF000F}", 0xFF000FFF, last_color);
+	last_color = ReplaceAll(transform, "<green>", "{2DFF00}", 0x2DFF00FF, last_color);
+	last_color = ReplaceAll(transform, "<blue>", "{0087FF}", 0x3793FAFF, last_color);
+	last_color = ReplaceAll(transform, "<yellow>", "{FFE600}", 0xFFE600FF, last_color);
+	last_color = ReplaceAll(transform, "<white>", "{F0F0F0}", 0xFEFEFEFF, last_color);
 	transform.erase(0, 3); // Remove '$$$' from the beginning of the string.
 	
 	cell *amx_Addr = NULL;
@@ -399,9 +399,9 @@ cell AMX_NATIVE_CALL Native::FormatColorCodes(AMX *amx, cell *params)
 	return static_cast<cell>(last_color);
 }
 /* Speedvergleich mit http://www.emoticode.net/c-plus-plus/replace-all-substring-occurrences-in-std-string.html */
-int32_t ReplaceAll(std::string &str, const std::string &from, const std::string &to, int32_t color)
+int32_t ReplaceAll(std::string &str, const std::string &from, const std::string &to, int32_t color, int32_t last)
 {
-	int32_t ret = 1;
+	int32_t ret = last;
     size_t start_pos = 0;
     while ((start_pos = str.find(from, start_pos)) != std::string::npos)
 	{
