@@ -1052,7 +1052,7 @@ enum E_ENT_DATA
 	/* DATA */
 	e_id,
 	e_owner,
-	Float:e_pos[3],
+	Float:e_pos[4],
 	e_value,
 	E_ENT_TYPE:e_type,
 	e_level,
@@ -14228,11 +14228,11 @@ YCMD:ecreate(playerid, params[], help)
 	
 	extract params -> new type, value; else
 	{
-	    SCM(playerid, NEF_GREEN, "ENT_TYPE_LOANSHARK, ENT_TYPE_ROBBERY, ENT_TYPE_SMUGGLING, ENT_TYPE_NUDE, ENT_TYPE_METHLAB, ENT_TYPE_BTCFARM");
+	    SCM(playerid, NEF_GREEN, "(0)ENT_TYPE_LOANSHARK, (1)ENT_TYPE_ROBBERY, (2)ENT_TYPE_SMUGGLING, (3)ENT_TYPE_NUDE, (4)ENT_TYPE_METHLAB, (5)ENT_TYPE_BTCFARM");
 	    return SCM(playerid, NEF_GREEN, "Usage: /ecreate <type> <value>");
 	}
 	
-	if(type < 0 || type > 6)
+	if(type < 0 || type > 5)
 	    return SCM(playerid, -1, ""er"Invalid enterprise type");
 	
 	new count = 0;
@@ -14258,7 +14258,7 @@ YCMD:ecreate(playerid, params[], help)
 	
     ResetEnterprise(r);
   	GetPlayerPos(playerid, EnterpriseData[r][e_pos][0], EnterpriseData[r][e_pos][1], EnterpriseData[r][e_pos][2]);
-    
+    GetPlayerFacingAngle(playerid, EnterpriseData[r][e_pos][3]);
     EnterpriseData[r][e_type] = E_ENT_TYPE:type;
     EnterpriseData[r][e_value] = value;
     EnterpriseData[r][e_date] = gettime();
@@ -17305,6 +17305,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    if(EnterpriseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
 						if(++count == listitem) {
 				   			SetPlayerPos(playerid, EnterpriseData[i][e_pos][0], EnterpriseData[i][e_pos][1], EnterpriseData[i][e_pos][2]);
+				   			SetPlayerFacingAngle(playerid, EnterpriseData[i][e_pos][3]);
 				   			PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 				   			SetPVarInt(playerid, "doingStunt", 0);
 				   			PlayerData[playerid][tickJoin_bmx] = 0;
@@ -17680,6 +17681,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    if(HouseData[i][e_owner] == PlayerData[playerid][e_accountid]) {
 						if(++count == listitem) {
 				   			SetPlayerPos(playerid, HouseData[i][e_pos][0], HouseData[i][e_pos][1], HouseData[i][e_pos][2]);
+				   			SetPlayerFacingAngle(playerid, HouseData[i][e_pos][3]);
 				   			PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 				   			SetPVarInt(playerid, "doingStunt", 0);
 				   			PlayerData[playerid][tickJoin_bmx] = 0;
@@ -29796,6 +29798,7 @@ AssembleEnterpriseORM(ORM:_ormid, slot)
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][0], "xpos");
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][1], "ypos");
     orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][2], "zpos");
+    orm_addvar_float(_ormid, EnterpriseData[slot][e_pos][3], "apos");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_value], "value");
     orm_addvar_int(_ormid, _:EnterpriseData[slot][e_type], "type");
     orm_addvar_int(_ormid, EnterpriseData[slot][e_level], "level");
