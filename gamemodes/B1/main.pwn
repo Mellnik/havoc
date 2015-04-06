@@ -4847,7 +4847,6 @@ public OnPlayerText(playerid, text[])
 	if(szMessage[0] == '$' && szMessage[1] == '$' && szMessage[2] == '$' && PlayerData[playerid][e_vip] == 1)
 	{
 		last_color_format = NC_FormatColorCodes(szMessage);
-		printf("jaaa: %i", last_color_format);
 	}
 	
 	if(PlayerData[playerid][e_gangrank] != 0)
@@ -4874,9 +4873,8 @@ public OnPlayerText(playerid, text[])
 				    strcat(tmp, gstr);
 				}
 			}
-			printf("ssss: %s", tmp);
+
 			strcat(tmp, szMessage[pos]);
-			printf("ccccc: %s", tmp);
 			szMessage[pos] = EOS;
 
 			if(PlayerData[playerid][e_level] == 0)
@@ -4931,9 +4929,7 @@ public OnPlayerText(playerid, text[])
 			}
 		}
 		
-		printf("ssss2: %s", tmp);
 		strcat(tmp, szMessage[pos]);
-		printf("ccccc2: %s", tmp);
 		szMessage[pos] = EOS;
 		
 		if(PlayerData[playerid][e_level] == 0)
