@@ -13,7 +13,7 @@
 
 /*
 || Build Dependencies:
-|| SA-MP Server 0.3.7-RC3
+|| SA-MP Server 0.3.7-RC4
 || Havoc Core
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1
@@ -109,11 +109,11 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_IP                       "46.105.40.127:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
-#define SERVER_VERSION					"Build 1"
+#define SERVER_VERSION					"Build 37"
 #else
-#define SERVER_VERSION					"Beta:Build 1"
+#define SERVER_VERSION					"Beta:Build 37"
 #endif
-#define SAMP_VERSION                    "0.3.7-RC3"
+#define SAMP_VERSION                    "0.3.7-RC4"
 
 // Script
 #define MAX_PLAYER_TOYS                 (6)
@@ -2995,9 +2995,6 @@ public OnPlayerRequestClass(playerid, classid)
 		PlayerData[playerid][bAllowSpawn] = false;
 		KickEx(playerid);*/
 		
-		/* Set the login time here because this line below at OnPlayerSpawn should not be called since bFirstSpawn is still false here */
-		PlayerData[playerid][iLoginTime] = gettime();
-		
 	    new rand = random(4);
 	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
         SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
@@ -3092,7 +3089,6 @@ public OnPlayerSpawn(playerid)
 		PlayerData[playerid][bAllowSpawn] = false;
 		AttachPlayerToys(playerid);
 		ResetPlayerWorld(playerid);
-		PlayerData[playerid][iLoginTime] = gettime();
 		PlayerData[playerid][ExitType] = EXIT_FIRST_SPAWNED;
 		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 		SetCameraBehindPlayer(playerid);
@@ -14286,7 +14282,7 @@ YCMD:hcreate(playerid, params[], help)
 	if(value > 1000000000 || value < 1) return SCM(playerid, -1, ""er"Value $1 - $1kkk");
 	if(inter > 13 || inter < 0) return SCM(playerid, -1, ""er"Interior: 1 - 13");
 	if(pvslots < 0 || pvslots > 20) return SCM(playerid, -1, ""er"Private vehicle slots: 0 - 20");
-	if(preload != 0 || preload != 1) return SCM(playerid, -1, ""er"preload: 1 = yes, 0 = no (Only set to '1' if house icon is on top of a dynamic object)");
+	if(preload != 0 && preload != 1) return SCM(playerid, -1, ""er"preload: 1 = yes, 0 = no (Only set to '1' if house icon is on top of a dynamic object)");
 
 	new count = 0;
 	for(new i = 0; i < MAX_HOUSES; i++) {
@@ -19245,7 +19241,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			case DIALOG_VMENU:
 			{
-                if(listitem > PlayerData[playerid][e_pvslots])
+                if(listitem > PlayerData[playerid][e_pvslots] + 1)
 					return 1;
 
 		        PVVMenuSel[playerid] = listitem;
@@ -19370,7 +19366,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    
 			    PVCatSel[playerid] = listitem;
 			    
-			    format(gstr, sizeof(gstr), ""nef" :: Custom cars > %s", g_szCustomCarCategories[listitem]);
+			    format(gstr, sizeof(gstr), ""nef" :: Private vehicles > %s", g_szCustomCarCategories[listitem]);
 			    ShowPlayerDialog(playerid, DIALOG_CAR_SHOP + 1, DIALOG_STYLE_TABLIST, gstr, string, "Select", "Back");
 			    return true;
 			}
@@ -19564,14 +19560,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				        count++;
 				}
 
-				if(count >= PlayerData[playerid][e_pvslots])
+				if(count >= PlayerData[playerid][e_pvslots] + 1)
 				{
 				    MessageDialog(playerid, ""nef" :: Info", ""white"You don't have a free private vehicle slot! Buy a house to expand your slots.");
 				    return 1;
 				}
 				
 				new slot = -1;
-				for(new i = 0; i < MAX_PLAYER_PVS && PlayerData[playerid][e_pvslots] < i; i++)
+				for(new i = 0; i < MAX_PLAYER_PVS && PlayerData[playerid][e_pvslots] + 1 > i; i++)
 				{
 				    if(PlayerPVData[playerid][i][e_model] == 0)
 				    {
@@ -19580,7 +19576,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    }
 				}
 				
-				if(slot != -1 && slot <= PlayerData[playerid][e_pvslots])
+				if(slot != -1 || slot >= PlayerData[playerid][e_pvslots] + 1)
 				{
 				    MessageDialog(playerid, ""nef" :: Info", ""white"You don't have a free private vehicle slot! Buy a house to expand your slots.");
 				    RemovePlayerFromCarShopState(playerid);
@@ -25819,7 +25815,7 @@ procedure ShowDialog(playerid, dialogid)
 		    new string[2048];
 		    strcat(string, "Slot ID\tVehicle\tNumber Plate\n"white"");
 		    
-		    for(new i = 0; i < MAX_PLAYER_PVS && PlayerData[playerid][e_pvslots] < i; i++)
+		    for(new i = 0; i < MAX_PLAYER_PVS && PlayerData[playerid][e_pvslots] + 1 > i; i++)
 		    {
 		        if(PlayerPVData[playerid][i][e_model] == 0)
 		        {
@@ -25831,7 +25827,7 @@ procedure ShowDialog(playerid, dialogid)
 		        }
 		    }
 		    
-			ShowPlayerDialog(playerid, DIALOG_VMENU, DIALOG_STYLE_TABLIST, ""nef" :: Your private vehicles", string, "Select", "Cancel");
+			ShowPlayerDialog(playerid, DIALOG_VMENU, DIALOG_STYLE_TABLIST_HEADERS, ""nef" :: Your private vehicles", string, "Select", "Cancel");
 		}
 		case DIALOG_WEAPON:
 		{
@@ -28601,6 +28597,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 
 				format(gstr, sizeof(gstr), ""server_sign" "r_besch"You were last online at %s and registered on %s", UTConvert(PlayerData[playerid][e_lastlogin]), UTConvert(PlayerData[playerid][e_regdate]));
 				SCM(playerid, -1, gstr);
+				printf("ok: %i", GetPlayingTime(playerid));
 				format(gstr, sizeof(gstr), ""server_sign" "r_besch"You've been online for %s", GetPlayingTimeFormat(playerid));
 				SCM(playerid, -1, gstr);
 
@@ -29325,6 +29322,8 @@ ResetPlayerData(playerid)
 	SetPVarInt(playerid, "Cop", 0);
 	SetPVarInt(playerid, "Robber", 0);
 	SetPVarInt(playerid, "inCNR", 0);
+
+	PlayerData[playerid][iLoginTime] = gettime();
 
 	strmid(PlayerData[playerid][e_email], "NoData", 0, 26, 26);
 	PlayerData[playerid][iTransactHousePlayer] = INVALID_PLAYER_ID;
