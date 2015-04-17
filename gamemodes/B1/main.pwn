@@ -126,7 +126,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define RACE_MAX_PLAYERS 				(12)
 #define SERVERMSGS_TIME                 (850000)
 #define SALT_LENGTH                     (32)
-#define MAX_PLAYER_PVS	                (8)
+#define MAX_PLAYER_PVS	                (40)
 #define MAX_REPORTS 					(7)
 #define MAX_ADMIN_LEVEL         		(5)
 #define MAX_WARNINGS 					(3)
@@ -537,7 +537,6 @@ enum (+= 56)
     DIALOG_VIP_LABEL,
     DIALOG_PLAYER_COLOR,
     DIALOG_CNR_REFILL,
-    DIALOG_PV_SELECT_SLOT,
     DIALOG_CNR,
     DIALOG_REFILL_COPS,
     DIALOG_REFILL_ROBBERS,
@@ -694,7 +693,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_mathwins,
 	e_gangid,
 	e_gangrank,
-	e_addpvslots,
 	e_derbywins,
 	e_racewins,
 	e_tdmwins,
@@ -17690,15 +17688,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 	            return true;
 	        }
-	        case DIALOG_PV_SELECT_SLOT:
-	        {
-				if(listitem == 0) return PVSlotSelect(playerid);
-
-                listitem--;
-			    
-	            CreateFinalCar(playerid, listitem);
-	            return true;
-	        }
 	        case DIALOG_PLAYER_COLOR:
 	        {
     			switch(listitem)
@@ -19256,24 +19245,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			case DIALOG_VMENU:
 			{
-                if(listitem > PlayerData[playerid][e_addpvslots])
-			    {
-					format(gstr, sizeof(gstr), ""nef" :: Private vehicle menu > Slot: %i", listitem + 1);
-			        ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, gstr, ""nef_green"This vehicle slot is locked.\n\n"white"You may unlock it by purchasing an extra slot at Gold Credits (/gc)", "OK", "");
-			    }
-			    else
-			    {
-			        PVVMenuSel[playerid] = listitem;
-			        
-				   	if(PlayerPVData[playerid][PVVMenuSel[playerid]][e_model] == 0)
-					{
-					    player_notice(playerid, "PV slot is not in use", "");
-					    return 1;
-					}
+                if(listitem > PlayerData[playerid][e_pvslots])
+					return 1;
 
-					format(gstr, sizeof(gstr), ""nef" :: Private vehicle menu > Slot: %i", listitem + 1);
-				    ShowPlayerDialog(playerid, DIALOG_VMENU + 1, DIALOG_STYLE_LIST, gstr, "Spawn Vehicle\nAttach Neon\nChange Number Plate\nChange Vehicle Color\n"grey"Sell vehicle", "Select", "Back");
-			    }
+		        PVVMenuSel[playerid] = listitem;
+
+			   	if(PlayerPVData[playerid][PVVMenuSel[playerid]][e_model] == 0)
+				{
+				    player_notice(playerid, "PV slot is not in use", "");
+				    return 1;
+				}
+
+				format(gstr, sizeof(gstr), ""nef" :: Private vehicle menu > Slot: %i", listitem + 1);
+			    ShowPlayerDialog(playerid, DIALOG_VMENU + 1, DIALOG_STYLE_LIST, gstr, "Spawn Vehicle\nAttach Neon\nChange Number Plate\nChange Vehicle Color\n"grey"Sell vehicle", "Select", "Back");
 				return true;
 			}
 			case DIALOG_VMENU + 1:
@@ -19572,8 +19556,38 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					return 1;
 				}
 				mysql_escape_string(PlayerPVTMPPlate[playerid], PlayerPVTMPPlate[playerid], pSQL, 13);
+
+				new count = 0;
+				for(new i = 0; i < MAX_PLAYER_PVS; i++)
+				{
+				    if(PlayerPVData[playerid][i][e_model] != 0)
+				        count++;
+				}
+
+				if(count >= PlayerData[playerid][e_pvslots])
+				{
+				    MessageDialog(playerid, ""nef" :: Info", ""white"You don't have a free private vehicle slot! Buy a house to expand your slots.");
+				    return 1;
+				}
 				
-				PVSlotSelect(playerid);
+				new slot = -1;
+				for(new i = 0; i < MAX_PLAYER_PVS && PlayerData[playerid][e_pvslots] < i; i++)
+				{
+				    if(PlayerPVData[playerid][i][e_model] == 0)
+				    {
+				        slot = i;
+				        break;
+				    }
+				}
+				
+				if(slot != -1 && slot <= PlayerData[playerid][e_pvslots])
+				{
+				    MessageDialog(playerid, ""nef" :: Info", ""white"You don't have a free private vehicle slot! Buy a house to expand your slots.");
+				    RemovePlayerFromCarShopState(playerid);
+				    return 1;
+				}
+				
+				CreateFinalCar(playerid, slot);
 				return true;
 			}
 			case DIALOG_CUSTOM_PLATE:
@@ -19801,11 +19815,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
  		        ShowDialog(playerid, DIALOG_TELEPORT);
  		        return true;
  		    }
-			case DIALOG_PV_SELECT_SLOT:
-			{
-			    ShowDialog(playerid, DIALOG_VEHICLE_PLATE);
-			    return true;
-			}
 			case DIALOG_NEON:
 			{
 				format(gstr, sizeof(gstr), ""nef" :: Custom car menu > Slot: %i", PVVMenuSel[playerid] + 1);
@@ -19876,9 +19885,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			case DIALOG_CAR_SHOP:
 			{
-   				SetCameraBehindPlayer(playerid);
-		    	SetPlayerVirtualWorld(playerid, 0);
-		    	TogglePlayerControllable(playerid, true);
+				RemovePlayerFromCarShopState(playerid);
 		    	return true;
 			}
 			case DIALOG_CAR_SHOP+1..DIALOG_CAR_SHOP+9:
@@ -23409,51 +23416,12 @@ server_load_visuals()
 	return 1;
 }
 
-PVSlotSelect(playerid)
-{
-    new string[1024], tmp[128];
-
-	strcat(string, ""nef_green"Select an unused slot for your new vehicle below:\n");
-
-    for(new i = 0; i < MAX_PLAYER_PVS; i++)
-    {
-        if(i > PlayerData[playerid][e_addpvslots]) // Can not use
-        {
-        	format(tmp, sizeof(tmp), ""white"PV Slot %i "red"(Locked)\n", i + 1);
-        	strcat(string, tmp);
-		}
-        else // Can use
-		{
-            if(PlayerPVData[playerid][i][e_model] != 0)
-            {
-            	format(tmp, sizeof(tmp), ""white"PV Slot %i "green2"(Used) (Vehicle: %s)\n", i + 1, GetPVNameByModelId(PlayerPVData[playerid][i][e_model]));
-            	strcat(string, tmp);
-			}
-			else
-			{
-            	format(tmp, sizeof(tmp), ""white"PV Slot %i\n", i + 1);
-            	strcat(string, tmp);
-			}
-		}
-    }
-
-	ShowPlayerDialog(playerid, DIALOG_PV_SELECT_SLOT, DIALOG_STYLE_LIST, ""nef" :: Custom car shop", string, "Select", "Back");
-	return 1;
-}
-
 CreateFinalCar(playerid, pv_slot)
 {
-	if(pv_slot > PlayerData[playerid][e_addpvslots])
-	{
-	    player_notice(playerid, "This PV slot is locked", "");
-	    PVSlotSelect(playerid);
-	    return 1;
-	}
-
 	if(PlayerPVData[playerid][pv_slot][e_model] != 0)
 	{
 	    player_notice(playerid, "This PV slot is in use", "");
-	    PVSlotSelect(playerid);
+	    RemovePlayerFromCarShopState(playerid);
 	    return 1;
 	}
 
@@ -25848,31 +25816,22 @@ procedure ShowDialog(playerid, dialogid)
 		}
 		case DIALOG_VMENU:
 		{
-		    new string[1024], tmp[128];
+		    new string[2048];
+		    strcat(string, "Slot ID\tVehicle\tNumber Plate\n"white"");
 		    
-		    for(new i = 0; i < MAX_PLAYER_PVS; i++)
+		    for(new i = 0; i < MAX_PLAYER_PVS && PlayerData[playerid][e_pvslots] < i; i++)
 		    {
-		        if(i > PlayerData[playerid][e_addpvslots]) // Can not use
+		        if(PlayerPVData[playerid][i][e_model] == 0)
 		        {
-	            	format(tmp, sizeof(tmp), ""white"PV Slot %i "red"(Locked)\n", i + 1);
-	            	strcat(string, tmp);
-				}
-		        else // Can use
-				{
-		            if(PlayerPVData[playerid][i][e_model] != 0)
-		            {
-		            	format(tmp, sizeof(tmp), ""white"PV Slot %i "green2"(Used) (Vehicle: %s)\n", i + 1, GetPVNameByModelId(PlayerPVData[playerid][i][e_model]));
-		            	strcat(string, tmp);
-					}
-					else
-					{
-		            	format(tmp, sizeof(tmp), ""white"PV Slot %i\n", i + 1);
-		            	strcat(string, tmp);
-					}
-				}
+		            format(gstr, sizeof(gstr), "#%i\tEmpty\t-\n", i + 1);
+		        }
+		        else
+		        {
+		            format(gstr, sizeof(gstr), "#%i\t%s\t%s\n", i + 1, GetPVNameByModelId(PlayerPVData[playerid][i][e_model]), PlayerPVData[playerid][i][e_plate]);
+		        }
 		    }
 		    
-			ShowPlayerDialog(playerid, DIALOG_VMENU, DIALOG_STYLE_LIST, ""nef" :: Your custom cars", string, "Select", "Cancel");
+			ShowPlayerDialog(playerid, DIALOG_VMENU, DIALOG_STYLE_TABLIST, ""nef" :: Your private vehicles", string, "Select", "Cancel");
 		}
 		case DIALOG_WEAPON:
 		{
@@ -29424,7 +29383,6 @@ ResetPlayerData(playerid)
 	PlayerData[playerid][Boost] = BOOST:0;
 	PlayerData[playerid][bwSuspect] = SUSPECT:0;
 	PlayerData[playerid][BoostDeplete] = 0;
-	PlayerData[playerid][e_addpvslots] = 0;
 	PlayerData[playerid][EnterpriseIdSelected] = 0;
 	PlayerData[playerid][DrawnNumber] = -1;
 	PlayerData[playerid][pTrailerVehicle] = INVALID_VEHICLE_ID;
@@ -30182,4 +30140,11 @@ MessageText(playerid, top[], down[] = "", time = 3000, style = 3)
 MessageDialog(playerid, caption[], text[])
 {
 	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, caption, text, "OK", "");
+}
+
+RemovePlayerFromCarShopState(playerid)
+{
+	SetCameraBehindPlayer(playerid);
+	SetPlayerVirtualWorld(playerid, 0);
+	TogglePlayerControllable(playerid, true);
 }
