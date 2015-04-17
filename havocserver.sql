@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 4.3.11.1
+-- version 4.3.12
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 25, 2015 at 09:38 PM
+-- Generation Time: Apr 17, 2015 at 04:59 PM
 -- Server version: 5.5.41-MariaDB
 -- PHP Version: 5.4.16
 
@@ -136,6 +136,7 @@ CREATE TABLE IF NOT EXISTS `enterprises` (
   `xpos` float(14,4) NOT NULL,
   `ypos` float(14,4) NOT NULL,
   `zpos` float(14,4) NOT NULL,
+  `apos` float(14,4) NOT NULL,
   `value` int(10) unsigned NOT NULL,
   `type` tinyint(3) unsigned NOT NULL,
   `level` tinyint(3) unsigned NOT NULL DEFAULT '1',
@@ -190,9 +191,11 @@ CREATE TABLE IF NOT EXISTS `houses` (
   `xpos` float(14,4) NOT NULL,
   `ypos` float(14,4) NOT NULL,
   `zpos` float(14,4) NOT NULL,
+  `apos` float(14,4) NOT NULL,
   `pvslots` tinyint(3) unsigned NOT NULL,
   `interior` tinyint(3) unsigned NOT NULL,
   `originterior` tinyint(3) unsigned NOT NULL,
+  `preload` tinyint(3) unsigned NOT NULL,
   `value` int(10) unsigned NOT NULL,
   `locked` tinyint(4) NOT NULL,
   `password` varchar(40) NOT NULL DEFAULT 'NoData',
@@ -429,6 +432,7 @@ CREATE TABLE IF NOT EXISTS `toys` (
 CREATE TABLE IF NOT EXISTS `vehicles` (
   `id` int(10) unsigned NOT NULL,
   `seq` tinyint(3) unsigned NOT NULL,
+  `date` int(10) unsigned NOT NULL,
   `model` smallint(5) unsigned NOT NULL,
   `plate` varchar(13) NOT NULL,
   `paintjob` tinyint(4) NOT NULL,

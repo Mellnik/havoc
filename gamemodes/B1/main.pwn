@@ -19379,7 +19379,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
         	    {
         	        if(g_aPVMatrix[i][pv_category] == listitem)
         	        {
-        	            format(gstr, sizeof(gstr), "%s "green"$%s\n", g_aPVMatrix[i][pv_modelname], number_format(g_aPVMatrix[i][pv_price]));
+        	            format(gstr, sizeof(gstr), "%s\t"nef_green"$%s\n", g_aPVMatrix[i][pv_modelname], number_format(g_aPVMatrix[i][pv_price]));
         	            strcat(string, gstr);
         	        }
         	    }
@@ -19387,7 +19387,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    PVCatSel[playerid] = listitem;
 			    
 			    format(gstr, sizeof(gstr), ""nef" :: Custom cars > %s", g_szCustomCarCategories[listitem]);
-			    ShowPlayerDialog(playerid, DIALOG_CAR_SHOP + 1, DIALOG_STYLE_LIST, gstr, string, "Select", "Back");
+			    ShowPlayerDialog(playerid, DIALOG_CAR_SHOP + 1, DIALOG_STYLE_TABLIST, gstr, string, "Select", "Back");
 			    return true;
 			}
 			case DIALOG_CAR_SHOP + 1:

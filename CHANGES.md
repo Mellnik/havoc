@@ -31,7 +31,7 @@ Build 1 (1st Feb 2015)
    * Removed house item system.
    * /hlock has been merged into /lock.
    * /hmenu has been removed.
-- Houses now determine how many private vehicles you may held within your account.
+- Houses now determine how many private vehicles you may held within your account. Every player has 1 private vehicle as default even without any houses.
 - Enterprise (Business) changes:
    * Businesses have been renamed to Enterprises.
    * Added new type: Bitcoin Mining Farm.
