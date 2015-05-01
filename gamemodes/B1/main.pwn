@@ -8632,6 +8632,7 @@ YCMD:spawn(playerid, params[], help)
 	    return 1;
 	}
 
+	// Falls er auﬂen ist
 	new r = -1;
 	if((r = GetNearestHouse(playerid)) != -1)
 	{
@@ -8643,12 +8644,13 @@ YCMD:spawn(playerid, params[], help)
 		player_notice(playerid, "Spawn:", "House");
 		return 1;
 	}
+	// Falls er innen ist
 	for(new i = 0; i < MAX_HOUSES; i++)
 	{
 	    if(HouseData[i][e_ormid] == ORM:-1)
 	        continue;
 
-    	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 3001))
+    	if(GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 3001))
 		{
 		    PlayerSettings[playerid][e_house_spawn] = HouseData[i][e_id];
 		    PlayerData[playerid][e_iHouseIdForSpawn] = i;
@@ -18391,13 +18393,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            if(listitem < 0 || listitem > sizeof(g_aHouseInteriorTypes))
 	                return true;
 	                
+                PlayerData[playerid][HouseIntSelected] = listitem;
+                
 				format(gstr2, sizeof(gstr2), ""white"House Upgrade\n\n- Interior: %s\n- Price: $%s\n\nClick \"Upgrade\" in order to apply the new interior.\n"green"* "white"All House Items will be removed in this slot!", g_aHouseInteriorTypes[listitem][intname], number_format(g_aHouseInteriorTypes[listitem][price]));
 				ShowPlayerDialog(playerid, DIALOG_HOUSE_UPGRADE + 1, DIALOG_STYLE_MSGBOX, ""nef" :: House Upgrade", gstr2, "Upgrade", "Cancel");
 				return true;
 	        }
 	        case DIALOG_HOUSE_UPGRADE + 1:
 	        {
-                PlayerData[playerid][HouseIntSelected] = listitem;
+                new int_selected = PlayerData[playerid][HouseIntSelected];
 				new slot_selected = PlayerData[playerid][iHouseLastSel];
 
 		        if(gTeam[playerid] != gFREEROAM)
@@ -18406,23 +18410,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					return 1;
 				}
 
-	            if(GetPlayerMoneyEx(playerid) < g_aHouseInteriorTypes[slot_selected][price])
+	            if(GetPlayerMoneyEx(playerid) < g_aHouseInteriorTypes[int_selected][price])
 	                return SCM(playerid, -1, ""er"You can't afford that interior");
 
 				if(HouseData[slot_selected][e_owner] != PlayerData[playerid][e_accountid])
 				    return SCM(playerid, -1, ""er"This house does not belong to you");
 
-  	            if(PlayerData[playerid][HouseIntSelected] == HouseData[slot_selected][e_interior])
+  	            if(int_selected == HouseData[slot_selected][e_interior])
          			return SCM(playerid, -1, ""er"This house already got the interior");
-
-				HouseData[slot_selected][e_locked] = 1;
-				HouseData[slot_selected][e_interior] = PlayerData[playerid][HouseIntSelected];
 				
 				/* Remove all players from house */
 	            for(new pid = 0; pid < MAX_PLAYERS; pid++)
 	            {
 	                if(pid == playerid) continue;
-	                if(gTeam[pid] == gHOUSE && GetPlayerInterior(pid) == g_aHouseInteriorTypes[HouseData[slot_selected][e_interior]][interior] && GetPlayerVirtualWorld(pid) == (HouseData[slot_selected][e_id] + 3001))
+	                if(gTeam[pid] == gHOUSE && GetPlayerVirtualWorld(pid) == (HouseData[slot_selected][e_id] + 3001))
 	                {
 	                    gTeam[pid] = gFREEROAM;
 	                    SetPlayerPos(pid, HouseData[slot_selected][e_pos][0], HouseData[slot_selected][e_pos][1], HouseData[slot_selected][e_pos][2]);
@@ -18430,11 +18431,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                }
 	            }
 
+				HouseData[slot_selected][e_locked] = 1;
+				HouseData[slot_selected][e_interior] = int_selected;
+
 				DestroyDynamic3DTextLabel(HouseData[slot_selected][e_labelid]);
                 HouseData[slot_selected][e_labelid] = Text3D:-1;
 	            SetupHouse(slot_selected, HouseData[slot_selected][e_namecache]);
 
-	            GivePlayerMoneyEx(playerid, -g_aHouseInteriorTypes[PlayerData[playerid][HouseIntSelected]][price]);
+	            GivePlayerMoneyEx(playerid, -g_aHouseInteriorTypes[int_selected][price]);
        			SetPlayerPos(playerid, HouseData[slot_selected][e_pos][0], HouseData[slot_selected][e_pos][1], HouseData[slot_selected][e_pos][2]);
 				ResetPlayerWorld(playerid);
 				gTeam[playerid] = gFREEROAM;
@@ -19224,9 +19228,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			case DIALOG_VMENU:
 			{
-                if(listitem > PlayerData[playerid][e_pvslots] + 1)
-					return 1;
-
+			    if(listitem < 0 || listitem > MAX_PLAYER_PVS)
+			        return 1;
+			        
 		        PVVMenuSel[playerid] = listitem;
 
 			   	if(PlayerPVData[playerid][PVVMenuSel[playerid]][e_model] == 0)
@@ -19546,11 +19550,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				if(count >= PlayerData[playerid][e_pvslots] + 1)
 				{
 				    MessageDialog(playerid, ""nef" :: Info", ""white"You don't have a free private vehicle slot! Buy a house to expand your slots.");
+				    RemovePlayerFromCarShopState(playerid);
 				    return 1;
 				}
 				
 				new slot = -1;
-				for(new i = 0; i < MAX_PLAYER_PVS && PlayerData[playerid][e_pvslots] + 1 > i; i++)
+				for(new i = 0; i < MAX_PLAYER_PVS; i++)
 				{
 				    if(PlayerPVData[playerid][i][e_model] == 0)
 				    {
@@ -19559,7 +19564,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    }
 				}
 				
-				if(slot != -1 || slot >= PlayerData[playerid][e_pvslots] + 1)
+				if(slot == -1)
 				{
 				    MessageDialog(playerid, ""nef" :: Info", ""white"You don't have a free private vehicle slot! Buy a house to expand your slots.");
 				    RemovePlayerFromCarShopState(playerid);
@@ -25796,7 +25801,7 @@ procedure ShowDialog(playerid, dialogid)
 		    new string[2048];
 		    strcat(string, "Slot ID\tVehicle\tNumber Plate\n"white"");
 		    
-		    for(new i = 0; i < MAX_PLAYER_PVS && PlayerData[playerid][e_pvslots] + 1 > i; i++)
+		    for(new i = 0; i < MAX_PLAYER_PVS; i++)
 		    {
 		        if(PlayerPVData[playerid][i][e_model] == 0)
 		        {
@@ -25806,6 +25811,7 @@ procedure ShowDialog(playerid, dialogid)
 		        {
 		            format(gstr, sizeof(gstr), "#%i\t%s\t%s\n", i + 1, GetPVNameByModelId(PlayerPVData[playerid][i][e_model]), PlayerPVData[playerid][i][e_plate]);
 		        }
+		        strcat(string, gstr);
 		    }
 		    
 			ShowPlayerDialog(playerid, DIALOG_VMENU, DIALOG_STYLE_TABLIST_HEADERS, ""nef" :: Your private vehicles", string, "Select", "Cancel");
@@ -27171,7 +27177,8 @@ ExitPlayer(playerid)
 
 		    	if(GetPlayerInterior(playerid) == g_aHouseInteriorTypes[HouseData[i][e_interior]][interior] && GetPlayerVirtualWorld(playerid) == (HouseData[i][e_id] + 3001))
 				{
-				    LoadMap(playerid);
+				    if(HouseData[i][e_preload] == 1)
+						LoadMap(playerid);
 			    	SetPlayerPos(playerid, HouseData[i][e_pos][0], HouseData[i][e_pos][1], HouseData[i][e_pos][2]);
 			    	SetPlayerInterior(playerid, 0);
 			    	SetPlayerVirtualWorld(playerid, 0);
