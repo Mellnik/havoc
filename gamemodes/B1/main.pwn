@@ -4201,7 +4201,6 @@ procedure OnQueryFinish(query[], resultid, extraid, connectionHandle)
 		case THREAD_RACE_FINISH:
 		{
 			new maxid = cache_insert_id();
-
 			format(gstr2, sizeof(gstr2), "SELECT `id`, `name`, `time` FROM `race_records` WHERE `track` = %i ORDER BY `time` ASC LIMIT 6;", g_NextRace); // 6 , da vllt Platz 5 belegt und somit 6 verdrängt // versteh ich nicht // ah warte jetzt hab ichs kapiert
 			mysql_tquery(pSQL, gstr2, "OnQueryFinish", "siii", gstr2, THREAD_RACE_LATEST, maxid, extraid);
 		}
@@ -10874,7 +10873,6 @@ YCMD:go(playerid, params[], help)
 			if(player == playerid) return SCM(playerid, -1, ""er"You may not teleport to yourself");
 			if(gTeam[player] != gFREEROAM) return SCM(playerid, -1, ""er"Player is currently unavailable to goto");
 			if(PlayerData[player][e_wanteds] != 0) return SCM(playerid, -1, ""er"This player has wanteds");
-			if(PlayerData[player][e_level] != 0) return SCM(playerid, -1, ""er"You can't teleport to admins");
             if(PlayerData[player][bGWarMode]) return SCM(playerid, -1, ""er"This player is in Gang War");
             if(GetPVarInt(player, "doingStunt") != 0) return SCM(playerid, -1, ""er"Player is doing stunts");
             if(!PlayerData[player][bAllowPlayerTeleport] && PlayerData[playerid][e_level] == 0) return SCM(playerid, -1, ""er"Player disabled teleports");
@@ -22408,19 +22406,18 @@ server_initialize()
     Command_AddAltNamed("gmenu", "mygang");
 	
     AddPlayerClass(3, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
+    AddPlayerClass(304, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
     AddPlayerClass(81, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(1, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
+	AddPlayerClass(299, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(0, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(199, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
-	AddPlayerClass(299, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(5, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(264, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(26, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(289, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(28, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(72, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
-	AddPlayerClass(248, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
-	AddPlayerClass(178, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(100, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(115, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(272, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
@@ -22429,12 +22426,11 @@ server_initialize()
 	AddPlayerClass(149, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(249, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(162, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
-	AddPlayerClass(206, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(271, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
-	AddPlayerClass(145, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
 	AddPlayerClass(285, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
-	AddPlayerClass(283, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
-
+	AddPlayerClass(310, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
+    AddPlayerClass(307, 1958.3783, 1343.1572, 15.3746, 270.1425, 0, 0, 0, 0, 0, 0);
+    
 	Log(LOG_INIT, "Server Modules loaded in %i ms", GetTickCountEx() - count);
 	return 1;
 }
@@ -29013,7 +29009,7 @@ IsValidVehicleModel(vmodel)
 
 IsValidSkin(skinid)
 {
-    if(skinid == 74 || skinid > 299 || skinid < 0)
+    if(skinid == 74 || skinid > 311 || skinid < 0)
     {
         return 0;
 	}

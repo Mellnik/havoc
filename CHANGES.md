@@ -8,7 +8,7 @@ Build 1 (1st Feb 2015)
 - Account IDs rather than playernames are now being used for internal data handlers.
 - Players can now have an offical mapper status (/mappers).
 - Namechanges are now attached to the account id rather than the name to avoid confusion between different accounts.
-- Playing time is now being calculated more accurate; avoiding time bugs.
+- Playing time is now being calculated more accurate; fixing time bugs.
 - Fixed /top commands showing non-online players.
 - New toy slot arrangement:
 	Slot 1-4 usable by everyone, slot 5-6 VIP only.
@@ -83,9 +83,11 @@ Build 1 (1st Feb 2015)
 Gameplay changes made possible by SA-MP 0.3.7
 - Sold house icon color has been changed to red
 - Vehicle collisions are now disabled in the /race minigame
-- Dialogs with columns for a better overview. Example: /h
+- Dialogs with columns for a better overview (e.g. /h or /e)
+- New skin ids 300-311 added to /skins
 
 Admin changelog:
+- Players can now teleport to you (/go). However, you can disable this in /settings.
 - /supervision
 - Renamed /togglegc to /tgc.
 - /caps command has been removed.
