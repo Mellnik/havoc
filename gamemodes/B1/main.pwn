@@ -2983,7 +2983,7 @@ public OnPlayerRequestClass(playerid, classid)
     if(bGlobalShutdown)
 		return 0;
 
-	if(classid > 300 || classid < 0)
+	if(classid > 311 || classid < 0)
 	{
 		PlayerData[playerid][bwSuspect] |= SUSPECT_FAKE_PACKETS;
 		Log(LOG_NET, "Invalid data in OnPlayerRequestClass(%i, %i)", playerid, classid);
