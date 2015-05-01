@@ -43,7 +43,7 @@
 #pragma dynamic 8192        // for md-sort
 
 #define IS_RELEASE_BUILD (true)
-#define INC_ENVIRONMENT (false)
+#define INC_ENVIRONMENT (true)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
 #define YSI_IS_SERVER
@@ -2987,7 +2987,7 @@ public OnPlayerRequestClass(playerid, classid)
 	{
 		PlayerData[playerid][bwSuspect] |= SUSPECT_FAKE_PACKETS;
 		Log(LOG_NET, "Invalid data in OnPlayerRequestClass(%i, %i)", playerid, classid);
-	}	
+	}
 	
 	if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED)
 	{/*
@@ -2996,7 +2996,7 @@ public OnPlayerRequestClass(playerid, classid)
 		KickEx(playerid);*/
 		
 	    new rand = random(4);
-	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
+	    SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
         SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
 		return 0;
 	}
@@ -3006,11 +3006,11 @@ public OnPlayerRequestClass(playerid, classid)
     if(PlayerSettings[playerid][e_house_spawn] == 0)
     {
         new rand = random(4);
-        SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
+        SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
     }
     else
     {
-        SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid),
+        SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid),
 			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][0],
 			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][1],
 			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][2] + 0.5,
@@ -3029,42 +3029,27 @@ public OnPlayerRequestClass(playerid, classid)
 	TextDrawShowForPlayer(playerid, TXTWinterEdition);
 	#endif
 
-	if(PlayerSettings[playerid][e_skin] != -1)
+	SetPlayerPos(playerid, 2526.1675, -1853.9927, 13.5469);
+	SetPlayerFacingAngle(playerid, 103.7086);
+	SetPlayerCameraPos(playerid, 2522.4890, -1855.3513, 13.9283);
+	SetPlayerCameraLookAt(playerid, 2523.4316, -1855.0209, 13.8781);
+
+	ShowPlayerWelcomeTextdraws(playerid);
+
+	switch(random(2))
 	{
-	    SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
-	    SCM(playerid, -1, ""server_sign" "r_besch"Your saved skin has been set (/deleteskin to remove)");
-	    return 0;
-	}
-	else
-	{
-		/*Streamer_UpdateEx(playerid, 1797.5835, -1305.0114, 121.2348, -1, -1);
-		SetPlayerPos(playerid, 1797.5835, -1305.0114, 121.2348);
-		SetPlayerFacingAngle(playerid, 359.9696);
-		SetPlayerCameraPos(playerid, 1797.3688, -1299.8156, 121.4657);
-		SetPlayerCameraLookAt(playerid, 1797.3661, -1300.8164, 121.4556);*/
-
-		SetPlayerPos(playerid, 2526.1675, -1853.9927, 13.5469);
-		SetPlayerFacingAngle(playerid, 103.7086);
-		SetPlayerCameraPos(playerid, 2522.4890, -1855.3513, 13.9283);
-		SetPlayerCameraLookAt(playerid, 2523.4316, -1855.0209, 13.8781);
-
-		ShowPlayerWelcomeTextdraws(playerid);
-
-		switch(random(2))
-		{
-		    case 0:
-		    {
-		        ApplyAnimation(playerid, "DANCING", "DNCE_M_A", 4.1, 1, 1, 1, 1, 1);
-			}
-			case 1:
-			{
-			    ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.1, 1, 1, 1, 1, 1);
-			}
+	    case 0:
+	    {
+	        ApplyAnimation(playerid, "DANCING", "DNCE_M_A", 4.1, 1, 1, 1, 1, 1);
 		}
-
-		SetPlayerAttachedObject(playerid, 0, 18693, 5, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfire left
-		SetPlayerAttachedObject(playerid, 1, 18693, 6, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfie right
+		case 1:
+		{
+		    ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.1, 1, 1, 1, 1, 1);
+		}
 	}
+
+	SetPlayerAttachedObject(playerid, 0, 18693, 5, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfire left
+	SetPlayerAttachedObject(playerid, 1, 18693, 6, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfie right
 	return 1;
 }
 
@@ -4808,7 +4793,7 @@ public OnPlayerText(playerid, text[])
 		}
 	}
 	
-	// Increase the chat counter.
+	// Increase the chat message counter.
 	g_ServerStats[1]++;
 	
 	if(szMessage[0] == '#' && PlayerData[playerid][e_level] >= 1)
@@ -15746,7 +15731,7 @@ YCMD:chris(playerid, params[], help)
 	}
 	return 1;
 }
-
+/*
 YCMD:saveskin(playerid, params[], help)
 {
 	if(!islogged(playerid)) return notlogged(playerid);
@@ -15784,7 +15769,7 @@ YCMD:deleteskin(playerid, params[], help)
     PlayerSettings[playerid][e_skin] = -1;
 	return 1;
 }
-
+*/
 YCMD:savecolor(playerid, params[], help)
 {
 	if(!islogged(playerid)) return notlogged(playerid);
@@ -20767,17 +20752,17 @@ GetPlayingTime(playerid)
 
 GetPlayingTimeFormat(playerid)
 {
-    new ptime[32],
-        time[4];
+	new ftime[32];
+	new total, seconds, hours, minutes;
 
-	time[0] = GetPlayingTime(playerid);
-	time[2] = time[0] / 60;
-	time[1] = time[0] % 60;
-	time[3] = time[2] / 60;
-	time[2] = time[2] % 60;
+	total = GetPlayingTime(playerid);
+	minutes = total / 60;
+	seconds = total % 60;
+	hours = minutes / 60;
+	minutes = minutes % 60;
 
-	format(ptime, sizeof(ptime), "%ih %02im %02is", time[0], time[1], time[2]);
-	return ptime;
+	format(ftime, sizeof(ftime), "%ih %02im %02is", hours, minutes, seconds);
+	return ftime;
 }
 
 CarSpawner(playerid, model, respawn_delay = -1, bool:spawnzone_check = true)
@@ -21023,7 +21008,7 @@ SQL_KickFromGangIfExist(playerid)
 SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
 {
     if(!islogged(playerid)) return 1;
-    
+
     PlayerData[playerid][e_time] = PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLoginTime]);
     
     if(PlayerData[playerid][e_ormid] == ORM:-1) {
@@ -28438,6 +28423,8 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 			}
 			else
 			{
+			    PlayerData[playerid][iLoginTime] = gettime();
+			    
 				TextDrawHideForPlayer(playerid, TXTOnJoin[0]);
 				TextDrawHideForPlayer(playerid, TXTOnJoin[1]);
 
@@ -28453,7 +28440,6 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				if(PlayerData[playerid][e_accountid] == 0)
 				{
 					// Does not have an account. Qualify player for registration.
-
 			        mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT COUNT(`id`) FROM `accounts` WHERE `regip` = '%s' AND `regdate` > (UNIX_TIMESTAMP() - 86400);", __GetIP(playerid));
 			        mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_QUALIFY_REGISTER);
 				}
@@ -28483,6 +28469,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				PlayerSettings[playerid][e_house_spawn] = cache_get_field_content_int(0, "house_spawn");
 				PlayerSettings[playerid][e_vip_join_msg] = cache_get_field_content_int(0, "vip_join_msg");
 			}
+			// else? -> wurde ja schon resetted mit ResetPlayerSettings eigentlich.
 			
 			/* The internal array id for the house to spawn later on */
 			for(new i = 0; i < MAX_HOUSES; i++)
@@ -28593,7 +28580,6 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 
 				format(gstr, sizeof(gstr), ""server_sign" "r_besch"You were last online at %s and registered on %s", UTConvert(PlayerData[playerid][e_lastlogin]), UTConvert(PlayerData[playerid][e_regdate]));
 				SCM(playerid, -1, gstr);
-				printf("ok: %i", GetPlayingTime(playerid));
 				format(gstr, sizeof(gstr), ""server_sign" "r_besch"You've been online for %s", GetPlayingTimeFormat(playerid));
 				SCM(playerid, -1, gstr);
 
@@ -29319,8 +29305,6 @@ ResetPlayerData(playerid)
 	SetPVarInt(playerid, "Robber", 0);
 	SetPVarInt(playerid, "inCNR", 0);
 
-	PlayerData[playerid][iLoginTime] = gettime();
-
 	strmid(PlayerData[playerid][e_email], "NoData", 0, 26, 26);
 	PlayerData[playerid][iTransactHousePlayer] = INVALID_PLAYER_ID;
 	PlayerData[playerid][iTransactHouseID] = -1;
@@ -30043,7 +30027,8 @@ ProcessSettingsDialog(playerid, listitem)
 	    }
 	    case 2: // Save skin
 	    {
-            ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Player Skin", ""white"Use /saveskin to save you current skin for the next visit.\n\n/deleteskin to use skin selection when logging in.", "OK", "");
+	        ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Info", "Not yet implemented, sorry.", "OK", "");
+            //ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Player Skin", ""white"Use /saveskin to save you current skin for the next visit.\n\n/deleteskin to use skin selection when logging in.", "OK", "");
 	    }
 	    case 3: // Spawn location
 	    {
