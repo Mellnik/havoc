@@ -13,7 +13,7 @@
 
 /*
 || Build Dependencies:
-|| SA-MP Server 0.3.7-RC4
+|| SA-MP Server 0.3.7
 || Havoc Core
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1
@@ -43,7 +43,7 @@
 #pragma dynamic 8192        // for md-sort
 
 #define IS_RELEASE_BUILD (true)
-#define INC_ENVIRONMENT (true)
+#define INC_ENVIRONMENT (false)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
 #define YSI_IS_SERVER
@@ -113,7 +113,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #else
 #define SERVER_VERSION					"Beta:Build 37"
 #endif
-#define SAMP_VERSION                    "0.3.7-RC4"
+#define SAMP_VERSION                    "0.3.7"
 
 // Script
 #define MAX_PLAYER_TOYS                 (6)
