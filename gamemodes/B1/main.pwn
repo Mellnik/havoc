@@ -768,7 +768,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	bool:bDerbyAFK,
 	bool:bDerbyHealthBarShowing,
 	e_iHouseIdForSpawn,
-	iLoginTime,
+	iLogonTime,
 	iHouseLastSel,
 	iEnterpriseLastSel,
 	Float:fDerbyVehicleHealth,
@@ -966,6 +966,7 @@ enum E_TOY_DATA
 enum E_PV_DATA
 {
 	/* DATA */
+	e_date,
 	e_model,
 	e_plate[13],
 	e_paintjob,
@@ -20752,7 +20753,7 @@ SkipLogin(playerid)
 
 GetPlayingTime(playerid)
 {
-	return PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLoginTime]);
+	return PlayerData[playerid][e_time] + (NC_GetStartupTime(1) - PlayerData[playerid][iLogonTime]);
 }
 
 GetPlayingTimeFormat(playerid)
@@ -21014,7 +21015,7 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
 {
     if(!islogged(playerid)) return 1;
 
-    PlayerData[playerid][e_time] = PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLoginTime]);
+    PlayerData[playerid][e_time] = GetPlayingTime(playerid);
     
     if(PlayerData[playerid][e_ormid] == ORM:-1) {
     	Log(LOG_PLAYER, "Crit: ORM -1 in SaveAccount %s, %i", __GetName(playerid), playerid);
@@ -21061,9 +21062,10 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
 		{
 		    if(PlayerPVData[playerid][i][e_model] != 0)
 		    {
-		        mysql_format(pSQL, buff, sizeof(buff), "INSERT INTO `vehicles` VALUES (%i, %i, %i, '%e', %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i);",
+		        mysql_format(pSQL, buff, sizeof(buff), "INSERT INTO `vehicles` VALUES (%i, %i, %i, %i, '%e', %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i);",
 				    PlayerData[playerid][e_accountid],
 				    i,
+				    gettime(),
 				    PlayerPVData[playerid][i][e_model],
 				    PlayerPVData[playerid][i][e_plate],
 				    PlayerPVData[playerid][i][e_paintjob],
@@ -28430,7 +28432,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 			}
 			else
 			{
-			    PlayerData[playerid][iLoginTime] = gettime();
+			    PlayerData[playerid][iLogonTime] = NC_GetStartupTime(1);
 			    
 				TextDrawHideForPlayer(playerid, TXTOnJoin[0]);
 				TextDrawHideForPlayer(playerid, TXTOnJoin[1]);
@@ -28676,15 +28678,16 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				{
 				    new r = cache_get_row_int(i, 1);
 
-				    PlayerPVData[playerid][r][e_model] = cache_get_row_int(i, 2);
-				    cache_get_row(i, 3, PlayerPVData[playerid][r][e_plate], pSQL, 13);
-				    PlayerPVData[playerid][r][e_paintjob] = cache_get_row_int(i, 4);
-				    PlayerPVData[playerid][r][e_color1] = cache_get_row_int(i, 5);
-				    PlayerPVData[playerid][r][e_color2] = cache_get_row_int(i, 6);
+                    PlayerPVData[playerid][r][e_date] = cache_get_row_int(i, 2);
+				    PlayerPVData[playerid][r][e_model] = cache_get_row_int(i, 3);
+				    cache_get_row(i, 4, PlayerPVData[playerid][r][e_plate], pSQL, 14);
+				    PlayerPVData[playerid][r][e_paintjob] = cache_get_row_int(i, 5);
+				    PlayerPVData[playerid][r][e_color1] = cache_get_row_int(i, 6);
+				    PlayerPVData[playerid][r][e_color2] = cache_get_row_int(i, 7);
 
-				    for(new m = 0; m < 17; m++)
+				    for(new m = 0; m < 18; m++)
 				    {
-				        PlayerPVData[playerid][r][e_mods][m] = cache_get_row_int(i, m + 7);
+				        PlayerPVData[playerid][r][e_mods][m] = cache_get_row_int(i, m + 8);
 				    }
 				}
 	        }
@@ -29431,7 +29434,7 @@ ResetPlayerData(playerid)
 	PlayerData[playerid][e_bank] = 0;
 	PlayerData[playerid][e_time] = 0;
 	PlayerData[playerid][e_skin] = 0;
-	PlayerData[playerid][iLoginTime] = 0;
+	PlayerData[playerid][iLogonTime] = 0;
 	PlayerData[playerid][e_vip] = 0;
 	PlayerData[playerid][e_lastnc] = 0;
 	PlayerData[playerid][Warnings] = 0;

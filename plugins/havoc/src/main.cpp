@@ -52,6 +52,7 @@ const AMX_NATIVE_INFO PluginNatives[] =
 	{"NC_ProcessTeleportRequest", Native::ProcessTeleportRequest},
 	{"NC_GetTeleportDialogString", Native::GetTeleportDialogString},
 	{"NC_OutputTeleportInfo", Native::OutputTeleportInfo},
+	{"NC_GetStartupTime", Native::GetStartupTime},
 	{"NC_UnixtimeToDate", Native::UnixtimeToDate},
 	{"NC_StringReplace", Native::StringReplace},
 	{"NC_Whirlpool", Native::Whirlpool},

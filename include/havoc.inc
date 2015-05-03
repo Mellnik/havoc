@@ -14,7 +14,7 @@
 #endif
 #define _havoc_included
 
-#define CORE_VERSION 0xF
+#define CORE_VERSION 0x10
 
 #define MAX_TELE_CATEGORIES 9
 #define MAX_TELES_PER_CATEGORY 32
@@ -32,6 +32,7 @@ native NC_OutputTeleportInfo();
 
 // General Util
 native NC_ServerLog(const file[], const data[]);
+native NC_GetStartupTime(tformat = 1);
 native NC_UnixtimeToDate(dest[], unixtime, len = sizeof(dest));
 native NC_StringReplace(const transform[], const from[], const to[], dest[], len = sizeof(dest));
 native NC_FormatColorCodes(string[]);

@@ -13,6 +13,7 @@
 #include <limits>
 #include <ctime>
 #include <fstream>
+#include <chrono>
 
 #include <cryptopp/hex.h>
 #include <cryptopp/filters.h>
@@ -24,6 +25,7 @@
 #include "native.h"
 #include "teleport.h"
 
+std::chrono::steady_clock::time_point tStartup;
 int32_t ReplaceAll(std::string &str, const std::string &from, const std::string &to, int32_t color, int32_t last);
 
 /* NC_Init(nc_version) */
@@ -33,6 +35,7 @@ cell AMX_NATIVE_CALL Native::Init(AMX *amx, cell *params)
 	PARAM_CHECK(ParamCount, "NC_Init");
 	
 	int32_t clientVersion = params[1];
+	tStartup = std::chrono::steady_clock::now();
 	
 	if (clientVersion != CORE_VERSION)
 	{
@@ -182,6 +185,21 @@ cell AMX_NATIVE_CALL Native::OutputTeleportInfo(AMX *amx, cell *params)
 		logprintf("[HAVOC] TP Category %i: %i TPs", i, pTeleport->GetCategorySize(i));
 	}
 	return 1;
+}
+
+/* NC_GetStartupTime(tformat = 0) */
+cell AMX_NATIVE_CALL Native::GetStartupTime(AMX *amx, cell *params)
+{
+	std::chrono::steady_clock::duration dur = std::chrono::steady_clock::now() - tStartup;
+	
+	if (params[1] == 0)
+		return static_cast<cell>(std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
+	else if (params[1] == 1)
+		return static_cast<cell>(std::chrono::duration_cast<std::chrono::seconds>(dur).count());
+	else if (params[1] == 2)
+		return static_cast<cell>(std::chrono::duration_cast<std::chrono::minutes>(dur).count());
+	else
+		return static_cast<cell>(std::chrono::duration_cast<std::chrono::hours>(dur).count());
 }
 
 /* NC_UnixtimeToDate(dest[], unixtime, len = sizeof(dest)) */

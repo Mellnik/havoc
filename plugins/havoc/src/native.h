@@ -25,6 +25,7 @@ namespace Native
 	cell AMX_NATIVE_CALL GetTeleportDialogString(AMX *amx, cell *params);
 	cell AMX_NATIVE_CALL ProcessTeleportRequest(AMX *amx, cell *params);
 	cell AMX_NATIVE_CALL OutputTeleportInfo(AMX *amx, cell *params);
+	cell AMX_NATIVE_CALL GetStartupTime(AMX *amx, cell *params);
 	cell AMX_NATIVE_CALL UnixtimeToDate(AMX *amx, cell *params);
 	cell AMX_NATIVE_CALL StringReplace(AMX *amx, cell *params);
 	cell AMX_NATIVE_CALL Whirlpool(AMX *amx, cell *params);
