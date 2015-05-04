@@ -25800,21 +25800,19 @@ procedure ShowDialog(playerid, dialogid)
 		}
 		case DIALOG_VMENU:
 		{
-		    new string[2048];
+		    new string[2048], count = 0;
 		    strcat(string, "Slot ID\tVehicle\tNumber Plate\n"white"");
 		    
 		    for(new i = 0; i < MAX_PLAYER_PVS; i++)
 		    {
-		        if(PlayerPVData[playerid][i][e_model] == 0)
+		        if(PlayerPVData[playerid][i][e_model] != 0)
 		        {
-		            format(gstr, sizeof(gstr), "#%i\tEmpty\t-\n", i + 1);
+					format(gstr, sizeof(gstr), "#%i\t%s\t%s\n", i + 1, GetPVNameByModelId(PlayerPVData[playerid][i][e_model]), PlayerPVData[playerid][i][e_plate]);
+					strcat(string, gstr);
+					++count;
 		        }
-		        else
-		        {
-		            format(gstr, sizeof(gstr), "#%i\t%s\t%s\n", i + 1, GetPVNameByModelId(PlayerPVData[playerid][i][e_model]), PlayerPVData[playerid][i][e_plate]);
-		        }
-		        strcat(string, gstr);
 		    }
+			if(count == 0)
 		    
 			ShowPlayerDialog(playerid, DIALOG_VMENU, DIALOG_STYLE_TABLIST_HEADERS, ""nef" :: Your private vehicles", string, "Select", "Cancel");
 		}
