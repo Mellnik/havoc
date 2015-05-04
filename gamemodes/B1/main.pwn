@@ -25813,6 +25813,7 @@ procedure ShowDialog(playerid, dialogid)
 		        }
 		    }
 			if(count == 0)
+				strcat(string, "-\tEmpty\t-\n");
 		    
 			ShowPlayerDialog(playerid, DIALOG_VMENU, DIALOG_STYLE_TABLIST_HEADERS, ""nef" :: Your private vehicles", string, "Select", "Cancel");
 		}
