@@ -16928,6 +16928,22 @@ public OnVehicleSpawn(vehicleid)
 	return 1;
 }
 
+procedure OnLogonLogsReceive(playerid, acc_id)
+{
+	if(cache_get_row_count() > 0)
+	{
+		for(new i = 0, r = cache_get_row_count(); i < r; ++i)
+		{
+			
+		}
+	}
+	else
+	{
+		
+	}
+	return 1;
+}
+
 procedure OnPlayerNameChangeRequest(playerid, newname[])
 {
 	new rows, fields;
@@ -17136,22 +17152,22 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			        }
 			        case 2:
 			        {
-			            ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 1, DIALOG_STYLE_INPUT, ""nef" :: banlookup", ""white"Enter a playername or account id:", "OK", "Cancel");
+			            ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 3, DIALOG_STYLE_INPUT, ""nef" :: banlookup", ""white"Enter a playername or account id:", "OK", "Cancel");
 			        }
 			        case 3:
 			        {
-			        
+						ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 4, DIALOG_STYLE_INPUT, ""nef" :: Player identification", ""white"This feature searches the DB for a specific element and returns all\nitems that contain that element.\n\nEnter one of the following: IP-Address, Serial:", "OK", "Cancel");
 			        }
 			        case 4:
 			        {
-			        
+						ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 5, DIALOG_STYLE_INPUT, ""nef" :: Logon logs", ""white"This features shows a players last 30 logons including timestamps and IP-Addresses.\n\nEnter a playername or account id to continue:", "OK", "Cancel");
 			        }
 			    }
 			    return true;
 			}
-			case DIALOG_SUPERVISION + 1:
+			case DIALOG_SUPERVISION + 3:
 			{
-	            if(strlen(inputtext) > MAX_PLAYER_NAME + 1 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Invalid name length");
+	            if(strlen(inputtext) > MAX_PLAYER_NAME + 1 || strlen(inputtext) < 1) return SCM(playerid, -1, ""er"Invalid name length");
 
 	            new player[MAX_PLAYER_NAME + 1];
 	            sscanf(inputtext, "s[25]", player);
@@ -17162,6 +17178,30 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					//mysql_format(pSQL, gstr, sizeof(gstr), "SELECT
 	            }
 			    return true;
+			}
+			case DIALOG_SUPERVISION + 5:
+			{
+				if(strlen(inputtext) > 45 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Invalid input length");
+				return true;
+			}
+			case DIALOG_SUPERVISION + 5:
+			{
+				if(strlen(inputtext) > MAX_PLAYER_NAME + 1 || strlen(inputtext) < 1) return SCM(playerid, -1, ""er"Invalid input length");
+				
+	            new player[MAX_PLAYER_NAME + 1];
+	            sscanf(inputtext, "s[25]", player);
+				
+	            if(IsNumeric(player))
+	            {
+					new acc_id = strval(player);
+					mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `logonlog` WHERE `id` = %i ORDER BY `date` DESC LIMIT 30;", acc_id);
+					mysql_tquery(pSQL, gstr, "OnLogonLogsReceive", "ii", acc_id, playerid);
+	            }
+				else
+				{
+					
+				}
+				return true;
 			}
 	        case DIALOG_DUEL:
 	        {
