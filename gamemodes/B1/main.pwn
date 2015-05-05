@@ -16932,14 +16932,23 @@ procedure OnLogonLogsReceive(playerid, acc_id)
 {
 	if(cache_get_row_count() > 0)
 	{
+	    new date[40], ip[16], string[2048], action[32];
+	    strcat(string, "Time\tIP\tAction\n"white"");
+	    
 		for(new i = 0, r = cache_get_row_count(); i < r; ++i)
 		{
-			
+			NC_UnixtimeToDate(date, cache_get_row_int(i, 4), sizeof(date));
+			cache_get_row(i, 1, ip, pSQL, sizeof(ip));
+			cache_get_row(i, 2, action, pSQL, sizeof(action));
+			format(gstr, sizeof(gstr), "%s\t%s\t%s\n", date, ip, action);
+			strcat(string, gstr);
 		}
+		format(gstr2, sizeof(gstr2), ""nef" :: Logon logs for account ID %i", acc_id);
+		ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_TABLIST_HEADERS, gstr2, string, "OK", "");
 	}
 	else
 	{
-		
+		SCM(playerid, -1, ""er"Player was not found!");
 	}
 	return 1;
 }
@@ -17148,7 +17157,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			        }
 			        case 1:
 			        {
-			        
+			            not_yet_implemented(playerid);
 			        }
 			        case 2:
 			        {
@@ -17179,7 +17188,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            }
 			    return true;
 			}
-			case DIALOG_SUPERVISION + 5:
+			case DIALOG_SUPERVISION + 4:
 			{
 				if(strlen(inputtext) > 45 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Invalid input length");
 				return true;
@@ -17191,16 +17200,30 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            new player[MAX_PLAYER_NAME + 1];
 	            sscanf(inputtext, "s[25]", player);
 				
+				new acc_id;
+				
 	            if(IsNumeric(player))
 	            {
-					new acc_id = strval(player);
-					mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `logonlog` WHERE `id` = %i ORDER BY `date` DESC LIMIT 30;", acc_id);
-					mysql_tquery(pSQL, gstr, "OnLogonLogsReceive", "ii", acc_id, playerid);
+					acc_id = strval(player);
 	            }
 				else
 				{
-					
+					mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", player);
+					new Cache:res = mysql_query(pSQL, gstr);
+					if(cache_get_row_count(pSQL) != 0)
+					{
+					    acc_id = cache_get_row_int(0, 0);
+					    cache_delete(res);
+				  	}
+				  	else
+				  	{
+				  	    SCM(playerid, -1, ""er"Player was not found!");
+				  	    cache_delete(res);
+				  	    return true;
+				  	}
 				}
+				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `logonlog` WHERE `id` = %i ORDER BY `date` DESC LIMIT 30;", acc_id);
+				mysql_tquery(pSQL, gstr, "OnLogonLogsReceive", "ii", playerid, acc_id);
 				return true;
 			}
 	        case DIALOG_DUEL:
@@ -30076,7 +30099,7 @@ ProcessSettingsDialog(playerid, listitem)
 	    }
 	    case 2: // Save skin
 	    {
-	        ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Info", "Not yet implemented, sorry.", "OK", "");
+	        not_yet_implemented(playerid);
             //ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Player Skin", ""white"Use /saveskin to save you current skin for the next visit.\n\n/deleteskin to use skin selection when logging in.", "OK", "");
 	    }
 	    case 3: // Spawn location
@@ -30109,7 +30132,7 @@ ProcessSettingsDialog(playerid, listitem)
 	    }
 	    case 8: // Vehicle speedometer
 	    {
-			ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Info", "Not yet implemented, sorry.", "OK", "");
+			not_yet_implemented(playerid);
 	    }
 	    case 9: // Vehicle boost factor
 	    {
@@ -30176,4 +30199,9 @@ RemovePlayerFromCarShopState(playerid)
 	SetCameraBehindPlayer(playerid);
 	SetPlayerVirtualWorld(playerid, 0);
 	TogglePlayerControllable(playerid, true);
+}
+
+not_yet_implemented(playerid)
+{
+    ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Info", "Not yet implemented, sorry.", "OK", "");
 }
