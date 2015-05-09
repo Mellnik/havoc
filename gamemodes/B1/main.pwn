@@ -685,7 +685,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_pvslots,
 	e_kills,
 	e_deaths,
-	e_time, // TODO: Bessere Zeitabrechung d.h. OPC(e_startime = GetTime), OPD(e_time = GetTime() - e_starttime).
+	e_time,
 	e_skin,
 	e_bounty,
 	e_payday,
@@ -846,7 +846,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
     DuelRequestRecv
 };
 
-enum E_PLAYER_SETTINGS // TODO: Laden bei login!
+enum E_PLAYER_SETTINGS
 {
 	e_allow_teleport,
 	e_allow_pm,
@@ -17161,11 +17161,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			        }
 			        case 2:
 			        {
-			            ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 3, DIALOG_STYLE_INPUT, ""nef" :: banlookup", ""white"Enter a playername or account id:", "OK", "Cancel");
+			            not_yet_implemented(playerid);
+			            //ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 3, DIALOG_STYLE_INPUT, ""nef" :: banlookup", ""white"Enter a playername or account id:", "OK", "Cancel");
 			        }
 			        case 3:
 			        {
-						ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 4, DIALOG_STYLE_INPUT, ""nef" :: Player identification", ""white"This feature searches the DB for a specific element and returns all\nitems that contain that element.\n\nEnter one of the following: IP-Address, Serial:", "OK", "Cancel");
+			            not_yet_implemented(playerid);
+						//ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 4, DIALOG_STYLE_INPUT, ""nef" :: Player identification", ""white"This feature searches the DB for a specific element and returns all\nitems that contain that element.\n\nEnter one of the following: IP-Address, Serial:", "OK", "Cancel");
 			        }
 			        case 4:
 			        {
@@ -17176,21 +17178,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			case DIALOG_SUPERVISION + 3:
 			{
-	            if(strlen(inputtext) > MAX_PLAYER_NAME + 1 || strlen(inputtext) < 1) return SCM(playerid, -1, ""er"Invalid name length");
-
-	            new player[MAX_PLAYER_NAME + 1];
-	            sscanf(inputtext, "s[25]", player);
-	            
-	            if(IsNumeric(player))
-	            {
-					//new acc_id = strval(player);
-					//mysql_format(pSQL, gstr, sizeof(gstr), "SELECT
-	            }
 			    return true;
 			}
 			case DIALOG_SUPERVISION + 4:
 			{
-				if(strlen(inputtext) > 45 || strlen(inputtext) < 3) return SCM(playerid, -1, ""er"Invalid input length");
 				return true;
 			}
 			case DIALOG_SUPERVISION + 5:
@@ -21222,7 +21213,7 @@ SQL_RegisterAccount(playerid, register, hash[], salt[])
 	orm_insert(ormid, "OnPlayerRegister", "iiissss", playerid, YHash(__GetName(playerid)), register, hash, salt, __GetName(playerid), __GetIP(playerid));
 }
 
-procedure OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[]) // TODO: Soll schon ein login log erstellt werden beim ersten reggen?
+procedure OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[]) // TODO: Soll schon ein login log erstellt werden beim ersten reggen? 09/05/15: neeee
 {
 	DEBUG_P1(playerid, "OnPlayerRegister")
 	new query[512];
@@ -21301,7 +21292,7 @@ SQL_BanAccount(playerid, adminid, reason[], lift = 0)
 	GetPlayerHealth(playerid, ha[0]);
 	GetPlayerArmour(playerid, ha[1]);
 	
-	mysql_format(pSQL, query, sizeof(query), "INSERT INTO `bans` VALUES (%i, %i, '%e', %i, UNIX_TIMESTAMP(), %i, %f, %f, %f, %f, %i, %f, %f, %i, %i, %b);",
+	mysql_format(pSQL, query, sizeof(query), "INSERT INTO `bans` VALUES (%i, %i, '%e', %i, UNIX_TIMESTAMP(), %i, %f, %f, %f, %f, %i, %f, %f, %i, %i, %i);",
 	    PlayerData[playerid][e_accountid],
 		PlayerData[adminid][e_accountid],
 	    reason,
@@ -21316,7 +21307,7 @@ SQL_BanAccount(playerid, adminid, reason[], lift = 0)
 	    ha[1],
 	    PlayerData[playerid][bGod],
 	    GetPlayerWeapon(playerid),
-	    _:PlayerData[playerid][bwSuspect]); // TODO: Suspect flag richtig speichern.
+	    _:PlayerData[playerid][bwSuspect]);
 	mysql_tquery(pSQL, query);
 }
 
