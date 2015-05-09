@@ -17007,9 +17007,6 @@ procedure OnPlayerNameChangeRequest(playerid, newname[])
             
             format(query, sizeof(query), "INSERT INTO `ncrecords` VALUES (%i, '%s', '%s', UNIX_TIMESTAMP());", PlayerData[playerid][e_accountid], oldname, newname);
             mysql_pquery(pSQL, query);
-            
-            format(query, sizeof(query), "UPDATE `queue` SET `Extra` = '%s' WHERE `Extra` = '%s';", newname, oldname);
-            mysql_tquery(pSQL, query);
 
             format(query, sizeof(query), "UPDATE `viporder` SET `receiver` = '%s' WHERE `receiver` = '%s';", newname, oldname);
             mysql_tquery(pSQL, query);
@@ -24133,6 +24130,81 @@ procedure QueueProcess()
 
 procedure OnQueueReceived()
 {
+	for(new r = 0; r < cache_get_row_count(); r++)
+	{
+	    new action = cache_get_row_int(r, 1);
+		cache_get_row(r, 3, gstr, pSQL, sizeof(gstr));
+		
+		switch(action)
+		{
+		    case 1: // DONATION_VIP
+		    {
+		        new acc_id, donation_amount;
+		        if(sscanf(gstr, "p<,>if", acc_id, donation_amount))
+		        {
+					Log(LOG_ONLINE, "sscanf failed in OnQueueReceived(DONATION_VIP)");
+					continue;
+		        }
+		        
+		        new bfound = false;
+		        for(new i = 0; i < MAX_PLAYERS; i++)
+		        {
+		            if(PlayerData[i][e_accountid] == acc_id)
+		            {
+		                if(islogged(i))
+		                {
+		                    bfound = true;
+		                    PlayerData[i][e_vip] = 1;
+		                    
+		 					format(gstr, sizeof(gstr), "~p~%s received VIP for donating!", __GetName(i));
+		                    GameTextForAll(gstr, 7000, 3);
+		                    format(gstr, sizeof(gstr), "%s received VIP for donating!", __GetName(i));
+		                    SCMToAll(ORANGE, gstr);
+		                }
+		            }
+		        }
+		        
+		        if(!bfound)
+		        {
+		            mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `vip` = 1 WHERE `id` = %i LIMIT 1;", acc_id);
+		            mysql_tquery(pSQL, gstr2);
+		        }
+		    }
+		    case 2: // DONATION_CUSTOM
+		    {
+		        new acc_id, cashamount;
+		        if(sscanf(gstr, "p<,>ii", acc_id, cashamount))
+		        {
+					Log(LOG_ONLINE, "sscanf failed in OnQueueReceived(DONATION_CUSTOM)");
+					continue;
+		        }
+
+		        new bfound = false;
+		        for(new i = 0; i < MAX_PLAYERS; i++)
+		        {
+		            if(PlayerData[i][e_accountid] == acc_id)
+		            {
+		                if(islogged(i))
+		                {
+		                    bfound = true;
+							GivePlayerMoneyEx(i, cashamount);
+
+		 					format(gstr, sizeof(gstr), "~p~You received $%s received for donating!", number_format(cashamount));
+		                    GameTextForPlayer(i, gstr, 7000, 3);
+		                    format(gstr, sizeof(gstr), "You received $%s for donating!", number_format(cashamount));
+		                    SCM(i, ORANGE, gstr);
+		                }
+		            }
+		        }
+
+		        if(!bfound)
+		        {
+		            mysql_format(pSQL, gstr2, sizeof(gstr2), "UPDATE `accounts` SET `money` = `money` + %i WHERE `id` = %i LIMIT 1;", cashamount, acc_id);
+		            mysql_tquery(pSQL, gstr2);
+		        }
+		    }
+		}
+	}
 	return 1;
 }
 
