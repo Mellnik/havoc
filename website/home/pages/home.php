@@ -13,7 +13,7 @@
 			Server Location: Roubaix, FR (Europe)
 			<br><br>
 			<font size="6">
-			<b><a class="neflink" href="http://files.sa-mp.com/sa-mp-0.3z-R1-install.exe">Download 0.3.7 Client to play</a></b>
+			<b><a class="neflink" href="http://files.sa-mp.com/sa-mp-0.3z-R1-install.exe">Download 0.3.7 client to play</a></b>
 			<br><br><br>
 			</font>
 			<div id="smallbox">
