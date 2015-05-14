@@ -17168,6 +17168,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			        }
 			        case 4:
 			        {
+						if (PlayerData[playerid][e_level] < 3)
+						    return SCM(playerid, -1, NO_PERM);
+						    
 						ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 5, DIALOG_STYLE_INPUT, ""nef" :: Logon logs", ""white"This features shows a players last 30 logons including timestamps and IP-Addresses.\n\nEnter a playername or account id to continue:", "OK", "Cancel");
 			        }
 			    }
@@ -20804,7 +20807,9 @@ SkipLogin(playerid)
 
 GetPlayingTime(playerid)
 {
-	return PlayerData[playerid][e_time] + (NC_GetStartupTime(1) - PlayerData[playerid][iLogonTime]);
+	new tmp = NC_GetStartupTime(1);
+	printf("NC_GetStartupTime(1): %i", tmp);
+	return PlayerData[playerid][e_time] + (tmp - PlayerData[playerid][iLogonTime]);
 }
 
 GetPlayingTimeFormat(playerid)
@@ -28557,7 +28562,9 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 			}
 			else
 			{
-			    PlayerData[playerid][iLogonTime] = NC_GetStartupTime(1);
+			    new _tmp = NC_GetStartupTime(1);
+			    printf("in E_ACCREQ_CHECK_SERIAL: NC_GetStartupTime: %i", _tmp);
+			    PlayerData[playerid][iLogonTime] = _tmp;
 			    
 				TextDrawHideForPlayer(playerid, TXTOnJoin[0]);
 				TextDrawHideForPlayer(playerid, TXTOnJoin[1]);
@@ -30262,6 +30269,12 @@ RemovePlayerFromCarShopState(playerid)
 	SetCameraBehindPlayer(playerid);
 	SetPlayerVirtualWorld(playerid, 0);
 	TogglePlayerControllable(playerid, true);
+	
+    if(PlayerData[playerid][pPreviewVehicle] != INVALID_VEHICLE_ID)
+    {
+		DestroyVehicleEx(PlayerData[playerid][pPreviewVehicle]);
+		PlayerData[playerid][pPreviewVehicle] = INVALID_VEHICLE_ID;
+	}
 }
 
 not_yet_implemented(playerid)

@@ -1,7 +1,7 @@
 Havoc Freeroam SA-MP Server
 ===========================
 
-Build 1 (1st Feb 2015)
+Build 37 (9 May 2015)
 ----------------------
 - Stores (24/7, Banks, Ammunation etc.) are now being saved and loaded from database.
 - Bans now include serverside information; Can be viewed at http://havocserver.com/bans
