@@ -28817,7 +28817,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				    PlayerPVData[playerid][r][e_color1] = cache_get_row_int(i, 6);
 				    PlayerPVData[playerid][r][e_color2] = cache_get_row_int(i, 7);
 
-				    for(new m = 0; m < 18; m++)
+				    for(new m = 0; m < 17; m++)
 				    {
 				        PlayerPVData[playerid][r][e_mods][m] = cache_get_row_int(i, m + 8);
 				    }
