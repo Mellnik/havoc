@@ -768,7 +768,6 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	bool:bDerbyAFK,
 	bool:bDerbyHealthBarShowing,
 	e_iHouseIdForSpawn,
-	iLogonTime,
 	iHouseLastSel,
 	iEnterpriseLastSel,
 	Float:fDerbyVehicleHealth,
@@ -820,6 +819,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	PlayerText:DmgBox[2],
 	Text3D:AdminDutyLabel,
 	Text3D:VIPLabel,
+	iLogonTime,
 	iLastChat,
 	tMute,
  	TmpGangID,
@@ -2722,6 +2722,20 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	g_LottoJackpot,
 	bool:bLottoActive = false,
 	g_ServerStats[4],
+  	gLastMap[MAX_PLAYERS],
+  	PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
+  	PlayerOld[MAX_PLAYERS][40],
+  	PlayerSettings[MAX_PLAYERS][E_PLAYER_SETTINGS],
+  	PlayerAchData[MAX_PLAYERS][E_PLAYER_ACH_DATA][2],
+  	PlayerToyData[MAX_PLAYERS][MAX_PLAYER_TOYS][E_TOY_DATA],
+  	PlayerPVData[MAX_PLAYERS][MAX_PLAYER_PVS][E_PV_DATA],
+  	HouseData[MAX_HOUSES][E_HOUSE_DATA],
+  	GZoneData[MAX_GZONES][E_GZONE_DATA],
+  	EnterpriseData[MAX_ENTERPRISES][E_ENT_DATA],
+  	StoreData[MAX_STORES][E_STORE_DATA],
+  	PVSelect[MAX_PLAYERS],
+	PVCatSel[MAX_PLAYERS],
+	PVVMenuSel[MAX_PLAYERS],
 	mathsAnswered = -1,
 	mathsCurrent[14],
 	mathsAnswer,
@@ -2814,20 +2828,6 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	bool:ReactionOn,
   	g_AdminLCTo,
   	g_AdminLCBack,
-  	gLastMap[MAX_PLAYERS],
-  	PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
-  	PlayerOld[MAX_PLAYERS][40],
-  	PlayerSettings[MAX_PLAYERS][E_PLAYER_SETTINGS],
-  	PlayerAchData[MAX_PLAYERS][E_PLAYER_ACH_DATA][2],
-  	PlayerToyData[MAX_PLAYERS][MAX_PLAYER_TOYS][E_TOY_DATA],
-  	PlayerPVData[MAX_PLAYERS][MAX_PLAYER_PVS][E_PV_DATA],
-  	HouseData[MAX_HOUSES][E_HOUSE_DATA],
-  	GZoneData[MAX_GZONES][E_GZONE_DATA],
-  	EnterpriseData[MAX_ENTERPRISES][E_ENT_DATA],
-  	StoreData[MAX_STORES][E_STORE_DATA],
-  	PVSelect[MAX_PLAYERS],
-	PVCatSel[MAX_PLAYERS],
-	PVVMenuSel[MAX_PLAYERS],
   	pick_chainsaw,
   	pick_life[14],
   	pick_armor[16],
@@ -20807,8 +20807,6 @@ SkipLogin(playerid)
 
 GetPlayingTime(playerid)
 {
-	new tmp = NC_GetStartupTime(1);
-	printf("NC_GetStartupTime(1): %i", tmp);
 	return PlayerData[playerid][e_time] + (tmp - PlayerData[playerid][iLogonTime]);
 }
 
@@ -28562,9 +28560,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 			}
 			else
 			{
-			    new _tmp = NC_GetStartupTime(1);
-			    printf("in E_ACCREQ_CHECK_SERIAL: NC_GetStartupTime: %i", _tmp);
-			    PlayerData[playerid][iLogonTime] = _tmp;
+			    PlayerData[playerid][iLogonTime] = NC_GetStartupTime(1);
 			    
 				TextDrawHideForPlayer(playerid, TXTOnJoin[0]);
 				TextDrawHideForPlayer(playerid, TXTOnJoin[1]);
