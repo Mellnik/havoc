@@ -20807,7 +20807,7 @@ SkipLogin(playerid)
 
 GetPlayingTime(playerid)
 {
-	return PlayerData[playerid][e_time] + (tmp - PlayerData[playerid][iLogonTime]);
+	return PlayerData[playerid][e_time] + (NC_GetStartupTime(1) - PlayerData[playerid][iLogonTime]);
 }
 
 GetPlayingTimeFormat(playerid)
