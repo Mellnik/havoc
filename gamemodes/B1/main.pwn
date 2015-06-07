@@ -21784,7 +21784,8 @@ server_load_textdraws()
 	TextDrawSetSelectable(TXTRandomInfo, 0);
 
 	// TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~"SERVER_WWWURL"");
-	TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~"SERVER_WWWURL"");
+	// TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~Havoc N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~"SERVER_WWWURL"");
+	TXTOnJoin[0] = TextDrawCreate(323.000000, 188.000000, "~y~~h~H~w~avoc ~r~~h~~h~F~w~reeroam~n~~n~"SERVER_WWWURL"");
 	TextDrawAlignment(TXTOnJoin[0], 2);
 	TextDrawBackgroundColor(TXTOnJoin[0], 168430202);
 	TextDrawFont(TXTOnJoin[0], 1);
@@ -21835,7 +21836,8 @@ server_load_textdraws()
 	TextDrawSetProportional(TXTFooter, 1);
 	TextDrawSetSelectable(TXTFooter, 0);
 	
-	NEFLOGO[0] = TextDrawCreate(88.000000, 426.000000, "~y~N~w~ew ~g~~h~E~w~volution ~r~~h~F~w~reeroam");
+	// NEFLOGO[0] = TextDrawCreate(88.000000, 426.000000, "~y~N~w~ew ~g~~h~E~w~volution ~r~~h~F~w~reeroam");
+	NEFLOGO[0] = TextDrawCreate(88.000000, 426.000000, "~y~~h~H~w~avoc ~r~~h~~h~F~w~reeroam");
 	TextDrawAlignment(NEFLOGO[0], 2);
 	TextDrawBackgroundColor(NEFLOGO[0], 51);
 	TextDrawFont(NEFLOGO[0], 3);
@@ -21964,7 +21966,8 @@ server_load_textdraws()
 	TextDrawSetSelectable(TXTWelcome[0], 0);
 
 	// TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~S~w~tunt ~g~~h~~h~E~w~volution~n~~n~samp."SERVER_URL":7777");
-	TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~samp."SERVER_URL":7777");
+	// TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~N~w~ew ~g~~h~~h~E~w~volution ~r~~h~~h~F~w~reeroam~n~~n~samp."SERVER_URL":7777");
+	TXTWelcome[1] = TextDrawCreate(520.000000, 118.000000, "~y~~h~H~w~avoc ~r~~h~~h~F~w~reeroam~n~~n~samp."SERVER_URL":7777");
 	TextDrawAlignment(TXTWelcome[1], 2);
 	TextDrawBackgroundColor(TXTWelcome[1], 168430202);
 	TextDrawFont(TXTWelcome[1], 1);
@@ -22538,7 +22541,7 @@ server_load_visuals()
 	MellnikRamp = CreateDynamicObject(3115, -153.74190, -2210.68457, 27.16690,   0.00000, 0.00000, -145.55995);
 
 	new mc_text = CreateDynamicObject(19479, -2331.787841, -1635.757690, 484.685546, 0.099999, -90.299964, 178.450790);
-	SetDynamicObjectMaterialText(mc_text, 0, ""nef_yellow"New "nef_green"Evolution "nef_red"Freeroam{F0F0F0}™\n"SERVER_VERSION"\n"SERVER_WWWURL"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 20, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+	SetDynamicObjectMaterialText(mc_text, 0, ""nef_yellow"Havoc "nef_red"Freeroam{F0F0F0}™\n"SERVER_VERSION"\n"SERVER_WWWURL"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 20, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
 	new beach_text = CreateDynamicObject(19479, 309.903930, -1934.953369, 12.736993, 0.000000, 0.000000, 39.940856);
 	SetDynamicObjectMaterialText(beach_text, 0, ""orange""SERVER_WWWURL"\n"red""SERVER_VERSION"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 30, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
@@ -24505,7 +24508,7 @@ procedure ProcessTick()
 			T_RocketDMPlayers);
 		TextDrawSetString(TXTFooter, gstr2);
 
-		format(gstr, sizeof(gstr), "Welcome to New Evolution Freeroam!\n\nServer time: %02i:%02i | %02i.%02i\nPlayers online: %i", gTime[3], gTime[4], gTime[2], gTime[1], T_ServerPlayers);
+		format(gstr, sizeof(gstr), "Welcome to Havoc Freeroam!\n\nServer time: %02i:%02i | %02i.%02i\nPlayers online: %i", gTime[3], gTime[4], gTime[2], gTime[1], T_ServerPlayers);
 		SetDynamicObjectMaterialText(bb_mcc, 0, gstr, OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_LEFT);
 		
 		if(g_RaceStatus == RaceStatus_Active)
