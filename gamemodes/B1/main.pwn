@@ -18215,11 +18215,36 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		        {
 		            case 0: // General
 		            {
-		            
+		                strcat(cstring, ""yellow"/toys "white"- customize your character\n");
+		                strcat(cstring, ""yellow"/t "white"- list of all teleports\n");
+						strcat(cstring, ""yellow"/w "white"- free weapons\n");
+						strcat(cstring, ""yellow"/v "white"- list of all vehicles also /v <vehicle name/id>\n");
+		                strcat(cstring, ""yellow"/help "white"- explanations about the server\n");
+		                strcat(cstring, ""yellow"/god "white"- infinite health\n");
+						strcat(cstring, ""yellow"/pm <playerid> <message>"white"- write a personal message to a player\n");
+						strcat(cstring, ""yellow"/r "white"- reply to your last pm\n");
+						strcat(cstring, ""yellow"/id <part of playername>"white"- get the id of a player\n");
+						strcat(cstring, ""yellow"/go <playerid>"white"- goto a desired player\n");
+						strcat(cstring, ""yellow"/time <hour> <minute>"white"- set your time\n");
+						strcat(cstring, ""yellow"/rtime "white"- reset your time to server default\n");
+						strcat(cstring, ""yellow"/admins "white"- a list of all online admins\n");
+						strcat(cstring, ""yellow"/car "white"- quickly spawn a car\n");
+						strcat(cstring, ""yellow"/top "white"- top list selection\n");
+						strcat(cstring, ""yellow"/report <playerid> <reason>"white"- report a player to admins\n");
+				        strcat(cstring, ""yellow"/streams "white"- listen to audio streams\n");
+						strcat(cstring, ""yellow"/sb "white"- toggle speedboost\n");
+						strcat(cstring, ""yellow"/sj "white"- toggle superjump\n");
+		                strcat(cstring, ""yellow"/fs "white"- fightstyles\n");
 		            }
 		            case 1: // Account
 		            {
-		            
+		                strcat(cstring, ""yellow"/settings "white"- player control panel\n");
+		                strcat(cstring, ""yellow"/achs "white"- achievements\n");
+		                strcat(cstring, ""yellow"/changename "white"- change your account's nickname\n");
+		                strcat(cstring, ""yellow"/changepass "white"- change your account's password\n");
+		                strcat(cstring, ""yellow"/stats "white"- stats of a player also /stats <playerid>\n");
+		                strcat(cstring, ""yellow"/savecolor "white"- save a color for you next visit\n");
+		                strcat(cstring, ""yellow"/deletecolor "white"- delete a saved color\n");
 		            }
 		            case 2: // Gangs
 		            {
@@ -18244,7 +18269,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		            case 3: // Houses
 		            {
 		                strcat(cstring, ""blue"/h "white"- view all your houses and go to them\n");
-		                strcat(cstring, ""blue"/enter "white"- enter the house or press 'F'\n");
+		                strcat(cstring, ""blue"/enter "white"- to get in a house or press 'F'\n");
 		                strcat(cstring, ""blue"/buy "white"- buy a house which is for sale\n");
 		                strcat(cstring, ""blue"/sell "white"- sell your house and get 25% of value in return\n");
 		                strcat(cstring, ""blue"/sellto <playerid> <price> "white"- sell your house to another player\n");
@@ -18268,15 +18293,33 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         strcat(cstring, ""yellow"/lock "white"- (un)lock your vehicle\n");
                         strcat(cstring, ""yellow"/tune "white"- teleport to tuning garages (modifications will be saved)\n");
                         strcat(cstring, ""yellow"/eject "white"- eject a player from your private vehicle\n");
-                        strcat(cstring, ""yellow"/speedo "white"- enable speedometer in vehicles\n");
+                        // strcat(cstring, ""yellow"/speedo "white"- enable speedometer in vehicles\n");
 		            }
 		            case 6: // VIP
 		            {
-		            
+						Command_ReProcess(playerid, "/vip", false);
+						return true;
 		            }
 		            case 7: // Other
 		            {
-		            
+		                strcat(cstring, ""yellow"/color "white"- change your color\n");
+		   				strcat(cstring, ""yellow"/uptime "white"- see the uptime of the server\n");
+						strcat(cstring, ""yellow"/textdraws "white"- enable or disable textdraws\n");
+						strcat(cstring, ""yellow"/hitman <playerid> <amount> "white"- set a bounty on someones head\n");
+						strcat(cstring, ""yellow"/bounties "white"- see current bounties\n");
+						strcat(cstring, ""yellow"/para "white"- gives you a parachute\n");
+						strcat(cstring, ""yellow"/s "white"- save your current position\n");
+						strcat(cstring, ""yellow"/l "white"- lave your saved position\n");
+						strcat(cstring, ""yellow"/weather <weather id> "white"- change your weather\n");
+						strcat(cstring, ""yellow"/anims "white"- a lsit of all animations\n");
+						strcat(cstring, ""yellow"/stopanims "white"- stop animation\n");
+						strcat(cstring, ""yellow"/247 "white"- random teleport to a 24/7 shop\n");
+						strcat(cstring, ""yellow"/bank "white"- random teleport to a bank\n");
+						strcat(cstring, ""yellow"/skin <skin id>"white"- change your current skin\n");
+						// strcat(cstring, ""yellow"/netstats "white"- servers network stats\n");
+						//strcat(cstring, ""yellow"/mynetstats "white"- your network stats\n");
+						strcat(cstring, ""yellow"/ping <playerid> "white"- check somebody's ping\n");
+						strcat(cstring, ""yellow"/toggletoys "white"- hide/show your toys\n");
 		            }
 				}
 		        /*
