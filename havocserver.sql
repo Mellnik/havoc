@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 01, 2015 at 09:41 AM
+-- Generation Time: Jun 13, 2015 at 12:55 PM
 -- Server version: 5.5.41-MariaDB
 -- PHP Version: 5.4.16
 
@@ -274,59 +274,15 @@ CREATE TABLE IF NOT EXISTS `queue` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `races`
---
-
-CREATE TABLE IF NOT EXISTS `races` (
-  `id` int(10) unsigned NOT NULL,
-  `vehicle` smallint(5) unsigned NOT NULL,
-  `type` tinyint(3) unsigned NOT NULL,
-  `world` int(11) NOT NULL,
-  `creator` int(10) unsigned NOT NULL,
-  `date` int(10) unsigned NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `race_cps`
---
-
-CREATE TABLE IF NOT EXISTS `race_cps` (
-  `id` int(10) unsigned NOT NULL,
-  `seq` tinyint(3) unsigned NOT NULL,
-  `xpos` float(14,4) NOT NULL,
-  `ypos` float(14,4) NOT NULL,
-  `zpos` float(14,4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `race_records`
 --
 
 CREATE TABLE IF NOT EXISTS `race_records` (
-  `id` int(10) unsigned NOT NULL,
-  `player` int(10) unsigned NOT NULL,
-  `time` int(11) NOT NULL,
-  `date` int(10) unsigned NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `race_startpos`
---
-
-CREATE TABLE IF NOT EXISTS `race_startpos` (
-  `id` int(10) unsigned NOT NULL,
-  `seq` tinyint(3) unsigned NOT NULL,
-  `xpos` float(14,4) NOT NULL,
-  `ypos` float(14,4) NOT NULL,
-  `zpos` float(14,4) NOT NULL,
-  `apos` float(14,4) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `id` mediumint(6) unsigned NOT NULL,
+  `track` smallint(4) NOT NULL,
+  `name` varchar(26) NOT NULL,
+  `time` int(10) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -534,28 +490,10 @@ ALTER TABLE `queue`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `races`
---
-ALTER TABLE `races`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `race_cps`
---
-ALTER TABLE `race_cps`
-  ADD KEY `id` (`id`);
-
---
 -- Indexes for table `race_records`
 --
 ALTER TABLE `race_records`
-  ADD KEY `id` (`id`);
-
---
--- Indexes for table `race_startpos`
---
-ALTER TABLE `race_startpos`
-  ADD KEY `id` (`id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `serialbans`
@@ -638,10 +576,10 @@ ALTER TABLE `news`
 ALTER TABLE `queue`
   MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `races`
+-- AUTO_INCREMENT for table `race_records`
 --
-ALTER TABLE `races`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `race_records`
+  MODIFY `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `stores`
 --
@@ -674,24 +612,6 @@ ADD CONSTRAINT `logonlog_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`)
 --
 ALTER TABLE `ncrecords`
 ADD CONSTRAINT `ncrecords_ibfk_1` FOREIGN KEY (`id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `race_cps`
---
-ALTER TABLE `race_cps`
-ADD CONSTRAINT `race_cps_ibfk_1` FOREIGN KEY (`id`) REFERENCES `races` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `race_records`
---
-ALTER TABLE `race_records`
-ADD CONSTRAINT `race_records_ibfk_1` FOREIGN KEY (`id`) REFERENCES `races` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `race_startpos`
---
-ALTER TABLE `race_startpos`
-ADD CONSTRAINT `race_startpos_ibfk_1` FOREIGN KEY (`id`) REFERENCES `races` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `settings`
