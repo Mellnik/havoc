@@ -11686,7 +11686,7 @@ YCMD:gregister(playerid, params[], help)
 	if(GetPlayerMoneyEx(playerid) < 500000) return SCM(playerid, -1, ""er"You need at least "nef_green"$500,000 "nef_red"for creating a gang!");
  	if(GetPlayerScoreEx(playerid) < 500) return SCM(playerid, -1, ""er"You need at least "nef_green"500 Score "nef_red"for creating a gang!");
  	
-	if(GetPlayingTime(playerid) < 36000) return SCM(playerid, -1, ""er"You need at least "nef_green"10 hours playing time {D2D2D2}for creating a gang!");
+	if(GetPlayingTime(playerid) < 36000) return SCM(playerid, -1, ""er"You need at least "nef_green"10 hours playing time "nef_red"for creating a gang!");
 
 	new ntmp[144],
 	    ttmp[144];
@@ -22162,7 +22162,7 @@ procedure xReactionTest()
 
 	gint = (T_ServerPlayers > 1 && T_ServerPlayers < MAX_PLAYERS) ? T_ServerPlayers : 30;
 	xCash = 250 * gint;
-	xScore = (random(7) + 2);
+	xScore = random(4) + (T_ServerPlayers > 50 ? 2 : 0);
 	format(xChars, sizeof(xChars), "");
 	
 	for(new i = 0; i < xLength; i++)
@@ -24265,7 +24265,7 @@ procedure LogoSwitch()
 	{
 	    case 0:
 	    {
-	        TextDrawSetString(NEFLOGO[2], "~w~NEF "SERVER_VERSION"");
+	        TextDrawSetString(NEFLOGO[2], "~w~Havoc "SERVER_VERSION"");
 	        phase = 1;
 	    }
 	    case 1:
