@@ -17008,8 +17008,9 @@ procedure OnPlayerNameChangeRequest(playerid, newname[])
             format(query, sizeof(query), "INSERT INTO `ncrecords` VALUES (%i, '%s', '%s', UNIX_TIMESTAMP());", PlayerData[playerid][e_accountid], oldname, newname);
             mysql_pquery(pSQL, query);
 
-            format(query, sizeof(query), "UPDATE `viporder` SET `receiver` = '%s' WHERE `receiver` = '%s';", newname, oldname);
-            mysql_tquery(pSQL, query);
+			//should no longer be needed as donations table contains acc id
+            //format(query, sizeof(query), "UPDATE `viporder` SET `receiver` = '%s' WHERE `receiver` = '%s';", newname, oldname);
+            //mysql_tquery(pSQL, query);
 
 			PlayerData[playerid][e_lastnc] = gettime();
 			
