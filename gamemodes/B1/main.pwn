@@ -28965,6 +28965,7 @@ SetPlayerMoneyEx(playerid, amount)
     return 1;
 }
 
+// boost param was used for the score/money boost when we still had GC, it can now be ignored
 GivePlayerMoneyEx(playerid, amount, bool:populate = true, bool:boost = false)
 {
 	if(playerid == INVALID_PLAYER_ID) return 1;
