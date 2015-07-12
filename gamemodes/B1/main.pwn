@@ -3560,7 +3560,7 @@ public OnPlayerConnect(playerid)
         
 		PlayAudioStreamForPlayer(playerid, "http://havocserver.net/login.mp3");
 
-        DEBUG_P1(playerid, "OnPlayerConnect")
+        //DEBUG_P1(playerid, "OnPlayerConnect")
 		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", __GetName(playerid));
 		mysql_pquery(pSQL, gstr, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_LOAD_ID);
  	}
@@ -20738,7 +20738,7 @@ AutoLogin(playerid)
 
 RequestRegistration(playerid)
 {
-    DEBUG_P1(playerid, "RequestRegistration")
+    //DEBUG_P1(playerid, "RequestRegistration")
 	new string[1024];
 	
     format(gstr, sizeof(gstr), ""nef" :: Registration - %s", __GetName(playerid));
@@ -20749,7 +20749,7 @@ RequestRegistration(playerid)
 
 RequestLogin(playerid)
 {
-    DEBUG_P1(playerid, "RequestLogin")
+    //DEBUG_P1(playerid, "RequestLogin")
 	new string[1024];
 	
     format(gstr, sizeof(gstr), ""nef_yellow"Login "white"- %s", __GetName(playerid));
@@ -20760,7 +20760,7 @@ RequestLogin(playerid)
 
 SkipRegistration(playerid)
 {
-    DEBUG_P1(playerid, "SkipRegistration")
+    //DEBUG_P1(playerid, "SkipRegistration")
     PlayerData[playerid][bAllowSpawn] = true;
 	
     PlayerData[playerid][e_regdate] = gettime();
@@ -20783,7 +20783,7 @@ SkipRegistration(playerid)
 
 SkipLogin(playerid)
 {
-    DEBUG_P1(playerid, "SkipLogin")
+    //DEBUG_P1(playerid, "SkipLogin")
 	if((strlen(__GetName(playerid)) + 4) > 20)
 	{
 	    Log(LOG_NET, "Name error, cannot set new name, kicking (%s, %i)", __GetName(playerid), playerid);
@@ -21225,7 +21225,7 @@ SQL_GangRename(playerid, newgangname[], newgangtag[])
 
 SQL_RegisterAccount(playerid, register, hash[], salt[])
 {
-    DEBUG_P1(playerid, "SQL_RegisterAccount")
+    //DEBUG_P1(playerid, "SQL_RegisterAccount")
 	PlayerData[playerid][e_lastlogin] = gettime();
 	PlayerData[playerid][e_lastnc] = 0;
     PlayerData[playerid][e_regdate] = gettime();
@@ -21242,7 +21242,7 @@ SQL_RegisterAccount(playerid, register, hash[], salt[])
 
 procedure OnPlayerRegister(playerid, namehash, register, hash[], salt[], playername[], ip_address[]) // TODO: Soll schon ein login log erstellt werden beim ersten reggen? 09/05/15: neeee
 {
-	DEBUG_P1(playerid, "OnPlayerRegister")
+	//DEBUG_P1(playerid, "OnPlayerRegister")
 	new query[512];
 	mysql_format(pSQL, query, sizeof(query), "UPDATE `accounts` SET `password` = '%s', `salt` = '%s', `regip` = '%s' WHERE `name` = '%s' LIMIT 1;", hash, salt, ip_address, playername);
 	mysql_tquery(pSQL, query);
@@ -21251,7 +21251,7 @@ procedure OnPlayerRegister(playerid, namehash, register, hash[], salt[], playern
 	{
 		if(register == REGISTER_CONNECT)
 		{
-		    DEBUG_P1(playerid, "OnPlayerRegister(REGISTER_CONNECT)")
+		    //DEBUG_P1(playerid, "OnPlayerRegister(REGISTER_CONNECT)")
 			PlayerData[playerid][ExitType] = EXIT_LOGGED;
 		    PlayerData[playerid][bAllowSpawn] = true;
 		    PlayerData[playerid][bLogged] = true;
@@ -21278,7 +21278,7 @@ procedure OnPlayerRegister(playerid, namehash, register, hash[], salt[], playern
 		}
 		else if(register == REGISTER_ONLINE)
 		{
-		    DEBUG_P1(playerid, "OnPlayerRegister(REGISTER_ONLINE)")
+		    //DEBUG_P1(playerid, "OnPlayerRegister(REGISTER_ONLINE)")
 		    PlayerData[playerid][bLogged] = true;
             g_ServerStats[2]++;
 
@@ -28462,7 +28462,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 	{
 		case E_ACCREQ_LOAD_ID:
 		{
-		    DEBUG_P1(playerid, "E_ACCREQ_LOAD_ID")
+		    //DEBUG_P1(playerid, "E_ACCREQ_LOAD_ID")
 			if(cache_get_row_count() == 0)
 			{
 				// Account does not exist and therefore also not banned. Continue to check their IP and afterwards their gpci.
@@ -28480,7 +28480,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_CHECK_BAN:
 		{
-		    DEBUG_P1(playerid, "E_ACCREQ_CHECK_BAN")
+		    //DEBUG_P1(playerid, "E_ACCREQ_CHECK_BAN")
 			if(cache_get_row_count() != 0)
 			{
 				new lift = cache_get_field_content_int(0, "lift");
@@ -28525,7 +28525,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_CHECK_IP:
 		{
-		    DEBUG_P1(playerid, "E_ACCREQ_CHECK_IP")
+		    //DEBUG_P1(playerid, "E_ACCREQ_CHECK_IP")
 			if(cache_get_row_count() == 0)
 			{
 				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `serialbans` WHERE `serial` = '%e' LIMIT 1;", __GetSerial(playerid));
@@ -28543,7 +28543,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_CHECK_SERIAL:
 		{
-		    DEBUG_P1(playerid, "E_ACCREQ_CHECK_SERIAL")
+		    //DEBUG_P1(playerid, "E_ACCREQ_CHECK_SERIAL")
 			if(cache_get_row_count() != 0)
 			{
 				// Players gpci has been banned.
@@ -28582,7 +28582,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_LOAD_SETTINGS:
 		{
-		    DEBUG_P1(playerid, "E_ACCREQ_LOAD_SETTINGS")
+		    //DEBUG_P1(playerid, "E_ACCREQ_LOAD_SETTINGS")
 			if(cache_get_row_count() != 0)
 			{
 				PlayerSettings[playerid][e_allow_teleport] = cache_get_field_content_int(0, "allow_teleport");
@@ -28623,7 +28623,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_CHECK_AUTOLOGIN:
 		{
-		    DEBUG_P1(playerid, "E_ACCREQ_CHECK_AUTOLOGIN")
+		    //DEBUG_P1(playerid, "E_ACCREQ_CHECK_AUTOLOGIN")
 			if(cache_get_row_count() > 0) 
 			{
 				// Player has logged in sometime earlier with this IP-Address.
@@ -28637,7 +28637,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_QUALIFY_REGISTER:
 		{
-		    DEBUG_P1(playerid, "E_ACCREQ_QUALIFY_REGISTER")
+		    //DEBUG_P1(playerid, "E_ACCREQ_QUALIFY_REGISTER")
 	        if(cache_get_row_int(0, 0) > 4)
 	        {
 	            Log(LOG_PLAYER, "%i, %s IP accounts found, kicking (%s, %i)", cache_get_row_int(0, 0), __GetIP(playerid), __GetName(playerid), playerid);
@@ -28652,7 +28652,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 		}
 		case E_ACCREQ_QUALIFY_REGISTER + 1:
 	    {
-	        DEBUG_P1(playerid, "E_ACCREQ_QUALIFY_REGISTER + 1")
+	        //DEBUG_P1(playerid, "E_ACCREQ_QUALIFY_REGISTER + 1")
 	        if(cache_get_row_int(0, 0) > 4)
 	        {
 	            Log(LOG_PLAYER, "%i, %s serial accounts found, kicking (%s, %i)", cache_get_row_int(0, 0), __GetSerial(playerid), __GetName(playerid), playerid);
@@ -28666,7 +28666,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 		}
 	    case E_ACCREQ_LOAD_ACCOUNT:
 	    {
-	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_ACCOUNT")
+	        //DEBUG_P1(playerid, "E_ACCREQ_LOAD_ACCOUNT")
 			if(cache_get_row_count() > 0)
 			{
 				new ORM:ormid = PlayerData[playerid][e_ormid] = orm_create("accounts");
@@ -28729,7 +28729,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_LOAD_GANG:
 	    {
-	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_GANG")
+	        //DEBUG_P1(playerid, "E_ACCREQ_LOAD_GANG")
 		    if(cache_get_row_count() > 0)
 			{
 		        cache_get_row(0, 0, PlayerData[playerid][GangName], pSQL, 25);
@@ -28751,7 +28751,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_LOAD_ACHIEVEMENTS:
 	    {
-	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_ACHIEVEMENTS")
+	        //DEBUG_P1(playerid, "E_ACCREQ_LOAD_ACHIEVEMENTS")
 	        if(cache_get_row_count() > 0)
 	        {
 				for(new i = 0; i < cache_get_row_count(); i++)
@@ -28765,7 +28765,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_LOAD_TOYS:
 	    {
-	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_TOYS")
+	        //DEBUG_P1(playerid, "E_ACCREQ_LOAD_TOYS")
 	        if(cache_get_row_count() > 0)
 	        {
 	            for(new i = 0; i < cache_get_row_count() && i < MAX_PLAYER_TOYS; i++)
@@ -28789,7 +28789,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_LOAD_PVS:
 	    {
-	        DEBUG_P1(playerid, "E_ACCREQ_LOAD_PVS")
+	        //DEBUG_P1(playerid, "E_ACCREQ_LOAD_PVS")
 	        if(cache_get_row_count() > 0)
 	        {
 				for(new i = 0; i < cache_get_row_count() && i < MAX_PLAYER_PVS; i++)
@@ -28813,7 +28813,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_CHECK_LOGIN:
 	    {
-	        DEBUG_P1(playerid, "E_ACCREQ_CHECK_LOGIN")
+	        //DEBUG_P1(playerid, "E_ACCREQ_CHECK_LOGIN")
 	  		if(cache_get_row_count() != 0) // Correct password. Player still has old password, convert to WHIRLPOOL.
 		    {
 		        new salt[SALT_LENGTH + 1], hash[WHIRLPOOL_LENGTH + 1], query[512];
@@ -28841,7 +28841,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 	    }
 	    case E_ACCREQ_CHECK_LOGIN + 1:
 	    {
-	        DEBUG_P1(playerid, "E_ACCREQ_CHECK_LOGIN + 1")
+	        //DEBUG_P1(playerid, "E_ACCREQ_CHECK_LOGIN + 1")
 	        if(cache_get_row_count() != 0)
 	        {
 	            new password[WHIRLPOOL_LENGTH + 1], salt[SALT_LENGTH + 1];
