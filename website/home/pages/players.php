@@ -49,20 +49,20 @@
 					$skin = "/graphics/skins/Skin_$skin.jpg";
 				}
 				
-				$stmt = $mysqli->prepare("SELECT COUNT(`id`) FROM `online` WHERE `name` = ?;");
+				/*$stmt = $mysqli->prepare("SELECT COUNT(`id`) FROM `online` WHERE `name` = ?;");
 				$stmt->bind_param("s", $player);
 				$stmt->execute();
 				$stmt->bind_result($logged);
 				$stmt->fetch();
-				$stmt->close();
-				
+				$stmt->close();*/
+				$logged = false;
 				if($logged)
 				{
 					$logged = "<font color='#00ff00'>Online</font>";
 				}
 				else
 				{
-					$logged = "<font color='red'>Offline</font>";
+					$logged = "<font color='red'>Unknown</font>";
 				}
 				
 				$level = GetRankByLevel($alevel);
@@ -85,8 +85,8 @@
 					<tr>
 						<?php
 
-						$stmt = $mysqli->prepare("SELECT `ID` FROM `bans` WHERE `PlayerName` = ?;");
-						$stmt->bind_param("s", $player);
+						$stmt = $mysqli->prepare("SELECT `id` FROM `bans` WHERE `id` = ?;");
+						$stmt->bind_param("i", $id);
 						$stmt->execute();
 						$stmt->store_result();
 						
