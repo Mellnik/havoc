@@ -6481,7 +6481,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 				        SetPlayerInterior(playerid, 5);
 				    }
 				}
-				SetPlayerVirtualWorld(playerid, r + 6001);
+				SetPlayerVirtualWorld(playerid, r + 1000);
 				return 1;
 		    }
 		}
