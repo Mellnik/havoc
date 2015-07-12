@@ -106,7 +106,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_URL                      "havocserver.com"
 #define SERVER_WWWURL                   "www.havocserver.com"
 #define SERVER_FORUMURL					"forum.havocserver.com"
-#define SERVER_IP                       "46.105.40.127:7777"
+#define SERVER_IP                       "213.163.74.164:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
 #define SERVER_VERSION					"Build 37"
