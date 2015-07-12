@@ -636,15 +636,6 @@ enum E_STAFF_LEVELS
 	e_color[10]
 };
 
-enum BOOST:(<<= 1)
-{
-	BOOST_MONEY_x2 = 1,
-	BOOST_MONEY_x3,
-	BOOST_SCORE_x2,
-	BOOST_SCORE_x3,
-	BOOST_MASTER
-};
-
 enum SUSPECT:(<<= 1)
 {
 	SUSPECT_VALID_ARMOR = 1,
@@ -793,9 +784,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	tRainbow,
 	tTDhandle,
 	tMedkit,
-	BOOST:Boost,
 	SUSPECT:bwSuspect,
-	BoostDeplete,
 	Float:fOldPos[4],
 	EnterpriseIdSelected,
 	DrawnNumber,
@@ -15502,12 +15491,6 @@ YCMD:stats(playerid, params[], help)
 			strcat(string3, UTConvert(PlayerData[player1][e_regdate]));
 		}
 			
-		if(PlayerData[player1][BoostDeplete] != 0)
-		{
-		    strcat(string3, "\nBoost will end on:\t\t");
-		    strcat(string3, UTConvert(PlayerData[player1][BoostDeplete]));
-		}
-			
 		strcat(finstring, string1);
 		strcat(finstring, string2);
 		strcat(finstring, string3);
@@ -27690,45 +27673,6 @@ procedure OnGangRenameAttempt(playerid, newgangname[], newgangtag[], namehash)
 	return 1;
 }
 
-procedure OnBoostReceive(playerid, namehash)
-{
-    if(!IsPlayerConnected(playerid))
-		return 0;
-		
-	if(YHash(__GetName(playerid)) != namehash)
-		return 0;
-
-	new rows, fields;
-	cache_get_data(rows, fields, pSQL);
-	
-	if(rows > 0)
-	{
-	    for(new i = 0; i < rows; i++)
-	    {
-	        new bool:set = true;
-	        
-			switch(cache_get_row_int(i, 1, pSQL))
-			{
-			    case 2: PlayerData[playerid][Boost] |= BOOST_MONEY_x2;
-			    case 3: PlayerData[playerid][Boost] |= BOOST_MONEY_x3;
-			    case 4: PlayerData[playerid][Boost] |= BOOST_SCORE_x2;
-			    case 5: PlayerData[playerid][Boost] |= BOOST_SCORE_x3;
-			    case 6: PlayerData[playerid][Boost] |= BOOST_MASTER;
-			    default: set = false;
-			}
-			
-			if(set)
-			{
-				PlayerData[playerid][BoostDeplete] = cache_get_row_int(i, 2, pSQL);
-				
-				format(gstr, sizeof(gstr), ""server_sign" "r_besch"Boost has been loaded! Runs out on: %s", UTConvert(PlayerData[playerid][BoostDeplete]));
-				SCM(playerid, -1, gstr);
-			}
-	    }
-	}
-	return 1;
-}
-
 procedure player_medkit_charge(playerid)
 {
 	if(PlayerData[playerid][iMedkitTime] > 0)
@@ -28780,9 +28724,6 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
                     format(gstr2, sizeof(gstr2), ""server_sign" "r_besch"VIP %s(%i) logged in!", __GetName(playerid), playerid);
                     SCMToAll(-1, gstr2);
 				}
-
-				mysql_format(pSQL, gstr, sizeof(gstr), "SELECT * FROM `queue` WHERE `Extra` = '%e';", __GetName(playerid));
-				mysql_pquery(pSQL, gstr, "OnBoostReceive", "ii", playerid, YHash(__GetName(playerid)));
 			}
 	        return 1;
 	    }
@@ -29038,29 +28979,8 @@ GivePlayerMoneyEx(playerid, amount, bool:populate = true, bool:boost = false)
 	}
 	else
 	{
-		if(boost)
-		{
-			if(PlayerData[playerid][Boost] & BOOST_MONEY_x2)
-			{
-			    PlayerData[playerid][e_money] += amount * 2;
-			    format(gstr, sizeof(gstr), "~g~~h~~h~+$%s (x2 Boost)", number_format(amount * 2));
-			}
-			else if(PlayerData[playerid][Boost] & BOOST_MONEY_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
-			{
-			    PlayerData[playerid][e_money] += amount * 3;
-			    format(gstr, sizeof(gstr), "~g~~h~~h~+$%s (x3 Boost)", number_format(amount * 3));
-			}
-			else
-			{
-		    	PlayerData[playerid][e_money] += amount;
-		    	format(gstr, sizeof(gstr), "~g~~h~~h~+$%s", number_format(amount));
-			}
-		}
-		else
-		{
-		    PlayerData[playerid][e_money] += amount;
-		    format(gstr, sizeof(gstr), "~g~~h~~h~+$%s", number_format(amount));
-		}
+	    PlayerData[playerid][e_money] += amount;
+	    format(gstr, sizeof(gstr), "~g~~h~~h~+$%s", number_format(amount));
 	}
 
     if(populate)
@@ -29082,6 +29002,7 @@ GetPlayerMoneyEx(playerid)
 	return PlayerData[playerid][e_money];
 }
 
+// boost param was used for the score/money boost when we still had GC, it can now be ignored
 GivePlayerScoreEx(playerid, amount, bool:populate = true, bool:boost = false)
 {
     if(playerid == INVALID_PLAYER_ID) return 1;
@@ -29092,29 +29013,8 @@ GivePlayerScoreEx(playerid, amount, bool:populate = true, bool:boost = false)
     }
     else
     {
-		if(boost)
-		{
-			if(PlayerData[playerid][Boost] & BOOST_SCORE_x2)
-			{
-			    PlayerData[playerid][e_score] += amount * 2;
-			    format(gstr, sizeof(gstr), "~y~~h~+%s Score (x2 Boost)", number_format(amount * 2));
-			}
-			else if(PlayerData[playerid][Boost] & BOOST_SCORE_x3 || PlayerData[playerid][Boost] & BOOST_MASTER)
-			{
-			    PlayerData[playerid][e_score] += amount * 3;
-			    format(gstr, sizeof(gstr), "~y~~h~+%s Score (x3 Boost)", number_format(amount * 3));
-			}
-			else
-			{
-			    PlayerData[playerid][e_score] += amount;
-			    format(gstr, sizeof(gstr), "~y~~h~+%s Score", number_format(amount));
-			}
-		}
-		else
-		{
-		    PlayerData[playerid][e_score] += amount;
-		    format(gstr, sizeof(gstr), "~y~~h~+%s Score", number_format(amount));
-		}
+	    PlayerData[playerid][e_score] += amount;
+	    format(gstr, sizeof(gstr), "~y~~h~+%s Score", number_format(amount));
 	}
 
 	SetPlayerScore(playerid, PlayerData[playerid][e_score]);
@@ -29546,9 +29446,7 @@ ResetPlayerData(playerid)
 	PlayerData[playerid][iRobberyCount] = 0;
 	PlayerData[playerid][tRobbery] = -1;
 	PlayerData[playerid][tLoadMap] = -1;
-	PlayerData[playerid][Boost] = BOOST:0;
 	PlayerData[playerid][bwSuspect] = SUSPECT:0;
-	PlayerData[playerid][BoostDeplete] = 0;
 	PlayerData[playerid][EnterpriseIdSelected] = 0;
 	PlayerData[playerid][DrawnNumber] = -1;
 	PlayerData[playerid][pTrailerVehicle] = INVALID_VEHICLE_ID;
