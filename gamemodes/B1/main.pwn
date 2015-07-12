@@ -28767,6 +28767,8 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				format(gstr, sizeof(gstr), ""server_sign" "r_besch"You've been online for %s", GetPlayingTimeFormat(playerid));
 				SCM(playerid, -1, gstr);
 
+                PlayerData[playerid][e_timeslogin]++;
+
 				if(PlayerSettings[playerid][e_namecolor] != 0)
 				{
 				    SetPlayerColor(playerid, PlayerSettings[playerid][e_namecolor]);
