@@ -10681,7 +10681,7 @@ YCMD:iplookup(playerid, params[], help)
 		    return SCM(playerid, -1, ""er"You have specified invalid characters");
 		}
 
-	    format(gstr, sizeof(gstr), "SELECT `name` FROM `accounts` WHERE `ip` = '%s' AND `level` != 5;", escape);
+	    format(gstr, sizeof(gstr), "SELECT DISTINCT(id) FROM `logonlogs` WHERE `ip` = '%s';", escape);
 	    mysql_tquery(pSQL, gstr, "OnIpLookUp", "is", playerid, escape);
 	}
 	else
@@ -27900,10 +27900,7 @@ procedure OnIpLookUp(playerid, ip[])
 	{
 	    for(new i = 0; i < rows; i++)
 	    {
-			new buffer[MAX_PLAYER_NAME+1];
-			cache_get_row(i, 0, buffer, pSQL, sizeof(buffer));
-
-			format(gstr, sizeof(gstr), "%i) %s used %s", i, buffer, ip);
+			format(gstr, sizeof(gstr), "Account ID %i used that ip.", cache_get_row_int(i, 0));
 			SCM(playerid, BLUE, gstr);
 	    }
 	}
