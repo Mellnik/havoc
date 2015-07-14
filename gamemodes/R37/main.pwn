@@ -12318,27 +12318,31 @@ YCMD:oban(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] >= 4)
 	{
-	    new player[144], reason[144];
-	    if(sscanf(params, "s[143]s[143]", player, reason))
+	    new account_id, reason[144];
+	    if(sscanf(params, "is[143]", account_id, reason))
 	    {
-	        return SCM(playerid, NEF_GREEN, "Usage: /offlineban <name> <reason>");
+	        return SCM(playerid, NEF_GREEN, "Usage: /offlineban <account_id> <reason>");
 	    }
 
         if(strlen(reason) > 50 || isnull(reason) || strlen(reason) < 2) return SCM(playerid, -1, ""er"Ban reason length: 2-50");
-	    if(strlen(player) > 24 || strlen(player) < 3) return SCM(playerid, -1, ""er"Name length 3-24");
-	    if(__GetPlayerID(player) != INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Player seems to be online!");
 
-	    new escape[25], ereason[128];
-	    mysql_escape_string(player, escape, pSQL, sizeof(escape));
+	    if(account_id < 1) return SCM(playerid, -1, ""er"Invalid account id");
+	    for(new i = 0; i < MAX_PLAYERS; i++)
+	    {
+	        if(PlayerData[i][e_accountid] == account_id)
+	            return SCM(playerid, -1, ""er"Player seems to be online!");
+	    }
+
+	    new ereason[128];
 	    mysql_escape_string(reason, ereason, pSQL, sizeof(ereason));
 
-		if(badsql(escape) != 0 || badsql(ereason, false) != 0)
+		if(badsql(ereason, false) != 0)
 		{
 		    return SCM(playerid, -1, ""er"You have specified invalid characters");
 		}
 
-	    mysql_format(pSQL, player, sizeof(player), "SELECT `adminname` FROM `bans` WHERE `playername` = '%e' LIMIT 1;", escape);
-	    mysql_pquery(pSQL, player, "OnOfflineBanAttempt", "iss", playerid, escape, ereason);
+	    mysql_format(pSQL, reason, sizeof(reason), "SELECT `admin_id` FROM `bans` WHERE `id` = '%i' LIMIT 1;", account_id);
+	    mysql_pquery(pSQL, reason, "OnOfflineBanAttempt", "iis", playerid, account_id, ereason);
 	}
 	else
 	{
@@ -27822,25 +27826,22 @@ procedure OnOfflineBanFetch(namehash, adminid, reason[], lift)
 	return 1;
 }
 
-procedure OnOfflineBanAttempt(playerid, ban[], reason[])
+procedure OnOfflineBanAttempt(playerid, account_id, reason[])
 {
 	if(cache_get_row_count() > 0)
 	{
-		new buffer[30];
-		cache_get_row(0, 0, buffer, pSQL, sizeof(buffer));
-		
-		format(gstr, sizeof(gstr), ""er"%s has already been banned by %s", ban, buffer);
+		format(gstr, sizeof(gstr), ""er"Player was already banned by %i", account_id);
 	    SCM(playerid, -1, gstr);
 	}
 	else
 	{
-	    mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `level`, `ip` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", ban);
-	    mysql_pquery(pSQL, gstr, "OnOfflineBanAttempt2", "iss", playerid, ban, reason);
+	    mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `level`, `regip`, `name` FROM `accounts` WHERE `id` = '%i' LIMIT 1;", account_id);
+	    mysql_pquery(pSQL, gstr, "OnOfflineBanAttempt2", "iis", playerid, account_id, reason);
 	}
 	return 1;
 }
 
-procedure OnOfflineBanAttempt2(playerid, ban[], reason[])
+procedure OnOfflineBanAttempt2(playerid, account_id, reason[])
 {
     if(cache_get_row_count() > 0)
 	{
@@ -27851,18 +27852,20 @@ procedure OnOfflineBanAttempt2(playerid, ban[], reason[])
 
 	    new ip[16];
 		cache_get_row(0, 1, ip, pSQL, sizeof(ip));
+		new name[MAX_PLAYER_NAME];
+		cache_get_row(0, 2, name, pSQL, sizeof(name));
 		
-		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `blacklist` WHERE `ip` = '%e';", ip);
+		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `account_id` FROM `ipbans` WHERE `ip` = '%e';", ip);
 		new Cache:cache = mysql_query(pSQL, gstr);
 		
 		if(cache_get_row_count() == 0)
-		    SQL_BanIP(ip, 0, playerid);
+		    SQL_BanIP(ip, account_id, playerid);
 		
 		cache_delete(cache);
 
-		SQL_BanAccountOffline(ban, playerid, reason);
+		SQL_BanAccountOffline(name, playerid, reason);
 		
-		format(gstr, sizeof(gstr), "[ADMIN CHAT] "LG_E"Account and IP (o)banned of %s [EXPIRES: NEVER, REASON: %s] by %s", ban, reason, __GetName(playerid));
+		format(gstr, sizeof(gstr), "[ADMIN CHAT] "LG_E"Account and IP (o)banned of %s [EXPIRES: NEVER, REASON: %s] by %s", name, reason, __GetName(playerid));
 		admin_broadcast(COLOR_RED, gstr);
 		Log(LOG_PLAYER, gstr);
 
