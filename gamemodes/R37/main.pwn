@@ -8087,7 +8087,7 @@ YCMD:sawn(playerid, params[], help)
     CheckPlayerGod(playerid);
     Command_ReProcess(playerid, "/stopanims", false);
     ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
-	SetPlayerVirtualWorld(playerid, WORLD_SAWN);
+	SetPlayerVirtualWorld(playerid, WORLD_SAWN + 3);
 	ResetPlayerWeapons(playerid);
 	ShowPlayerDMTextdraws(playerid);
 	new rand = random(2);
