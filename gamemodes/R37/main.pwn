@@ -8462,17 +8462,16 @@ YCMD:sj(playerid, params[], help)
 
 YCMD:menu(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != STORE) return SCM(playerid, -1, ""er"You must be in a bank to use this command.");
     
-	if(gTeam[playerid] == STORE)
+	if(IsPlayerInRangeOfPoint(playerid, 2.2, 2311.63, -3.89, 26.74))
 	{
-        if(IsPlayerInRangeOfPoint(playerid, 2.2, 2311.63, -3.89, 26.74))
-        {
-		    if(!islogged(playerid)) return notlogged(playerid);
-		    ShowDialog(playerid, DIALOG_BANK);
-        }
-        else
-            SCM(playerid, -1, ""er"You must be near the bank sign");
+		if(!islogged(playerid)) return notlogged(playerid);
+		ShowDialog(playerid, DIALOG_BANK);
+	}
+	else
+	{
+		SCM(playerid, -1, ""er"You must be near the bank sign.");
 	}
 	return 1;
 }
