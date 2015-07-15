@@ -8535,7 +8535,7 @@ YCMD:e(playerid, params[], help)
     
 	new string[512], count = 0;
 	strcat(string, "Enterprise ID\tLevel\tType\tValue\n");
-	for(new i = 0; i < MAX_PLAYER_ENTERPRISES; i++)
+	for(new i = 0; i < MAX_ENTERPRISES; i++)
 	{
 	    if(EnterpriseData[i][e_ormid] == ORM:-1)
 	        continue;
