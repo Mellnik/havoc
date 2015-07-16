@@ -24241,6 +24241,8 @@ procedure OnQueueReceived()
 		        }
 		    }
 		}
+		format(gstr2, sizeof(gstr2), "DELETE FROM `queue` WHERE `id` = %i LIMIT 1;", cache_get_row_int(i, 0));
+		mysql_tquery(pSQL, gstr2);
 	}
 	return 1;
 }
