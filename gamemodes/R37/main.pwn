@@ -20837,7 +20837,7 @@ SkipLogin(playerid)
 
 GetPlayingTime(playerid)
 {
-	return PlayerData[playerid][e_time] + (NC_GetStartupTime(1) - PlayerData[playerid][iLogonTime]);
+	return PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLogonTime]);
 }
 
 GetPlayingTimeFormat(playerid)
@@ -28474,7 +28474,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 			{
 				// Account does exist, check if account is banned.
 				PlayerData[playerid][e_accountid] = cache_get_row_int(0, 0);
-				PlayerData[playerid][iLogonTime] = NC_GetStartupTime(1);
+				PlayerData[playerid][iLogonTime] = gettime();
 
 				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT UNIX_TIMESTAMP(), `bans`.`reason`, `bans`.`date`, `bans`.`lift`, `accounts`.`name` FROM `bans` INNER JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id` WHERE `bans`.`id` = %i;", PlayerData[playerid][e_accountid]);
 				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_BAN);
