@@ -12303,7 +12303,7 @@ YCMD:unban(playerid, params[], help)
 	            return SCM(playerid, -1, ""er"Player seems to be online!");
 	    }
 	    
-	    format(gstr, sizeof(gstr), "SELECT `id` FROM `ipbans` WHERE `account_id` = %i LIMIT 1;", account_id);
+	    format(gstr, sizeof(gstr), "SELECT `ip` FROM `ipbans` WHERE `account_id` = %i LIMIT 1;", account_id);
 	    mysql_pquery(pSQL, gstr, "OnUnbanAttempt", "ii", playerid, account_id);
 	}
 	else
