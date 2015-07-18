@@ -15699,13 +15699,13 @@ YCMD:mellnik(playerid, params[], help)
 	return 1;
 }
 
-YCMD:chris(playerid, params[], help)
+YCMD:higgs(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL)
 	{
 		switch(YHash(__GetName(playerid), false))
 		{
-		    case _I(c,h,r,i,s):
+		    case _I(h,i,g,g,s):
 		    {
 				SetPlayerSkin(playerid, 5);
 			    SetSpawnInfoEx(playerid, NO_TEAM, 5, 0.0, 0.0, 10.0, 0.0);
@@ -15720,7 +15720,7 @@ YCMD:chris(playerid, params[], help)
 	}
 	return 1;
 }
-/*
+
 YCMD:saveskin(playerid, params[], help)
 {
 	if(!islogged(playerid)) return notlogged(playerid);
@@ -15758,7 +15758,7 @@ YCMD:deleteskin(playerid, params[], help)
     PlayerSettings[playerid][e_skin] = -1;
 	return 1;
 }
-*/
+
 YCMD:savecolor(playerid, params[], help)
 {
 	if(!islogged(playerid)) return notlogged(playerid);
@@ -15862,7 +15862,7 @@ YCMD:answer(playerid, params[], help)
 		return true;
 	}
 
-	format(gstr, sizeof(gstr), ""SERVER_SHORT" "RED_E"[MATHS] :: {%06x}%s(%i) "white"has correctly answered %s (answer: %i) winning 4 score and $%s!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, mathsCurrent, answer, number_format(mathsAward));
+	format(gstr, sizeof(gstr), ""RED_E"[MATHS] :: {%06x}%s(%i) "white"has correctly answered %s (answer: %i) winning 4 score and $%s!", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, mathsCurrent, answer, number_format(mathsAward));
 	SCMToAll(-1, gstr);
 
 	GivePlayerScoreEx(playerid, 4, true, true);
@@ -26734,7 +26734,7 @@ procedure Maths()
 		}
 	}
 	format(mathsCurrent, sizeof(mathsCurrent), "%i%s%i%s%i", NR1, FOP1, NR2, FOP2, NR3);
-	format(gstr2, sizeof(gstr2), ""SERVER_SHORT" "RED_E"[MATHS] "white"Calculate %s and write /answer <answer> "YELLOW_E"(Score: 4 | Money: $%s)", mathsCurrent, number_format(mathsAward));
+	format(gstr2, sizeof(gstr2), ""RED_E"[MATHS] "white"Calculate %s and write /answer <answer> "YELLOW_E"(Score: 4 | Money: $%s)", mathsCurrent, number_format(mathsAward));
 	SCMToAll(-1, gstr2);
 	return 1;
 }
@@ -30114,8 +30114,7 @@ ProcessSettingsDialog(playerid, listitem)
 	    }
 	    case 2: // Save skin
 	    {
-	        not_yet_implemented(playerid);
-            //ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Player Skin", ""white"Use /saveskin to save you current skin for the next visit.\n\n/deleteskin to use skin selection when logging in.", "OK", "");
+            ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Player Skin", ""white"Use /saveskin to save you current skin for the next visit.\n\n/deleteskin to use skin selection when logging in.", "OK", "");
 	    }
 	    case 3: // Spawn location
 	    {
