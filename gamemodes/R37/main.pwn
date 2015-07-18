@@ -21199,7 +21199,7 @@ SQL_FetchGangMemberNames(playerid, gangid)
 
 SQL_BanIP(const ip[], accountid, adminid)
 {
- 	mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `ipbans` VALUES ('%e', %i, %i, 'SERVICE_SERVER', UNIX_TIMESTAMP());", ip, accountid, adminid);
+ 	mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `ipbans` VALUES (NULL,'%e', %i, %i, 'SERVICE_SERVER', UNIX_TIMESTAMP());", ip, accountid, adminid);
  	mysql_pquery(pSQL, gstr);
 }
 
@@ -24241,7 +24241,7 @@ procedure OnQueueReceived()
 		        }
 		    }
 		}
-		format(gstr2, sizeof(gstr2), "DELETE FROM `queue` WHERE `id` = %i LIMIT 1;", cache_get_row_int(i, 0));
+		format(gstr2, sizeof(gstr2), "DELETE FROM `queue` WHERE `id` = %i LIMIT 1;", cache_get_row_int(r, 0));
 		mysql_tquery(pSQL, gstr2);
 	}
 	return 1;
