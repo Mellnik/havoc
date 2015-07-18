@@ -3495,6 +3495,9 @@ public OnIncomingConnection(playerid, ip_address[], port)
 public OnPlayerConnect(playerid)
 {
     mysql_tquery(pSQL, "UPDATE `server` SET `value` = `value` + 1 WHERE `name` = 'online';");
+    
+    mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `online` WHERE `name` = '%e';", __GetName(playerid));
+	mysql_tquery(pSQL, gstr);
 
     ResetPlayerData(playerid);
 	ResetPlayerPV(playerid);
@@ -3570,6 +3573,9 @@ public OnPlayerConnect(playerid)
 public OnPlayerDisconnect(playerid, reason)
 {
 	mysql_tquery(pSQL, "UPDATE `server` SET `value` = `value` - 1 WHERE `name` = 'online';");
+	
+	mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `online` WHERE `name` = '%e';", __GetName(playerid));
+	mysql_tquery(pSQL, gstr);
 
 	PlayerData[playerid][bLoadMap] = false;
 
@@ -16993,6 +16999,9 @@ procedure OnPlayerNameChangeRequest(playerid, newname[])
             
             format(query, sizeof(query), "INSERT INTO `ncrecords` VALUES (%i, '%s', '%s', UNIX_TIMESTAMP());", PlayerData[playerid][e_accountid], oldname, newname);
             mysql_pquery(pSQL, query);
+            
+            format(query, sizeof(query), "UPDATE `online` SET `name` = '%s' WHERE `name` = '%s';", newname, oldname);
+            mysql_tquery(pSQL, query, "", "");
 
 			//should no longer be needed as donations table contains acc id
             //format(query, sizeof(query), "UPDATE `viporder` SET `receiver` = '%s' WHERE `receiver` = '%s';", newname, oldname);
