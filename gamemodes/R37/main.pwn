@@ -12493,12 +12493,12 @@ YCMD:ban(playerid, params[], help)
 			    new amsg[144];
 			    if(islogged(player)) { // Ban registered player
                 	SQL_BanAccount(player, playerid, reason);
-                    SQL_BanIP(__GetIP(player), player, playerid);
+                    SQL_BanIP(__GetIP(player), PlayerData[player][e_accountid], PlayerData[playerid][e_accountid]);
                     
                     format(gstr, sizeof(gstr), ""yellow"** "red"%s(%i) has been banned by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
                     format(amsg, sizeof(amsg), "[ADMIN CHAT] "LG_E"Account and IP banned of %s [EXPIRES: NEVER, REASON: %s]", __GetName(player), reason);
 				} else {
-				    SQL_BanIP(__GetIP(player), 0, playerid);
+				    SQL_BanIP(__GetIP(player), 0, PlayerData[playerid][e_accountid]);
 				    
 				    format(gstr, sizeof(gstr), ""SERVER_SHORT""yellow"** "red"%s(%i) has been banned by Admin %s(%i) [Reason: %s]", __GetName(player), player, __GetName(playerid), playerid, reason);
 				    format(amsg, sizeof(amsg), "[ADMIN CHAT] "LG_E"IP banned of %s [EXPIRES: NEVER, REASON: %s]", __GetName(player), reason);
@@ -21279,9 +21279,9 @@ SQL_FetchGangMemberNames(playerid, gangid)
 	mysql_tquery(pSQL, gstr, "OnQueryFinish", "siii", gstr, THREAD_FETCH_GANG_MEMBER_NAMES, playerid, pSQL);
 }
 
-SQL_BanIP(const ip[], player, playerid)
+SQL_BanIP(const ip[], accountid, adminid)
 {
- 	mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `ipbans` VALUES ('%e', %i, %i, 'SERVICE_SERVER', UNIX_TIMESTAMP());", ip, PlayerData[player][e_accountid], PlayerData[playerid][e_accountid]);
+ 	mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `ipbans` VALUES ('%e', %i, %i, 'SERVICE_SERVER', UNIX_TIMESTAMP());", ip, accountid, adminid);
  	mysql_pquery(pSQL, gstr);
 }
 
