@@ -13864,6 +13864,10 @@ YCMD:trollinquisset(playerid, params[], help)
 			{
 				return SCM(playerid, -1, ""er"Cannot set level 4 (max is 3)");
 			}
+			if(alevel == MAX_HA_LEVEL)
+			{
+				return SCM(playerid, -1, ""er"Cannot set level 4 (max is 3)");
+			}
 			if(alevel == PlayerData[player][e_level])
 			{
 				return SCM(playerid, -1, ""er"Player is already this level");
