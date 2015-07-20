@@ -13,7 +13,7 @@
 
 /*
 || Build Dependencies:
-|| SA-MP Server 0.3.7
+|| SA-MP Server 0.3.7 R2
 || Havoc Core
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1
@@ -113,7 +113,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #else
 #define SERVER_VERSION					"Beta:Build 37"
 #endif
-#define SAMP_VERSION                    "0.3.7"
+#define SAMP_VERSION                    "0.3.7 R2"
 
 // Script
 #define MAX_PLAYER_TOYS                 (6)
@@ -671,13 +671,13 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	e_email[26],
 	e_level,
 	e_mapper,
+	e_time,
 	e_score,
 	e_money,
 	e_bank,
 	e_pvslots,
 	e_kills,
 	e_deaths,
-	e_time,
 	e_skin,
 	e_bounty,
 	e_payday,
@@ -2713,19 +2713,6 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	bool:bLottoActive = false,
 	g_ServerStats[4],
   	gLastMap[MAX_PLAYERS],
-  	PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
-  	PlayerOld[MAX_PLAYERS][40],
-  	PlayerSettings[MAX_PLAYERS][E_PLAYER_SETTINGS],
-  	PlayerAchData[MAX_PLAYERS][E_PLAYER_ACH_DATA][2],
-  	PlayerToyData[MAX_PLAYERS][MAX_PLAYER_TOYS][E_TOY_DATA],
-  	PlayerPVData[MAX_PLAYERS][MAX_PLAYER_PVS][E_PV_DATA],
-  	HouseData[MAX_HOUSES][E_HOUSE_DATA],
-  	GZoneData[MAX_GZONES][E_GZONE_DATA],
-  	EnterpriseData[MAX_ENTERPRISES][E_ENT_DATA],
-  	StoreData[MAX_STORES][E_STORE_DATA],
-  	PVSelect[MAX_PLAYERS],
-	PVCatSel[MAX_PLAYERS],
-	PVVMenuSel[MAX_PLAYERS],
 	mathsAnswered = -1,
 	mathsCurrent[14],
 	mathsAnswer,
@@ -2778,6 +2765,19 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	bb_mcc,
   	Text3D:Label_Elevator,
   	Text3D:Label_Floors[21],
+  	PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
+  	PlayerOld[MAX_PLAYERS][40],
+  	PlayerSettings[MAX_PLAYERS][E_PLAYER_SETTINGS],
+  	PlayerAchData[MAX_PLAYERS][E_PLAYER_ACH_DATA][2],
+  	PlayerToyData[MAX_PLAYERS][MAX_PLAYER_TOYS][E_TOY_DATA],
+  	PlayerPVData[MAX_PLAYERS][MAX_PLAYER_PVS][E_PV_DATA],
+  	HouseData[MAX_HOUSES][E_HOUSE_DATA],
+  	GZoneData[MAX_GZONES][E_GZONE_DATA],
+  	EnterpriseData[MAX_ENTERPRISES][E_ENT_DATA],
+  	StoreData[MAX_STORES][E_STORE_DATA],
+  	PVSelect[MAX_PLAYERS],
+	PVCatSel[MAX_PLAYERS],
+	PVVMenuSel[MAX_PLAYERS],
   	PlayerText:DynamicAchTD[MAX_PLAYERS][2],
   	PlayerText:TXTGunGameInfo[MAX_PLAYERS],
   	PlayerText:vTD[MAX_PLAYERS],
@@ -21182,7 +21182,7 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
 {
     if(!islogged(playerid)) return 1;
 
-    PlayerData[playerid][e_time] = GetPlayingTime(playerid);
+    PlayerData[playerid][e_time] += (NC_GetStartupTime(1) - PlayerData[playerid][iLogonTime]);
     
     if(PlayerData[playerid][e_ormid] == ORM:-1) {
     	Log(LOG_PLAYER, "Crit: ORM -1 in SaveAccount %s, %i", __GetName(playerid), playerid);
