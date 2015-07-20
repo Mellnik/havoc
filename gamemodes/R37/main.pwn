@@ -21279,9 +21279,9 @@ SQL_FetchGangMemberNames(playerid, gangid)
 	mysql_tquery(pSQL, gstr, "OnQueryFinish", "siii", gstr, THREAD_FETCH_GANG_MEMBER_NAMES, playerid, pSQL);
 }
 
-SQL_BanIP(const ip[], accountid, adminid)
+SQL_BanIP(const ip[], player, playerid)
 {
- 	mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `ipbans` VALUES ('%e', %i, %i, 'SERVICE_SERVER', UNIX_TIMESTAMP());", ip, accountid, adminid);
+ 	mysql_format(pSQL, gstr, sizeof(gstr), "INSERT INTO `ipbans` VALUES ('%e', %i, %i, 'SERVICE_SERVER', UNIX_TIMESTAMP());", ip, PlayerData[player][e_accountid], PlayerData[playerid][e_accountid]);
  	mysql_pquery(pSQL, gstr);
 }
 
