@@ -129,6 +129,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define MAX_PLAYER_PVS	                (40)
 #define MAX_REPORTS 					(7)
 #define MAX_ADMIN_LEVEL         		(5)
+#define MAX_HA_LEVEL         			(4)
 #define MAX_WARNINGS 					(3)
 #define MAX_ZONE_NAME                   (28)
 #define MAX_CUSTOMCAR_SHOPS				(3)
@@ -13834,6 +13835,73 @@ YCMD:setmapper(playerid, params[], help)
 	else
 	{
 	    SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
+YCMD:trollinquisset(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= 4)
+	{
+	    new player, alevel;
+	 	if(sscanf(params, "ri", player, alevel))
+		{
+			return SCM(playerid, NEF_GREEN, "Usage: /trollinquisset <playerid> <level>");
+	  	}
+
+	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+	    if(player == MAX_HA_LEVEL) return SCM(playerid, -1, ""er"You cannot adjust the level of fellow leaders.");
+		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
+
+		if(IsPlayerAvail(player))
+		{
+			if(alevel > MAX_ADMIN_LEVEL)
+			{
+				return SCM(playerid, -1, ""er"Incorrect Level");
+			}
+			if(alevel > MAX_HA_LEVEL)
+			{
+				return SCM(playerid, -1, ""er"Cannot set level 4 (max is 3)");
+			}
+			if(alevel == PlayerData[player][e_level])
+			{
+				return SCM(playerid, -1, ""er"Player is already this level");
+			}
+  			new time[3];
+   			gettime(time[0], time[1], time[2]);
+
+			if(alevel > 0)
+			{
+				format(gstr, sizeof(gstr), "Head-Admin %s has set you to Admin Status [level %i]", __GetName(playerid), alevel);
+			}
+			else
+			{
+				format(gstr, sizeof(gstr), "Head-Admin %s has set you to Player Status [level %i]", __GetName(playerid), alevel);
+			}
+			SCM(player, BLUE, gstr);
+
+			if(alevel > PlayerData[player][e_level])
+				GameTextForPlayer(player, "Promoted", 5000, 3);
+			else
+				GameTextForPlayer(player, "Demoted", 5000, 3);
+
+			format(gstr, sizeof(gstr), "You have made %s Level %i at %i:%i:%i", __GetName(player), alevel, time[0], time[1], time[2]);
+			SCM(playerid, BLUE, gstr);
+			format(gstr, sizeof(gstr), "Admin %s has made %s Level %i at %i:%i:%i", __GetName(playerid), __GetName(player), alevel, time[0], time[1], time[2]);
+            SCM(player, BLUE, gstr);
+            print(gstr);
+			PlayerData[player][e_level] = alevel;
+
+			SQL_SaveAccount(playerid, false, false);
+		}
+		else
+		{
+			SCM(playerid, -1, ""er"Cannot assign permissions");
+		}
+	}
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
 	}
 	return 1;
 }
