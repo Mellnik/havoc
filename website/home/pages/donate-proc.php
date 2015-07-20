@@ -50,7 +50,7 @@
 						<b><font size="2">PayPal / Credit Card</font></b>
 						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 						<input type="hidden" name="cmd" value="_xclick">
-						<input type="hidden" name="business" value="nefnotification@gmail.com">
+						<input type="hidden" name="business" value="havocsamp@gmail.com">
 						<input type="hidden" name="lc" value="US">
 						<input type="hidden" name="item_name" value="Havoc Custom Donation">
 						<input type="hidden" name="item_number" value="HAVOC-CUSTOM-FREEROAM">
@@ -69,6 +69,15 @@
 						<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 						</form>
 						</div>
+						
+-						<div style="vertical-align: middle; display: table-cell; padding-left: 10px;">
+-						<b><font size="2">Pay by phone (SMS)</font></b><br>
+-						
+-						<a id="fmp-button" href="#" rel="5b7046e8dc4bff8d6dc42df3ec177fd1/<?php echo($id); ?>"><img src="//fortumo.com/images/fmp/fortumopay_96x47.png" width="96" height="47" alt="Mobile Payments by Fortumo" border="0" /></a>
+-						
+-						</div>
+-						</div>
+-						</div>
 						
 						<?php
 						
