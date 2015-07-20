@@ -5,7 +5,7 @@ error_reporting(-1);
 ini_set("display_errors", 1);
 
 define("DEBUG", 1);
-define("USE_SANDBOX", 1);
+define("USE_SANDBOX", 0);
 define("ACCESS_LOG", "/var/cache/httpd/havoc_ipn_access.log");
 define("DATA_LOG", "/var/cache/httpd/havoc_ipn_data.log");
 define("_DONATION_REWARD", 200000);
