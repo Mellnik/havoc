@@ -126,7 +126,7 @@ if (strcmp($res, "VERIFIED") == 0)
 		
 		if ($q->num_rows != 0)
 		{
-			$mysqli->query("INSERT INTO `viporder` VALUES (NULL, 'DONATION_VIP', '$txn_id', '$payer_email', $payment_amount, 'unknown', $receiver, 'P_PAYPAL', 'TXN_ID_EXISTS');");
+			$mysqli->query("INSERT INTO `donations` VALUES (NULL, 'DONATION_VIP', '$txn_id', '$payer_email', $payment_amount, 'unknown', $receiver, 'P_PAYPAL', 'TXN_ID_EXISTS');");
 			return 0;
 		}
 		
@@ -166,7 +166,7 @@ if (strcmp($res, "VERIFIED") == 0)
 		
 		if ($q->num_rows != 0)
 		{
-			$mysqli->query("INSERT INTO `viporder` VALUES (NULL, 'DONATION_CUSTOM', '$txn_id', '$payer_email', $payment_amount, 'unknown', $receiver, 'P_PAYPAL', 'TXN_ID_EXISTS');");
+			$mysqli->query("INSERT INTO `donations` VALUES (NULL, 'DONATION_CUSTOM', '$txn_id', '$payer_email', $payment_amount, 'unknown', $receiver, 'P_PAYPAL', 'TXN_ID_EXISTS');");
 			return 0;
 		}
 		
@@ -196,7 +196,7 @@ if (strcmp($res, "VERIFIED") == 0)
 	}
 	else
 	{
-		$mysqli->query("INSERT INTO `viporder` VALUES (NULL, 'DONATION_VIP', '$txn_id', '$payer_email', $payment_amount, 'unknown', $receiver, 'P_PAYPAL', 'UNKNOWN_ITEM');");
+		$mysqli->query("INSERT INTO `donations` VALUES (NULL, 'DONATION_VIP', '$txn_id', '$payer_email', $payment_amount, 'unknown', $receiver, 'P_PAYPAL', 'UNKNOWN_ITEM');");
 	}
 } 
 else 
