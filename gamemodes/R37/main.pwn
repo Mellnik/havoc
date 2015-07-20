@@ -2988,6 +2988,7 @@ public OnPlayerRequestClass(playerid, classid)
 		
 	    new rand = random(4);
 	    SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
+	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerData[playerid][e_skin] != -1 ? PlayerData[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
         SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
 		return 0;
 	}
@@ -12473,7 +12474,7 @@ YCMD:ban(playerid, params[], help)
 	        return SCM(playerid, NEF_GREEN, "Usage: /ban <playerid> <reason>");
 	    }
 	    
-	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+	    if(PlayerData[player][e_level] > 1) return SCM(playerid, -1, ""er"CANNOT BAN ADMINS!!  <This attempt as been logged) ");
 		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
 	    
 		if(strlen(reason) > 50 || isnull(reason) || strlen(reason) < 2) return SCM(playerid, -1, ""er"Ban reason length: 2-50");
@@ -20914,7 +20915,7 @@ SkipLogin(playerid)
 
 GetPlayingTime(playerid)
 {
-	return PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLogonTime]);
+	return PlayerData[playerid][e_time] + (NC_GetStartupTime(1) - PlayerData[playerid][iLogonTime]);
 }
 
 GetPlayingTimeFormat(playerid)
@@ -27913,7 +27914,7 @@ procedure OnOfflineBanAttempt(playerid, account_id, reason[])
 	}
 	else
 	{
-	    mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `level`, `regip`, `name` FROM `accounts` WHERE `id` = '%i' LIMIT 1;", account_id);
+	    mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `admin`, `regip`, `name` FROM `accounts` WHERE `id` = '%i' LIMIT 1;", account_id);
 	    mysql_pquery(pSQL, gstr, "OnOfflineBanAttempt2", "iis", playerid, account_id, reason);
 	}
 	return 1;
@@ -28551,7 +28552,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 			{
 				// Account does exist, check if account is banned.
 				PlayerData[playerid][e_accountid] = cache_get_row_int(0, 0);
-				PlayerData[playerid][iLogonTime] = gettime();
+				PlayerData[playerid][iLogonTime] = NC_GetStartupTime(1);
 
 				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT UNIX_TIMESTAMP(), `bans`.`reason`, `bans`.`date`, `bans`.`lift`, `accounts`.`name` FROM `bans` INNER JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id` WHERE `bans`.`id` = %i;", PlayerData[playerid][e_accountid]);
 				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_BAN);
