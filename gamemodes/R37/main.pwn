@@ -25194,7 +25194,7 @@ fallout_buildmap()
 	FalloutData[I_iFirstShake] = true;
 
 	new j = 0;
-	FalloutData[I_iObject][j++] = CreateDynamicObject(1697, 2482.1921, -1660.4783, 160.0000, 31.8000, 0.0000, 0.0000);
+	FalloutData[I_iObject][j++] = CreateDynamicObject(1697, 2482.1921, -1660.4782, 176.7803, 31.8000, 0.0000, 0.0000);
 	FalloutData[I_iObject][j++] = CreateDynamicObject(1697, 2477.7395, -1660.4783, 160.0000, 31.8000, 0.0000, 0.0000);
 	FalloutData[I_iObject][j++] = CreateDynamicObject(1697, 2473.2869, -1660.4783, 160.0000, 31.8000, 0.0000, 0.0000);
 	FalloutData[I_iObject][j++] = CreateDynamicObject(1697, 2468.8343, -1660.4783, 160.0000, 31.8000, 0.0000, 0.0000);
@@ -25587,7 +25587,7 @@ procedure fallout_squareshake(objectid)
 			GetDynamicObjectPos(FalloutData[I_iObject][objectid], patPOS[0], patPOS[1], patPOS[2]);
 			MoveDynamicObject(FalloutData[I_iObject][objectid], patPOS[0], patPOS[1], (patPOS[2] - 100.0), 4);
 		}
-		case 11..100:
+		case 11..99:
 		{
   			SetDynamicObjectPos(FalloutData[I_iObject][objectid], 31.8 - floatsub((FalloutData[I_iShake][objectid] * 2), 20), 0, 0);
 		}
