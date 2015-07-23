@@ -25587,7 +25587,7 @@ procedure fallout_squareshake(objectid)
 			GetDynamicObjectPos(FalloutData[I_iObject][objectid], patPOS[0], patPOS[1], patPOS[2]);
 			MoveDynamicObject(FalloutData[I_iObject][objectid], patPOS[0], patPOS[1], (patPOS[2] - 100.0), 4);
 		}
-		case 11..99:
+		case 11..100:
 		{
   			SetDynamicObjectPos(FalloutData[I_iObject][objectid], 31.8 - floatsub((FalloutData[I_iShake][objectid] * 2), 20), 0, 0);
 		}
