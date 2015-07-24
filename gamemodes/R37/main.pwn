@@ -2987,8 +2987,7 @@ public OnPlayerRequestClass(playerid, classid)
 		KickEx(playerid);*/
 		
 	    new rand = random(4);
-	    SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
-	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerData[playerid][e_skin] != -1 ? PlayerData[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
+	    SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
         SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
 		return 0;
 	}
@@ -2998,11 +2997,11 @@ public OnPlayerRequestClass(playerid, classid)
     if(PlayerSettings[playerid][e_house_spawn] == 0)
     {
         new rand = random(4);
-        SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 2.0, WorldSpawns[rand][3]);
+        SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid), WorldSpawns[rand][0], WorldSpawns[rand][1], WorldSpawns[rand][2] + 3.0, WorldSpawns[rand][3]);
     }
     else
     {
-        SetSpawnInfoEx(playerid, NO_TEAM, GetPlayerSkin(playerid),
+        	SetSpawnInfoEx(playerid, NO_TEAM, PlayerSettings[playerid][e_skin] != -1 ? PlayerSettings[playerid][e_skin] : GetPlayerSkin(playerid),
 			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][0],
 			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][1],
 			HouseData[PlayerData[playerid][e_iHouseIdForSpawn]][e_pos][2] + 0.5,
@@ -3020,28 +3019,37 @@ public OnPlayerRequestClass(playerid, classid)
 	#if WINTER_EDITION == true
 	TextDrawShowForPlayer(playerid, TXTWinterEdition);
 	#endif
-
-	SetPlayerPos(playerid, 2526.1675, -1853.9927, 13.5469);
-	SetPlayerFacingAngle(playerid, 103.7086);
-	SetPlayerCameraPos(playerid, 2522.4890, -1855.3513, 13.9283);
-	SetPlayerCameraLookAt(playerid, 2523.4316, -1855.0209, 13.8781);
-
-	ShowPlayerWelcomeTextdraws(playerid);
-
-	switch(random(2))
+	
+    if(PlayerSettings[playerid][e_skin] != -1)
 	{
-	    case 0:
-	    {
-	        ApplyAnimation(playerid, "DANCING", "DNCE_M_A", 4.1, 1, 1, 1, 1, 1);
-		}
-		case 1:
-		{
-		    ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.1, 1, 1, 1, 1, 1);
-		}
+	    SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
+	    SCM(playerid, -1, ""server_sign" "r_besch"Your saved skin has been set. (/deleteskin to remove)");
+	    return 0;
 	}
+	else
+	{
+		SetPlayerPos(playerid, 2526.1675, -1853.9927, 13.5469);
+		SetPlayerFacingAngle(playerid, 103.7086);
+		SetPlayerCameraPos(playerid, 2522.4890, -1855.3513, 13.9283);
+		SetPlayerCameraLookAt(playerid, 2523.4316, -1855.0209, 13.8781);
 
-	SetPlayerAttachedObject(playerid, 0, 18693, 5, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfire left
-	SetPlayerAttachedObject(playerid, 1, 18693, 6, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfie right
+		ShowPlayerWelcomeTextdraws(playerid);
+
+		switch(random(2))
+		{
+	    	case 0:
+	    	{
+	        	ApplyAnimation(playerid, "DANCING", "DNCE_M_A", 4.1, 1, 1, 1, 1, 1);
+			}
+			case 1:
+			{
+		    	ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.1, 1, 1, 1, 1, 1);
+			}
+		}
+
+		SetPlayerAttachedObject(playerid, 0, 18693, 5, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfire left
+		SetPlayerAttachedObject(playerid, 1, 18693, 6, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfie right
+	}
 	return 1;
 }
 
