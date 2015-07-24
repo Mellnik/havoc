@@ -2765,7 +2765,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	bb_mcc,
   	Text3D:Label_Elevator,
   	Text3D:Label_Floors[21],
-  	PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
+    PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
   	PlayerOld[MAX_PLAYERS][40],
   	PlayerSettings[MAX_PLAYERS][E_PLAYER_SETTINGS],
   	PlayerAchData[MAX_PLAYERS][E_PLAYER_ACH_DATA][2],
@@ -21190,6 +21190,7 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
     if(!islogged(playerid)) return 1;
 
     PlayerData[playerid][e_time] += (NC_GetStartupTime(1) - PlayerData[playerid][iLogonTime]);
+	PlayerData[playerid][iLogonTime] = NC_GetStartupTime(1); // RESET LOGON TIME HERE OR WHEN CALLING SQL_SAVEACCOUNT MULTIPLE TIMES IT WILL ADD THE ELAPSED TIME OVER AND OVER AGAIN
     
     if(PlayerData[playerid][e_ormid] == ORM:-1) {
     	Log(LOG_PLAYER, "Crit: ORM -1 in SaveAccount %s, %i", __GetName(playerid), playerid);
