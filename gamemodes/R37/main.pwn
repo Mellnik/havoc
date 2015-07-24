@@ -109,7 +109,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_IP                       "213.163.74.164:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
-#define SERVER_VERSION					"Build 37"
+#define SERVER_VERSION					"Build 37-2"
 #else
 #define SERVER_VERSION					"Beta:Build 37"
 #endif
@@ -6056,6 +6056,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 		  		InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the 5th skydive challange~n~~r~~h~~h~8 score and $8,000!");
+		  		Command_ReProcess(playerid, "/skydive5", false);
 			}
 	 	}
 		case 37: //Skydive6 Prize
