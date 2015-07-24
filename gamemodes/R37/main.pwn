@@ -27885,7 +27885,7 @@ procedure OnUnbanAttempt(playerid, account_id)
 	{
 	    format(gstr, sizeof(gstr), "DELETE FROM `bans` WHERE `id` = %i LIMIT 1;", account_id);
 	    mysql_pquery(pSQL, gstr);
-	    format(gstr, sizeof(gstr), "DELETE FROM `ipbans` WHERE `account_id` = %i LIMIT 1;", account_id);
+	    format(gstr, sizeof(gstr), "DELETE FROM `ipbans` WHERE `account_id` = %i;", account_id);
 	    mysql_pquery(pSQL, gstr);
 
 	    SCM(playerid, -1, ""er"Player has been unbanned!");
