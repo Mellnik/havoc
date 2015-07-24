@@ -5706,6 +5706,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the first skydive challange~n~~r~~h~~h~3 score and $5,000!");
+				Command_ReProcess(playerid, "/skydive", false);
 				SetPVarInt(playerid, "CompletedSD1", 1);
 				if(GetPVarInt(playerid, "CompletedSD1") == 1 && GetPVarInt(playerid, "CompletedSD2") == 1)
 				{
@@ -5735,6 +5736,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the second skydive challange~n~~r~~h~~h~6 score and $10,000!");
+				Command_ReProcess(playerid, "/skydive2", false);
 				SetPVarInt(playerid, "CompletedSD2", 1);
 				if(GetPVarInt(playerid, "CompletedSD1") == 1 && GetPVarInt(playerid, "CompletedSD2") == 1)
 				{
@@ -5764,6 +5766,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the third skydive challange~n~~r~~h~~h~7 score and $7,500!");
+				Command_ReProcess(playerid, "/skydive3", false);
 			}
 	 	}
 		case 5: //Skydive4 Prize
@@ -5785,6 +5788,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the 4th skydive challange~n~~r~~h~~h~7 score and $8,000!");
+				Command_ReProcess(playerid, "/skydive4", false);
 			}
 	 	}
  		case 6: //bmx Prize
@@ -6078,6 +6082,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 		  		InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the 6th skydive challange~n~~r~~h~~h~8 score and $8,000!");
+		  		Command_ReProcess(playerid, "/skydive6", false);
 			}
 	 	}
 	}
