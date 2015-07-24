@@ -6773,6 +6773,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 				new i = -1;
 				if((i = GetNearestHouse(playerid)) != -1)
 				{
+					PlayerData[playerid][iHouseLastSel] = i;
+					
+					if(strlen(HouseData[i][e_password]) > 1)
+					{
+						return ShowPlayerDialog(playerid, DIALOG_HOUSE_ASK_PASSWORD, DIALOG_STYLE_PASSWORD, ""white"House Password", ""white"The owner of this house has set a password...", "Enter", "Cancel");
+					}
+					
 				    EnterHouse(playerid, i);
 				    return 1;
 				}
