@@ -111,7 +111,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #if IS_RELEASE_BUILD == true
 #define SERVER_VERSION					"Build 37-2"
 #else
-#define SERVER_VERSION					"Beta:Build 37"
+#define SERVER_VERSION					"Beta:Build 37-2"
 #endif
 #define SAMP_VERSION                    "0.3.7 R2"
 
@@ -3019,37 +3019,28 @@ public OnPlayerRequestClass(playerid, classid)
 	#if WINTER_EDITION == true
 	TextDrawShowForPlayer(playerid, TXTWinterEdition);
 	#endif
-	
-    if(PlayerSettings[playerid][e_skin] != -1)
-	{
-	    SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
-	    SCM(playerid, -1, ""server_sign" "r_besch"Your saved skin has been set. (/deleteskin to remove)");
-	    return 0;
-	}
-	else
-	{
-		SetPlayerPos(playerid, 2526.1675, -1853.9927, 13.5469);
-		SetPlayerFacingAngle(playerid, 103.7086);
-		SetPlayerCameraPos(playerid, 2522.4890, -1855.3513, 13.9283);
-		SetPlayerCameraLookAt(playerid, 2523.4316, -1855.0209, 13.8781);
 
-		ShowPlayerWelcomeTextdraws(playerid);
+	SetPlayerPos(playerid, 2526.1675, -1853.9927, 13.5469);
+	SetPlayerFacingAngle(playerid, 103.7086);
+	SetPlayerCameraPos(playerid, 2522.4890, -1855.3513, 13.9283);
+	SetPlayerCameraLookAt(playerid, 2523.4316, -1855.0209, 13.8781);
 
-		switch(random(2))
-		{
-	    	case 0:
-	    	{
-	        	ApplyAnimation(playerid, "DANCING", "DNCE_M_A", 4.1, 1, 1, 1, 1, 1);
-			}
-			case 1:
-			{
-		    	ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.1, 1, 1, 1, 1, 1);
-			}
+	ShowPlayerWelcomeTextdraws(playerid);
+
+	switch(random(2))
+	{
+	    case 0:
+	    {
+	        ApplyAnimation(playerid, "DANCING", "DNCE_M_A", 4.1, 1, 1, 1, 1, 1);
 		}
-
-		SetPlayerAttachedObject(playerid, 0, 18693, 5, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfire left
-		SetPlayerAttachedObject(playerid, 1, 18693, 6, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfie right
+		case 1:
+		{
+		    ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.1, 1, 1, 1, 1, 1);
+		}
 	}
+
+	SetPlayerAttachedObject(playerid, 0, 18693, 5, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfire left
+	SetPlayerAttachedObject(playerid, 1, 18693, 6, 1.983503, 1.558882, -0.129482, 86.705787, 308.978118, 268.198822, 1.500000, 1.500000, 1.500000); // Flame99 - handfie right
 	return 1;
 }
 
@@ -3084,6 +3075,13 @@ public OnPlayerSpawn(playerid)
 		SavePos(playerid);
 		SyncGangZones(playerid);
 		
+		if(PlayerSettings[playerid][e_skin] != -1)
+		{
+ 			SetTimerEx("server_force_spawn", 10, 0, "i", playerid);
+	    	SCM(playerid, -1, ""server_sign" "r_besch"Your saved skin has been set. (/deleteskin to remove)");
+	    	return 0;
+		}
+		
 		if(PlayerData[playerid][e_vip] == 1)
 		{
 		    SetPlayerArmour(playerid, 100.0);
@@ -3095,7 +3093,7 @@ public OnPlayerSpawn(playerid)
         {
             ResetPlayerWorld(playerid);
             
-			// Spawn setzung moved to OPD (OnPlayerDeath) SetPlayerSpawnInfo, deshalb ist hier kein RandomSpawn call
+   // Spawn setzung moved to OPD (OnPlayerDeath) SetPlayerSpawnInfo, deshalb ist hier kein RandomSpawn call
 
 			SetCameraBehindPlayer(playerid);
 
@@ -5714,7 +5712,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the first skydive challange~n~~r~~h~~h~3 score and $5,000!");
-				Command_ReProcess(playerid, "/skydive", false);
+				SpawnPlayer(playerid);
 				SetPVarInt(playerid, "CompletedSD1", 1);
 				if(GetPVarInt(playerid, "CompletedSD1") == 1 && GetPVarInt(playerid, "CompletedSD2") == 1)
 				{
@@ -5744,7 +5742,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the second skydive challange~n~~r~~h~~h~6 score and $10,000!");
-				Command_ReProcess(playerid, "/skydive2", false);
+				SpawnPlayer(playerid);
 				SetPVarInt(playerid, "CompletedSD2", 1);
 				if(GetPVarInt(playerid, "CompletedSD1") == 1 && GetPVarInt(playerid, "CompletedSD2") == 1)
 				{
@@ -5774,7 +5772,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the third skydive challange~n~~r~~h~~h~7 score and $7,500!");
-				Command_ReProcess(playerid, "/skydive3", false);
+				SpawnPlayer(playerid);
 			}
 	 	}
 		case 5: //Skydive4 Prize
@@ -5796,7 +5794,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the 4th skydive challange~n~~r~~h~~h~7 score and $8,000!");
-				Command_ReProcess(playerid, "/skydive4", false);
+				SpawnPlayer(playerid);
 			}
 	 	}
  		case 6: //bmx Prize
@@ -6068,7 +6066,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 		  		InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the 5th skydive challange~n~~r~~h~~h~8 score and $8,000!");
-		  		Command_ReProcess(playerid, "/skydive5", false);
+		  		SpawnPlayer(playerid);
 			}
 	 	}
 		case 37: //Skydive6 Prize
@@ -6090,7 +6088,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SetPVarInt(playerid, "doingStunt", 0);
 		  		PlayerData[playerid][tickJoin_bmx] = 0;
 		  		InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the 6th skydive challange~n~~r~~h~~h~8 score and $8,000!");
-		  		Command_ReProcess(playerid, "/skydive6", false);
+		  		SpawnPlayer(playerid);
 			}
 	 	}
 	}
@@ -9693,7 +9691,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/unban /oban /sethealth /healall /armorall\n\n");
+		strcat(string, "/asetcash /aaddcash /asetscore /unban /oban /sethealth /healall /armorall\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
@@ -10263,6 +10261,59 @@ YCMD:setcash(playerid, params[], help)
 	return 1;
 }
 
+YCMD:asetcash(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= MAX_HA_LEVEL)
+	{
+	    new player, amount;
+	    if(sscanf(params, "ri", player, amount))
+	    {
+	        return SCM(playerid, NEF_GREEN, "Usage: /asetcash <playerid> <amount>");
+	    }
+
+	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
+
+    	if(amount < 0 || amount > 1000000)
+		{
+			return SCM(playerid, -1, ""er"$0 - $1,000,000");
+		}
+
+        if(!islogged(player)) return SCM(playerid, -1, ""er"This player is not registered!");
+
+		if(IsPlayerAvail(player))
+		{
+			if(player != playerid)
+			{
+				format(gstr, sizeof(gstr), "Admin %s(%i) has set your cash to $%s.", __GetName(playerid), playerid, number_format(amount));
+				SCM(player, YELLOW, gstr);
+				format(gstr, sizeof(gstr), "You have set %s's cash to $%s.", __GetName(player), number_format(amount));
+				SCM(playerid, YELLOW, gstr);
+			}
+			else
+			{
+				format(gstr, sizeof(gstr), "You have set your cash to $%s.", number_format(amount));
+				SCM(playerid, YELLOW, gstr);
+			}
+
+			format(gstr, sizeof(gstr), ""red"Adm: %s's(%i) cash has been set to $%i by %s(%i)", __GetName(player), player, amount, __GetName(playerid), playerid);
+			admin_broadcast(-1, gstr);
+			print(gstr);
+
+			SetPlayerMoneyEx(player, amount);
+		}
+		else
+		{
+			SCM(playerid, -1, ""er"Player is not connected or unavailable");
+		}
+	}
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
 YCMD:addscore(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] >= MAX_ADMIN_LEVEL)
@@ -10369,6 +10420,59 @@ YCMD:addcash(playerid, params[], help)
 	return 1;
 }
 
+YCMD:aaddcash(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= MAX_HA_LEVEL)
+	{
+	    new player, amount;
+	    if(sscanf(params, "ri", player, amount))
+	    {
+	        return SCM(playerid, NEF_GREEN, "Usage: /aaddcash <playerid> <amount>");
+	    }
+
+	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
+
+    	if(amount < -100000000 || amount > 1000000)
+		{
+			return SCM(playerid, -1, ""er"$-10,000,000 - $1,000,00");
+		}
+
+        if(!islogged(player)) return SCM(playerid, -1, ""er"This player is not registered!");
+
+		if(IsPlayerAvail(player))
+		{
+			if(player != playerid)
+			{
+				format(gstr, sizeof(gstr), "Admin %s(%i) has given you $%s.", __GetName(playerid), playerid, number_format(amount));
+				SCM(player, YELLOW, gstr);
+				format(gstr, sizeof(gstr), "You have given %s $%s.", __GetName(player), number_format(amount));
+				SCM(playerid, YELLOW, gstr);
+			}
+			else
+			{
+				format(gstr, sizeof(gstr), "You have given yourself $%s.", number_format(amount));
+				SCM(playerid, YELLOW, gstr);
+			}
+
+			format(gstr, sizeof(gstr), ""red"Adm: %s(%i) has been given $%s by %s(%i)", __GetName(player), player, number_format(amount), __GetName(playerid), playerid);
+			admin_broadcast(-1, gstr);
+			print(gstr);
+
+			GivePlayerMoneyEx(player, amount);
+		}
+		else
+		{
+			SCM(playerid, -1, ""er"Player is not connected or unavailable");
+		}
+	}
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
 YCMD:setscore(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] >= MAX_ADMIN_LEVEL)
@@ -10408,6 +10512,59 @@ YCMD:setscore(playerid, params[], help)
 			admin_broadcast(-1, gstr);
 			print(gstr);
 			
+			SetPlayerScoreEx(player, amount);
+		}
+	 	else
+	 	{
+		 	SCM(playerid, -1, ""er"Player is not connected or unavailable");
+		}
+	}
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
+YCMD:asetscore(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= MAX_HA_LEVEL)
+	{
+	    new player, amount;
+	    if(sscanf(params, "ri", player, amount))
+	    {
+	        return SCM(playerid, NEF_GREEN, "Usage: /setscore <playerid> <score>");
+	    }
+
+	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
+
+    	if(amount < 0 || amount > 500000)
+		{
+			return SCM(playerid, -1, ""er"Score: 0 - 500,000");
+		}
+
+        if(!islogged(player)) return SCM(playerid, -1, ""er"This player is not registered!");
+
+		if(IsPlayerAvail(player))
+		{
+			if(player != playerid)
+			{
+				format(gstr, sizeof(gstr), "Admin %s(%i) has set your score to %i.", __GetName(playerid), playerid, amount);
+				SCM(player, YELLOW, gstr);
+				format(gstr, sizeof(gstr), "You set %s's score to %i.", __GetName(player), amount);
+				SCM(playerid, YELLOW, gstr);
+			}
+			else
+			{
+				format(gstr, sizeof(gstr), "You have set your score to %i.", amount);
+				SCM(playerid, YELLOW, gstr);
+			}
+
+			format(gstr, sizeof(gstr), ""red"Adm: %s(%i) has set %s(%i) score to %i", __GetName(playerid), playerid, __GetName(player), player, amount);
+			admin_broadcast(-1, gstr);
+			print(gstr);
+
 			SetPlayerScoreEx(player, amount);
 		}
 	 	else
