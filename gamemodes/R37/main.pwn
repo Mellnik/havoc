@@ -6740,7 +6740,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	    {
 		    if(IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 		    {
-				if(Key(KEY_YES))
+				if(Key(KEY_LOOK_BEHIND))
 				{
 			 		new currentveh, Float:angle;
 				    currentveh = GetPlayerVehicleID(playerid);
@@ -10143,7 +10143,7 @@ YCMD:supervision(playerid, params[], help)
 	if (PlayerData[playerid][e_level] == 0)
 	    return SCM(playerid, -1, NO_PERM);
 
-	ShowPlayerDialog(playerid, DIALOG_SUPERVISION, DIALOG_STYLE_LIST, ""nef" :: Supervisor program", ""white"Suspect output\nAccount association\nBan server snapshot (banlookup)\nPlayer identification\nLogon logs", "Select", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_SUPERVISION, DIALOG_STYLE_LIST, ""nef" :: Supervisor program", ""white"Possible Suspects\nLast 30 bans\nBan server snapshot (banlookup)\nPlayer identification\nLogon logs", "Select", "Cancel");
 	return 1;
 }
 
@@ -16366,6 +16366,11 @@ YCMD:pm(playerid, params[], help)
 	    return SCM(playerid, -1, ""er"This player has blocked you from PMing him");
 	}
 	
+	if(PlayerSettings[player][e_allow_pm] == 0)
+	{
+	    return SCM(playerid, -1, ""er"This player does not allow private messages.");
+	}
+	
 	TextDrawShowForPlayer(playerid, CheckTD);
 	TextDrawShowForPlayer(player, NewMsgTD);
 	SetTimerEx("hideMsgTD", 3000, false, "i", player);
@@ -16423,6 +16428,11 @@ YCMD:r(playerid, params[], help)
 	if(Iter_Contains(iterPlayerIgnore[lID], playerid))
 	{
 	    return SCM(playerid, -1, ""er"This player has blocked you from PMing him");
+	}
+	
+	if(PlayerSettings[lID][e_allow_pm] == 0)
+	{
+	    return SCM(playerid, -1, ""er"This player does not allow private messages.");
 	}
 	
 	format(gstr, sizeof(gstr), "{26FF00}***[PM] from %s(%i): %s", __GetName(playerid), playerid, msg);
@@ -17401,7 +17411,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			        }
 			        case 1:
 			        {
-			            not_yet_implemented(playerid);
+			           	mysql_tquery(pSQL, "SELECT * FROM `bans` ORDER BY `Date` DESC LIMIT 30;");
 			        }
 			        case 2:
 			        {
@@ -20028,13 +20038,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	        case DIALOG_SET_ALLOW_TP:
 	        {
 				PlayerSettings[playerid][e_allow_teleport] = 0;
-				player_notice(playerid, "Teleports", "~y~Enabled");
+				player_notice(playerid, "Teleports", "~y~disabled");
 	            return true;
 	        }
 	        case DIALOG_SET_ALLOW_PM:
 	        {
 				PlayerSettings[playerid][e_allow_pm] = 0;
-				player_notice(playerid, "Private messages", "~y~Enabled");
+				player_notice(playerid, "Private messages", "~y~disabled");
 	            return true;
 	        }
 	        case DIALOG_SET_JOINMSG:
@@ -28033,7 +28043,7 @@ procedure RandomTXTInfo()
 		"~w~Don't wanna get killed? Type ~g~~h~~h~/god",
 		"~w~Want access to ~y~bonus commands~w~? Check out ~r~~h~/premium~w~!",
 		"~w~Edit your server preferences and features using ~r~~h~/settings~w~!",
-		"~w~Flip your vehicle with the key ~g~~h~~h~'2'",
+		"~w~Flip your vehicle with the key ~2~~h~~h~'2'",
 		"~w~Join our ~r~~h~forums~w~! Register at ~b~~h~~h~"SERVER_WWWURL"~w~!",
 		"~w~Try our ~y~Cops and Robbers ~w~Minigame! ~y~/cnr",
 		"~w~Type ~g~~h~~h~/c ~b~~h~~h~/t~w~ for ~y~commands ~w~and ~y~teleports!",
