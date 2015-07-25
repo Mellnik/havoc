@@ -7,7 +7,7 @@
 		<div align="center">
 
 			<font size="5">
-			<b>SA-MP Server: <a class="neflink" href="samp://samp.havocserver.net:7777">samp.havocserver.com:7777</a> (Comming soon)</b>
+			<b>SA-MP Server: <a class="neflink" href="samp://samp.havocserver.net:7777">samp.havocserver.com:7777</a> (213.163.74.164)</b>
 			</font>
 			<br>
 			Server Location: Amsterdam, NL (Europe)

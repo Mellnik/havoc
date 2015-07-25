@@ -103,7 +103,7 @@ if (strcmp($res, "VERIFIED") == 0)
 	// check that payment_amount/payment_currency are correct
 	// process payment and mark item as paid.
 
-	$item_number = $_POST['item_number1'];		// z.B: HAVOC-VIP-FREEROAM
+	$item_number = $_POST['item_number'];		// z.B: HAVOC-VIP-FREEROAM
 	$payment_status = $_POST['payment_status'];	// zahlungsstatus
 	$payment_amount = $_POST['mc_gross'];		// Wie viel er donated hat
 	$payment_currency = $_POST['mc_currency'];
@@ -184,7 +184,7 @@ if (strcmp($res, "VERIFIED") == 0)
 		$cashamount = floor($payment_amount * _DONATION_REWARD);
 		
 		// PAYMENT VALIDATED
-		$mysqli->query("INSERT INTO `queue` VALUES (NULL, 2, UNIX_TIMESTAMP(), '$receiver,$cashamount');");
+		$mysqli->query("INSERT INTO `queue` VALUES (NULL, 1, UNIX_TIMESTAMP(), '$receiver,$cashamount');");
 		$mysqli->query("INSERT INTO `donations` VALUES (NULL, 'DONATION_CUSTOM', '$txn_id', '$payer_email', $payment_amount, '$name', $receiver, 'P_PAYPAL', 'OK');");
 		
 		if (filter_var($email, FILTER_VALIDATE_EMAIL)) 

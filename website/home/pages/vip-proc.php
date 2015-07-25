@@ -32,7 +32,7 @@
 			<b><font size="2">PayPal / Credit Card</font></b>
 			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 			<input type="hidden" name="cmd" value="_xclick">
-			<input type="hidden" name="business" value="havocsamp@gmail.com">
+			<input type="hidden" name="business" value="nefnotification@gmail.com">
 			<input type="hidden" name="lc" value="US">
 			<input type="hidden" name="item_name" value="Havoc VIP (SA-MP)">
 			<input type="hidden" name="item_number" value="HAVOC-VIP-FREEROAM">
@@ -42,10 +42,10 @@
 			<input type="hidden" name="no_note" value="1">
 			<input type="hidden" name="no_shipping" value="1">
 			<input type="hidden" name="rm" value="1">
-			<input type="hidden" name="return" value="http://havocserver.com/vip-complete">
-			<input type="hidden" name="cancel_return" value="http://havocserver.com/donate">
+			<input type="hidden" name="return" value="https://havocserver.com/vip-complete">
+			<input type="hidden" name="cancel_return" value="https://havocserver.com/donate">
 			<input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted">
-			<input type="hidden" name="notify_url" value="http://havocserver.com/gateway/ipn_paypal.php">
+			<input type="hidden" name="notify_url" value="https://havocserver.com/gateway/ipn_paypal.php">
 			<input type="hidden" name="custom" value="<?php echo($id); ?>">
 			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 			<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
@@ -55,8 +55,8 @@
 - 			<div style="vertical-align: middle; display: table-cell; padding-left: 10px;">
 -			<b><font size="2">Pay by phone (SMS)</font></b><br>
 -			
--			<a id="fmp-button" href="#" rel="d91bf7c4215dcde69361c826c3532a5c/<?php echo($id); ?>"><img src="//fortumo.com/images/fmp/fortumopay_96x47.png" width="96" height="47" alt="Mobile Payments by Fortumo" border="0" /></a>
--			
+			<a id="fmp-button" href="#" rel="d91bf7c4215dcde69361c826c3532a5c/<?php echo($id); ?>"><img src="//fortumo.com/images/fmp/fortumopay_96x47.png" width="96" height="47" alt="Mobile Payments by Fortumo" border="0" /></a>
+
 -			</div>
 -			</div>
 -			</div>
