@@ -8908,6 +8908,11 @@ YCMD:buy(playerid, params[], help)
 		SetupHouse(i, HouseData[i][e_namecache]);
         orm_update(HouseData[i][e_ormid]);
 
+	    if(PlayerAchData[playerid][e_ach_settled][0] == 0)
+	    {
+	        GivePlayerAchievement(playerid, e_ach_settled, "Settled", "Congrats you earned $30,000!~n~and 10 score!~n~~w~Type /ach to view your achievements.");
+		}
+
         GivePlayerMoneyEx(playerid, -HouseData[i][e_value]);
 		PlayerData[playerid][e_pvslots] += HouseData[i][e_pvslots];
         PlayerData[playerid][tickLastBuy] = tick;
