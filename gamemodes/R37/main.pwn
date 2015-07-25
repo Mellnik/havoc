@@ -21127,7 +21127,6 @@ GetPlayingTimeFormat(playerid)
 	minutes = minutes % 60;
 
 	format(ftime, sizeof(ftime), "%ih %02im %02is", hours, minutes, seconds);
-	printf("GetPlayingTimeFormat = %s, %i", ftime, total);
 	return ftime;
 }
 
