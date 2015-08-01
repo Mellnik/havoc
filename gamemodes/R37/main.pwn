@@ -42,7 +42,7 @@
 
 #pragma dynamic 8192        // for md-sort
 
-#define IS_RELEASE_BUILD (true)
+#define IS_RELEASE_BUILD (false)
 #define INC_ENVIRONMENT (true)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
@@ -94,7 +94,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SQL_DATA   						"havocserver"
 #else
 #define SQL_USER   						"havocdev"
-#define SQL_PASS   						"83Qhfdawdfrb-.a7ghb7tgbfsds"
+#define SQL_PASS   						"ZjLynSAeVNZTwwUR"
 #define SQL_DATA                        "havocdev"
 #endif
 
@@ -549,6 +549,7 @@ enum (+= 56)
     DIALOG_SET_ALLOW_PM,
     DIALOG_SET_BOOST_FACTOR,
     DIALOG_SET_JUMP_FACTOR,
+    DIALOG_CCTV,
     NO_DIALOG_ID
 };
 
@@ -9696,11 +9697,11 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/asetcash /aaddcash /asetscore /unban /oban /sethealth /healall /armorall\n\n");
+		strcat(string, "/announce /asetcash /aaddcash /asetscore /unban /oban /sethealth /healall /armorall\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/onlinefix /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /ereset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /screate /gzonecreate");
+		strcat(string, "/announce2 /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /ereset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /screate /gzonecreate");
 
         ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
 	}
@@ -9869,6 +9870,22 @@ YCMD:exit(playerid, params[], help)
 		SCM(playerid, -1, ""er"You can't use this command now!");
 	}
 	return 1;
+}
+
+YCMD:cctv(playerid, params[], help)
+{
+	ShowPlayerDialog(playerid, DIALOG_CCTV, DIALOG_STYLE_LIST, ""nef" :: CCTV", ""white"AA\nLSB\nSFA\nMC", "Select", "Cancel");
+ 	return 1;
+}
+
+YCMD:cctvoff(playerid, params[], help)
+{
+    SetPVarInt(playerid, "HadGod", 0);
+	SetPlayerHealth(playerid, 100);
+	SCM(playerid, -1, ""nef" CCTV has been turned off!");
+	SpawnPlayer(playerid);
+	TogglePlayerSpectating(playerid, 0);
+ 	return 1;
 }
 
 YCMD:radio(playerid, params[], help)
@@ -11516,6 +11533,30 @@ YCMD:night(playerid, params[], help)
 		SCM(playerid, -1, NO_PERM);
 	}
    	return 1;
+}
+
+YCMD:announce(playerid, params[], help)
+{
+    if(PlayerData[playerid][e_level] >= 4 || IsPlayerAdmin(playerid))
+	{
+	    extract params -> new string:text[144]; else
+	    {
+	        return SCM(playerid, NEF_GREEN, "Usage: /announce <message>");
+	    }
+
+	    if(strfind(text, "~", true) != -1) return SCM(playerid, -1, ""er"'~' is not allowed in announce.");
+	    if(strfind(text, "#", true) != -1) return SCM(playerid, -1, ""er"'#' is not allowed in announce.");
+	    if(strfind(text, "%", true) != -1) return SCM(playerid, -1, ""er"'%' is not allowed in announce.");
+	    if(strlen(text) > 50 || strlen(text) < 1) return SCM(playerid, -1, ""er"Length 1-50");
+
+		format(gstr, sizeof(gstr), "%s", text);
+		GameTextForAll(gstr, 4000, 3);
+    }
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
 }
 
 YCMD:kick(playerid, params[], help)
@@ -17405,7 +17446,54 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            
 	            player_notice(playerid, "Email updated", "");
 	            return true;
-	        }
+			}
+			case DIALOG_CCTV:
+			{
+				switch(listitem)
+				{
+					case 0:
+					{
+					    SetPVarInt(playerid, "HadGod", 1);
+						SetPlayerHealth(playerid, 999999);
+     					SetPlayerPos(playerid, 362.0220, 2524.6802, 24.1532); // AA
+					    SetPlayerCameraPos(playerid, 399.6457, 2558.1228, 22.1733);
+						SetPlayerCameraLookAt(playerid, 399.0048, 2557.3582, 21.9632);
+						SCM(playerid, -1, ""nef" To turn off CCTV use /cctvoff");
+					}
+					case 1:
+					{
+					    SetPVarInt(playerid, "HadGod", 1);
+						SetPlayerHealth(playerid, 999999);
+     					SetPlayerPos(playerid, 363.4516,-1801.0297,4.8207); // BEACH
+					   	SetPlayerCameraPos(playerid, 321.9037, -1822.9531, 16.4298);
+						SetPlayerCameraLookAt(playerid, 322.4607, -1823.7843, 16.1396);
+						SCM(playerid, -1, ""nef" To turn off CCTV use /cctvoff");
+					}
+					case 2:
+	 				{
+	 				    SetPVarInt(playerid, "HadGod", 1);
+						SetPlayerHealth(playerid, 999999);
+	     				SetPlayerPos(playerid, -1191.8287,-33.3998,15.8403); // SFA
+					    SetPlayerCameraPos(playerid, -1225.4535, -20.4089, 24.5581);
+						SetPlayerCameraLookAt(playerid, -1224.4572, -20.4420, 24.2627);
+						SCM(playerid, -1, ""nef" To turn off CCTV use /cctvoff");
+					}
+					case 3:
+					{
+					    SetPVarInt(playerid, "HadGod", 1);
+						SetPlayerHealth(playerid, 999999);
+					    SetPlayerPos(playerid,	-2350.3938,-1629.8983,488.8468); //MC
+					   	SetPlayerCameraPos(playerid, -2318.4465, -1616.4235, 494.7616);
+						SetPlayerCameraLookAt(playerid, -2319.1665, -1617.1173, 494.4168);
+						SCM(playerid, -1, ""nef" To turn off CCTV use /cctvoff");
+					}
+					case 4:
+					{
+					    not_yet_implemented(playerid);
+					}
+				}
+				return true;
+			}
 			case DIALOG_SUPERVISION:
 			{
 			    switch(listitem)
