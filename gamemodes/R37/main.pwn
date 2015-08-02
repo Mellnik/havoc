@@ -21200,21 +21200,23 @@ SkipLogin(playerid)
 
 GetPlayingTime(playerid)
 {
-	return PlayerData[playerid][e_time] + (NC_GetStartupTime(1) - PlayerData[playerid][iLogonTime]);
+	PlayerData[playerid][e_time] = PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLogonTime]);
+	PlayerData[playerid][iLogonTime] = gettime();
+	return PlayerData[playerid][e_time];
 }
 
 GetPlayingTimeFormat(playerid)
 {
-	new ftime[32];
-	new total, seconds, hours, minutes;
+	new playtime = GetPlayingTime(playerid);
 
-	total = GetPlayingTime(playerid);
-	minutes = total / 60;
-	seconds = total % 60;
-	hours = minutes / 60;
-	minutes = minutes % 60;
+    new ftime[32],
+        time[3];
 
-	format(ftime, sizeof(ftime), "%ih %02im %02is", hours, minutes, seconds);
+    time[0] = floatround(playtime / 3600, floatround_floor);
+    time[1] = floatround(playtime / 60, floatround_floor) % 60;
+    time[2] = floatround(playtime % 60, floatround_floor);
+
+	format(ftime, sizeof(ftime), "%ih %02im %02is", time[0], time[1], time[2]);
 	return ftime;
 }
 
@@ -21462,9 +21464,8 @@ SQL_SaveAccount(playerid, bool:toys = true, bool:pv = true)
 {
     if(!islogged(playerid)) return 1;
 
-    PlayerData[playerid][e_time] += (NC_GetStartupTime(1) - PlayerData[playerid][iLogonTime]);
-	PlayerData[playerid][iLogonTime] = NC_GetStartupTime(1); // RESET LOGON TIME HERE OR WHEN CALLING SQL_SAVEACCOUNT MULTIPLE TIMES IT WILL ADD THE ELAPSED TIME OVER AND OVER AGAIN
-    
+	GetPlayingTime(playerid); // Function updates e_time
+
     if(PlayerData[playerid][e_ormid] == ORM:-1) {
     	Log(LOG_PLAYER, "Crit: ORM -1 in SaveAccount %s, %i", __GetName(playerid), playerid);
 	} else {
