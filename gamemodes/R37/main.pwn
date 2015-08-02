@@ -3515,6 +3515,9 @@ public OnPlayerConnect(playerid)
     GetPlayerName(playerid, PlayerData[playerid][e_name], MAX_PLAYER_NAME + 1);
     GetPlayerIp(playerid, PlayerData[playerid][e_ip], MAX_PLAYER_IP + 1);
 
+	// Just to make sure it gets called...
+    PlayerData[playerid][iLogonTime] = gettime();
+
 	SetPlayerScoreEx(playerid, 0);
 	SetPlayerTeam(playerid, NO_TEAM);
 	SetPlayerColor(playerid, szPlayerColors[random(sizeof(szPlayerColors))]);
@@ -28838,7 +28841,6 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 			{
 				// Account does exist, check if account is banned.
 				PlayerData[playerid][e_accountid] = cache_get_row_int(0, 0);
-				PlayerData[playerid][iLogonTime] = NC_GetStartupTime(1);
 
 				mysql_format(pSQL, gstr2, sizeof(gstr2), "SELECT UNIX_TIMESTAMP(), `bans`.`reason`, `bans`.`date`, `bans`.`lift`, `accounts`.`name` FROM `bans` INNER JOIN `accounts` ON `bans`.`admin_id` = `accounts`.`id` WHERE `bans`.`id` = %i;", PlayerData[playerid][e_accountid]);
 				mysql_pquery(pSQL, gstr2, "OnPlayerAccountRequest", "iii", playerid, YHash(__GetName(playerid)), E_ACCREQ_CHECK_BAN);
