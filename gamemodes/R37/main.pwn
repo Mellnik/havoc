@@ -9877,12 +9877,14 @@ YCMD:exit(playerid, params[], help)
 
 YCMD:cctv(playerid, params[], help)
 {
+    if(PlayerData[playerid][e_vip] != 1 && PlayerData[playerid][e_level] == 0) return Command_ReProcess(playerid, "/vip", false);
 	ShowPlayerDialog(playerid, DIALOG_CCTV, DIALOG_STYLE_LIST, ""nef" :: CCTV", ""white"AA\nLSB\nSFA\nMC", "Select", "Cancel");
  	return 1;
 }
 
 YCMD:cctvoff(playerid, params[], help)
 {
+    TogglePlayerControllable(playerid,1);
     SetPVarInt(playerid, "HadGod", 0);
 	SetPlayerHealth(playerid, 100);
 	SCM(playerid, -1, ""nef" CCTV has been turned off!");
@@ -17456,6 +17458,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				{
 					case 0:
 					{
+     					TogglePlayerControllable(playerid,0);
 					    SetPVarInt(playerid, "HadGod", 1);
 						SetPlayerHealth(playerid, 999999);
      					SetPlayerPos(playerid, 362.0220, 2524.6802, 24.1532); // AA
@@ -17465,6 +17468,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 					case 1:
 					{
+					    TogglePlayerControllable(playerid,0);
 					    SetPVarInt(playerid, "HadGod", 1);
 						SetPlayerHealth(playerid, 999999);
      					SetPlayerPos(playerid, 363.4516,-1801.0297,4.8207); // BEACH
@@ -17474,6 +17478,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 					case 2:
 	 				{
+	 				    TogglePlayerControllable(playerid,0);
 	 				    SetPVarInt(playerid, "HadGod", 1);
 						SetPlayerHealth(playerid, 999999);
 	     				SetPlayerPos(playerid, -1191.8287,-33.3998,15.8403); // SFA
@@ -17483,6 +17488,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					}
 					case 3:
 					{
+					    TogglePlayerControllable(playerid,0);
 					    SetPVarInt(playerid, "HadGod", 1);
 						SetPlayerHealth(playerid, 999999);
 					    SetPlayerPos(playerid,	-2350.3938,-1629.8983,488.8468); //MC
@@ -21301,7 +21307,7 @@ CarSpawner(playerid, model, respawn_delay = -1, bool:spawnzone_check = true)
 	ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
 	SetVehicleVirtualWorld(PlayerData[playerid][pVehicle], GetPlayerVirtualWorld(playerid));
 	LinkVehicleToInterior(PlayerData[playerid][pVehicle], GetPlayerInterior(playerid));
-	SetVehicleNumberPlate(PlayerData[playerid][pVehicle], "{F81414}NEF");
+	SetVehicleNumberPlate(PlayerData[playerid][pVehicle], "{F81414}HAVOC");
 	SetVehicleToRespawn(PlayerData[playerid][pVehicle]);
 	if(IsComponentIdCompatible(GetVehicleModel(PlayerData[playerid][pVehicle]), 1010)) AddVehicleComponent(PlayerData[playerid][pVehicle], 1010);
 	PutPlayerInVehicle(playerid, PlayerData[playerid][pVehicle], 0);
