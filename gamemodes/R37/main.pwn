@@ -3,7 +3,7 @@
 || # Project Havoc Server						        			  # ||
 || # ---------------------------------------------------------------- # ||
 || # Copyright (c)2011-2015 Havoc Server			  				  # ||
-|| # Created by Mellnik                                               # ||
+|| # Created by Mellnik		                                          # ||
 || # ---------------------------------------------------------------- # ||
 || # http://havocserver.com											  # ||
 || #################################################################### ||
@@ -109,9 +109,9 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_IP                       "213.163.74.164:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
-#define SERVER_VERSION					"Build 37-2"
+#define SERVER_VERSION					"Build 37-3"
 #else
-#define SERVER_VERSION					"Beta:Build 37-2"
+#define SERVER_VERSION					"Beta:Build 37-3"
 #endif
 #define SAMP_VERSION                    "0.3.7 R2"
 
@@ -155,7 +155,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define fallout_sign                    "{FFFFFF}[{AAAAFF}FALLOUT{FFFFFF}]"
 #define server_sign                     "{FFFFFF}[{FF005F}SERVER{FFFFFF}]"
 #define gang_sign                       "{FFFFFF}[{FFA000}GANG{FFFFFF}]"
-#define nefa                            "{FFFFFF}[{FFE600}"SERVER_SHORT"{FFFFFF}]"
+#define nefa                            ""red"::{FFFFFF}[{FFE600}"SERVER_SHORT"{FFFFFF}"red"::]"
 #define nef                             "{FFE600}"SERVER_SHORT"{FFFFFF}"
 #define NO_PERM                     	"{FF000F}[INFO] {FF000F}Insufficient permissions"
 #define NOT_AVAIL                       "{FF000F}[INFO] {FF000F}You can't use this command now! Use /exit to leave."
@@ -396,6 +396,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define ORANGE_E 						"{DB881A}"
 #define GREEN_E 						"{3BBD44}"
 #define PURPLE_E 						"{5A00FF}"
+#define LIGHT_P                         "{605D90}"
 
 // NEF 2.0 Colors
 //#define X_RED                           ()
@@ -3093,6 +3094,7 @@ public OnPlayerSpawn(playerid)
         case gFREEROAM:
         {
             ResetPlayerWorld(playerid);
+            SetPVarInt(playerid, "AntiFall", 1);
             
    // Spawn setzung moved to OPD (OnPlayerDeath) SetPlayerSpawnInfo, deshalb ist hier kein RandomSpawn call
 
@@ -4851,7 +4853,7 @@ public OnPlayerText(playerid, text[])
 			{
 				if(last_color_format == 1)
 				{
-					strcat(tmp, "{A8DBFF}");
+					strcat(tmp, "{15D4ED}");
 				}
 				else
 				{
@@ -4871,7 +4873,7 @@ public OnPlayerText(playerid, text[])
 	   		}
 			else
 			{
-				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) {A8DBFF}%s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, szMessage);
+				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) %s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, szMessage);
 				SCMToAll(-1, gstr);
 				SCMToAll(-1, tmp);
 			}
@@ -4885,7 +4887,7 @@ public OnPlayerText(playerid, text[])
 	   		}
 			else
 			{
-				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) %s%s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, PlayerData[playerid][bOnlineAdmin] ? ("{A8DBFF}") : (""), text);
+				format(gstr, sizeof(gstr), "{%06x}[%s] %s"white"(%i) %s%s", GetColorEx(playerid) >>> 8, PlayerData[playerid][GangTag], __GetName(playerid), playerid, PlayerData[playerid][bOnlineAdmin] ? ("{15D4ED}") : (""), text);
 				SCMToAll(-1, gstr);
 			}
 		}
@@ -4906,7 +4908,7 @@ public OnPlayerText(playerid, text[])
 		{
 			if(last_color_format == 1)
 			{
-				strcat(tmp, "{A8DBFF}");
+				strcat(tmp, "{15D4ED}");
 			}
 			else
 			{
@@ -4920,13 +4922,13 @@ public OnPlayerText(playerid, text[])
 		
 		if(PlayerData[playerid][e_level] == 0)
 		{
-			format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage);
+			format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) "white"%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage);
 			SCMToAll(-1, gstr);
 			SCMToAll(-1, tmp);
 		}
 		else
 		{
-			format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) {A8DBFF}%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage);
+			format(gstr, sizeof(gstr), "{%06x}%s"red"(%i) "white"%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage);
 			SCMToAll(-1, gstr);
 			SCMToAll(-1, tmp);
 		}
@@ -4935,12 +4937,12 @@ public OnPlayerText(playerid, text[])
 	{
 		if(PlayerData[playerid][e_level] == 0)
 		{
-	 		format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage);
+	 		format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) "white"%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, szMessage);
 			SCMToAll(-1, gstr);
   		}
 		else
 		{
-            format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, PlayerData[playerid][bOnlineAdmin] ? ("{A8DBFF}") : (""), szMessage);
+            format(gstr, sizeof(gstr), "{%06x}%s"white"(%i) %s%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, PlayerData[playerid][bOnlineAdmin] ? ("{15D4ED}") : (""), szMessage);
 			SCMToAll(-1, gstr);
 		}
 	}
@@ -5063,7 +5065,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 			    {
 		            new Float:HP;
 		            GetPlayerHealth(i, HP);
-		            global_broadcast(">> DUEL: %s won the duel against %s and has %.2f HP left!", __GetName(i), __GetName(playerid), HP);
+		            global_broadcast("..:: DUEL ::.. %s won the duel against %s and has %.2f HP left!", __GetName(i), __GetName(playerid), HP);
 		            
 					PlayerData[i][e_duelwins]++;
 					PlayerData[playerid][e_duellost]++;
@@ -5094,7 +5096,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 			        {
 			            new Float:HP;
 			            GetPlayerHealth(i, HP);
-			            global_broadcast(">> DUEL: %s won the duel against %s and has %.2f HP left!", __GetName(i), __GetName(playerid), HP);
+			            global_broadcast("..:: DUEL ::.. %s won the duel against %s and has %.2f HP left!", __GetName(i), __GetName(playerid), HP);
 
 						PlayerData[i][e_duelwins]++;
 						PlayerData[playerid][e_duellost]++;
@@ -6772,6 +6774,15 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 						SetVehicleHealth(vid, 1000.0);
 						return 1;
 					}
+					
+					if(Key(KEY_YES) || Key(KEY_NO))
+					{
+					new Float:POS[3], vid = GetPlayerVehicleID(playerid);
+					GetVehicleVelocity(vid, POS[0], POS[1], POS[2]);
+					SetVehicleVelocity(vid, POS[0] > 0 ? POS[0] * 0.75 : 0.0, POS[1] > 0 ? POS[1] * 0.75 : 0.0, POS[2]);
+					SetVehicleHealth(vid, 1000.0);
+				    return 1;
+					}
 				}
 				else
 				{
@@ -7332,7 +7343,7 @@ YCMD:bmx(playerid, params[], help)
     if(PortPlayerMap(playerid, 3362.586, -1939.724, 43.027, 37.0, "BMX Parkour", "bmx"))
     {
         CheckPlayerGod(playerid);
-        
+
 		DestroyPlayerVehicles(playerid);
 		
 		PlayerData[playerid][tickJoin_bmx] = GetTickCountEx();
@@ -9700,11 +9711,11 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/announce /asetcash /aaddcash /asetscore /unban /oban /sethealth /healall /armorall\n\n");
+		strcat(string, "/aaddscore /cashfall /scorefall /announce /asetcash /aaddcash /asetscore /unban /oban /sethealth /healall /armorall\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/announce2 /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /ereset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /screate /gzonecreate");
+		strcat(string, "/ecashfall /escorefall /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /ereset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /screate /gzonecreate");
 
         ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
 	}
@@ -10386,6 +10397,208 @@ YCMD:addscore(playerid, params[], help)
 		{
 			SCM(playerid, -1, ""er"Player is not connected or unavailable");
 		}
+	}
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
+YCMD:aaddscore(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= MAX_HA_LEVEL)
+	{
+	    new player, amount;
+	    if(sscanf(params, "ri", player, amount))
+	    {
+	        return SCM(playerid, NEF_GREEN, "Usage: /aaddscore <playerid> <amount>");
+	    }
+
+	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
+
+    	if(amount < 1 || amount > 50)
+		{
+			return SCM(playerid, -1, ""er"$1 - 50");
+		}
+
+        if(!islogged(player)) return SCM(playerid, -1, ""er"This player is not registered!");
+
+		if(IsPlayerAvail(player))
+		{
+			if(player != playerid)
+			{
+				format(gstr, sizeof(gstr), "Head-Admin %s(%i) has given you %i score", __GetName(playerid), playerid, amount);
+				SCM(player, YELLOW, gstr);
+				format(gstr, sizeof(gstr), "You have given %s %i score.", __GetName(player), amount);
+				SCM(playerid, YELLOW, gstr);
+			}
+			else
+			{
+				format(gstr, sizeof(gstr), "You have given yourself %i. >>Big Brother is watching you<<", amount);
+				SCM(playerid, YELLOW, gstr);
+			}
+
+			format(gstr, sizeof(gstr), ""red"Adm: %s(%i) has been given %i score by %s(%i)", __GetName(player), player, amount, __GetName(playerid), playerid);
+			admin_broadcast(-1, gstr);
+			print(gstr);
+
+			GivePlayerScoreEx(player, amount);
+		}
+		else
+		{
+			SCM(playerid, -1, ""er"Player is not connected or unavailable");
+		}
+	}
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
+YCMD:ecashfall(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL)
+	{
+		extract params -> new money; else
+		{
+			return SCM(playerid, NEF_GREEN, "Usage: /ecashfall <cash>");
+		}
+
+		if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL) {
+			if(money > 50000000 || money < 1) return SCM(playerid, -1, ""er"Cash: $1 - $50,000,000"); // Needs to be increased for eventful requirements.
+		} else {
+		    if(money > 10000 || money < 1) return SCM(playerid, -1, ""er"Cash: $1 - $10,000");
+		}
+
+        format(gstr, sizeof(gstr), "~g~+$%i USD", money);
+		for(new i = 0; i < MAX_PLAYERS; i++)
+		{
+			if(IsPlayerAvail(i))
+			{
+				PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
+				GivePlayerMoneyEx(i, money, false, true);
+				player_notice(i, "CASHFALL", gstr, 4000);
+			}
+		}
+
+		format(gstr, sizeof(gstr), "Admin %s(%i) has given all players $%s", __GetName(playerid), playerid, number_format(money));
+		SCMToAll(YELLOW, gstr);
+		print(gstr);
+	}
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
+
+YCMD:cashfall(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= 4)
+	{
+		extract params -> new money; else
+		{
+			return SCM(playerid, NEF_GREEN, "Usage: /cashfall <cash>");
+		}
+
+		if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL) {
+			if(money > 25000 || money < 1) return SCM(playerid, -1, ""er"Cash: $1 - $25,000"); // Needs to be increased for eventful requirements.
+		} else {
+		    if(money > 10000 || money < 1) return SCM(playerid, -1, ""er"Cash: $1 - $10,000");
+		}
+
+        format(gstr, sizeof(gstr), "~g~+$%i USD", money);
+		for(new i = 0; i < MAX_PLAYERS; i++)
+		{
+			if(IsPlayerAvail(i))
+			{
+				PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
+				GivePlayerMoneyEx(i, money, false, true);
+				player_notice(i, "CASHFALL", gstr, 4000);
+			}
+		}
+
+		format(gstr, sizeof(gstr), "Admin %s(%i) has given all players $%s", __GetName(playerid), playerid, number_format(money));
+		SCMToAll(YELLOW, gstr);
+		print(gstr);
+	}
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
+YCMD:scorefall(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= 4)
+	{
+		extract params -> new score; else
+		{
+			return SCM(playerid, NEF_GREEN, "Usage: /scorefall <score>");
+		}
+
+		if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL) {
+			if(score > 50 || score < 1) return SCM(playerid, -1, ""er"Score: 1 - 50");
+		} else {
+		    if(score > 100 || score < 1) return SCM(playerid, -1, ""er"Score: 1 - 25");
+		}
+
+        format(gstr, sizeof(gstr), "~y~+%i score", score);
+		for(new i = 0; i < MAX_PLAYERS; i++)
+		{
+			if(IsPlayerAvail(i))
+			{
+				PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
+				GivePlayerScoreEx(i, score, true, true);
+				player_notice(i, "SCOREFALL", gstr, 4000);
+			}
+		}
+
+		format(gstr, sizeof(gstr), "Admin %s(%i) has given all players %i Score", __GetName(playerid), playerid, score);
+		SCMToAll(YELLOW, gstr);
+		print(gstr);
+	}
+	else
+	{
+		SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
+
+YCMD:escorefall(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= 4)
+	{
+		extract params -> new score; else
+		{
+			return SCM(playerid, NEF_GREEN, "Usage: /escorefall <score>");
+		}
+
+		if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL) {
+			if(score > 500 || score < 1) return SCM(playerid, -1, ""er"Score: 1 - 500");
+		} else {
+		    if(score > 600 || score < 1) return SCM(playerid, -1, ""er"Score: 1 - 25");
+		}
+
+        format(gstr, sizeof(gstr), "~y~+%i score", score);
+		for(new i = 0; i < MAX_PLAYERS; i++)
+		{
+			if(IsPlayerAvail(i))
+			{
+				PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
+				GivePlayerScoreEx(i, score, true, true);
+				player_notice(i, "SCOREFALL", gstr, 4000);
+			}
+		}
+
+		format(gstr, sizeof(gstr), "Admin %s(%i) has given all players %i Score", __GetName(playerid), playerid, score);
+		SCMToAll(YELLOW, gstr);
+		print(gstr);
 	}
 	else
 	{
@@ -12642,6 +12855,7 @@ YCMD:tban(playerid, params[], help)
 				format(gstr, sizeof(gstr), ""yellow"** "red"%s(%i) has been banned by Admin %s(%i) [Reason: %s] [Time: %i mins]", __GetName(player), player, __GetName(playerid), playerid, reason, time);
 				format(amsg, sizeof(amsg), "[ADMIN CHAT] "LG_E"Account banned of %s [EXPIRES: %s, REASON: %s]", __GetName(player), UTConvert(gettime() + (time * 60)), reason);
 
+                SetPlayerPos(player, 404.3699, 2473.8491, 29.8077);
 				SCMToAll(-1, gstr);
                 admin_broadcast(COLOR_RED, amsg);
 
@@ -12735,6 +12949,8 @@ YCMD:ban(playerid, params[], help)
 
 				SCMToAll(-1, gstr);
                 admin_broadcast(COLOR_RED, amsg);
+                
+                SetPlayerPos(player, 404.3699, 2473.8491, 29.8077);
 
 	    		format(gstr2, sizeof(gstr2), ""red"You have been banned!"white"\n\nAdmin: %s\nReason: %s\nExpires: %s\n\nIf you think that you have been banned wrongly,\nwrite a ban appeal on "SERVER_FORUMURL"",
 					__GetName(playerid),
@@ -26403,18 +26619,18 @@ procedure server_random_broadcast()
 {
 	static const szRandomServerMessages[12][] =
 	{
-		""yellow_e"- Server - "LB2_E"Visit our site: "SERVER_WWWURL"",
-		""yellow_e"- Server - "LB2_E"Join Minigames for money and score - /help",
-		""yellow_e"- Server - "LB2_E"Access your player preferences: /settings",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
-		""yellow_e"- Server - "LB2_E"Join Minigames to earn money and score - /help",
-		""yellow_e"- Server - "LB2_E"Got suggestions? Post them on our forums! ("SERVER_FORUMURL")",
-		""yellow_e"- Server - "LB2_E"Use /report to report a player to the admins",
-		""yellow_e"- Server - "LB2_E"Add "SERVER_SHORT" to your favlist! samp."SERVER_URL":7777",
-		""yellow_e"- Server - "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip/",
-		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!",
-		""yellow_e"- Server - "LB2_E"Get your own car at /vs which you can tune!"
+		""red".:: HAVOC ::.. "LB2_E"Visit our site: "SERVER_WWWURL"",
+		""red".:: HAVOC ::.. "LB2_E"Join Minigames for money and score - /help",
+		""red".:: HAVOC ::.. "LB2_E"Access your player preferences: /settings",
+		""red".:: HAVOC ::.. "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
+		""red".:: HAVOC ::.. "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
+		""red".:: HAVOC ::.. "LB2_E"Join Minigames to earn money and score - /help",
+		""red".:: HAVOC ::.. "LB2_E"Got suggestions? Post them on our forums! ("SERVER_FORUMURL")",
+		""red".:: HAVOC ::.. "LB2_E"Use /report to report a player to the admins",
+		""red".:: HAVOC ::.. "LB2_E"Add "SERVER_SHORT" to your favlist! samp."SERVER_URL":7777",
+		""red".:: HAVOC ::.. "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip/",
+		""red".:: HAVOC ::.. "LB2_E"Get your own car at /vs which you can tune!",
+		""red".:: HAVOC ::.. "LB2_E"Get your own car at /vs which you can tune!"
 	};
 	
     SCMToAll(WHITE, szRandomServerMessages[random(sizeof(szRandomServerMessages))]);
@@ -29268,7 +29484,7 @@ Log(E_LOG_LEVEL:log_level, const fmat[], va_args<>)
 
 global_broadcast(const fmat[], va_args<>)
 {
-	format(gstr, sizeof(gstr), "[{00FF96}GLOBAL"white"] %s", fmat);
+	format(gstr, sizeof(gstr), "["red"GLOBAL"white"] %s", fmat);
 	va_format(gstr2, sizeof(gstr2), gstr, va_start<1>);
 	return SCMToAll(WHITE, gstr2);
 }
