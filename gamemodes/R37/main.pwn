@@ -12343,7 +12343,7 @@ YCMD:gwar(playerid, params[], help)
 
     if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
 	if(PlayerData[playerid][e_gangid] == 0) return SCM(playerid, -1, ""er"You aren't in any gang! Create a gang /gregister or join one.");
-	if(PlayerData[playerid][e_gangrank] < GANG_POS_SENIOR_MEMBER) return SCM(playerid, -1, ""er"You you need to be at least Senior Member in your gang!");
+	if(PlayerData[playerid][e_gangrank] < GANG_POS_SENIOR_MEMBER) return SCM(playerid, -1, ""er"You need to be at least Senior Member in your gang!");
 
 	new bool:bFound = false;
 	for(new r = 0; r < MAX_GZONES; r++)
@@ -12460,7 +12460,7 @@ YCMD:ginvite(playerid, params[], help)
 		if((PlayerData[playerid][tickLastGInvite] + COOLDOWN_CMD_GINVITE) >= tick) return SCM(playerid, -1, ""er"Please wait a bit before inviting again!");
 	}
 	if(PlayerData[playerid][e_gangid] == 0) return SCM(playerid, -1, ""er"You aren't in any gang!");
-	if(PlayerData[playerid][e_gangrank] < GANG_POS_ADVISOR) return SCM(playerid, -1, ""er"You you need to be at least advisor");
+	if(PlayerData[playerid][e_gangrank] < GANG_POS_ADVISOR) return SCM(playerid, -1, ""er"You need to be at least advisor");
 
 	new player;
 	if(sscanf(params, "r", player))
@@ -27851,6 +27851,7 @@ ExitPlayer(playerid)
 
 			SetPVarInt(playerid, "Robber", 0);
 			SetPVarInt(playerid, "Cop", 0);
+			SetPVarInt(playerid, "InStore", 0);
 
 			SetPlayerColor(playerid, GetPVarInt(playerid, "oldColor"));
 			SetPlayerSkin(playerid, GetPVarInt(playerid, "dSkin"));
