@@ -8313,6 +8313,14 @@ YCMD:colors(playerid, params[], help)
 	return 1;
 }
 
+YCMD:world(playerid, params[], help)
+{
+	format(gstr, sizeof(gstr), "Your virtual world is %i", GetPlayerVirtualWorld(playerid));
+	SCM(playerid, BLUE, gstr);
+	return 1;
+}
+
+
 YCMD:random(playerid, params[], help)
 {
 	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2 || gTeam[playerid] == gTDM_VOTING || gTeam[playerid] == gCNR)
