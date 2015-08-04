@@ -3022,10 +3022,13 @@ public OnPlayerRequestClass(playerid, classid)
 	TextDrawShowForPlayer(playerid, TXTWinterEdition);
 	#endif
 
-	SetPlayerPos(playerid, 2526.1675, -1853.9927, 13.5469);
+	SetPlayerPos(playerid, -1430.8273, 1581.1094, 1055.7191);
 	SetPlayerFacingAngle(playerid, 103.7086);
-	SetPlayerCameraPos(playerid, 2522.4890, -1855.3513, 13.9283);
-	SetPlayerCameraLookAt(playerid, 2523.4316, -1855.0209, 13.8781);
+	SetPlayerInterior(playerid, 14);
+	//SetPlayerCameraPos(playerid, 2522.4890, -1855.3513, 13.9283);
+	//SetPlayerCameraLookAt(playerid, 2523.4316, -1855.0209, 13.8781);
+	SetPlayerCameraPos(playerid, -1435.3335, 1578.2095, 1056.1750);
+	SetPlayerCameraLookAt(playerid, -1434.4907, 1578.7393, 1056.0746);
 
 	ShowPlayerWelcomeTextdraws(playerid);
 
@@ -3076,6 +3079,7 @@ public OnPlayerSpawn(playerid)
 		ShowPlayerInfoTextdraws(playerid);
 		SavePos(playerid);
 		SyncGangZones(playerid);
+		SetPlayerInterior(playerid, 0);
 		
 		if(PlayerSettings[playerid][e_skin] != -1)
 		{
@@ -3094,7 +3098,7 @@ public OnPlayerSpawn(playerid)
         case gFREEROAM:
         {
             ResetPlayerWorld(playerid);
-            SetPVarInt(playerid, "AntiFall", 1);
+            SetPlayerInterior(playerid, 0);
             
    // Spawn setzung moved to OPD (OnPlayerDeath) SetPlayerSpawnInfo, deshalb ist hier kein RandomSpawn call
 
