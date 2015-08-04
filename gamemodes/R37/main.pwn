@@ -11285,6 +11285,7 @@ YCMD:go(playerid, params[], help)
 			if(!IsPlayerAvail(player)) return SCM(playerid, -1, ""er"Player is not avialable");
   			if(Iter_Contains(iterPlayerIgnore[player], playerid)) return SCM(playerid, -1, ""er"This player ignores you");
 			if(player == playerid) return SCM(playerid, -1, ""er"You may not teleport to yourself");
+			if(PlayerData[player][e_level] != 0) return SCM(playerid, -1, ""er"You can't teleport to admins");
 			if(gTeam[player] != gFREEROAM) return SCM(playerid, -1, ""er"Player is currently unavailable to goto");
 			if(PlayerData[player][e_wanteds] != 0) return SCM(playerid, -1, ""er"This player has wanteds");
             if(PlayerData[player][bGWarMode]) return SCM(playerid, -1, ""er"This player is in Gang War");
@@ -23272,7 +23273,8 @@ server_load_visuals()
 	CreateObject(4726, 338.60001, -1853.16003, 5.92000,   0.00000, 0.00000, 270.00000); // LS beach
 	CreateObject(9241, -1182.88000, -12.16000, 14.00000,   0.00000, 0.00000, -135.00000); //SFA 1
 	CreateObject(9241, -1200.43005, -29.73000, 14.00000,   0.00000, 0.00000, -135.00000); //SFA 2
-	CreateObject(18783, 385.4325, 2541.2456, 14.5953,   0.00000, 0.00000, 0.00000); //AA
+	//CreateObject(18783, 385.4325, 2541.2456, 14.5953,   0.00000, 0.00000, 0.00000); //AA
+	CreateObject(19074, 381.27908, 2539.74194, 15.53098,   0.00000, 0.00000, 0.00000);// aa
 	CreateObject(8040,-1296.403,-1665.809,538.216,0.0,0.0,-6.016); // Ski-Ramp
 	CreateObject(8040, 423.46, 3216.41, 739.40,   0.00, 0.00, -106.57); //AAJUMP
 	CreateObject(14548,-2183.280,1194.442,1696.073,0.0,0.0,-3.438); // Andro
@@ -23473,7 +23475,7 @@ server_load_visuals()
 	AddTeleport(5, "Concert", "concert", 1477.8225,-1714.1190,14.1400);
 
     CreateDynamic3DTextLabel(""red">>> SLOW DOWN <<<", RED, 477.7281,1399.4580,735.2565+0.5, 60.0);
-    CreateDynamic3DTextLabel(""white"["lila"Mellnik's Office"white"]", -1, 1794.8202,-1311.3057,120.6237+0.5, 35.0);
+    CreateDynamic3DTextLabel(""white"["lila"Higg's Office"white"]", -1, 1794.8202,-1311.3057,120.6237+0.5, 35.0); //nogger
     CreateDynamic3DTextLabel(""white"["yellow"Admin Liberty City"white"]", -1, 1805.7494,-1302.6721,120.2656+0.5, 35.0);
     CreateDynamic3DTextLabel(""white"["nef_green"Custom car shop"white"]", -1, -1407.0137,1013.8229,1049.0288+0.5, 500.0);
     CreateDynamic3DTextLabel(""white"["nef_yellow"VIP"white"]\nLounge Entrance", -1, -2624.3010,1411.4360,7.2303+0.5, 35.0);
@@ -26631,18 +26633,18 @@ procedure server_random_broadcast()
 {
 	static const szRandomServerMessages[12][] =
 	{
-		""red".:: HAVOC ::.. "LB2_E"Visit our site: "SERVER_WWWURL"",
-		""red".:: HAVOC ::.. "LB2_E"Join Minigames for money and score - /help",
-		""red".:: HAVOC ::.. "LB2_E"Access your player preferences: /settings",
-		""red".:: HAVOC ::.. "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
-		""red".:: HAVOC ::.. "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
-		""red".:: HAVOC ::.. "LB2_E"Join Minigames to earn money and score - /help",
-		""red".:: HAVOC ::.. "LB2_E"Got suggestions? Post them on our forums! ("SERVER_FORUMURL")",
-		""red".:: HAVOC ::.. "LB2_E"Use /report to report a player to the admins",
-		""red".:: HAVOC ::.. "LB2_E"Add "SERVER_SHORT" to your favlist! samp."SERVER_URL":7777",
-		""red".:: HAVOC ::.. "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip/",
-		""red".:: HAVOC ::.. "LB2_E"Get your own car at /vs which you can tune!",
-		""red".:: HAVOC ::.. "LB2_E"Get your own car at /vs which you can tune!"
+		""red"..:: HAVOC ::.. "LB2_E"Visit our site: "SERVER_WWWURL"",
+		""red"..:: HAVOC ::.. "LB2_E"Join Minigames for money and score - /help",
+		""red"..:: HAVOC ::.. "LB2_E"Access your player preferences: /settings",
+		""red"..:: HAVOC ::.. "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
+		""red"..:: HAVOC ::.. "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip",
+		""red"..:: HAVOC ::.. "LB2_E"Join Minigames to earn money and score - /help",
+		""red"..:: HAVOC ::.. "LB2_E"Got suggestions? Post them on our forums! ("SERVER_FORUMURL")",
+		""red"..:: HAVOC ::.. "LB2_E"Use /report to report a player to the admins",
+		""red"..:: HAVOC ::.. "LB2_E"Add "SERVER_SHORT" to your favlist! samp."SERVER_URL":7777",
+		""red"..:: HAVOC ::.. "LB2_E"Get VIP (/vip) today! "SERVER_WWWURL"/vip/",
+		""red"..:: HAVOC ::.. "LB2_E"Get your own car at /vs which you can tune!",
+		""red"..:: HAVOC ::.. "LB2_E"Get your own car at /vs which you can tune!"
 	};
 	
     SCMToAll(WHITE, szRandomServerMessages[random(sizeof(szRandomServerMessages))]);
