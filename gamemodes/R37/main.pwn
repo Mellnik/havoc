@@ -153,7 +153,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define war_sign                        "{FFFFFF}[{AAAAFF}WAR{FFFFFF}]"
 #define gungame_sign                    "{FFFFFF}[{AAAAFF}GUNGAME{FFFFFF}]"
 #define fallout_sign                    "{FFFFFF}[{AAAAFF}FALLOUT{FFFFFF}]"
-#define server_sign                     "{FFFFFF}[{FF005F}SERVER{FFFFFF}]"
+#define server_sign                     "{FF000F}..:: HAVOC ::.."
 #define gang_sign                       "{FFFFFF}[{FFA000}GANG{FFFFFF}]"
 #define nefa                            ""red"::{FFFFFF}[{FFE600}"SERVER_SHORT"{FFFFFF}"red"::]"
 #define nef                             "{FFE600}"SERVER_SHORT"{FFFFFF}"
@@ -29300,17 +29300,17 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 
 				if(PlayerData[playerid][e_level] > 0)
 				{
-					format(gstr2, sizeof(gstr2), ""server_sign" "r_besch"Successfully logged in. (Level: %s)", g_szStaffLevelNames[PlayerData[playerid][e_level]][e_rank]);
+					format(gstr2, sizeof(gstr2), ""server_sign" "GREY_E"Successfully logged in. (Level: %s)", g_szStaffLevelNames[PlayerData[playerid][e_level]][e_rank]);
 					SCM(playerid, -1, gstr2);
 		   		}
 		   		else
 				{
-				   	SCM(playerid, -1, ""server_sign" "r_besch"Successfully logged in!");
+				   	SCM(playerid, -1, ""server_sign" "GREY_E"Successfully logged in!");
 				}
 
-				format(gstr, sizeof(gstr), ""server_sign" "r_besch"You were last online at %s and registered on %s", UTConvert(PlayerData[playerid][e_lastlogin]), UTConvert(PlayerData[playerid][e_regdate]));
+				format(gstr, sizeof(gstr), ""server_sign" "GREY_E"You were last online at %s and registered on %s", UTConvert(PlayerData[playerid][e_lastlogin]), UTConvert(PlayerData[playerid][e_regdate]));
 				SCM(playerid, -1, gstr);
-				format(gstr, sizeof(gstr), ""server_sign" "r_besch"You've been online for %s", GetPlayingTimeFormat(playerid));
+				format(gstr, sizeof(gstr), ""server_sign" "GREY_E"You've been online for %s", GetPlayingTimeFormat(playerid));
 				SCM(playerid, -1, gstr);
 
                 PlayerData[playerid][e_timeslogin]++;
