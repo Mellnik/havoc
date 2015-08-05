@@ -42,7 +42,7 @@
 
 #pragma dynamic 8192        // for md-sort
 
-#define IS_RELEASE_BUILD (false)
+#define IS_RELEASE_BUILD (true)
 #define INC_ENVIRONMENT (true)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
@@ -109,9 +109,9 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_IP                       "213.163.74.164:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
-#define SERVER_VERSION					"Build 37-3"
+#define SERVER_VERSION					"Build 38"
 #else
-#define SERVER_VERSION					"Beta:Build 37-3"
+#define SERVER_VERSION					"Beta:Build 38"
 #endif
 #define SAMP_VERSION                    "0.3.7 R2"
 
@@ -412,7 +412,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define COOLDOWN_CMD_AR                 (1000)
 #define COOLDOWN_CMD_ROB                (10000)
 #define COOLDOWN_CMD_BUY                (2000)
-#define COOLDOWN_CMD_GIVECASH           (120000)
+#define COOLDOWN_CMD_GIVECASH           (180000)
 #define COOLDOWN_CMD_REPORT             (30000)
 #define COOLDOWN_CMD_SELL               (3000)
 #define COOLDOWN_CMD_CHANGEPASS         (30000)
@@ -3099,6 +3099,7 @@ public OnPlayerSpawn(playerid)
         {
             ResetPlayerWorld(playerid);
             SetPlayerInterior(playerid, 0);
+            DisableRemoteVehicleCollisions(playerid, 0);
             
    // Spawn setzung moved to OPD (OnPlayerDeath) SetPlayerSpawnInfo, deshalb ist hier kein RandomSpawn call
 
@@ -4965,7 +4966,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	{
 	    case 0..3:
 	    {
-		    if(++PlayerData[playerid][iDeathCountThreshold] == 4)
+		    if(++PlayerData[playerid][iDeathCountThreshold] == 2)
 		    {
 			    format(gstr, sizeof(gstr), "[SUSPECT] Fake deaths/kills detected, kicking (%s, %i)", __GetName(playerid), playerid);
 			    admin_broadcast(RED, gstr);
@@ -5267,7 +5268,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 	    	format(gstr, sizeof(gstr), "%s(%i) has died!", __GetName(playerid), playerid);
 			race_broadcast(gstr);
-
+            DisableRemoteVehicleCollisions(playerid, 0);
 			gTeam[playerid] = gFREEROAM;
 
 			if(g_RaceVehicle[playerid] != -1)
@@ -6186,6 +6187,7 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 			SCMToAll(YELLOW, gstr);
 			GivePlayerMoneyEx(playerid, Prize[0], true, true);
 			GivePlayerScoreEx(playerid, Prize[1], true, true);
+			DisableRemoteVehicleCollisions(playerid, 0);
 			
 			if(g_rPosition <= 5 && TotalRaceTime > 40000 && GetPlayerScoreEx(playerid) > 1000)
 			{
@@ -9387,7 +9389,7 @@ YCMD:cnrhelp(playerid, params[], help)
  	}
  	else if(GetPVarInt(playerid, "Robber") == 1)
 	{
-		strcat(line3, ""ORANGE_E"You have joined the Las Venturas Mafia!\n\n"BLUE_E"Criminal Help:\n"WHITE_E"Your job is to cause mayham in the streets of Las Venturas\nYou must do your best to evade any cops while you're at it.\nThe cops are marked as "LB_E"blue"WHITE_E" on your map radar.\nThe elite Swat team is marked as "BLUE_E"darkblue on your map radar.\n");
+		strcat(line3, ""ORANGE_E"You have joined the Las Venturas Mafia!\n\n"BLUE_E"Criminal Help:\n"WHITE_E"Your job is to cause mayhem in the streets of Las Venturas\nYou must do your best to evade any cops while you're at it.\nThe cops are marked as "LB_E"blue"WHITE_E" on your map radar.\nThe elite Swat team is marked as "BLUE_E"darkblue on your map radar.\n");
 		strcat(line3, "\nYou can enter some shops and "RED_E"/rob "WHITE_E"the store for cash.\nType "PINK_E"/tpm "WHITE_E"to teamchat with your team members.\n\nType /cnrhelp to open this box up at anytime, Good luck boys!");
 		ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""RED_E"Criminal Help", line3, "OK", "");
 	}
@@ -9715,11 +9717,11 @@ YCMD:adminhelp(playerid, params[], help)
 
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[2][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/online /offline /onduty /offduty /akill /rv /day /tgc\n/burn /move /tban /ban /cuff /uncuff /jail /unjail /unfreeze /readrules\n\n");
+		strcat(string, "/mkick /online /offline /onduty /offduty /akill /rv /day /tgc\n/burn /move /tban /ban /cuff /uncuff /jail /unjail /freeze /unfreeze /readrules\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[3][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/freeze /eject /go /getip /get /mkick /clearchat /iplookup /tplayer\n/dawn /night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n\n");
+		strcat(string, "/eject /go /getip /get /clearchat /iplookup /tplayer\n/dawn /night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
@@ -11617,7 +11619,7 @@ YCMD:warn(playerid, params[], help)
 
 YCMD:mkick(playerid, params[], help)
 {
-	if(PlayerData[playerid][e_level] >= 3)
+	if(PlayerData[playerid][e_level] >= 2)
 	{
 		new player;
 		if(sscanf(params, "r", player))
@@ -12377,7 +12379,7 @@ YCMD:gwar(playerid, params[], help)
 		
 		if(Iter_Contains(iterGangWar, PlayerData[playerid][e_gangid]))
 		{
-		    return ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" Gang War", ""white"You can't attack this zone because your gang is already\ninvloved in another Gang War!", "OK", "");
+		    return ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" Gang War", ""white"You can't attack this zone because your gang is already\ninvolved in another Gang War!", "OK", "");
 		}
 		
 		if(GZoneData[r][e_localgang] != 0)
@@ -13372,7 +13374,7 @@ YCMD:slap(playerid, params[], help)
 			  	Float:POS[3];
 
   			GetPlayerHealth(player, Health);
-			SetPlayerHealth(player, (Health - 25.0));
+		//	SetPlayerHealth(player, (Health - 25.0));
 			GetPlayerPos(player, POS[0], POS[1], POS[2]);
 			SetPlayerPos(player, POS[0], POS[1], floatadd(POS[2], 10.0));
 			
@@ -15671,7 +15673,7 @@ YCMD:unspec(playerid, params[], help)
 
 YCMD:freeze(playerid, params[], help)
 {
-	if(PlayerData[playerid][e_level] >= 3)
+	if(PlayerData[playerid][e_level] >= 2)
 	{
 		new player;
 		if(sscanf(params, "r", player))
@@ -16568,9 +16570,9 @@ YCMD:givecash(playerid, params[], help)
 		{
 			return SCM(playerid, RED, "You don't have that much!");
 		}
-    	if(cash < 100 || cash > 250000)
+    	if(cash < 100 || cash > 1000000)
 		{
-			return SCM(playerid, YELLOW, "Info: $100 - $250,000");
+			return SCM(playerid, YELLOW, "Info: $100 - $1,000,000");
 		}
     	if(player == playerid)
 		{
@@ -18093,11 +18095,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 						SetPVarInt(playerid, "Robber", 1);
 						SetPVarInt(playerid, "Cop", 0);
 
-  	    				format(string, sizeof(string), ""cnr_sign" "ORANGE_E"%s(%i) has joined the "LB_E"Robbers "ORANGE_E"in the /CNR minigame.", __GetName(playerid), playerid);
+  	    				format(string, sizeof(string), ""cnr_sign" "ORANGE_E"%s(%i) has joined the "ORANGE_E"Robbers "ORANGE_E"in the /CNR minigame.", __GetName(playerid), playerid);
   	    				SCMToAll(-1, string);
 						PreloadAnimLib(playerid, "SHOP");
 			    		SCM(playerid, COLOR_GREY, ""nef" You have joined the Robbers!");
-			    		SCM(playerid, COLOR_GREY, ""nef" Your mission is create mayham in LV and evade cops!");
+			    		SCM(playerid, COLOR_GREY, ""nef" Your mission is create mayhem in LV and evade cops!");
 						GameTextForPlayer(playerid, "~w~You have joined the ~r~Robbers team~w~!", 4000, 4);
 						SetPlayerColor(playerid, COLOR_ORANGE);
 						ResetPlayerWeapons(playerid);
@@ -18146,7 +18148,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
   	    				SCMToAll(-1, string);
 						PreloadAnimLib(playerid, "SHOP");
 			    		SCM(playerid, -1, ""nef" You have joined the MOB!");
-			    		SCM(playerid, -1, ""nef" This is the elite version of the robbers, Your mission is create mayham in LV and evade cops!");
+			    		SCM(playerid, -1, ""nef" This is the elite version of the robbers, Your mission is create mayhem in LV and evade cops!");
 						GameTextForPlayer(playerid, "~w~You have joined the ~r~pro Robbers team~w~!", 4000, 4);
 						SetPlayerColor(playerid, COLOR_CNR_PRO_ROBBER);
 						ResetPlayerWeapons(playerid);
@@ -21409,7 +21411,7 @@ SkipLogin(playerid)
 	{
 	    GetPlayerName(playerid, PlayerData[playerid][e_name], MAX_PLAYER_NAME + 1);
 			
-		format(gstr, sizeof(gstr), ""white"Your name has been changed to %s because you failed to log in.\n\n"nef_yellow"Please restart the game if this is incorrect.\n\n\n"red"You can reset your password at "SERVER_WWWURL"/reset", newname);
+		format(gstr, sizeof(gstr), ""white"Your name has been changed to %s because you failed to log in.\n\n"nef_yellow"Please restart the game if this is incorrect.", newname); //\n\n\n"red"You can reset your password at "SERVER_WWWURL"/reset
 		ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef"", gstr, "OK", "");
 		
 	    PlayerData[playerid][e_regdate] = gettime();
@@ -22852,7 +22854,7 @@ server_initialize()
 		
 	// Other stuff to initialize TODO: Overhaul spawns using polygons
     g_SpawnAreas[0] = CreateDynamicSphere(341.8535, -1852.6327, 6.8569, 25.0); // <- beach sphere
-    g_SpawnAreas[1] = CreateDynamicSphere(385.4325, 2541.2456, 14.5953, 13.5); // <- AA sphere
+    g_SpawnAreas[1] = CreateDynamicSphere(385.4325, 2541.2456, 14.5953, 14.0); // <- AA sphere
     g_SpawnAreas[2] = CreateDynamicSphere(-1203.3666, -27.8846, 15.8403, 15.0); // <- SFA 1 sphere
     g_SpawnAreas[3] = CreateDynamicSphere(-1183.3441, -9.4441, 15.8403, 15.0); // <- SFA 2 sphere
     g_SpawnAreas[4] = CreateDynamicSphere(-2338.0479, -1636.5223, 485.6543, 13.5); // <- MC sphere
@@ -27973,7 +27975,7 @@ ExitPlayer(playerid)
 			ResetPlayerWorld(playerid);
 			RandomSpawn(playerid, true);
 			SetPlayerHealth(playerid, 100.0);
-			SetPlayerSkin(playerid, GetPVarInt(playerid, "LastSkin"));
+			SetPlayerSkin(playerid, PlayerSettings[playerid][e_skin]);
 
 			if(GetPVarInt(playerid, "HadGod") == 1) Command_ReProcess(playerid, "/god silent", false);
 			SetPVarInt(playerid, "doingStunt", 0);
@@ -27992,7 +27994,7 @@ ExitPlayer(playerid)
 			RandomSpawn(playerid, true);
 			RandomWeapons(playerid);
 			SetPlayerHealth(playerid, 100.0);
-			SetPlayerSkin(playerid, GetPVarInt(playerid, "LastSkin"));
+			SetPlayerSkin(playerid, PlayerSettings[playerid][e_skin]);
 
 			if(GetPVarInt(playerid, "HadGod") == 1) Command_ReProcess(playerid, "/god silent", false);
 			SetPVarInt(playerid, "doingStunt", 0);
@@ -28011,7 +28013,7 @@ ExitPlayer(playerid)
 			RandomSpawn(playerid, true);
 			RandomWeapons(playerid);
 			SetPlayerHealth(playerid, 100.0);
-			SetPlayerSkin(playerid, GetPVarInt(playerid, "LastSkin"));
+			SetPlayerSkin(playerid, PlayerSettings[playerid][e_skin]);
 
 			if(GetPVarInt(playerid, "HadGod") == 1) Command_ReProcess(playerid, "/god silent", false);
 			SetPVarInt(playerid, "doingStunt", 0);
@@ -28040,6 +28042,7 @@ ExitPlayer(playerid)
 			race_broadcast(gstr);
 
 			gTeam[playerid] = gFREEROAM;
+			DisableRemoteVehicleCollisions(playerid, 0);
 
 			if(g_RaceVehicle[playerid] != -1)
 			{
@@ -28640,6 +28643,7 @@ race_player_setup(playerid)
 	SetVehicleVirtualWorld(g_RaceVehicle[playerid], g_RaceArray[E_rWorld]);
 	if(IsComponentIdCompatible(GetVehicleModel(g_RaceVehicle[playerid]), 1010)) AddVehicleComponent(g_RaceVehicle[playerid], 1010);
 	RepairVehicle(g_RaceVehicle[playerid]);
+	DisableRemoteVehicleCollisions(playerid, 1);
 
     Streamer_ToggleItemUpdate(playerid, STREAMER_TYPE_OBJECT, 0);
     Streamer_ToggleItemUpdate(playerid, STREAMER_TYPE_PICKUP, 0);
