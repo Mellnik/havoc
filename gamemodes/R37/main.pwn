@@ -17750,8 +17750,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			        }
 			        case 1:
 			        {
-					//	mysql_tquery(pSQL, "SELECT * FROM `bans` ORDER BY `Date` DESC LIMIT 30;");
-					   // ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 2, DIALOG_STYLE_INPUT, ""nef" :: Logon logs", ""white"This feature converts account id's to name.\n\n Enter a account id to convert", "OK", "Cancel");
 
 			        }
 			        case 2:
