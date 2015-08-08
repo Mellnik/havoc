@@ -13805,6 +13805,12 @@ YCMD:vips(playerid, params[], help)
 YCMD:p(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_vip] != 1 && PlayerData[playerid][e_level] == 0) return Command_ReProcess(playerid, "/vip", false);
+	
+	if(PlayerData[playerid][bMuted])
+	{
+	    SCM(playerid, RED, "You are muted! Please wait until the time is over!");
+	    return 0;
+	}
 
 	if(sscanf(params, "s[143]", gstr))
 	{
@@ -17744,7 +17750,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			        }
 			        case 1:
 			        {
-			           	mysql_tquery(pSQL, "SELECT * FROM `bans` ORDER BY `Date` DESC LIMIT 30;");
+					//	mysql_tquery(pSQL, "SELECT * FROM `bans` ORDER BY `Date` DESC LIMIT 30;");
+					   // ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 2, DIALOG_STYLE_INPUT, ""nef" :: Logon logs", ""white"This feature converts account id's to name.\n\n Enter a account id to convert", "OK", "Cancel");
+
 			        }
 			        case 2:
 			        {
@@ -29327,7 +29335,7 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				    SCM(playerid, -1, ""server_sign" "r_besch"Your saved color has been set. (/deletecolor to remove)");
 				}
 
-				if(PlayerData[playerid][e_vip] == 1)
+				if(PlayerData[playerid][e_vip] == 1 && PlayerSettings[playerid][e_vip_join_msg] == 1)
 				{
                     format(gstr2, sizeof(gstr2), ""server_sign" "r_besch"VIP %s(%i) logged in!", __GetName(playerid), playerid);
                     SCMToAll(-1, gstr2);
