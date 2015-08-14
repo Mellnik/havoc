@@ -42,7 +42,7 @@
 
 #pragma dynamic 8192        // for md-sort
 
-#define IS_RELEASE_BUILD (true)
+#define IS_RELEASE_BUILD (false)
 #define INC_ENVIRONMENT (true)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
@@ -109,9 +109,9 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_IP                       "213.163.74.164:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
-#define SERVER_VERSION					"Build 38"
+#define SERVER_VERSION					"Build 38-1"
 #else
-#define SERVER_VERSION					"Beta:Build 38"
+#define SERVER_VERSION					"Beta:Build 38-1"
 #endif
 #define SAMP_VERSION                    "0.3.7 R2"
 
@@ -476,6 +476,7 @@ enum (+= 7)
 	WORLD_WAR,
 	WORLD_DERBY,
 	WORLD_FALLOUT,
+	WORLD_EVENT,
 	WORLD_DM
 };
 
@@ -551,6 +552,7 @@ enum (+= 56)
     DIALOG_SET_BOOST_FACTOR,
     DIALOG_SET_JUMP_FACTOR,
     DIALOG_CCTV,
+    DIALOG_EVENT,
     NO_DIALOG_ID
 };
 
@@ -621,6 +623,7 @@ enum
 	STORE,
 	SPEC,
 	VIPL,
+	EVENT,
 	JAIL,
 	gSAWN
 };
@@ -734,6 +737,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
     bool:bHideGC,
 	bool:bAchsLoad,
 	bool:bVIPLInv,
+	bool:bEventInv,
 	bool:bIsDead,
 	bool:bShowToys,
 	bool:bAllowPlayerTeleport,
@@ -3121,6 +3125,13 @@ public OnPlayerSpawn(playerid)
 			{
 			    SetPlayerArmour(playerid, 100.0);
 			}
+		}
+		case EVENT:
+		{
+		  	gTeam[playerid] = gFREEROAM;
+			ResetPlayerWorld(playerid);
+			RandomSpawn(playerid);
+   			RandomWeapons(playerid);
 		}
         case JAIL:
         {
@@ -8728,6 +8739,73 @@ YCMD:password(playerid, params[], help)
 	return 1;
 }
 
+YCMD:eventwinner(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= 3)
+	{
+	    new player, amount;
+	    if(sscanf(params, "ri", player, amount))
+	    {
+	        return SCM(playerid, NEF_GREEN, "Usage: /eventwinner <playerid> <amount>");
+	    }
+
+	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
+		if(gTeam[player] != EVENT)	return SCM(playerid, -1, ""er"Player is not included in the event!");
+
+    	if(amount < 1 || amount > 100000)
+		{
+			return SCM(playerid, -1, ""er"$1 - $100,000");
+		}
+
+        if(!islogged(player)) return SCM(playerid, -1, ""er"This player is not registered!");
+
+		if(IsPlayerAvail(player))
+		{
+			if(player != playerid)
+			{
+				format(gstr, sizeof(gstr), ""white"["red"EVENT"white"] "LB_E"Congratulations staff member %s(%i) has announced you as the winner! "nef_yellow"Prize: $%s!!", __GetName(playerid), playerid, number_format(amount));
+				SCM(player, YELLOW, gstr);
+				format(gstr, sizeof(gstr), "You announced %s as the winner and rewarded them, $%s", __GetName(player), number_format(amount));
+				SCM(playerid, YELLOW, gstr);
+			}
+			else
+			{
+				format(gstr, sizeof(gstr), "You made yourself the winner and you have won %s.", number_format(amount));
+				SCM(playerid, YELLOW, gstr);
+			}
+
+			format(gstr, sizeof(gstr), ""white"["red"EVENT"white"] %s(%i) has won the event! "nef_yellow"Prize: $%s", __GetName(player), player, number_format(amount));
+			SCMToAll(-1, gstr);
+			print(gstr);
+			GivePlayerMoneyEx(player, amount);
+			
+			for(new i = 0; i < MAX_PLAYERS; i++)
+			{
+   				if(gTeam[i] == EVENT)
+			    {
+					TogglePlayerControllable(i, true);
+					RandomSpawn(i, true);
+					RandomWeapons(i);
+					HidePlayerFalloutTextdraws(i);
+    				ResetPlayerWorld(i);
+    				//fallout_broadcast("Fallout has been canceled!");
+					gTeam[i] = gFREEROAM;
+  					}
+				}
+			}
+			else
+			{
+				SCM(playerid, -1, ""er"Player is not connected or unavailable");
+				}
+			}
+			else
+			{
+				SCM(playerid, -1, NO_PERM);
+				}
+	return 1;
+}
+
 YCMD:accept(playerid, params[], help)
 {
 	if(gTeam[playerid] != gFREEROAM) return SCM(playerid, RED, NOT_AVAIL);
@@ -8737,6 +8815,28 @@ YCMD:accept(playerid, params[], help)
     {
         return SCM(playerid, NEF_GREEN, "Usage: /accept <option>");
     }
+    
+    if(!strcmp(gstr, "event", true))
+	{
+		if(!PlayerData[playerid][bEventInv])
+		{
+		    return SCM(playerid, -1, ""er"You got no invitation");
+		}
+
+		if(gTeam[playerid] != gFREEROAM)
+		{
+		    Command_ReProcess(playerid, "/exit", false);
+		}
+		
+	    gTeam[playerid] = EVENT;
+	    ShowPlayerDialog(playerid, -1, DIALOG_STYLE_LIST, "Close", "Close", "Close", "Close");
+	    
+    	ShowPlayerDialog(playerid, DIALOG_EVENT, DIALOG_STYLE_LIST, ""nef" :: Event map selection (Players) please select a suitable event location", ""white"Dodge the shamal\n8 Track race\n\nMount chiliad(SkyDives)", "Select", "Cancel");
+		SCM(playerid, -1, ""yellow_e"You've used your invitation");
+
+		PlayerData[playerid][bEventInv] = false;
+		return 1;
+	}
     
  	if(!strcmp(gstr, "vip", true))
 	{
@@ -9396,6 +9496,53 @@ YCMD:cnrhelp(playerid, params[], help)
 	else SCM(playerid, COLOR_BLUE, ""nef" "YELLOW_E"You must be in a /cnr minigame to use this command!");
 	return 1;
 }
+// Event world for players, invite implimented due to kids not playing by the rules. // using same cooldown time as VIP Lounge invite *see define*
+
+YCMD:einvite(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= 1)
+	{
+		new tick = GetTickCountEx();
+	 	if(PlayerData[playerid][e_level] != MAX_ADMIN_LEVEL)
+		{
+			if((PlayerData[playerid][tickLastVIPLInv] + COOLDOWN_CMD_VIPLI) >= tick)
+			{
+			    return player_notice(playerid, "Command is on cooldown!", "");
+			}
+		}
+
+		new player;
+		if(sscanf(params, "r", player))
+		{
+		    return SCM(playerid, NEF_GREEN, "Usage: /einvite <playerid>");
+		}
+
+	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
+		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
+
+ 		if(IsPlayerAvail(player))
+		{
+			PlayerData[player][bEventInv] = true;
+
+			format(gstr, sizeof(gstr), ""LB_E"Administrator "red"%s(%i) "LB_E"invited you to attend an event, type '/accept event' to join", __GetName(playerid), playerid);
+			SCM(player, -1, gstr);
+
+			format(gstr, sizeof(gstr), ""red"Event invite has been sent, waiting for response from %s(%i)", __GetName(player), player);
+			SCM(playerid, -1, gstr);
+
+		    PlayerData[playerid][tickLastVIPLInv] = tick;
+		}
+		else
+		{
+			SCM(playerid, -1, ""er"Player is not available");
+		}
+	}
+	else
+	{
+	   SCM(playerid, -1, NO_PERM);
+	}
+	return 1;
+}
 
 YCMD:duel(playerid, params[], help)
 {
@@ -9713,7 +9860,7 @@ YCMD:adminhelp(playerid, params[], help)
 
 		format(gstr, sizeof(gstr), ""white"%s\n", g_szStaffLevelNames[1][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/suspect /asay /warn /slap /reports /spec /unspec /disarm\n/rplayers /dplayers /pweaps /getin /gotoxyza /spectators\n/kick /mute /unmute /adminhq /ncrecords\n\n");
+		strcat(string, "/einvite /suspect /asay /warn /slap /reports /spec /unspec /disarm\n/rplayers /dplayers /pweaps /getin /gotoxyza /spectators\n/kick /mute /unmute /adminhq /ncrecords\n\n");
 
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[2][e_rank]);
 		strcat(string, gstr);
@@ -9721,7 +9868,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[3][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/eject /go /getip /get /clearchat /iplookup /tplayer\n/dawn /night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n\n");
+		strcat(string, "/eventwinner /eventplan /eject /go /getip /get /clearchat /iplookup /tplayer\n/dawn /night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
@@ -9729,7 +9876,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[5][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/ecashfall /escorefall /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /ereset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /screate /gzonecreate");
+		strcat(string, "/grantnc /ecashfall /escorefall /setcash /setbcash /setscore /gdestroy /addcash /addscore\n/resetrc /hreset /ereset /hsetvalue /hsetscore\n/setentlevel /hcreate /ecreate /screate /gzonecreate");
 
         ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Admin Commands", string, "OK", "");
 	}
@@ -10141,7 +10288,7 @@ YCMD:setbcash(playerid, params[], help)
 	}
 	return 1;
 }
-/*
+
 YCMD:grantnc(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] >= MAX_ADMIN_LEVEL)
@@ -10188,7 +10335,17 @@ YCMD:grantnc(playerid, params[], help)
 		SCM(playerid, -1, NO_PERM);
 	}
 	return 1;
-}*/
+}
+
+YCMD:eventplan(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] == 0)
+	    return SCM(playerid, -1, NO_PERM);
+
+	gTeam[playerid] = EVENT;
+	ShowPlayerDialog(playerid, DIALOG_EVENT, DIALOG_STYLE_LIST, ""nef" :: Event map selection (Staff) please select a suitable event location", ""white"Dodge the shamal\n8 Track race\nMount chiliad(SkyDives)\nEvent viewer", "Select", "Cancel");
+	return 1;
+}
 
 YCMD:supervision(playerid, params[], help)
 {
@@ -17689,6 +17846,38 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	            player_notice(playerid, "Email updated", "");
 	            return true;
 			}
+			case DIALOG_EVENT:
+			{
+				switch(listitem)
+				{
+				    case 0:
+				    {
+				    	SetPlayerVirtualWorld(playerid, WORLD_EVENT);
+				    	SetPlayerPos(playerid, 2573.9934, 1343.0865, 78.4764);
+				    	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Event", ""white"Welcome to event world!\n "red"Please follow all staff instructions or you will be removed!", "OK", "");
+				    	SetPVarInt(playerid, "HadGod", 0);
+				    	SetPlayerHealth(playerid, 100.0);
+				    	
+				    }
+				    case 1:
+					{
+                        SetPlayerVirtualWorld(playerid, WORLD_EVENT+1);
+                        ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Event", ""white"Welcome to event world!\n "red"Please follow all staff instructions or you will be removed!", "OK", "");
+                        SetPlayerInterior(playerid, 7);
+                        SetPlayerPos(playerid, -1398.0653, -217.0289,1051.1158);
+                        SetPVarInt(playerid, "HadGod", 0);
+                        SetPlayerHealth(playerid, 100.0);
+					}
+					case 2:
+					{
+					    not_yet_implemented(playerid);
+                        //SCM(playerid, COLOR_YELLOW, ">> "RED_E"Debug: Dialog has responded, ready for correct code (Mount chiliad)");
+                       // SetPlayerVirtualWorld(playerid, WORLD_EVENT+2);
+                        //ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Event", ""white"Welcome to event world!\n "red"Please follow all staff instructions or you will be removed!", "OK", "");
+						}
+					}
+				return true;
+			}
 			case DIALOG_CCTV:
 			{
 				switch(listitem)
@@ -23400,7 +23589,7 @@ server_load_visuals()
 	AddTeleport(3, "Quad Parkour", "qp", -2904.806, 880.312, 5.354);
 	AddTeleport(3, "Quad Parkour 2", "qp2", 2121.9146,2397.7786,51.2586);
 	AddTeleport(5, "Los Santos Beach", "beach", 341.8535, -1852.6327, 8.2618);
-	AddTeleport(5, "Mount Chilliad", "mc", -2330.8264,-1636.1765,485.6543);
+	AddTeleport(5, "Mount Chiliad", "mc", -2330.8264,-1636.1765,485.6543);
 	AddTeleport(8, "Bayside", "bayside", -2227.2446,2326.8723,7.5469);
 	AddTeleport(5, "San Fierro Airport", "sfa", -1196.3280, -17.4523, 15.8281);
 	AddTeleport(8, "Los Santos Airport", "lsa", 2012.4763,-2448.1399,14.6396);
@@ -24551,8 +24740,11 @@ procedure Derby()
 			    	
 			    	PlayerData[i][bDerbyWinner] = false;
 			    	
-			    	format(gstr, sizeof(gstr), "%s won the Derby and earned "nef_yellow"$%s", __GetName(i), number_format(money));
-					derby_broadcast(gstr);
+			    //	format(gstr, sizeof(gstr), ""white"["red"DERBY"white"]"LB_E"%s won the Derby! "nef_yellow"Prize: $%s and %i score!", __GetName(i), number_format(money), number_format(score));
+				//	derby_broadcast(gstr);
+					//Msg to everyone. Above code disabled.
+ 					format(gstr, sizeof(gstr), ""white"["red"DERBY"white"] "LB_E"%s won the Derby! "nef_yellow"Prize: $%s and %i score!", __GetName(i), number_format(money), number_format(score));
+					SCMToAll(-1, gstr);
 	   			}
 				SetPlayerDerbyStaticMeshes(i);
 	      		ShowDialog(i, DIALOG_DERBY_VOTING);
@@ -27898,6 +28090,18 @@ ExitPlayer(playerid)
 		    SetPVarInt(playerid, "doingStunt", 0);
 		    PlayerData[playerid][tickJoin_bmx] = 0;
 		    return 0;
+		}
+		case EVENT:
+		{
+  			SetPlayerPos(playerid, -2623.6348, 1407.9154, 7.1016);
+		    ResetPlayerWorld(playerid);
+		    gTeam[playerid] = gFREEROAM;
+		    PlayerPlaySound(playerid, 1069, 0, 0, 0);
+
+		    if(GetPVarInt(playerid, "HadGod") == 1) Command_ReProcess(playerid, "/god silent", false);
+		    SetPVarInt(playerid, "doingStunt", 0);
+		    PlayerData[playerid][tickJoin_bmx] = 0;
+			return 0;
 		}
 	    case SPEC:
 	    {
