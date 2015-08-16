@@ -28444,7 +28444,7 @@ procedure OnOfflineBanAttempt(playerid, account_id, reason[])
 {
 	if(cache_get_row_count() > 0)
 	{
-		format(gstr, sizeof(gstr), ""er"Player was already banned by admin id %i", account_id);
+		format(gstr, sizeof(gstr), ""er"Player was already banned by admin id %i", cache_get_row_int(0, 0));
 	    SCM(playerid, -1, gstr);
 	}
 	else
