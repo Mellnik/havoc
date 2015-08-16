@@ -7310,6 +7310,15 @@ YCMD:plane(playerid, params[], help)
     PortPlayerMap(playerid, 1841.8307,-1398.3483,117.0471,66.2874, "Plane", "plane");
     return 1;
 }
+YCMD:disco(playerid, params[], help)
+{
+	if(PortPlayerMap(playerid, 916.0006,-1663.1764,10003.9453,90.6284, "Disco", "Disco"))
+	{
+		if(IsPlayerInAnyVehicle(playerid)) return player_notice(playerid, "Exit your vehicle", "");
+		PlayAudioStreamForPlayer(playerid, "http://108.61.73.117:8036/listen.pls");
+	}
+	return 1;
+}
 YCMD:et(playerid, params[], help)
 {
     PortPlayerMap(playerid, 956.2977,2441.0171,205.7626,183.3917, "Eiffel Tower", "et");
@@ -23332,6 +23341,9 @@ server_load_visuals()
 
 	new beach_text = CreateDynamicObject(19479, 309.903930, -1934.953369, 12.736993, 0.000000, 0.000000, 39.940856);
 	SetDynamicObjectMaterialText(beach_text, 0, ""orange""SERVER_WWWURL"\n"red""SERVER_VERSION"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 30, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+	
+	new aa_text = CreateDynamicObject(8323, 426.52484, 2528.90259, 21.78450,   0.00000, 0.00000, -87.12002);
+	SetDynamicObjectMaterialText(aa_text, 0, ""nef_yellow"Havoc Freeroam\n "nef_red"Welcome to (USER)'s house!", OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
     pick_chainsaw = CreateDynamicPickup(341, 23, 1219.1809,-924.6318,42.9045);
     pick_life[0] = CreateDynamicPickup(1240, 23, -1987.6259,274.7049,34.9564);
@@ -23642,6 +23654,7 @@ server_load_visuals()
 	AddTeleport(1, "Sky", "sky", 1544.1896,-1352.2094,329.4762);
 	AddTeleport(4, "San Fierro Tower Jump", "sftj", -1753.6401,884.9623,295.8750);
 	AddTeleport(4, "Plane", "plane", 1841.8307,-1398.3483,117.0471);
+	AddTeleport(4, "Disco", "Disco", 917.500000,-1663.330000,10003.940000);
 	AddTeleport(8, "Farm", "farm", -1206.7996,-1056.9430,128.3646);
 	AddTeleport(8, "Docks", "docks", 2714.5000,-2711.2676,2.4919);
 	AddTeleport(8, "Palomino Creek", "palominocreek", 2343.0247,91.6131,26.3281);
