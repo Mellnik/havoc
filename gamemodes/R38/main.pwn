@@ -12807,6 +12807,7 @@ YCMD:oban(playerid, params[], help)
 
 	    mysql_format(pSQL, reason, sizeof(reason), "SELECT `admin_id` FROM `bans` WHERE `id` = '%i' LIMIT 1;", account_id);
 	    mysql_pquery(pSQL, reason, "OnOfflineBanAttempt", "iis", playerid, account_id, ereason);
+	    printf("oban (admin: %i)", playerid);
 	}
 	else
 	{
@@ -21924,6 +21925,7 @@ SQL_BanAccountOffline(account[], adminid, reason[], lift = 0)
 {
 	mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", account);
 	mysql_pquery(pSQL, gstr, "OnOfflineBanFetch", "iisi", YHash(__GetName(adminid)), adminid, reason, lift);
+	printf("SQL_BanAccountOffline %s (admin: %i)", account, adminid);
 }
 
 SQL_BanAccount(playerid, adminid, reason[], lift = 0)
@@ -28437,6 +28439,7 @@ procedure OnOfflineBanFetch(namehash, adminid, reason[], lift)
 		reason,
 		lift);
 	mysql_pquery(pSQL, gstr2);
+	printf("OnOfflineBanFetch (admin: %i)", adminid);
 	return 1;
 }
 
@@ -28451,6 +28454,7 @@ procedure OnOfflineBanAttempt(playerid, account_id, reason[])
 	{
 	    mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `admin`, `regip`, `name` FROM `accounts` WHERE `id` = '%i' LIMIT 1;", account_id);
 	    mysql_pquery(pSQL, gstr, "OnOfflineBanAttempt2", "iis", playerid, account_id, reason);
+	    printf("OnOfflineBanAttempt (admin: %i)", playerid);
 	}
 	return 1;
 }
@@ -28478,6 +28482,7 @@ procedure OnOfflineBanAttempt2(playerid, account_id, reason[])
 		cache_delete(cache);
 
 		SQL_BanAccountOffline(name, playerid, reason);
+		printf("OnOfflineBanAttempt2 (admin: %i)", playerid);
 		
 		format(gstr, sizeof(gstr), "[ADMIN CHAT] "LG_E"Account and IP (o)banned of %s [EXPIRES: NEVER, REASON: %s] by %s", name, reason, __GetName(playerid));
 		admin_broadcast(COLOR_RED, gstr);
