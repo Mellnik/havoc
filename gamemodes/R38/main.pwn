@@ -42,7 +42,7 @@
 
 #pragma dynamic 8192        // for md-sort
 
-#define IS_RELEASE_BUILD (false)
+#define IS_RELEASE_BUILD (true)
 #define INC_ENVIRONMENT (true)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
@@ -624,6 +624,8 @@ enum
 	SPEC,
 	VIPL,
 	EVENT,
+	DISCO,
+	SKYDIVE,
 	JAIL,
 	gSAWN
 };
@@ -2677,6 +2679,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	g_SpawnAreas[5],
 	//g_DerbyForceMap = 0,
 	g_RaceForceMap = 0,
+	Text3D:NPCLabelHandle[5],
 	g_BuildRace = INVALID_PLAYER_ID,
 	g_BuildDeployTime = 0,
 	g_BuildRaceType = 1,
@@ -2684,6 +2687,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	g_BuildCheckPointCount = 0,
 	g_BuildVehPosCount = 0,
 	g_BuildModeVMID = 0,
+	pEventVehicle = 0,
 	bool:g_BuildTakeCheckpoints = false,
 	bool:g_BuildTakeVehPos = false,
 	g_BuildVehicle = -1,
@@ -2703,6 +2707,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	g_rPosition = 0,
 	g_CPProgress[MAX_PLAYERS],
 	g_RaceVehicle[MAX_PLAYERS],
+	g_EventVehicle[MAX_PLAYERS],
 	g_RacePosition[MAX_PLAYERS],
 	m_PlayerRecord,
 	g_sCustomCarCategory[512],
@@ -2849,6 +2854,14 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
  	tVIPCountdown = -1,
  	veh_cnr[101],
  	g_CNR_RobberGate[2],
+	stripper1,
+	stripper2,
+	stripper3,
+	stripper4,
+	bartender,
+	security1,
+	security2,
+	security3,
  	pArrests[MAX_PLAYERS],
  	T_RacePlayers = 0,
 	T_DerbyPlayers = 0,
@@ -2901,6 +2914,27 @@ public OnGameModeInit()
 	}
 	
     SQL_Connect();
+    
+    bartender = CreateActor(11, 841.0313,-1663.1836,10004.4365,271.0867);
+    stripper1 = CreateActor(87, 862.2070,-1675.7322,10005.1895,89.3985);
+    stripper2 = CreateActor(87, 882.0258,-1675.2375,10005.1592,359.0080);
+    stripper3 = CreateActor(87, 882.0302,-1651.4526,10005.1602,181.6831);
+    stripper4 = CreateActor(87, 860.9739,-1651.4042,10005.1602,176.7959);
+    security1 = CreateActor(163, 871.2335,-1650.8506,10004.4365,180.8693);
+    security2 = CreateActor(163, 871.2946,-1676.4806,10004.4346,358.8210);
+    security3 = CreateActor(163, 909.1741,-1665.8850,10003.9287,355.6642);
+    SetActorInvulnerable(stripper1, true);
+    SetActorInvulnerable(stripper2, true);
+    SetActorInvulnerable(stripper3, true);
+    SetActorInvulnerable(stripper4, true);
+    SetActorInvulnerable(bartender, true);
+    SetActorInvulnerable(security1, true);
+    SetActorInvulnerable(security2, true);
+    SetActorInvulnerable(security3, true);
+    ApplyActorAnimation(stripper1, "STRIP", "STR_LOOP_C", 4.1, 1, 0, 0, 0, 0);
+    ApplyActorAnimation(stripper2, "STRIP", "STR_LOOP_C", 4.1, 1, 0, 0, 0, 0);
+    ApplyActorAnimation(stripper3, "STRIP", "STR_LOOP_C", 4.1, 1, 0, 0, 0, 0);
+    ApplyActorAnimation(stripper4, "STRIP", "STR_LOOP_C", 4.1, 1, 0, 0, 0, 0);
 
 	//Streamer_SetTickRate(40);
 	
@@ -3055,6 +3089,7 @@ public OnPlayerRequestClass(playerid, classid)
 
 public OnPlayerRequestSpawn(playerid)
 {
+	if(IsPlayerNPC(playerid)) return 1;
 	if(!PlayerData[playerid][bAllowSpawn])
 	{
 	    //SCM(playerid, -1, ""er"You are not logged in!");
@@ -3127,6 +3162,20 @@ public OnPlayerSpawn(playerid)
 			}
 		}
 		case EVENT:
+		{
+		  	gTeam[playerid] = gFREEROAM;
+			ResetPlayerWorld(playerid);
+			RandomSpawn(playerid);
+   			RandomWeapons(playerid);
+		}
+		case SKYDIVE:
+		{
+		  	gTeam[playerid] = gFREEROAM;
+			ResetPlayerWorld(playerid);
+			RandomSpawn(playerid);
+   			RandomWeapons(playerid);
+		}
+		case DISCO:
 		{
 		  	gTeam[playerid] = gFREEROAM;
 			ResetPlayerWorld(playerid);
@@ -3521,6 +3570,7 @@ public OnIncomingConnection(playerid, ip_address[], port)
 
 public OnPlayerConnect(playerid)
 {
+	if(IsPlayerNPC(playerid)) return 1;
     mysql_tquery(pSQL, "UPDATE `server` SET `value` = `value` + 1 WHERE `name` = 'online';");
     
     mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `online` WHERE `name` = '%e';", __GetName(playerid));
@@ -3559,8 +3609,8 @@ public OnPlayerConnect(playerid)
 	    new count_r = 0;
 	    for(new i = 0; i < MAX_PLAYERS; i++)
 	    {
-	        if(IsPlayerConnected(i))
-	            count_r++;
+	        if(IsPlayerConnected(i) || IsPlayerNPC(i)) continue;
+         	count_r++;
 	    }
 	    
 	    if(count_r > m_PlayerRecord) {
@@ -3591,7 +3641,7 @@ public OnPlayerConnect(playerid)
 		PreloadAnimLib(playerid, "PED");
         ApplyAnimation(playerid, "DANCING", "DNCE_M_B", 4.0, 1, 0, 0, 0, -1);
         
-		PlayAudioStreamForPlayer(playerid, "http://havocserver.net/login.mp3");
+		PlayAudioStreamForPlayer(playerid, "http://havocserver.com/login.mp3");
 
         //DEBUG_P1(playerid, "OnPlayerConnect")
 		mysql_format(pSQL, gstr, sizeof(gstr), "SELECT `id` FROM `accounts` WHERE `name` = '%e' LIMIT 1;", __GetName(playerid));
@@ -3607,6 +3657,8 @@ public OnPlayerDisconnect(playerid, reason)
 	mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `online` WHERE `name` = '%e';", __GetName(playerid));
 	mysql_tquery(pSQL, gstr);
 
+    if(IsPlayerNPC(playerid)) return 1;
+    
 	PlayerData[playerid][bLoadMap] = false;
 
    	if(PlayerData[playerid][ExitType] == EXIT_FIRST_SPAWNED && PlayerData[playerid][bLogged])
@@ -5717,7 +5769,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
  		}
  		case 2: //Skydive Prize
 		{
-			if(GetPVarInt(playerid, "doingStunt") == 2)
+			if(gTeam[playerid] == SKYDIVE)
 	  		{
 	  			if(GetPlayerWeapon(playerid) != 46)
 	  			{
@@ -5747,7 +5799,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 	 	}
 		case 3: //Skydive2 Prize
 		{
-			if(GetPVarInt(playerid, "doingStunt") == 2)
+			if(gTeam[playerid] == SKYDIVE)
 	  		{
 	  			if(GetPlayerWeapon(playerid) != 46)
 	  			{
@@ -5777,7 +5829,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 	 	}
 		case 4: //Skydive3 Prize
 		{
-			if(GetPVarInt(playerid, "doingStunt") == 2)
+			if(gTeam[playerid] == SKYDIVE)
 	  		{
 	  			if(GetPlayerWeapon(playerid) != 46)
 	  			{
@@ -5799,7 +5851,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 	 	}
 		case 5: //Skydive4 Prize
 		{
-			if(GetPVarInt(playerid, "doingStunt") == 2)
+			if(gTeam[playerid] == SKYDIVE)
 	  		{
 	  			if(GetPlayerWeapon(playerid) != 46)
 	  			{
@@ -6071,7 +6123,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		}
 		case 36: //Skydive5 Prize
 		{
-			if(GetPVarInt(playerid, "doingStunt") == 2)
+			if(gTeam[playerid] == SKYDIVE)
 	  		{
 	  			if(GetPlayerWeapon(playerid) != 46)
 	  			{
@@ -6093,7 +6145,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 	 	}
 		case 37: //Skydive6 Prize
 		{
-			if(GetPVarInt(playerid, "doingStunt") == 2)
+			if(gTeam[playerid] == SKYDIVE)
 	  		{
 	  			if(GetPlayerWeapon(playerid) != 46)
 	  			{
@@ -7109,11 +7161,12 @@ YCMD:mh(playerid, params[], help)
 	}
 	return 1;
 }
-YCMD:ch(playerid, params[], help)
+YCMD:hh(playerid, params[], help)
 {
-	if(PortPlayerMapVeh(playerid,2002.9380, -3656.5505, 5.4980, 90, 2002.9380, -3656.5505, 5.4980, 90, "Chris House", "ch"))
+    if(IsPlayerInAnyVehicle(playerid)) return player_notice(playerid, "Exit your vehicle", "");
+	if(PortPlayerMapVeh(playerid,3957.9692, -1461.4019,2.2547, 3881.4951,-1457.3647,3.2918,274.0751, 90, "Higgs House", "hh"))
 	{
-	    PlayAudioStreamForPlayer(playerid, "http://yp.shoutcast.com/sbin/tunein-station.pls?id=70545", 2002.9380, -3656.5505, 5.4980, 100.0, 1);
+		PlayAudioStreamForPlayer(playerid, "http://108.61.73.117:8036/listen.pls", 3873.6665,-1378.5516,1.9986, 100.0, 1);
 	}
 	return 1;
 }
@@ -7139,6 +7192,10 @@ YCMD:bikec(playerid, params[], help)
 		DestroyPlayerVehicles(playerid);
 		
 		SetPVarInt(playerid, "doingStunt", 1);
+		
+		ResetPlayerWeapons(playerid);
+
+		gTeam[playerid] = SKYDIVE;
     }
     return 1;
 }
@@ -7315,7 +7372,10 @@ YCMD:disco(playerid, params[], help)
 	if(PortPlayerMap(playerid, 916.0006,-1663.1764,10003.9453,90.6284, "Disco", "Disco"))
 	{
 		if(IsPlayerInAnyVehicle(playerid)) return player_notice(playerid, "Exit your vehicle", "");
-		PlayAudioStreamForPlayer(playerid, "http://108.61.73.117:8036/listen.pls");
+		PlayAudioStreamForPlayer(playerid, "http://108.61.73.117:8036/listen.pls", 874.0858,-1664.8997,10004.4365, 100.0, 1);
+		LoadMap(playerid);
+		SetPlayerTime(playerid, 0, 0);
+		gTeam[playerid] = DISCO;
 	}
 	return 1;
 }
@@ -7375,6 +7435,10 @@ YCMD:bmx(playerid, params[], help)
 		PlayerData[playerid][tickJoin_bmx] = GetTickCountEx();
 		
 		SetPVarInt(playerid, "doingStunt", 3);
+		
+		ResetPlayerWeapons(playerid);
+		
+		gTeam[playerid] = SKYDIVE;
     }
     return 1;
 }
@@ -7671,7 +7735,8 @@ YCMD:skydive(playerid, params[], help)
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
-        SetPVarInt(playerid, "doingStunt", 2);
+        //SetPVarInt(playerid, "doingStunt", 2);
+        gTeam[playerid] = SKYDIVE;
     }
     return 1;
 }
@@ -7682,7 +7747,8 @@ YCMD:skydive2(playerid, params[], help)
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
-        SetPVarInt(playerid, "doingStunt", 2);
+        //SetPVarInt(playerid, "doingStunt", 2);
+        gTeam[playerid] = SKYDIVE;
     }
     return 1;
 }
@@ -7693,7 +7759,8 @@ YCMD:skydive3(playerid, params[], help)
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
-        SetPVarInt(playerid, "doingStunt", 2);
+        //SetPVarInt(playerid, "doingStunt", 2);
+        gTeam[playerid] = SKYDIVE;
     }
     return 1;
 }
@@ -7704,7 +7771,8 @@ YCMD:skydive4(playerid, params[], help)
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
-        SetPVarInt(playerid, "doingStunt", 2);
+       // SetPVarInt(playerid, "doingStunt", 2);
+        gTeam[playerid] = SKYDIVE;
     }
     return 1;
 }
@@ -7715,7 +7783,8 @@ YCMD:skydive5(playerid, params[], help)
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
-        SetPVarInt(playerid, "doingStunt", 2);
+        //SetPVarInt(playerid, "doingStunt", 2);
+        gTeam[playerid] = SKYDIVE;
     }
     return 1;
 }
@@ -7726,7 +7795,8 @@ YCMD:skydive6(playerid, params[], help)
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
-        SetPVarInt(playerid, "doingStunt", 2);
+        //SetPVarInt(playerid, "doingStunt", 2);
+        gTeam[playerid] = SKYDIVE;
     }
     return 1;
 }
@@ -8814,6 +8884,106 @@ YCMD:eventwinner(playerid, params[], help)
 				}
 	return 1;
 }
+/*
+YCMD:eunfreezeall(playerid, params[], help)
+{
+    if(PlayerData[playerid][e_level] >= 3)
+    {
+        for(new i = 0; i < MAX_PLAYERS; i++)
+        {
+      	 	if(gTeam[i] == EVENT)
+            {
+                player_notice(i, "Event", "~r~You have been un-frozen");
+                TogglePlayerControllable(i, true);
+            	return 1;
+            }
+        }
+    }
+    else
+    {
+        SCM(playerid, -1, NO_PERM);
+    }
+    return 1;
+}
+
+YCMD:efreezeall(playerid, params[], help)
+{
+    if(PlayerData[playerid][e_level] >= 3)
+    {
+        for(new i = 0; i < MAX_PLAYERS; i++)
+        {
+            if(gTeam[i] == EVENT)
+            {
+                player_notice(i, "Event", "~r~You have been frozen");
+                TogglePlayerControllable(i, false);
+            	return 1;
+        }
+    }
+    else
+    {
+        SCM(playerid, -1, NO_PERM);
+    }
+    return 1;
+}
+*/
+YCMD:eshamal(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= 3)
+	{
+		if(gTeam[playerid] == EVENT)
+  		{
+    			new Float:POS[4];
+      			GetPlayerPos(playerid, POS[0], POS[1], POS[2]);
+        		GetPlayerFacingAngle(playerid, POS[3]);
+				pEventVehicle = CreateVehicleEx(519, POS[0], POS[1], POS[2], POS[3], (random(128) + 127), (random(128) + 127), -1);
+   				SetVehicleNumberPlate(pEventVehicle , "{3399ff}E{FFFFFF}vent{F81414}Y");
+				SetVehicleVirtualWorld(pEventVehicle, GetPlayerVirtualWorld(playerid));
+				LinkVehicleToInterior(pEventVehicle, GetPlayerInterior(playerid));
+				TogglePlayerControllable(playerid, true);
+				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+				ClearAnimations(playerid);
+				PutPlayerInVehicle(playerid, pEventVehicle, 0);
+				RepairVehicle(pEventVehicle);
+				SetCameraBehindPlayer(playerid);
+				}
+			}
+			else
+			{
+				SCM(playerid, -1, NO_PERM);
+				}
+	return 1;
+}
+
+YCMD:eventcars(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= 3)
+	{
+	   for(new i = 0; i < MAX_PLAYERS; i++)
+			{
+   				if(gTeam[i] == EVENT)
+			    {
+			        new Float:POS[4];
+			        GetPlayerPos(i, POS[0], POS[1], POS[2]);
+			        GetPlayerFacingAngle(i, POS[3]);
+					pEventVehicle = CreateVehicleEx(494, POS[0], POS[1], POS[2], POS[3], (random(128) + 127), (random(128) + 127), -1);
+                    SetVehicleNumberPlate(pEventVehicle , "{3399ff}E{FFFFFF}vent{F81414}Y");
+					SetVehicleVirtualWorld(pEventVehicle, GetPlayerVirtualWorld(i));
+					LinkVehicleToInterior(pEventVehicle, GetPlayerInterior(i));
+					TogglePlayerControllable(i, true);
+ 					SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
+					ClearAnimations(i);
+					PutPlayerInVehicle(i, pEventVehicle, 0);
+					RepairVehicle(pEventVehicle);
+					SetCameraBehindPlayer(i);
+					}
+				}
+			}
+			else
+			{
+				SCM(playerid, -1, NO_PERM);
+				}
+	return 1;
+}
 
 YCMD:accept(playerid, params[], help)
 {
@@ -9877,7 +10047,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[3][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/eventwinner /eventplan /eject /go /getip /get /clearchat /iplookup /tplayer\n/dawn /night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n\n");
+		strcat(string, "/eshaml /eventcars /eventwinner /eventplan /eject /go /getip /get /clearchat /iplookup /tplayer\n/dawn /night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
@@ -10361,7 +10531,7 @@ YCMD:supervision(playerid, params[], help)
 	if (PlayerData[playerid][e_level] == 0)
 	    return SCM(playerid, -1, NO_PERM);
 
-	ShowPlayerDialog(playerid, DIALOG_SUPERVISION, DIALOG_STYLE_LIST, ""nef" :: Supervisor program", ""white"Possible Suspects\nLast 30 bans\nBan server snapshot (banlookup)\nPlayer identification\nLogon logs", "Select", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_SUPERVISION, DIALOG_STYLE_LIST, ""nef" :: Supervisor program", ""white"Possible Suspects\nAcc ID to NAME\nBan server snapshot (banlookup)\nPlayer identification\nLogon logs", "Select", "Cancel");
 	return 1;
 }
 
@@ -11448,6 +11618,7 @@ YCMD:go(playerid, params[], help)
 				return SCM(playerid, NEF_GREEN, "Usage: /go <playerid>");
 		  	}
 		  	
+		  //	if(IsPlayerNPC(player)) return SCM(playerid, -1, ""er" Invalid player!");
 			if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
 			if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
 			if(!IsPlayerAvail(player)) return SCM(playerid, -1, ""er"Player is not avialable");
@@ -11849,7 +12020,7 @@ YCMD:avgping(playerid, params[], help)
 	
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(IsPlayerConnected(i))
+	    if(IsPlayerConnected(i) && !IsPlayerNPC(i))
 	    {
 			players++;
 			pings += GetPlayerPing(i);
@@ -12247,7 +12418,7 @@ YCMD:gzonereset(playerid, params[], help)
 	        
 	        for(new ii = 0; ii < MAX_PLAYERS; ii++)
 	        {
-			    if(IsPlayerConnected(ii))
+			    if(IsPlayerConnected(ii) && !IsPlayerNPC(ii))
 			    {
 					SyncGangZones(ii);
 			    }
@@ -13968,10 +14139,39 @@ YCMD:vips(playerid, params[], help)
 	return 1;
 }*/
 
+YCMD:echat(playerid, params[], help)
+{
+	if(gTeam[playerid] == gFREEROAM && PlayerData[playerid][e_level] == 0) return player_notice(playerid, "You're not apart of this event", "");
+
+	if(PlayerData[playerid][bMuted])
+	{
+	    SCM(playerid, RED, "You are muted! Please wait until the time is over!");
+	    return 0;
+	}
+
+	if(sscanf(params, "s[143]", gstr))
+	{
+	    return SCM(playerid, NEF_GREEN, "Usage: /p <text>");
+	}
+
+	if(IsAd(gstr))
+	{
+	  	format(gstr2, sizeof(gstr2), ""yellow"** "red"Suspicion advertising | Player: %s(%i) Advertised IP: %s - PlayerIP: %s", __GetName(playerid), playerid, gstr, __GetIP(playerid));
+		admin_broadcast(RED, gstr2);
+
+        SCM(playerid, RED, "Advertising is not allowed!");
+        return 1;
+	}
+
+	format(gstr, sizeof(gstr), ""white"["lb_e"EVENT"white"] {%06x}%s"lb_e"(%i): "green"%s", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid, gstr);
+	event_broadcast(-1, gstr);
+	return 1;
+}
+
 YCMD:p(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_vip] != 1 && PlayerData[playerid][e_level] == 0) return Command_ReProcess(playerid, "/vip", false);
-	
+
 	if(PlayerData[playerid][bMuted])
 	{
 	    SCM(playerid, RED, "You are muted! Please wait until the time is over!");
@@ -14558,7 +14758,7 @@ YCMD:setadminlevel(playerid, params[], help)
 
 		if(IsPlayerAvail(player))
 		{
-			if(alevel > MAX_ADMIN_LEVEL)
+			if(alevel > MAX_ADMIN_LEVEL && alevel < 0)
 			{
 				return SCM(playerid, -1, ""er"Incorrect Level");
 			}
@@ -15085,9 +15285,9 @@ YCMD:rules(playerid, params[], help)
 {
 	new rules[700];
 
-	strcat(rules, ""white"- No cheating of any kind\n- Do not ask others to gift you money\n- No mods that affect other player's gameplay\n- No insults\n- No advertising of any kind\n- No (command)spamming\n");
-	strcat(rules, "- No abusing bugs/glitches/commands\n- Do not share your account\n- No AFK in minigames\n- Do not ask for an unban ingame\n- Do not ask to be an administrator /free VIP\n- Do not use Vortex to driveby players\n- Do not driveby at Hotspots/Spawnareas");
-	strcat(rules, "\n- No score/money farming\n- Do not use joypad\n- No impersonating\n\nNever tell your password to anyone!");
+    strcat(rules, ""white"- No cheating of any kind\n- Do not ask others to gift you money/score\n- No mods are to be used that affect other player's gameplay\n- No insulting\n- No advertising of any kind\n- No spamming/command spamming\n");
+	strcat(rules, "- No abusing bugs/glitches/commands\n- Do not share/trade account(s)\n- Do not pause the game in minigames\n- Do not ask for an unban ingame\n- Do not ask to be an administrator/free VIP\n- Do not use Vortex to driveby players\n- Do not driveby at Hotspots");
+	strcat(rules, "\n- No score/money farming\n- Do not use joypad\n- No Impersonating\n- No Bullying/n- Do not interfere in gang wars and/or exit abuse in gang wars\n- No passenger seat abuse\n- Do not make multiple accounts\n- Do not join with another account if any of your accounts are banned/n- No scamming of any kind\n- Do not death-match at /bmx, /bikec or any /skydive/n- Do not time farm\n\nNever tell your password to anyone!");
 
     ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Rules", rules, "OK", "");
 	return 1;
@@ -17088,7 +17288,7 @@ YCMD:anims(playerid, params[], help)
 
 YCMD:stopanims(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE && gTeam[playerid] != DISCO) return SCM(playerid, RED, NOT_AVAIL);
     SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
     ClearAnimations(playerid);
 	return 1;
@@ -17193,7 +17393,7 @@ YCMD:sit(playerid, params[], help)
 
 YCMD:dance(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != DISCO && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
 
     extract params -> new dance; else
     {
@@ -17863,19 +18063,21 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    {
 				    	SetPlayerVirtualWorld(playerid, WORLD_EVENT);
 				    	SetPlayerPos(playerid, 2573.9934, 1343.0865, 78.4764);
-				    	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Event", ""white"Welcome to event world!\n "red"Please follow all staff instructions or you will be removed!", "OK", "");
+				    	ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Event", ""white"Welcome to event world!\n "red"Please follow all staff instructions or you will be removed!\n "white" Use /echat to talk to everyone in the event!", "OK", "");
 				    	SetPVarInt(playerid, "HadGod", 0);
 				    	SetPlayerHealth(playerid, 100.0);
+				    	ResetPlayerWeapons(playerid);
 				    	
 				    }
 				    case 1:
 					{
                         SetPlayerVirtualWorld(playerid, WORLD_EVENT+1);
-                        ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Event", ""white"Welcome to event world!\n "red"Please follow all staff instructions or you will be removed!", "OK", "");
+                        ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Event", ""white"Welcome to event world!\n "red"Please follow all staff instructions or you will be removed!\n "white" Use /echat to talk to everyone in the event!", "OK", "");
                         SetPlayerInterior(playerid, 7);
                         SetPlayerPos(playerid, -1398.0653, -217.0289,1051.1158);
                         SetPVarInt(playerid, "HadGod", 0);
                         SetPlayerHealth(playerid, 100.0);
+                        ResetPlayerWeapons(playerid);
 					}
 					case 2:
 					{
@@ -17948,7 +18150,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			        }
 			        case 1:
 			        {
-
+                //        ShowPlayerDialog(playerid, DIALOG_SUPERVISION + 3, DIALOG_STYLE_INPUT, ""nef" :: ID to NAME resolver", ""white"This feature resolved a account id to their name.\n\nEnter a account id to continue:", "OK", "Cancel");
 			        }
 			        case 2:
 			        {
@@ -17972,7 +18174,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			case DIALOG_SUPERVISION + 3:
 			{
-			    return true;
+				return true;
 			}
 			case DIALOG_SUPERVISION + 4:
 			{
@@ -21850,6 +22052,17 @@ vip_broadcast(color, const msg[])
 	}
 }
 
+event_broadcast(color, const msg[])
+{
+	for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+		if(gTeam[i] == EVENT || PlayerData[i][e_level] > 0)
+		{
+			SCM(i, color, msg);
+		}
+	}
+}
+
 SQL_FetchGangInfo(playerid, gangid)
 {
 	format(gstr, sizeof(gstr), "SELECT * FROM `gangs` WHERE `id` = %i LIMIT 1;", gangid);
@@ -23344,6 +23557,9 @@ server_load_visuals()
 	
 	new aa_text = CreateDynamicObject(8323, 426.52484, 2528.90259, 21.78450,   0.00000, 0.00000, -87.12002);
 	SetDynamicObjectMaterialText(aa_text, 0, ""nef_yellow"Havoc Freeroam\n "nef_red"Welcome to (USER)'s house!", OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+
+	new disco_text = CreateDynamicObject(7910, 918.46777, -1663.79858, 10010.17773,   0.00000, 0.00000, 270.18719);
+	SetDynamicObjectMaterialText(disco_text, 0, ""nef_yellow"Havoc Freeroam\n "green">>> Disco & Bar <<<", OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
     pick_chainsaw = CreateDynamicPickup(341, 23, 1219.1809,-924.6318,42.9045);
     pick_life[0] = CreateDynamicPickup(1240, 23, -1987.6259,274.7049,34.9564);
@@ -28064,6 +28280,26 @@ ExitPlayer(playerid)
 			RemoveFromRaceBuilder(playerid);
 			return 0;
 	    }
+	    case DISCO:
+	    {
+            TogglePlayerControllable(playerid, true);
+			RandomSpawn(playerid, true);
+			RandomWeapons(playerid);
+			HidePlayerFalloutTextdraws(playerid);
+			ResetPlayerWorld(playerid);
+			gTeam[playerid] = gFREEROAM;
+			return 0;
+		}
+	 	case SKYDIVE:
+	    {
+            TogglePlayerControllable(playerid, true);
+			RandomSpawn(playerid, true);
+			RandomWeapons(playerid);
+			HidePlayerFalloutTextdraws(playerid);
+			ResetPlayerWorld(playerid);
+			gTeam[playerid] = gFREEROAM;
+			return 0;
+		}
 	    case gCNR:
 	    {
 	        gTeam[playerid] = gFREEROAM;
@@ -28112,7 +28348,6 @@ ExitPlayer(playerid)
 		    PlayerPlaySound(playerid, 1069, 0, 0, 0);
 
 		    if(GetPVarInt(playerid, "HadGod") == 1) Command_ReProcess(playerid, "/god silent", false);
-		    SetPVarInt(playerid, "doingStunt", 0);
 		    PlayerData[playerid][tickJoin_bmx] = 0;
 			return 0;
 		}
