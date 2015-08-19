@@ -9232,7 +9232,7 @@ YCMD:buy(playerid, params[], help)
 		}
 
         GivePlayerMoneyEx(playerid, -HouseData[i][e_value]);
-		PlayerData[playerid][e_pvslots] += HouseData[i][e_pvslots];
+		PlayerData[playerid][e_pvslots] += HouseData[i][e_pvslots]; // We can comment this line later and abandon PlayerData[e_pvslots] if GetPlayerCustomCarSlots works
         PlayerData[playerid][tickLastBuy] = tick;
 		SQL_SaveAccount(playerid, false, false);
 		PlayerPlaySound(playerid, 1149, 0.0, 0.0, 0.0);
@@ -9437,7 +9437,7 @@ YCMD:sell(playerid, params[], help)
 		if(PlayerSettings[playerid][e_house_spawn] == HouseData[i][e_id])
 		    PlayerSettings[playerid][e_house_spawn] = 0;
 
-        PlayerData[playerid][e_pvslots] -= HouseData[i][e_pvslots];
+        PlayerData[playerid][e_pvslots] -= HouseData[i][e_pvslots]; // We can comment this line later and abandon PlayerData[e_pvslots] if GetPlayerCustomCarSlots works
 		PlayerData[playerid][tickLastSell] = tick;
         GivePlayerMoneyEx(playerid, floatround(HouseData[i][e_value] / 4));
 	    SQL_SaveAccount(playerid, false, false);
@@ -16390,7 +16390,8 @@ YCMD:stats(playerid, params[], help)
         	number_format(PlayerData[player1][e_bank]));
 
 		format(string2, sizeof(string2), "Custom Car Slots:\t%i\nRace wins:\t\t%i\nDerby wins:\t\t%i\nReaction wins:\t\t%i\nMath wins:\t\t%i\nTDM wins:\t\t%i\nFallout wins:\t\t%i\nGungame wins:\t\t%i\nTime until PayDay:\t%i minutes\n",
-            PlayerData[player1][e_pvslots],
+            //PlayerData[player1][e_pvslots],
+			GetPlayerCustomCarSlots(player1) + 1, // Instead of using that var we count the slots dynamically +1 for slot everyone has
 			PlayerData[player1][e_racewins],
 	   		PlayerData[player1][e_derbywins],
 	   		PlayerData[player1][e_reaction],
@@ -20652,7 +20653,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				        count++;
 				}
 
-				if(count >= PlayerData[playerid][e_pvslots] + 1)
+				if(count >= GetPlayerCustomCarSlots(playerid) + 1)
 				{
 				    MessageDialog(playerid, ""nef" :: Info", ""white"You don't have a free private vehicle slot! Buy a house to expand your slots.");
 				    RemovePlayerFromCarShopState(playerid);
@@ -31166,6 +31167,19 @@ ResetHouse(slot = -1)
         HouseData[r][e_namecache][0] = '\0';
 	}
 	return 1;
+}
+
+GetPlayerCustomCarSlots(playerid)
+{
+	new total = 0;
+	for(new i = 0; i < MAX_HOUSES; i++)
+	{
+		if (HouseData[i][e_owner] == PlayerData[playerid][e_accountid])
+		{
+			total += HouseData[i][e_pvslots];
+		}
+	}
+	return total;
 }
 
 no_vip(playerid, msg[])
