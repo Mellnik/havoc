@@ -42,7 +42,7 @@
 
 #pragma dynamic 8192        // for md-sort
 
-#define IS_RELEASE_BUILD (true)
+#define IS_RELEASE_BUILD (false)
 #define INC_ENVIRONMENT (true)
 #define WINTER_EDITION (false) // Requires FS ferriswheelfair.amx
 #define _YSI_NO_VERSION_CHECK
@@ -24972,7 +24972,7 @@ procedure Derby()
 			    //	format(gstr, sizeof(gstr), ""white"["red"DERBY"white"]"LB_E"%s won the Derby! "nef_yellow"Prize: $%s and %i score!", __GetName(i), number_format(money), number_format(score));
 				//	derby_broadcast(gstr);
 					//Msg to everyone. Above code disabled.
- 					format(gstr, sizeof(gstr), ""white"["red"DERBY"white"] "LB_E"%s won the Derby! "nef_yellow"Prize: $%s and %i score!", __GetName(i), number_format(money), number_format(score));
+ 					format(gstr, sizeof(gstr), ""white"["red"DERBY"white"] "LB_E"%s won the Derby! "nef_yellow"Prize: $%s and %i score!", __GetName(i), number_format(money), score);
 					SCMToAll(-1, gstr);
 	   			}
 				SetPlayerDerbyStaticMeshes(i);
