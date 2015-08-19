@@ -13,7 +13,7 @@
 
 /*
 || Build Dependencies:
-|| SA-MP Server 0.3.7 R2
+|| SA-MP Server 0.3.7 R2-1
 || Havoc Core
 || YSI Library 3.1.133
 || sscanf Plugin 2.8.1
@@ -782,6 +782,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
 	iDeathCountThreshold,
 	PlayerText3D:t3dDerbyVehicleLabel,
 	pDerbyVehicle,
+	pEventVehicle,
 	pTrailerVehicle,
 	pVehicle,
 	iJailTime,
@@ -2687,7 +2688,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	g_BuildCheckPointCount = 0,
 	g_BuildVehPosCount = 0,
 	g_BuildModeVMID = 0,
-	pEventVehicle = 0,
+//	pEventVehicle = 0,
 	bool:g_BuildTakeCheckpoints = false,
 	bool:g_BuildTakeVehPos = false,
 	g_BuildVehicle = -1,
@@ -2935,6 +2936,9 @@ public OnGameModeInit()
     ApplyActorAnimation(stripper2, "STRIP", "STR_LOOP_C", 4.1, 1, 0, 0, 0, 0);
     ApplyActorAnimation(stripper3, "STRIP", "STR_LOOP_C", 4.1, 1, 0, 0, 0, 0);
     ApplyActorAnimation(stripper4, "STRIP", "STR_LOOP_C", 4.1, 1, 0, 0, 0, 0);
+    ApplyAnimation(security1, "CRACK", "Bbalbat_Idle_01", 4.0, 1, 0, 0, 0, 0);
+	ApplyAnimation(security2, "CRACK", "Bbalbat_Idle_02", 4.0, 1, 0, 0, 0, 0);
+	ApplyAnimation(security3, "CRACK", "Bbalbat_Idle_02", 4.0, 1, 0, 0, 0, 0);
 
 	//Streamer_SetTickRate(40);
 	
@@ -3571,10 +3575,9 @@ public OnIncomingConnection(playerid, ip_address[], port)
 public OnPlayerConnect(playerid)
 {
 	if(IsPlayerNPC(playerid)) return 1;
-    mysql_tquery(pSQL, "UPDATE `server` SET `value` = `value` + 1 WHERE `name` = 'online';");
     
-    mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `online` WHERE `name` = '%e';", __GetName(playerid));
-	mysql_tquery(pSQL, gstr);
+   	format(gstr, sizeof(gstr), "INSERT INTO `online` VALUES (NULL, '%s', '%s', UNIX_TIMESTAMP());",PlayerData[playerid][e_accountid], __GetName(playerid), __GetIP(playerid));
+	mysql_tquery(pSQL, gstr, "", "");
 
     ResetPlayerData(playerid);
 	ResetPlayerPV(playerid);
@@ -7732,6 +7735,7 @@ YCMD:skydive(playerid, params[], help)
 {
     if(PortPlayerMap(playerid,3887.5874,3891.2942,2017.7869,91.8075, "Skydive 1", "skydive"))
     {
+        ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
@@ -7744,11 +7748,13 @@ YCMD:skydive2(playerid, params[], help)
 {
     if(PortPlayerMap(playerid,-1288.0760,-44.0085,4216.4507,93.1578, "Skydive 2", "skydive2"))
     {
+        ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
+        ResetPlayerWeapons(playerid);
     }
     return 1;
 }
@@ -7761,6 +7767,7 @@ YCMD:skydive3(playerid, params[], help)
         Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
+        ResetPlayerWeapons(playerid);
     }
     return 1;
 }
@@ -7773,6 +7780,7 @@ YCMD:skydive4(playerid, params[], help)
         Command_ReProcess(playerid, "/parch", false);
        // SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
+        ResetPlayerWeapons(playerid);
     }
     return 1;
 }
@@ -7785,6 +7793,7 @@ YCMD:skydive5(playerid, params[], help)
         Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
+        ResetPlayerWeapons(playerid);
     }
     return 1;
 }
@@ -7797,6 +7806,7 @@ YCMD:skydive6(playerid, params[], help)
         Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
+        ResetPlayerWeapons(playerid);
     }
     return 1;
 }
@@ -8935,15 +8945,15 @@ YCMD:eshamal(playerid, params[], help)
     			new Float:POS[4];
       			GetPlayerPos(playerid, POS[0], POS[1], POS[2]);
         		GetPlayerFacingAngle(playerid, POS[3]);
-				pEventVehicle = CreateVehicleEx(519, POS[0], POS[1], POS[2], POS[3], (random(128) + 127), (random(128) + 127), -1);
-   				SetVehicleNumberPlate(pEventVehicle , "{3399ff}E{FFFFFF}vent{F81414}Y");
-				SetVehicleVirtualWorld(pEventVehicle, GetPlayerVirtualWorld(playerid));
-				LinkVehicleToInterior(pEventVehicle, GetPlayerInterior(playerid));
+				PlayerData[playerid][pEventVehicle] = CreateVehicleEx(519, POS[0], POS[1], POS[2], POS[3], (random(128) + 127), (random(128) + 127), -1);
+   				SetVehicleNumberPlate(PlayerData[playerid][pEventVehicle] , "{3399ff}E{FFFFFF}vent{F81414}Y");
+				SetVehicleVirtualWorld(PlayerData[playerid][pEventVehicle], GetPlayerVirtualWorld(playerid));
+				LinkVehicleToInterior(PlayerData[playerid][pEventVehicle], GetPlayerInterior(playerid));
 				TogglePlayerControllable(playerid, true);
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 				ClearAnimations(playerid);
-				PutPlayerInVehicle(playerid, pEventVehicle, 0);
-				RepairVehicle(pEventVehicle);
+				PutPlayerInVehicle(playerid, PlayerData[playerid][pEventVehicle], 0);
+				RepairVehicle(PlayerData[playerid][pEventVehicle]);
 				SetCameraBehindPlayer(playerid);
 				}
 			}
@@ -8965,15 +8975,15 @@ YCMD:eventcars(playerid, params[], help)
 			        new Float:POS[4];
 			        GetPlayerPos(i, POS[0], POS[1], POS[2]);
 			        GetPlayerFacingAngle(i, POS[3]);
-					pEventVehicle = CreateVehicleEx(494, POS[0], POS[1], POS[2], POS[3], (random(128) + 127), (random(128) + 127), -1);
-                    SetVehicleNumberPlate(pEventVehicle , "{3399ff}E{FFFFFF}vent{F81414}Y");
-					SetVehicleVirtualWorld(pEventVehicle, GetPlayerVirtualWorld(i));
-					LinkVehicleToInterior(pEventVehicle, GetPlayerInterior(i));
+					PlayerData[i][pEventVehicle] = CreateVehicleEx(494, POS[0], POS[1], POS[2], POS[3], (random(128) + 127), (random(128) + 127), -1);
+                    SetVehicleNumberPlate(PlayerData[i][pEventVehicle], "{3399ff}E{FFFFFF}vent{F81414}Y");
+					SetVehicleVirtualWorld(PlayerData[i][pEventVehicle], GetPlayerVirtualWorld(i));
+					LinkVehicleToInterior(PlayerData[i][pEventVehicle], GetPlayerInterior(i));
 					TogglePlayerControllable(i, true);
  					SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
 					ClearAnimations(i);
-					PutPlayerInVehicle(i, pEventVehicle, 0);
-					RepairVehicle(pEventVehicle);
+					PutPlayerInVehicle(i, PlayerData[i][pEventVehicle], 0);
+					RepairVehicle(PlayerData[i][pEventVehicle]);
 					SetCameraBehindPlayer(i);
 					}
 				}
@@ -9762,6 +9772,8 @@ YCMD:duel(playerid, params[], help)
 		        	PlayerData[i][DuelRequest] = INVALID_PLAYER_ID;
 			    }
 			}
+			
+			ClearAnimations(playerid);
 			
 			CheckPlayerGod(playerid);
 			CheckPlayerGod(PlayerData[playerid][DuelRequestRecv]);
@@ -15284,10 +15296,9 @@ YCMD:screate(playerid, params[], help)
 YCMD:rules(playerid, params[], help)
 {
 	new rules[700];
-
     strcat(rules, ""white"- No cheating of any kind\n- Do not ask others to gift you money/score\n- No mods are to be used that affect other player's gameplay\n- No insulting\n- No advertising of any kind\n- No spamming/command spamming\n");
 	strcat(rules, "- No abusing bugs/glitches/commands\n- Do not share/trade account(s)\n- Do not pause the game in minigames\n- Do not ask for an unban ingame\n- Do not ask to be an administrator/free VIP\n- Do not use Vortex to driveby players\n- Do not driveby at Hotspots");
-	strcat(rules, "\n- No score/money farming\n- Do not use joypad\n- No Impersonating\n- No Bullying/n- Do not interfere in gang wars and/or exit abuse in gang wars\n- No passenger seat abuse\n- Do not make multiple accounts\n- Do not join with another account if any of your accounts are banned/n- No scamming of any kind\n- Do not death-match at /bmx, /bikec or any /skydive/n- Do not time farm\n\nNever tell your password to anyone!");
+	strcat(rules, "\n- No score/money farming\n- Do not use joypad\n- No Impersonating\n- No Bullying\n- Do not interfere in gang wars and/or exit abuse in gang wars\n- No passenger seat abuse\n- Do not make multiple accounts\n- Do not join with another account if any of your accounts are banned\n- No scamming of any kind\n- Do not death-match in events, bmx, bikec and skydives\n- Do not time farm\n\nNever tell your password to anyone!");
 
     ShowPlayerDialog(playerid, NO_DIALOG_ID, DIALOG_STYLE_MSGBOX, ""nef" :: Rules", rules, "OK", "");
 	return 1;
@@ -17337,7 +17348,7 @@ YCMD:piss(playerid, params[], help)
 
 YCMD:wank(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE && gTeam[playerid] != DISCO) return SCM(playerid, RED, NOT_AVAIL);
     Command_ReProcess(playerid, "/stopanims", false);
     player_notice(playerid, "~w~Type ~y~/stopanim ~w~to quit", "");
     
@@ -17368,7 +17379,7 @@ YCMD:crossarms(playerid, params[], help)
 
 YCMD:sit(playerid, params[], help)
 {
-    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE) return SCM(playerid, RED, NOT_AVAIL);
+    if(gTeam[playerid] != gFREEROAM && gTeam[playerid] != gHOUSE && gTeam[playerid] != VIPL && gTeam[playerid] != STORE && gTeam[playerid] != DISCO) return SCM(playerid, RED, NOT_AVAIL);
 
     extract params -> new sit; else
     {
@@ -17559,7 +17570,7 @@ YCMD:rob(playerid, params[], help)
 		    		if(i == playerid) continue;
 		    		if(IsPlayerInAnyVehicle(i)) continue;
 		    		if(gTeam[i] != gCNR) continue;
-		    		if(IsPlayerOnDesktop(i)) {
+			       	if(IsPlayerOnDesktop(i)) {
 						SCM(playerid, COLOR_RED, "Server: "GREY2_E"Player is AFK.");
 						continue;
 		    		}
@@ -21846,9 +21857,9 @@ SkipLogin(playerid)
 
 GetPlayingTime(playerid)
 {
-	PlayerData[playerid][e_time] = PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLogonTime]);
-	PlayerData[playerid][iLogonTime] = gettime();
-	return PlayerData[playerid][e_time];
+    PlayerData[playerid][e_time] = PlayerData[playerid][e_time] + (gettime() - PlayerData[playerid][iLogonTime]);
+    PlayerData[playerid][iLogonTime] = gettime();
+    return PlayerData[playerid][e_time];
 }
 
 GetPlayingTimeFormat(playerid)
@@ -29391,6 +29402,12 @@ DestroyPlayerVehicles(playerid, bool:minigames = false)
 	{
 		DestroyVehicleEx(PlayerData[playerid][pVehicle]);
 		PlayerData[playerid][pVehicle] = INVALID_VEHICLE_ID;
+	}
+	
+	if(PlayerData[playerid][pEventVehicle] != INVALID_VEHICLE_ID)
+	{
+		DestroyVehicleEx(PlayerData[playerid][pEventVehicle]);
+		PlayerData[playerid][pEventVehicle] = INVALID_VEHICLE_ID;
 	}
 
 	if(PVSelect[playerid] != -1)
