@@ -99,7 +99,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #endif
 
 // Server
-#define HOSTNAME                        "Havoc Server » Stunt/DM/Race/Derby/Minigames"
+#define HOSTNAME                        "•Havoc Server™• «Stunt|Freeroam|DM|Derby|Minigames»"
 #define SERVER_NAME                    	"Havoc Server"
 #define SERVER_SHORT                   	"Havoc"
 #define SERVER_LOGO						"{646464}«(-|-|{F0F0F0}Havoc Server{646464}|-|-)»" // TODO: Replace this and all NEF stuff names
@@ -109,9 +109,9 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define SERVER_IP                       "213.163.74.164:7777"
 #define SERVER_DNS                      "samp.havocserver.com:7777"
 #if IS_RELEASE_BUILD == true
-#define SERVER_VERSION					"Build 38-1"
+#define SERVER_VERSION					"Build 38-2"
 #else
-#define SERVER_VERSION					"Beta:Build 38-1"
+#define SERVER_VERSION					"Beta:Build 38-2"
 #endif
 #define SAMP_VERSION                    "0.3.7 R2"
 
@@ -288,9 +288,9 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define MAX_PLAYER_HOUSES 				(5)
 
 // Enterprises
-#define MAX_ENTERPRISES                 (500)
+#define MAX_ENTERPRISES                 (600)
 #define MAX_ENTERPRISE_LEVEL            (20)
-#define MAX_PLAYER_ENTERPRISES          (5)
+#define MAX_PLAYER_ENTERPRISES          (7)
 
 #define __func:%1(%2) \
 	forward public %1(%2); \
@@ -2774,7 +2774,8 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
   	beach_tp,
   	beach_weps,
   	beach_m,
-	bb_mcc,
+ 	bb_mcc,
+ 	aa_text,
   	Text3D:Label_Elevator,
   	Text3D:Label_Floors[21],
     PlayerData[MAX_PLAYERS][E_PLAYER_DATA],
@@ -2817,6 +2818,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
     Text:AchTD[6],
 	Text:TXTWelcome[5],
 	Text:JailTD,
+	Text:TXTGodTD,
 	#if WINTER_EDITION == true
 	Text:TXTWinterEdition,
 	#endif
@@ -3152,6 +3154,7 @@ public OnPlayerSpawn(playerid)
 			{
 			    SetPlayerHealth(playerid, 99999.0);
 			    ResetPlayerWeapons(playerid);
+			    TextDrawShowForPlayer(playerid, TXTGodTD);
 			}
 			else
 			{
@@ -3576,8 +3579,11 @@ public OnPlayerConnect(playerid)
 {
 	if(IsPlayerNPC(playerid)) return 1;
     
-   	format(gstr, sizeof(gstr), "INSERT INTO `online` VALUES (NULL, '%s', '%s', UNIX_TIMESTAMP());",PlayerData[playerid][e_accountid], __GetName(playerid), __GetIP(playerid));
-	mysql_tquery(pSQL, gstr, "", "");
+  // 	format(gstr, sizeof(gstr), "INSERT INTO `online` VALUES ('%s', '%s', '%s', UNIX_TIMESTAMP());",PlayerData[playerid][e_accountid], __GetName(playerid), __GetIP(playerid));
+//	mysql_tquery(pSQL, gstr, "", "");
+	
+	mysql_format(pSQL, gstr, sizeof(gstr), "DELETE FROM `online` WHERE `name` = '%e';", __GetName(playerid));
+	mysql_tquery(pSQL, gstr);
 
     ResetPlayerData(playerid);
 	ResetPlayerPV(playerid);
@@ -4237,6 +4243,16 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 			}
 		}
 	}
+	
+		/* HITSOUND */
+	if(hittype == BULLET_HIT_TYPE_PLAYER) {
+		if(weaponid >= 22) {
+		    if(gTeam[playerid] == DM || gTeam[playerid] == gSNIPER || gTeam[playerid] == gDUEL) {
+		        PlayerPlaySound(playerid, 17802, 0.0, 0.0, 0.0);
+		    }
+		}
+	}
+
 
 	/* TDM RPG ABUSE */
 	if(gTeam[playerid] == gTDM_TEAM1 || gTeam[playerid] == gTDM_TEAM2) {
@@ -4815,11 +4831,12 @@ public OnPlayerText(playerid, text[])
 	    SCM(playerid, RED, "You have been muted!");
 	    return 0;
 	}
-	if((PlayerData[playerid][iCoolDownChat] + COOLDOWN_CHAT) >= GetTickCountEx())
+	if((PlayerData[playerid][iCoolDownChat] + COOLDOWN_CHAT) > GetTickCountEx())
 	{
 		player_notice(playerid, "1 message every second", "");
 	    return 0;
 	}
+	
 	if(strfind(szMessage, "/q", true) != -1 || strfind(szMessage, "/ q", true) != -1 || strfind(szMessage, "/quit", true) != -1 || strfind(szMessage, "/ quit", true) != -1)
   		return 0;
 	
@@ -5106,6 +5123,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	PlayerData[playerid][tickJoin_bmx] = 0;
 
     PlayerTextDrawHide(playerid, TXTWantedsTD[playerid]);
+    TextDrawHideForPlayer(playerid, TXTGodTD);
 
 	switch(random(7))
 	{
@@ -6168,6 +6186,81 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 		  		SpawnPlayer(playerid);
 			}
 	 	}
+	 	case 38: //bikec2 Prize
+		{
+			if(GetPVarInt(playerid, "doingStunt") == 1 && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+	  		{
+	  		    if(GetVehicleModel(GetPlayerVehicleID(playerid)) != 522)
+				  	return 1;
+
+     			new tick = GetTickCountEx();
+				if((PlayerData[playerid][tickLastBIKEC] + COOLDOWN_BIKEC) >= tick)
+				{
+				    return player_notice(playerid, "Stunt is on cooldown,", "please wait");
+				}
+
+				new vehicle = 0;
+
+				if((vehicle = GetPlayerVehicleID(playerid)) != 0)
+				{
+					new Float:POS[3];
+		   			GetPlayerPos(playerid, POS[0], POS[1], POS[2]);
+					SetPlayerPos(playerid, POS[0], POS[1], POS[2] + 10.0);
+
+                    SetVehicleToRespawn(vehicle);
+				}
+
+				GameTextForPlayer(playerid, "~r~~h~Congrats!~n~~w~You finished the bike challenge 2.", 6000, 5);
+				PlayerPlaySound(playerid, 1149, 0, 0, 0);
+
+				format(gstr, sizeof(gstr), ""nef" {%06x}%s(%i) "PINK_E"has successfully completed /bikec2.", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid);
+				SCMToAll(COLOR_WHITE, gstr);
+
+				GivePlayerScoreEx(playerid, 5, true, true);
+				GivePlayerMoneyEx(playerid, 9000, true, true);
+
+				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the bike challange~n~~r~~h~~h~5 score and $9,000!");
+				if(PlayerAchData[playerid][e_ach_biker][0] == 0)
+				{
+  					GivePlayerAchievement(playerid, e_ach_biker, "Biker", "Congrats you earned $30,000!~n~and 10 score!~n~~w~Type /ach to view your achievements.");
+				}
+
+				SetPVarInt(playerid, "doingStunt", 0);
+				PlayerData[playerid][tickJoin_bmx] = 0;
+				PlayerData[playerid][tickLastBIKEC] = tick;
+			}
+	 	}
+	 	case 39: //hayclimb Prize
+		{
+			if(GetPVarInt(playerid, "doingStunt") == 1)
+	  		{
+
+     			new tick = GetTickCountEx();
+				if((PlayerData[playerid][tickLastBIKEC] + COOLDOWN_BIKEC) >= tick)
+				{
+				    return player_notice(playerid, "Stunt is on cooldown,", "please wait");
+				}
+
+				GameTextForPlayer(playerid, "~r~~h~Congrats!~n~~w~You finished the hayclimb challenge!", 6000, 5);
+				PlayerPlaySound(playerid, 1149, 0, 0, 0);
+
+				format(gstr, sizeof(gstr), ""nef" {%06x}%s(%i) "PINK_E"has successfully completed /hayclimb.", GetColorEx(playerid) >>> 8, __GetName(playerid), playerid);
+				SCMToAll(COLOR_WHITE, gstr);
+
+				GivePlayerScoreEx(playerid, 8, true, true);
+				GivePlayerMoneyEx(playerid, 10000, true, true);
+
+				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the hayclimb challange~n~~r~~h~~h~8 score and $10,000!");
+				if(PlayerAchData[playerid][e_ach_biker][0] == 0)
+				{
+  					GivePlayerAchievement(playerid, e_ach_biker, "Biker", "Congrats you earned $30,000!~n~and 10 score!~n~~w~Type /ach to view your achievements.");
+				}
+
+				SetPVarInt(playerid, "doingStunt", 0);
+				PlayerData[playerid][tickJoin_bmx] = 0;
+				PlayerData[playerid][tickLastBIKEC] = tick;
+			}
+	 	}
 	}
 	return 1;
 }
@@ -7144,7 +7237,17 @@ YCMD:racemap2(playerid, params[], help)
 YCMD:hayclimb(playerid, params[], help)
 {
     PortPlayerMap(playerid, -1788.4408, 575.2750, 35.1641, 145.6224, "Hayclimb", "hayclimb", true, false);
-    return 1;
+
+	CheckPlayerGod(playerid);
+
+	DestroyPlayerVehicles(playerid);
+
+	SetPVarInt(playerid, "doingStunt", 1);
+
+	ResetPlayerWeapons(playerid);
+
+	gTeam[playerid] = SKYDIVE;
+	return 1;
 }
 YCMD:dfun2(playerid, params[], help)
 {
@@ -7196,6 +7299,24 @@ YCMD:bikec(playerid, params[], help)
 		
 		SetPVarInt(playerid, "doingStunt", 1);
 		
+		ResetPlayerWeapons(playerid);
+
+		gTeam[playerid] = SKYDIVE;
+    }
+    return 1;
+}
+YCMD:bikec2(playerid, params[], help)
+{
+    if(PortPlayerMap(playerid, 2974.4126,2859.6987,6.8459,278.3169, "Bike Challange2", "bikec2"))
+    {
+        CheckPlayerGod(playerid);
+
+		DestroyPlayerVehicles(playerid);
+		
+		LoadMap(playerid);
+
+		SetPVarInt(playerid, "doingStunt", 1);
+
 		ResetPlayerWeapons(playerid);
 
 		gTeam[playerid] = SKYDIVE;
@@ -7748,13 +7869,12 @@ YCMD:skydive2(playerid, params[], help)
 {
     if(PortPlayerMap(playerid,-1288.0760,-44.0085,4216.4507,93.1578, "Skydive 2", "skydive2"))
     {
-        ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
-        Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
         ResetPlayerWeapons(playerid);
+        Command_ReProcess(playerid, "/parch", false);
     }
     return 1;
 }
@@ -7762,12 +7882,13 @@ YCMD:skydive3(playerid, params[], help)
 {
     if(PortPlayerMap(playerid,2875,-3233,3268,0, "Skydive 3", "skydive3"))
     {
+        ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
-        Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
         ResetPlayerWeapons(playerid);
+        Command_ReProcess(playerid, "/parch", false);
     }
     return 1;
 }
@@ -7775,6 +7896,7 @@ YCMD:skydive4(playerid, params[], help)
 {
     if(PortPlayerMap(playerid,118.210845,3658.245859,836.183776,266.014678, "Skydive 4", "skydive4"))
     {
+        ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
@@ -7788,12 +7910,12 @@ YCMD:skydive5(playerid, params[], help)
 {
     if(PortPlayerMap(playerid, 239.3282, 3754.8267, 888.9833, 332.5006, "Skydive 5", "skydive5"))
     {
+        ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
-        ResetPlayerWeapons(playerid);
     }
     return 1;
 }
@@ -7801,12 +7923,12 @@ YCMD:skydive6(playerid, params[], help)
 {
     if(PortPlayerMap(playerid, -1854.9218,-3813.2405,1160.8369,270.6376, "Skydive 6", "skydive6"))
     {
+        ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
-        ResetPlayerWeapons(playerid);
     }
     return 1;
 }
@@ -8272,6 +8394,7 @@ YCMD:hidef(playerid, params[], help)
 	TextDrawHideForPlayer(playerid, NEFLOGO[1]);
 	TextDrawHideForPlayer(playerid, NEFLOGO[2]);
     TextDrawHideForPlayer(playerid, TXTRandomInfo);
+    TextDrawHideForPlayer(playerid, TXTGodTD);
     PlayerTextDrawHide(playerid, TXTWantedsTD[playerid]);
 	#if WINTER_EDITION == true
 	TextDrawHideForPlayer(playerid, TXTWinterEdition);
@@ -8289,6 +8412,7 @@ YCMD:showf(playerid, params[], help)
 	TextDrawShowForPlayer(playerid, NEFLOGO[1]);
 	TextDrawShowForPlayer(playerid, NEFLOGO[2]);
     TextDrawShowForPlayer(playerid, TXTRandomInfo);
+   	if(PlayerData[playerid][bGod]) TextDrawShowForPlayer(playerid, TXTGodTD);
 	PlayerTextDrawShow(playerid, TXTWantedsTD[playerid]);
 	#if WINTER_EDITION == true
 	TextDrawShowForPlayer(playerid, TXTWinterEdition);
@@ -8873,6 +8997,12 @@ YCMD:eventwinner(playerid, params[], help)
 			{
    				if(gTeam[i] == EVENT)
 			    {
+			    
+					new Float:POS[3];
+	   				GetPlayerPos(i, POS[0], POS[1], POS[2]);
+					SetPlayerPos(i, POS[0], POS[1], floatadd(POS[2], 10.0));
+					SetVehicleToRespawn(GetPlayerVehicleID(i));
+					RemovePlayerFromVehicle(i);
 					TogglePlayerControllable(i, true);
 					RandomSpawn(i, true);
 					RandomWeapons(i);
@@ -8972,19 +9102,7 @@ YCMD:eventcars(playerid, params[], help)
 			{
    				if(gTeam[i] == EVENT)
 			    {
-			        new Float:POS[4];
-			        GetPlayerPos(i, POS[0], POS[1], POS[2]);
-			        GetPlayerFacingAngle(i, POS[3]);
-					PlayerData[i][pEventVehicle] = CreateVehicleEx(494, POS[0], POS[1], POS[2], POS[3], (random(128) + 127), (random(128) + 127), -1);
-                    SetVehicleNumberPlate(PlayerData[i][pEventVehicle], "{3399ff}E{FFFFFF}vent{F81414}Y");
-					SetVehicleVirtualWorld(PlayerData[i][pEventVehicle], GetPlayerVirtualWorld(i));
-					LinkVehicleToInterior(PlayerData[i][pEventVehicle], GetPlayerInterior(i));
-					TogglePlayerControllable(i, true);
- 					SetPlayerSpecialAction(i, SPECIAL_ACTION_NONE);
-					ClearAnimations(i);
-					PutPlayerInVehicle(i, PlayerData[i][pEventVehicle], 0);
-					RepairVehicle(PlayerData[i][pEventVehicle]);
-					SetCameraBehindPlayer(i);
+                    SCM(playerid, NEF_GREEN, "This command has now been disabled, use cars provided.");
 					}
 				}
 			}
@@ -9110,7 +9228,7 @@ YCMD:accept(playerid, params[], help)
 	    SCM(playerid, -1, gstr);
 	    format(gstr, sizeof(gstr), ""blue"%s(%i) has accepted your offer, you sold the house ID:%i for $%s", __GetName(playerid), playerid, r, number_format(PlayerData[playerid][iTransactHousePrice]));
 	    SCM(otherid, -1, gstr);
-	    format(gstr, sizeof(gstr), ""orange"[NEF] %s(%i) has sold their house (ID %i) to %s(%i) for $%s", __GetName(otherid), otherid, r, __GetName(playerid), playerid, number_format(PlayerData[playerid][iTransactHousePrice]));
+	    format(gstr, sizeof(gstr), ""orange""nef" %s(%i) has sold their house (ID %i) to %s(%i) for $%s", __GetName(otherid), otherid, r, __GetName(playerid), playerid, number_format(PlayerData[playerid][iTransactHousePrice]));
 	    SCMToAll(-1, gstr);
 
 	    PlayerData[playerid][iTransactHousePlayer] = INVALID_PLAYER_ID;
@@ -10059,7 +10177,7 @@ YCMD:adminhelp(playerid, params[], help)
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[3][e_rank]);
 		strcat(string, gstr);
-		strcat(string, "/eshaml /eventcars /eventwinner /eventplan /eject /go /getip /get /clearchat /iplookup /tplayer\n/dawn /night /giveweapon /connectbots /raceforcemap /derbyforcemap /deleterecord /nstats\n\n");
+		strcat(string, "/eshaml /eventcars /eventwinner /eventplan /eject /go /getip /get /clearchat /iplookup /tplayer\n/dawn /night /giveweapon /raceforcemap /deleterecord /nstats\n\n");
 		
 		format(gstr, sizeof(gstr), "%s\n", g_szStaffLevelNames[4][e_rank]);
 		strcat(string, gstr);
@@ -13281,7 +13399,6 @@ YCMD:ban(playerid, params[], help)
 	        return SCM(playerid, NEF_GREEN, "Usage: /ban <playerid> <reason>");
 	    }
 	    
-	    if(PlayerData[player][e_level] > 1) return SCM(playerid, -1, ""er"CANNOT BAN ADMINS!!  <This attempt as been logged) ");
 		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
 	    
 		if(strlen(reason) > 50 || isnull(reason) || strlen(reason) < 2) return SCM(playerid, -1, ""er"Ban reason length: 2-50");
@@ -13293,7 +13410,7 @@ YCMD:ban(playerid, params[], help)
 		    return SCM(playerid, -1, ""er"You have specified invalid characters");
 		}
 
-	  	if(PlayerData[player][e_level] != MAX_ADMIN_LEVEL)
+	  	if(PlayerData[player][e_level] >= MAX_HA_LEVEL)
 	  	{
 		 	if(IsPlayerAvail(player))
 			{
@@ -14279,7 +14396,7 @@ YCMD:vip(playerid, params[], help)
 	strcat(string, " /label - attach a label and choose a text\n /dlabel - delete the label\n");
 	strcat(string, " /elabel - edit the label text and color\n");
 	strcat(string, "- Access to VIP-Lounge and VIP-Lounge invites.\n- Access to the restricted part of the admin headquarters (/adminhq)\n");
-	strcat(string, "- Access to exclusive VIP Private Vehicles: Hustler, Bandito, Mower, S.W.A.T., Kotknife and Kart.\n");
+	strcat(string, "- Access to exclusive VIP Private Vehicles: Hustler, Bandito, Mower, S.W.A.T., Hotknife and Kart.\n");
 	strcat(string, "- Play as SWAT in the Cops and Robbers minigame.\n- Simply attach a trailer to your truck (/trailer)\n");
 	strcat(string, "- Ability to refill your health and armor for $5,000 (/harefill)\n- Chat color codes: <blue> <red> <green> <yellow>\n");
 	strcat(string, " To enable color codes use '$$$' at the beginning of your message.\n\n"nef_yellow"Get VIP at "SERVER_WWWURL"/donate");
@@ -14330,6 +14447,7 @@ YCMD:god(playerid, params[], help)
 	        SetPVarInt(playerid, "HadGod", 0);
 	 		SCM(playerid, COLOR_RED, ""nef" "GREY_E"You have disabled god-mode. You can now lose health in stunt zones.");
 			SCM(playerid, COLOR_RED, "> "YELLOW_E"You can now freely use weapons.");
+		 	TextDrawHideForPlayer(playerid, TXTGodTD);
 	        SetPlayerHealth(playerid, 100.0);
 	        RandomWeapons(playerid);
 	    }
@@ -14350,6 +14468,7 @@ YCMD:god(playerid, params[], help)
 	        SetPVarInt(playerid, "HadGod", 1);
 		    SCM(playerid, COLOR_RED, ""nef" "GREY_E"You have enabled god-mode. You will now have infinite health in stunt zones.");
 			SCM(playerid, COLOR_RED, "> "YELLOW_E"You will not be able to use weapons with godmode enabled, type /god again to disable.");
+			TextDrawShowForPlayer(playerid, TXTGodTD);
 	        ResetPlayerWeapons(playerid);
 	        SetPlayerHealth(playerid, 999999.0);
 			PlayerTextDrawSetString(playerid, TXTWantedsTD[playerid], "~y~[] ~w~0");
@@ -14848,11 +14967,11 @@ YCMD:report(playerid, params[], help)
 		}
 		Reports[MAX_REPORTS - 1] = gstr;
 
-        if(admin_broadcast(COLOR_RED, gstr, true) == 0)
-        {
-			format(gstr, sizeof(gstr), ""white"["lb_e"VIP CHAT"white"] "YELLOW_E"Report(%02i:%02i:%02i) "RED_E"%s(%i) -> %s(%i) -> %s", time[0], time[1], time[2], __GetName(playerid), playerid, __GetName(player), player, reason);
-			vip_broadcast(-1, gstr);
-        }
+      //  if(admin_broadcast(COLOR_RED, gstr, true) == 0)
+     //   {
+	//		format(gstr, sizeof(gstr), ""white"["lb_e"VIP CHAT"white"] "YELLOW_E"Report(%02i:%02i:%02i) "RED_E"%s(%i) -> %s(%i) -> %s", time[0], time[1], time[2], __GetName(playerid), playerid, __GetName(player), player, reason);
+	//		vip_broadcast(-1, gstr);
+    //    }
 
 		SCM(playerid, YELLOW, "Your report has been sent to online Administrators");
 		PlayerData[playerid][tickLastReport] = tick;
@@ -22972,6 +23091,18 @@ server_load_textdraws()
 	TextDrawSetShadow(CheckTD, 0);
 	TextDrawSetOutline(CheckTD, 0);
 	TextDrawFont(CheckTD, 4);
+	
+	TXTGodTD = TextDrawCreate(499.000000, 106.000000, "~y~~h~GODMODE ENABLED");
+	TextDrawBackgroundColor(TXTGodTD, 168430202);
+	TextDrawFont(TXTGodTD, 1);
+	TextDrawLetterSize(TXTGodTD, 0.319999, 1.399999);
+	TextDrawColor(TXTGodTD, -1);
+	TextDrawSetOutline(TXTGodTD, 1);
+	TextDrawSetProportional(TXTGodTD, 1);
+	TextDrawUseBox(TXTGodTD, 1);
+	TextDrawBoxColor(TXTGodTD, 168430202);
+	TextDrawTextSize(TXTGodTD, 607.000000, 3.000000);
+	TextDrawSetSelectable(TXTGodTD, 0);
 
 	TXTWelcome[0] = TextDrawCreate(435.000000, 106.000000, "~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~~n~");
 	TextDrawBackgroundColor(TXTWelcome[0], 255);
@@ -23567,8 +23698,8 @@ server_load_visuals()
 	new beach_text = CreateDynamicObject(19479, 309.903930, -1934.953369, 12.736993, 0.000000, 0.000000, 39.940856);
 	SetDynamicObjectMaterialText(beach_text, 0, ""orange""SERVER_WWWURL"\n"red""SERVER_VERSION"", OBJECT_MATERIAL_SIZE_256x128, "Arial", 30, 1, -32256, 0, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 	
-	new aa_text = CreateDynamicObject(8323, 426.52484, 2528.90259, 21.78450,   0.00000, 0.00000, -87.12002);
-	SetDynamicObjectMaterialText(aa_text, 0, ""nef_yellow"Havoc Freeroam\n "nef_red"Welcome to (USER)'s house!", OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
+	aa_text = CreateDynamicObject(8323, 426.52484, 2528.90259, 21.78450,   0.00000, 0.00000, -87.12002);
+	SetDynamicObjectMaterialText(aa_text, 0, ""nef_yellow"Havoc Freeroam\n "nef_red"Players online:", OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 
 	new disco_text = CreateDynamicObject(7910, 918.46777, -1663.79858, 10010.17773,   0.00000, 0.00000, 270.18719);
 	SetDynamicObjectMaterialText(disco_text, 0, ""nef_yellow"Havoc Freeroam\n "green">>> Disco & Bar <<<", OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
@@ -23682,6 +23813,8 @@ server_load_visuals()
 	CreateDynamicCP(3360.8054,-1934.1283,43.3184, 3.5, 0, -1, -1, 50.0); // bmx bike spawn
 	CreateDynamicCP(249.9905, 3772.1204, 18.3780, 12.0, 0, -1, -1, 100.0); // skydive5 checkpoint
 	CreateDynamicCP(-1839.5253, -3856.7036, 16.9936, 12.0, 0, -1, -1, 100.0); // skydive6 checkpoint
+	CreateDynamicCP(3069.5635,2887.3774,86.4717, 5.0, 0, -1, -1, 100.0);//37 bikec2 challenge
+	CreateDynamicCP(-1824.5894,566.4678,277.6880, 2.0, 0, -1, -1, 100.0);//37 Hayclimb challenge
 
 	//Stores
 	CreateDynamicMapIcon(2539.3477,2081.2295,10.8203, 6, 0, WORLD_CNR); //Ammunation 1
@@ -23749,6 +23882,10 @@ server_load_visuals()
 	CreateObject(18769, -2332.69995, -1630.66577, 483.17276,   0.00000, 0.00000, -2.10001); // mc vspawn
 	CreateObject(9241, -2339.24951, -1636.16699, 483.82617,   0.00000, 0.00000, -271.79977); // mc spawn
 	
+	CreateObject(10009,3215.4533700,2964.3259300,136.3898900,0.0000000,0.0000000,124.7859000); // bikec2
+	CreateObject(10009,3217.2475600,2968.8066400,121.3930000,0.0000000,0.0000000,212.5943000); //bikec2
+	CreateObject(10009,3211.2700200,2968.7404800,128.9100000,0.0000000,0.0000000,346.6144100); //bikec2
+	
 	// derby townhall fix
 	CreateDynamicObject(8558, 1544.65198, -1843.98779, 17.14610,   1.80000, -88.90002, -89.69999);
 	CreateDynamicObject(8558, 1541.62708, -1843.84485, 17.14610,   1.80000, -88.90002, -89.69999);
@@ -23801,6 +23938,7 @@ server_load_visuals()
 	AddTeleport(2, "Party", "party", -377.2038,2131.4634,133.1797);
 	AddTeleport(4, "Balloon", "balloon", 295.4890,-1813.5734,52.0518);
 	AddTeleport(3, "Bike Challange", "bikec", 1102.3887, 1355.4951, 10.8203);
+	AddTeleport(3, "Bike Challange 2", "bikec2", 2974.4126,2859.6987,6.8459);
 	AddTeleport(3, "Hayclimb", "hayclimb", -1788.4408, 575.2750, 35.1641);
 	AddTeleport(1, "HalfPipe", "hp", 2848.1548,-1977.4320,10.6646);
 	AddTeleport(1, "Slide", "slide", 1572.9949, -1238.7869, 277.7445);
@@ -25270,7 +25408,7 @@ procedure OnQueueReceived()
 		                    bfound = true;
 							GivePlayerMoneyEx(i, cashamount);
 
-		 					format(gstr, sizeof(gstr), "~p~You received $%s received for donating!", number_format(cashamount));
+		 					format(gstr, sizeof(gstr), "~p~You received $%s for donating!", number_format(cashamount));
 		                    GameTextForPlayer(i, gstr, 7000, 3);
 		                    format(gstr, sizeof(gstr), "You received $%s for donating!", number_format(cashamount));
 		                    SCM(i, ORANGE, gstr);
@@ -25544,6 +25682,9 @@ procedure ProcessTick()
 
 		format(gstr, sizeof(gstr), "Welcome to Havoc Freeroam!\n\nServer time: %02i:%02i | %02i.%02i\nPlayers online: %i", gTime[3], gTime[4], gTime[2], gTime[1], T_ServerPlayers);
 		SetDynamicObjectMaterialText(bb_mcc, 0, gstr, OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_LEFT);
+		
+		format(gstr, sizeof(gstr), ""nef_yellow"Havoc Freeroam\n "nef_red"Players online: %i",T_ServerPlayers);
+		SetDynamicObjectMaterialText(aa_text, 0, gstr, OBJECT_MATERIAL_SIZE_256x128, "Calibri", 0, 0, -32256, -16777216, OBJECT_MATERIAL_TEXT_ALIGN_CENTER);
 		
 		if(g_RaceStatus == RaceStatus_Active)
 		{
@@ -27785,6 +27926,7 @@ procedure Maths()
 
 CheckPlayerGod(playerid)
 {
+    TextDrawHideForPlayer(playerid, TXTGodTD);
 	SetPlayerHealth(playerid, 100.0);
 	PlayerData[playerid][bGod] = false;
 }
@@ -28241,7 +28383,9 @@ GetAllowedEnterpriseCount(playerid, &score)
 	    {2000, 	2},
 	    {5000, 	3},
 	    {10000, 4},
-	    {25000, 5}
+	    {25000, 5},
+	    {26000, 6},
+	    {27000, 7}
 	};
 	for(new i = MAX_PLAYER_ENTERPRISES - 1; i >= 0; i--)
 	{
@@ -29645,6 +29789,9 @@ procedure OnPlayerAccountRequest(playerid, namehash, request)
 				SetPlayerFacingAngle(playerid, 359.9696);
 				SetPlayerCameraPos(playerid, 1797.3688, -1299.8156, 121.4657);
 				SetPlayerCameraLookAt(playerid, 1797.3661, -1300.8164, 121.4556);
+				
+				mysql_format(pSQL, gstr2, sizeof(gstr2), "INSERT INTO `online` VALUES (NULL, '%e', '%s', UNIX_TIMESTAMP());",__GetName(playerid), __GetIP(playerid));
+				mysql_tquery(pSQL, gstr2);
 			
 			    SendWelcomeMSG(playerid);
 			
@@ -30576,6 +30723,7 @@ ResetPlayerData(playerid)
 	PlayerData[playerid][tickLastBIKEC] = 0;
   	PlayerData[playerid][tickLastBuy] = 0;
   	PlayerData[playerid][tickLastSell] = 0;
+	PlayerData[playerid][tickLastChat] = 0;
   	PlayerData[playerid][tickLastPW] = 0;
   	PlayerData[playerid][tickLastChat] = 0;
   	PlayerData[playerid][tickLastPM] = 0;
@@ -30803,6 +30951,7 @@ SetPlayerGWarMode(playerid)
 	if(PlayerData[playerid][bGod])
 	{
         SetPVarInt(playerid, "HadGod", 0);
+        TextDrawHideForPlayer(playerid, TXTGodTD);
         PlayerData[playerid][bGod] = false;
         RandomWeapons(playerid);
 		SetPlayerHealth(playerid, 100.0);
