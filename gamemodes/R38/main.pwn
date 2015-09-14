@@ -2672,7 +2672,7 @@ static const pv_lights[2][0] =
 new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	Iterator:iterDerbyVoters<MAX_PLAYERS>,
 	Iterator:iterPlayerIgnore[MAX_PLAYERS]<MAX_PLAYERS>,
-	Iterator:iterLottoNumberPool<75>,
+	Iterator:iterLottoNumberPool<45>,
 	Iterator:iterGangWar<3000>,
 	Float:g_RaceVehCoords[RACE_MAX_PLAYERS][4],
 	Float:g_RaceCPs[RACE_MAX_CHECKPOINTS][3],
@@ -7869,11 +7869,11 @@ YCMD:skydive2(playerid, params[], help)
 {
     if(PortPlayerMap(playerid,-1288.0760,-44.0085,4216.4507,93.1578, "Skydive 2", "skydive2"))
     {
+        ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
-        ResetPlayerWeapons(playerid);
         Command_ReProcess(playerid, "/parch", false);
     }
     return 1;
@@ -7887,7 +7887,6 @@ YCMD:skydive3(playerid, params[], help)
         CheckPlayerGod(playerid);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
-        ResetPlayerWeapons(playerid);
         Command_ReProcess(playerid, "/parch", false);
     }
     return 1;
@@ -13579,6 +13578,16 @@ YCMD:raceforcemap(playerid, params[], help)
 	return 1;
 }
 
+YCMD:startlotto(playerid, params[], help)
+{
+	if(PlayerData[playerid][e_level] >= 3)
+	{
+	    DoLotto();
+        SCM(playerid, -1, ""er"Lotto starting.");
+ 	}
+	return 1;
+}
+
 YCMD:shutdown(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL && IsPlayerAdmin(playerid))
@@ -16851,10 +16860,10 @@ YCMD:lotto(playerid, params[], help)
 	new lotto;
 	if(sscanf(params, "i", lotto))
 	{
-	    return SCM(playerid, NEF_GREEN, "Usage: /lotto <1-75>");
+	    return SCM(playerid, NEF_GREEN, "Usage: /lotto <1-45>");
 	}
 	
-	if(lotto < 1 || lotto > 75) return SCM(playerid, -1, ""er"Invalid lotto number");
+	if(lotto < 1 || lotto > 45) return SCM(playerid, -1, ""er"Invalid lotto number");
 	if(Iter_Contains(iterLottoNumberPool, lotto)) return SCM(playerid, -1, ""er"This lotto number is already in use!");
 	
 	PlayerData[playerid][DrawnNumber] = lotto;
@@ -28023,11 +28032,11 @@ procedure InfoTD_Hide(playerid)
 procedure DoLotto()
 {
 	Iter_Clear(iterLottoNumberPool);
-	g_LottoNumber = random(75) + 1;
+	g_LottoNumber = random(45) + 1;
 	g_LottoJackpot = 200000 + random(100000);
 	bLottoActive = true;
 
-	format(gstr, sizeof(gstr), "~g~~h~~<~ Lottery Information ~>~~n~~w~Buy a lotto in any 24/7 shop (/247) inside use /lotto <1-75>~n~~r~~h~Jackpot: $%s - Draw starts in 5 minutes!", number_format(g_LottoJackpot));
+	format(gstr, sizeof(gstr), "~g~~h~~<~ Lottery Information ~>~~n~~w~Buy a lotto in any 24/7 shop (/247) inside use /lotto <1-45>~n~~r~~h~Jackpot: $%s - Draw starts in 5 minutes!", number_format(g_LottoJackpot));
 
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -28074,7 +28083,7 @@ procedure LottoDraw()
         PlayerData[i][DrawnNumber] = -1;
 	}
 
-	SetTimer("DoLotto", 1200000, false);
+	SetTimer("DoLotto", 900000, false);
 	return 1;
 }
 
