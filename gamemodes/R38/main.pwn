@@ -409,6 +409,7 @@ Float:GetDistanceFast(&Float:x1, &Float:y1, &Float:z1, &Float:x2, &Float:y2, &Fl
 #define MAX_PLAYER_MONEY                (1000000000)
 #define MAX_PLAYER_IP                   (16)
 #define COOLDOWN_CMD_BAN                (125000)
+#define	COOLDOWN_CMD_LOTTO1             (600000)
 #define COOLDOWN_CMD_AR                 (1000)
 #define COOLDOWN_CMD_ROB                (10000)
 #define COOLDOWN_CMD_BUY                (2000)
@@ -712,6 +713,7 @@ enum E_PLAYER_DATA // Prefixes: i = Integer, s = String, b = bool, f = Float, p 
     tickLastAr,
 	tickLastShot,
 	tickLastRob,
+	tickLastLotto,
 	tickVehicleEnterTime,
 	tickLastGiveCash,
 	tickLastMedkit,
@@ -2681,6 +2683,7 @@ new Iterator:iterRaceJoins<MAX_PLAYERS>,
 	//g_DerbyForceMap = 0,
 	g_RaceForceMap = 0,
 	Text3D:NPCLabelHandle[5],
+	g_Startlotto = INVALID_PLAYER_ID,
 	g_BuildRace = INVALID_PLAYER_ID,
 	g_BuildDeployTime = 0,
 	g_BuildRaceType = 1,
@@ -5776,6 +5779,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 				
 				GivePlayerScoreEx(playerid, 4, true, true);
 				GivePlayerMoneyEx(playerid, 7000, true, true);
+				SpawnPlayer(playerid);
 				
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the bike challange~n~~r~~h~~h~4 score and $7,000!");
 				if(PlayerAchData[playerid][e_ach_biker][0] == 0)
@@ -6218,6 +6222,7 @@ public OnPlayerEnterDynamicCP(playerid, checkpointid)
 
 				GivePlayerScoreEx(playerid, 5, true, true);
 				GivePlayerMoneyEx(playerid, 9000, true, true);
+				SpawnPlayer(playerid);
 
 				InfoTD_MSG(playerid, 5000, "~r~~h~~h~Congratulations!~n~~w~You finished the bike challange~n~~r~~h~~h~5 score and $9,000!");
 				if(PlayerAchData[playerid][e_ach_biker][0] == 0)
@@ -7869,12 +7874,12 @@ YCMD:skydive2(playerid, params[], help)
 {
     if(PortPlayerMap(playerid,-1288.0760,-44.0085,4216.4507,93.1578, "Skydive 2", "skydive2"))
     {
-        ResetPlayerWeapons(playerid);
-        LoadMap(playerid);
-        CheckPlayerGod(playerid);
+       ResetPlayerWeapons(playerid);
+       LoadMap(playerid);
+       CheckPlayerGod(playerid);
+       Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
-        Command_ReProcess(playerid, "/parch", false);
     }
     return 1;
 }
@@ -7882,12 +7887,12 @@ YCMD:skydive3(playerid, params[], help)
 {
     if(PortPlayerMap(playerid,2875,-3233,3268,0, "Skydive 3", "skydive3"))
     {
-        ResetPlayerWeapons(playerid);
+    	ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
+        Command_ReProcess(playerid, "/parch", false);
         //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
-        Command_ReProcess(playerid, "/parch", false);
     }
     return 1;
 }
@@ -7895,13 +7900,12 @@ YCMD:skydive4(playerid, params[], help)
 {
     if(PortPlayerMap(playerid,118.210845,3658.245859,836.183776,266.014678, "Skydive 4", "skydive4"))
     {
-        ResetPlayerWeapons(playerid);
+    	ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
-       // SetPVarInt(playerid, "doingStunt", 2);
+        //SetPVarInt(playerid, "doingStunt", 2);
         gTeam[playerid] = SKYDIVE;
-        ResetPlayerWeapons(playerid);
     }
     return 1;
 }
@@ -7909,7 +7913,7 @@ YCMD:skydive5(playerid, params[], help)
 {
     if(PortPlayerMap(playerid, 239.3282, 3754.8267, 888.9833, 332.5006, "Skydive 5", "skydive5"))
     {
-        ResetPlayerWeapons(playerid);
+    	ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
@@ -7922,7 +7926,7 @@ YCMD:skydive6(playerid, params[], help)
 {
     if(PortPlayerMap(playerid, -1854.9218,-3813.2405,1160.8369,270.6376, "Skydive 6", "skydive6"))
     {
-        ResetPlayerWeapons(playerid);
+    	ResetPlayerWeapons(playerid);
         LoadMap(playerid);
         CheckPlayerGod(playerid);
         Command_ReProcess(playerid, "/parch", false);
@@ -13577,17 +13581,18 @@ YCMD:raceforcemap(playerid, params[], help)
 	}
 	return 1;
 }
-
 YCMD:startlotto(playerid, params[], help)
 {
-	if(PlayerData[playerid][e_level] >= 3)
-	{
-	    DoLotto();
+    if(PlayerData[playerid][e_level] >= 3)
+    {
+   		if(g_Startlotto != INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Lotto was started not long ago by another staff member. (10mins)");
+        g_Startlotto = playerid;
+        DoLotto();
+        SetTimer("releaselotto", 600000, false);
         SCM(playerid, -1, ""er"Lotto starting.");
- 	}
-	return 1;
+    }
+    return 1;
 }
-
 YCMD:shutdown(playerid, params[], help)
 {
 	if(PlayerData[playerid][e_level] == MAX_ADMIN_LEVEL && IsPlayerAdmin(playerid))
@@ -13614,7 +13619,7 @@ YCMD:giveweapon(playerid, params[], help)
 		
 	    if(player == INVALID_PLAYER_ID) return SCM(playerid, -1, ""er"Invalid player!");
 		if(!IsPlayerConnected(player)) return SCM(playerid, -1, ""er"Player not connected!");
-		
+
 		if(IsPlayerAvail(player))
 		{
 	        if(gTeam[player] != gFREEROAM) return SCM(playerid, -1, ""er"Player is in a minigame!");
@@ -18217,6 +18222,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         SetPlayerPos(playerid, -1398.0653, -217.0289,1051.1158);
                         SetPVarInt(playerid, "HadGod", 0);
                         SetPlayerHealth(playerid, 100.0);
+                        DisableRemoteVehicleCollisions(playerid, 1);
                         ResetPlayerWeapons(playerid);
 					}
 					case 2:
@@ -28028,6 +28034,10 @@ procedure InfoTD_Hide(playerid)
 	SetPVarInt(playerid, "InfoTDshown", -1);
 	PlayerTextDrawHide(playerid, TXTInfoTD[playerid]);
 }
+procedure releaselotto()
+{
+ g_Startlotto =	INVALID_PLAYER_ID;
+}
 
 procedure DoLotto()
 {
@@ -28514,6 +28524,7 @@ ExitPlayer(playerid)
 
 		    if(GetPVarInt(playerid, "HadGod") == 1) Command_ReProcess(playerid, "/god silent", false);
 		    PlayerData[playerid][tickJoin_bmx] = 0;
+		    DisableRemoteVehicleCollisions(playerid, 0);
 			return 0;
 		}
 	    case SPEC:
@@ -30718,6 +30729,7 @@ ResetPlayerData(playerid)
     PlayerData[playerid][tickLastAr] = 0;
 	PlayerData[playerid][tickLastShot] = 0;
 	PlayerData[playerid][tickLastRob] = 0;
+	PlayerData[playerid][tickLastLotto] = 0;
 	PlayerData[playerid][tickVehicleEnterTime] = 0;
 	PlayerData[playerid][tickLastGiveCash] = 0;
 	PlayerData[playerid][tickLastMedkit] = 0;
